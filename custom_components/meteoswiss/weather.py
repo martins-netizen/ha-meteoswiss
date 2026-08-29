@@ -441,7 +441,7 @@ class MeteoSwissWeather(CoordinatorEntity[MeteoSwissDataUpdateCoordinator], Weat
 
                 ha_forecast.append(Forecast(
                     datetime=representative.get("datetime"),
-                    temperature=representative.get("temperature"),
+                    temperature=max(temperatures) if temperatures else representative.get("temperature"),
                     native_templow=min(temperatures) if temperatures else None,
                     precipitation=sum(e.get("precipitation", 0) for e in hourly_entries),
                     precipitation_probability=max(e.get("precipitation_probability", 0) for e in hourly_entries),
