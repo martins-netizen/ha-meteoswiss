@@ -16,6 +16,8 @@ from .const import (
     CONF_POSTAL_CODE,
     CONF_STATION_ID,
     CONF_STATION_NAME,
+    DATA_SOURCE_METEOSWISS,
+    DATA_SOURCE_OPENMETEO,
     DOMAIN,
 )
 
@@ -35,6 +37,36 @@ COORDINATORS = (
     "pollen_coordinator",
     "meteoswiss_pollen_coordinator",
 )
+
+
+def _location_sources(data_source: str | None) -> dict[str, str]:
+    # Describe where each data family is geographically anchored without
+    # exposing coordinates, postal codes, or station identifiers.
+    if data_source == DATA_SOURCE_METEOSWISS:
+        return {
+            "observations": "meteoswiss_station",
+            "weather_forecast": "home_assistant",
+            "pollen_forecast": "home_assistant",
+            "weather_alerts": "postal_code",
+            "measured_pollen": "meteoswiss_pollen_station",
+        }
+
+    if data_source == DATA_SOURCE_OPENMETEO:
+        return {
+            "observations": "configured_location",
+            "weather_forecast": "configured_location",
+            "pollen_forecast": "configured_location",
+            "weather_alerts": "postal_code",
+            "measured_pollen": "meteoswiss_pollen_station",
+        }
+
+    return {
+        "observations": "unknown",
+        "weather_forecast": "unknown",
+        "pollen_forecast": "unknown",
+        "weather_alerts": "postal_code",
+        "measured_pollen": "meteoswiss_pollen_station",
+    }
 
 
 def _summarize_data(data: Any) -> dict[str, Any]:
@@ -116,5 +148,6 @@ async def async_get_config_entry_diagnostics(
             "minor_version": entry.minor_version,
         },
         "data_source": entry_data.get("data_source"),
+        "location_sources": _location_sources(entry_data.get("data_source")),
         "coordinators": coordinators,
     }

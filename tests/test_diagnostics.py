@@ -15,6 +15,8 @@ from custom_components.meteoswiss.const import (
     CONF_POSTAL_CODE,
     CONF_STATION_ID,
     CONF_STATION_NAME,
+    DATA_SOURCE_METEOSWISS,
+    DATA_SOURCE_OPENMETEO,
     DOMAIN,
 )
 from custom_components.meteoswiss.diagnostics import (
@@ -124,3 +126,43 @@ async def test_diagnostics_summarize_data_without_exposing_values_or_errors(hass
     assert "do-not-expose" not in rendered
     assert "private failure detail" not in rendered
     assert "8302" not in rendered
+
+async def test_diagnostics_report_meteoswiss_location_sources(hass) -> None:
+    entry = MockConfigEntry(domain=DOMAIN, data={CONF_STATION_ID: "KLO"})
+    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {
+        "data_source": DATA_SOURCE_METEOSWISS,
+    }
+
+    diagnostics = await async_get_config_entry_diagnostics(hass, entry)
+
+    assert diagnostics["location_sources"] == {
+        "observations": "meteoswiss_station",
+        "weather_forecast": "home_assistant",
+        "pollen_forecast": "home_assistant",
+        "weather_alerts": "postal_code",
+        "measured_pollen": "meteoswiss_pollen_station",
+    }
+
+
+async def test_diagnostics_report_openmeteo_location_sources(hass) -> None:
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={CONF_LATITUDE: 46.2, CONF_LONGITUDE: 6.1},
+    )
+    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {
+        "data_source": DATA_SOURCE_OPENMETEO,
+    }
+
+    diagnostics = await async_get_config_entry_diagnostics(hass, entry)
+
+    assert diagnostics["location_sources"] == {
+        "observations": "configured_location",
+        "weather_forecast": "configured_location",
+        "pollen_forecast": "configured_location",
+        "weather_alerts": "postal_code",
+        "measured_pollen": "meteoswiss_pollen_station",
+    }
+
+    rendered = repr(diagnostics)
+    assert "46.2" not in rendered
+    assert "6.1" not in rendered
