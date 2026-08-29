@@ -81,6 +81,7 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
             f"&longitude={self._longitude}"
             f"&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,precipitation,windspeed_10m,winddirection_10m,weather_code,snowfall,freezing_level_height"
             f"&forecast_hours=120"
+            f"&daily=temperature_2m_max,temperature_2m_min"
             f"&models=meteoswiss_icon_seamless"
             f"&timezone=Europe/Zurich"
         )
@@ -137,6 +138,23 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
         snowfall = hourly.get("snowfall", [])
         freezing_level = hourly.get("freezing_level_height", [])
 
+        # Native calendar-day extrema from Open-Meteo. These remain complete
+        # for the current day even though hourly data starts at the current hour.
+        daily = data.get("daily", {})
+        daily_times = daily.get("time", [])
+        daily_max_temps = daily.get("temperature_2m_max", [])
+        daily_min_temps = daily.get("temperature_2m_min", [])
+        daily_extrema: dict[str, dict[str, float | None]] = {}
+        for i, day in enumerate(daily_times):
+            daily_extrema[str(day)] = {
+                "temperature_max": (
+                    daily_max_temps[i] if i < len(daily_max_temps) else None
+                ),
+                "temperature_min": (
+                    daily_min_temps[i] if i < len(daily_min_temps) else None
+                ),
+            }
+
         # Build forecast list (5 days = 120 hours for daily forecast)
         # Determine day/night for each hour based on time
         for i in range(min(120, len(times))):
@@ -152,9 +170,13 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
                 except (IndexError, ValueError):
                     pass
             
+            daily_values = daily_extrema.get(time_str[:10], {})
+
             entry = {
                 "datetime": times[i],
                 "temperature": temps[i] if i < len(temps) else None,
+                "daily_temperature_max": daily_values.get("temperature_max"),
+                "daily_temperature_min": daily_values.get("temperature_min"),
                 "humidity": humidity[i] if i < len(humidity) else None,
                 "precipitation_probability": precip_prob[i] if i < len(precip_prob) else None,
                 "precipitation": precip[i] if i < len(precip) else None,

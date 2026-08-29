@@ -438,11 +438,37 @@ class MeteoSwissWeather(CoordinatorEntity[MeteoSwissDataUpdateCoordinator], Weat
                     for entry in hourly_entries
                     if entry.get("temperature") is not None
                 ]
+                daily_temperature_max = next(
+                    (
+                        entry.get("daily_temperature_max")
+                        for entry in hourly_entries
+                        if entry.get("daily_temperature_max") is not None
+                    ),
+                    None,
+                )
+                daily_temperature_min = next(
+                    (
+                        entry.get("daily_temperature_min")
+                        for entry in hourly_entries
+                        if entry.get("daily_temperature_min") is not None
+                    ),
+                    None,
+                )
 
                 ha_forecast.append(Forecast(
                     datetime=representative.get("datetime"),
-                    temperature=max(temperatures) if temperatures else representative.get("temperature"),
-                    native_templow=min(temperatures) if temperatures else None,
+                    temperature=(
+                        daily_temperature_max
+                        if daily_temperature_max is not None
+                        else max(temperatures) if temperatures
+                        else representative.get("temperature")
+                    ),
+                    native_templow=(
+                        daily_temperature_min
+                        if daily_temperature_min is not None
+                        else min(temperatures) if temperatures
+                        else None
+                    ),
                     precipitation=sum(e.get("precipitation", 0) for e in hourly_entries),
                     precipitation_probability=max(e.get("precipitation_probability", 0) for e in hourly_entries),
                     wind_speed=representative.get("wind_speed"),

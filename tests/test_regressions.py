@@ -81,7 +81,12 @@ class _FakeResponse:
                 "time": ["2026-08-20T12:00"],
                 "temperature_2m": [24.7],
                 "weather_code": [3],
-            }
+            },
+            "daily": {
+                "time": ["2026-08-20"],
+                "temperature_2m_max": [28.8],
+                "temperature_2m_min": [19.2],
+            },
         }
 
 
@@ -113,7 +118,10 @@ async def test_forecast_request_uses_rolling_meteoswiss_seamless_model(hass) -> 
     assert session.requested_url is not None
     assert "&forecast_hours=120" in session.requested_url
     assert "&forecast_days=" not in session.requested_url
+    assert "&daily=temperature_2m_max,temperature_2m_min" in session.requested_url
     assert "&models=meteoswiss_icon_seamless" in session.requested_url
+    assert forecast[0]["daily_temperature_max"] == 28.8
+    assert forecast[0]["daily_temperature_min"] == 19.2
 
 
 async def test_daily_forecast_uses_maximum_and_minimum_temperature(hass) -> None:
@@ -163,3 +171,51 @@ async def test_daily_forecast_uses_maximum_and_minimum_temperature(hass) -> None
     assert len(daily) == 1
     assert daily[0]["temperature"] == 28.8
     assert daily[0]["native_templow"] == 19.2
+
+async def test_daily_forecast_prefers_native_calendar_day_extrema(hass) -> None:
+    """Current-day extrema must include hours before the rolling forecast starts."""
+    current = MeteoSwissDataUpdateCoordinator(
+        hass,
+        station_id="KLO",
+        update_interval=600,
+    )
+    current.data = {SENSOR_TEMPERATURE: 30.0}
+
+    forecast = MeteoSwissForecastCoordinator(
+        hass,
+        station_id="KLO",
+        latitude=47.45,
+        longitude=8.56,
+    )
+    # Simulate a forecast fetched in the afternoon. The remaining hourly
+    # values alone cannot know the morning minimum or an earlier maximum.
+    forecast.data = [
+        {
+            "datetime": "2026-08-20T15:00",
+            "temperature": 28.8,
+            "daily_temperature_max": 33.3,
+            "daily_temperature_min": 18.1,
+            "precipitation": 0,
+            "precipitation_probability": 0,
+        },
+        {
+            "datetime": "2026-08-20T16:00",
+            "temperature": 27.4,
+            "daily_temperature_max": 33.3,
+            "daily_temperature_min": 18.1,
+            "precipitation": 0,
+            "precipitation_probability": 0,
+        },
+    ]
+
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={CONF_STATION_NAME: "Kloten"},
+    )
+
+    entity = MeteoSwissWeather(current, forecast, entry, "Kloten")
+    daily = await entity.async_forecast_daily()
+
+    assert len(daily) == 1
+    assert daily[0]["temperature"] == 33.3
+    assert daily[0]["native_templow"] == 18.1
