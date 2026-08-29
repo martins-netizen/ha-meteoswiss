@@ -34,6 +34,33 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 
+
+def _has_matching_meteoswiss_entry(
+    entries: list[Any],
+    station_id: str,
+    postal_code: str,
+) -> bool:
+    # Return whether the same MeteoSwiss station and alert postcode exists.
+    normalized_station = str(station_id).strip().lower()
+    normalized_postal_code = str(postal_code).strip()
+
+    for entry in entries:
+        data = entry.data
+        data_source = data.get(CONF_DATA_SOURCE, DATA_SOURCE_METEOSWISS)
+        if data_source != DATA_SOURCE_METEOSWISS:
+            continue
+
+        existing_station = str(data.get(CONF_STATION_ID, "")).strip().lower()
+        existing_postal_code = str(data.get(CONF_POSTAL_CODE, "")).strip()
+
+        if (
+            existing_station == normalized_station
+            and existing_postal_code == normalized_postal_code
+        ):
+            return True
+
+    return False
+
 class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle a config flow for meteoswiss."""
 
@@ -162,8 +189,22 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
             )
 
         # Process form submission
-        post_code = user_input[CONF_POSTAL_CODE]
-        station_id = user_input[CONF_STATION_ID]
+        post_code = str(user_input[CONF_POSTAL_CODE]).strip()
+        station_id = str(user_input[CONF_STATION_ID]).strip().lower()
+
+        # Older config entries may not have a unique_id, so explicitly compare
+        # their stored station/postcode before relying on HA's unique-id guard.
+        if _has_matching_meteoswiss_entry(
+            self._async_current_entries(),
+            station_id,
+            post_code,
+        ):
+            return self.async_abort(reason="already_configured")
+
+        await self.async_set_unique_id(
+            f"{DATA_SOURCE_METEOSWISS}:{station_id}:{post_code}"
+        )
+        self._abort_if_unique_id_configured()
 
         # Find station details
         stations = await self._load_stations()

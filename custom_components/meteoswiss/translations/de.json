@@ -31,6 +31,9 @@
       "cannot_connect": "Konnte nicht zur Wetter-API verbinden",
       "station_not_found": "Station nicht gefunden",
       "invalid_location": "Ungültige Koordinaten"
+    },
+    "abort": {
+      "already_configured": "Diese MeteoSwiss-Messstation und PLZ sind bereits konfiguriert."
     }
   },
   "options": {
