@@ -15,6 +15,7 @@ from custom_components.meteoswiss.const import (
     SENSOR_PRECIPITATION,
     SENSOR_TEMPERATURE,
 )
+from custom_components.meteoswiss.calc import calculate_heating_degree_days
 from custom_components.meteoswiss.coordinator import MeteoSwissDataUpdateCoordinator
 from custom_components.meteoswiss.forecast_coordinator import (
     MeteoSwissForecastCoordinator,
@@ -22,6 +23,7 @@ from custom_components.meteoswiss.forecast_coordinator import (
 from custom_components.meteoswiss.sensor import (
     SENSOR_DESCRIPTIONS,
     MeteoSwissSensor,
+    _daily_mean_for_date,
 )
 from custom_components.meteoswiss.weather import MeteoSwissWeather
 
@@ -89,6 +91,7 @@ class _FakeResponse:
                 "time": ["2026-08-20"],
                 "temperature_2m_max": [28.8],
                 "temperature_2m_min": [19.2],
+                "temperature_2m_mean": [24.1],
             },
         }
 
@@ -121,10 +124,14 @@ async def test_forecast_request_uses_rolling_meteoswiss_seamless_model(hass) -> 
     assert session.requested_url is not None
     assert "&forecast_hours=120" in session.requested_url
     assert "&forecast_days=" not in session.requested_url
-    assert "&daily=temperature_2m_max,temperature_2m_min" in session.requested_url
+    assert (
+        "&daily=temperature_2m_max,temperature_2m_min,temperature_2m_mean"
+        in session.requested_url
+    )
     assert "&models=meteoswiss_icon_seamless" in session.requested_url
     assert forecast[0]["daily_temperature_max"] == 28.8
     assert forecast[0]["daily_temperature_min"] == 19.2
+    assert forecast[0]["daily_temperature_mean"] == 24.1
 
 
 async def test_daily_forecast_uses_maximum_and_minimum_temperature(hass) -> None:
@@ -233,3 +240,30 @@ def test_location_based_openmeteo_device_name_is_not_station_based() -> None:
     # Air quality and pollen forecasts must not be labelled as SwissMetNet.
     assert OPENMETEO_AIR_QUALITY_DEVICE_NAME == "Open-Meteo Air Quality & Pollen"
     assert "MeteoSwiss" not in OPENMETEO_AIR_QUALITY_DEVICE_NAME
+
+def test_swiss_hgt_12_20_formula() -> None:
+    # Heating day <= 12 °C; contribution is the difference to 20 °C.
+    assert calculate_heating_degree_days(7.0) == 13.0
+    assert calculate_heating_degree_days(12.0) == 8.0
+    assert calculate_heating_degree_days(13.0) == 0.0
+    assert calculate_heating_degree_days(None) is None
+
+
+def test_hgt_daily_mean_uses_native_calendar_day_value() -> None:
+    # Remaining hourly values must not be averaged for today's HGT.
+    forecast = [
+        {
+            "datetime": "2026-08-20T15:00",
+            "temperature": 16.0,
+            "daily_temperature_mean": 7.0,
+        },
+        {
+            "datetime": "2026-08-20T16:00",
+            "temperature": 15.0,
+            "daily_temperature_mean": 7.0,
+        },
+    ]
+
+    daily_mean = _daily_mean_for_date(forecast, "2026-08-20")
+    assert daily_mean == 7.0
+    assert calculate_heating_degree_days(daily_mean) == 13.0

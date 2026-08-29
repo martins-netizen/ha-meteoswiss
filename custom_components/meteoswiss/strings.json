@@ -113,7 +113,7 @@
         "name": "Ozone"
       },
       "heating_degree_days": {
-        "name": "Heating Degree Days"
+        "name": "Heating degree days 12/20 today (forecast)"
       },
       "season_heating_degree_days": {
         "name": "Season Heating Degree Days"

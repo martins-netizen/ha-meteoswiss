@@ -1,9 +1,9 @@
 """Heating Degree Days (Heizgradtage) calculation utilities.
 
-Implements Swiss standard SIA 381/3:
-  - Heating threshold: 12 °C daily mean temperature
-  - HGt = max(0, 12 - daily_mean_temperature)
-  - Heating season: October 1 – April 30 (7 months)
+Implements Swiss HGT 12/20:
+  - A heating day has a daily mean temperature <= 12 °C.
+  - On a heating day: HGT = 20 °C - daily mean outdoor temperature.
+  - Above 12 °C daily mean: HGT = 0.
 """
 from __future__ import annotations
 
@@ -13,8 +13,9 @@ from typing import Any
 
 _LOGGER = logging.getLogger(__name__)
 
-# Swiss heating threshold (SIA 381/3)
+# Swiss HGT 12/20 thresholds.
 HEATING_THRESHOLD: float = 12.0
+HEATING_REFERENCE_TEMPERATURE: float = 20.0
 
 # Heating season boundaries
 HEATING_SEASON_START_MONTH: int = 10  # October
@@ -33,7 +34,9 @@ def calculate_heating_degree_days(daily_mean_temp: float | None) -> float | None
     """
     if daily_mean_temp is None:
         return None
-    return max(0.0, HEATING_THRESHOLD - daily_mean_temp)
+    if daily_mean_temp <= HEATING_THRESHOLD:
+        return HEATING_REFERENCE_TEMPERATURE - daily_mean_temp
+    return 0.0
 
 
 def is_in_heating_season(d: date | None = None) -> bool:

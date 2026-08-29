@@ -81,7 +81,7 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
             f"&longitude={self._longitude}"
             f"&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,precipitation,windspeed_10m,winddirection_10m,weather_code,snowfall,freezing_level_height"
             f"&forecast_hours=120"
-            f"&daily=temperature_2m_max,temperature_2m_min"
+            f"&daily=temperature_2m_max,temperature_2m_min,temperature_2m_mean"
             f"&models=meteoswiss_icon_seamless"
             f"&timezone=Europe/Zurich"
         )
@@ -144,6 +144,7 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
         daily_times = daily.get("time", [])
         daily_max_temps = daily.get("temperature_2m_max", [])
         daily_min_temps = daily.get("temperature_2m_min", [])
+        daily_mean_temps = daily.get("temperature_2m_mean", [])
         daily_extrema: dict[str, dict[str, float | None]] = {}
         for i, day in enumerate(daily_times):
             daily_extrema[str(day)] = {
@@ -152,6 +153,9 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
                 ),
                 "temperature_min": (
                     daily_min_temps[i] if i < len(daily_min_temps) else None
+                ),
+                "temperature_mean": (
+                    daily_mean_temps[i] if i < len(daily_mean_temps) else None
                 ),
             }
 
@@ -177,6 +181,7 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
                 "temperature": temps[i] if i < len(temps) else None,
                 "daily_temperature_max": daily_values.get("temperature_max"),
                 "daily_temperature_min": daily_values.get("temperature_min"),
+                "daily_temperature_mean": daily_values.get("temperature_mean"),
                 "humidity": humidity[i] if i < len(humidity) else None,
                 "precipitation_probability": precip_prob[i] if i < len(precip_prob) else None,
                 "precipitation": precip[i] if i < len(precip) else None,

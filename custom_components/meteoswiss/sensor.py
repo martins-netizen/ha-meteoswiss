@@ -3,7 +3,6 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from datetime import date, datetime
 from typing import Final
 
 from homeassistant.components.sensor import (
@@ -41,8 +40,10 @@ except ImportError:
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.update_coordinator import CoordinatorEntity, DataUpdateCoordinator
+from homeassistant.util import dt as dt_util
 
 from .cache import get_all_cache_stats
 from .const import (
@@ -79,9 +80,9 @@ from .const import (
 from .coordinator import MeteoSwissDataUpdateCoordinator
 from .stations_map import MeteoSwissStationsMap
 from .calc import (
+    HEATING_REFERENCE_TEMPERATURE,
+    HEATING_THRESHOLD,
     calculate_heating_degree_days,
-    get_heating_season_start_date,
-    is_in_heating_season,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -247,16 +248,14 @@ async def async_setup_entry(
         )
         _LOGGER.debug("Added %d air quality sensors", len(AIR_QUALITY_SENSOR_DESCRIPTIONS))
 
-    # Add heating degree days sensors
+    # Add the calculated daily HGT 12/20 forecast sensor.
     forecast_coordinator = hass.data[DOMAIN][entry.entry_id].get("forecast_coordinator")
     if forecast_coordinator:
         entities.append(
-            MeteoSwissHeatingDegreeDaysSensor(forecast_coordinator, entry, station_name)
+            MeteoSwissHeatingDegreeDaysSensor(forecast_coordinator, entry)
         )
-        entities.append(
-            MeteoSwissSeasonHgtSensor(forecast_coordinator, entry, station_name)
-        )
-        _LOGGER.debug("Added heating degree days sensors")
+        _remove_legacy_season_hgt_entity(hass, entry)
+        _LOGGER.debug("Added calculated HGT 12/20 forecast sensor")
 
     # Add MeteoSwiss measured pollen sensors
     ms_pollen_coordinator = hass.data[DOMAIN][entry.entry_id].get("meteoswiss_pollen_coordinator")
@@ -486,28 +485,60 @@ class MeteoSwissAirQualitySensor(CoordinatorEntity, SensorEntity):
 
 
 # --------------------------------------------------------------------------- #
-# Heating Degree Days (Heizgradtage) Sensors                                   #
+# Heating Degree Days (Heizgradtage)                                          #
 # --------------------------------------------------------------------------- #
 
+HGT_ATTRIBUTION = (
+    "Calculated from MeteoSwiss ICON Seamless forecast via Open-Meteo"
+)
+
+
+def _daily_mean_for_date(
+    forecast_data: list[dict],
+    day: str,
+) -> float | None:
+    # Return Open-Meteo's native full-calendar-day mean for a date.
+    for entry_data in forecast_data:
+        if not str(entry_data.get("datetime", "")).startswith(day):
+            continue
+        daily_mean = entry_data.get("daily_temperature_mean")
+        if daily_mean is not None:
+            return float(daily_mean)
+    return None
+
+
+def _remove_legacy_season_hgt_entity(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+) -> None:
+    # Remove the old forecast-only season value because it was not a true total.
+    registry = er.async_get(hass)
+    unique_id = f"{DOMAIN}_{entry.entry_id}_season_hgt"
+    entity_id = registry.async_get_entity_id("sensor", DOMAIN, unique_id)
+    if entity_id is not None:
+        registry.async_remove(entity_id)
+        _LOGGER.info(
+            "Removed legacy season HGT entity %s because it was not a true season total",
+            entity_id,
+        )
+
+
 class MeteoSwissHeatingDegreeDaysSensor(CoordinatorEntity, SensorEntity):
-    """Sensor for daily heating degree days (SIA 381/3)."""
+    """Calculated HGT 12/20 for today from the location-based forecast."""
 
     def __init__(
         self,
         forecast_coordinator: DataUpdateCoordinator,
         entry: ConfigEntry,
-        station_name: str,
     ) -> None:
         super().__init__(forecast_coordinator)
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_heating_degree_days"
         self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, entry.entry_id)},
-            name=f"MeteoSwiss {station_name}",
-            manufacturer="MeteoSwiss",
-            model="Heizgradtage",
+            identifiers={(DOMAIN, f"calculated_{entry.entry_id}")},
+            name="Calculated Weather Metrics",
         )
         self._attr_has_entity_name = True
-        self._attr_attribution = ATTRIBUTION
+        self._attr_attribution = HGT_ATTRIBUTION
         self.entity_description = SensorEntityDescription(
             key="heating_degree_days",
             translation_key="heating_degree_days",
@@ -519,125 +550,33 @@ class MeteoSwissHeatingDegreeDaysSensor(CoordinatorEntity, SensorEntity):
 
     @callback
     def _handle_coordinator_update(self) -> None:
-        """Calculate HGt from forecast daily mean temperature."""
+        """Calculate today's HGT 12/20 from the complete daily mean."""
         if not self.coordinator.data:
             self._attr_native_value = None
             self._attr_extra_state_attributes = None
             super()._handle_coordinator_update()
             return
 
-        # Use today's forecast entries to compute daily mean
-        today_str = datetime.now().strftime("%Y-%m-%d")
-        today_temps = [
-            e.get("temperature")
-            for e in self.coordinator.data
-            if e.get("datetime", "").startswith(today_str) and e.get("temperature") is not None
-        ]
+        today = dt_util.now().date().isoformat()
+        daily_mean = _daily_mean_for_date(self.coordinator.data, today)
 
-        if today_temps:
-            daily_mean = sum(today_temps) / len(today_temps)
+        if daily_mean is None:
+            self._attr_native_value = None
+            self._attr_extra_state_attributes = {
+                "method": "HGT 12/20",
+                "source": "MeteoSwiss ICON Seamless via Open-Meteo",
+            }
+        else:
             hgt = calculate_heating_degree_days(daily_mean)
             self._attr_native_value = round(hgt, 1) if hgt is not None else None
             self._attr_extra_state_attributes = {
-                "daily_mean_temp": round(daily_mean, 1),
-                "heating_threshold": 12.0,
-                "in_heating_season": is_in_heating_season(),
+                "daily_mean_temperature": round(daily_mean, 1),
+                "heating_day_threshold": HEATING_THRESHOLD,
+                "reference_indoor_temperature": HEATING_REFERENCE_TEMPERATURE,
+                "method": "HGT 12/20",
+                "source": "MeteoSwiss ICON Seamless via Open-Meteo",
+                "value_type": "forecast",
             }
-        else:
-            self._attr_native_value = None
-            self._attr_extra_state_attributes = {
-                "in_heating_season": is_in_heating_season(),
-            }
-
-        super()._handle_coordinator_update()
-
-
-class MeteoSwissSeasonHgtSensor(CoordinatorEntity, SensorEntity):
-    """Sensor for accumulated heating degree days since heating season start."""
-
-    def __init__(
-        self,
-        forecast_coordinator: DataUpdateCoordinator,
-        entry: ConfigEntry,
-        station_name: str,
-    ) -> None:
-        super().__init__(forecast_coordinator)
-        self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_season_hgt"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, entry.entry_id)},
-            name=f"MeteoSwiss {station_name}",
-            manufacturer="MeteoSwiss",
-            model="Heizgradtage Saison",
-        )
-        self._attr_has_entity_name = True
-        self._attr_attribution = ATTRIBUTION
-        self.entity_description = SensorEntityDescription(
-            key="season_hgt",
-            translation_key="season_heating_degree_days",
-            device_class=None,
-            state_class=SensorStateClass.TOTAL_INCREASING,
-            native_unit_of_measurement="°C·d",
-            icon="mdi:calendar-sync",
-        )
-
-    @callback
-    def _handle_coordinator_update(self) -> None:
-        """Calculate season accumulated HGt."""
-        if not self.coordinator.data:
-            self._attr_native_value = None
-            self._attr_extra_state_attributes = None
-            super()._handle_coordinator_update()
-            return
-
-        # Compute season start
-        season_start = get_heating_season_start_date()
-
-        # We only have forecast data (5 days), so we can only estimate
-        # For a proper season total, we'd need historical daily data.
-        # For now, compute HGt for available forecast days that fall in heating season.
-        season_hgt = 0.0
-        days_counted = 0
-
-        # Group forecast entries by day
-        daily_means: dict[str, list[float]] = {}
-        for entry_data in self.coordinator.data:
-            dt_str = entry_data.get("datetime", "")
-            temp = entry_data.get("temperature")
-            if not dt_str or temp is None:
-                continue
-            day_str = dt_str[:10]
-            daily_means.setdefault(day_str, []).append(temp)
-
-        today_str = datetime.now().strftime("%Y-%m-%d")
-        today_hgt = 0.0
-
-        for day_str, temps in sorted(daily_means.items()):
-            try:
-                day_date = date.fromisoformat(day_str)
-            except ValueError:
-                continue
-
-            if day_date < season_start:
-                continue
-            if day_date > date.today():
-                # Include future forecast days as estimates
-                pass
-
-            daily_mean = sum(temps) / len(temps)
-            hgt = calculate_heating_degree_days(daily_mean)
-            if hgt is not None:
-                season_hgt += hgt
-                days_counted += 1
-                if day_str == today_str:
-                    today_hgt = hgt
-
-        self._attr_native_value = round(season_hgt, 1)
-        self._attr_extra_state_attributes = {
-            "season_start": season_start.isoformat(),
-            "days_counted": days_counted,
-            "today_hgt": round(today_hgt, 1),
-            "note": "Based on available forecast data only. For full season total, historical daily data is needed.",
-        }
 
         super()._handle_coordinator_update()
 

@@ -113,7 +113,7 @@
         "name": "Ozon"
       },
       "heating_degree_days": {
-        "name": "Heizgradtage"
+        "name": "Heizgradtage 12/20 heute (Prognose)"
       },
       "season_heating_degree_days": {
         "name": "Heizgradtage Saison"
