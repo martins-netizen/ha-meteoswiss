@@ -8,7 +8,10 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.meteoswiss.const import (
     CONF_STATION_NAME,
+    DEFAULT_POLLEN_STATION,
     DOMAIN,
+    OPENMETEO_AIR_QUALITY_DEVICE_NAME,
+    POLLEN_STATIONS,
     SENSOR_PRECIPITATION,
     SENSOR_TEMPERATURE,
 )
@@ -219,3 +222,14 @@ async def test_daily_forecast_prefers_native_calendar_day_extrema(hass) -> None:
     assert len(daily) == 1
     assert daily[0]["temperature"] == 33.3
     assert daily[0]["native_templow"] == 18.1
+
+def test_measured_pollen_default_is_a_known_station() -> None:
+    # Runtime and options flow must share one valid measured-pollen default.
+    assert DEFAULT_POLLEN_STATION in POLLEN_STATIONS
+    assert POLLEN_STATIONS[DEFAULT_POLLEN_STATION] == "Luzern (PLZ)"
+
+
+def test_location_based_openmeteo_device_name_is_not_station_based() -> None:
+    # Air quality and pollen forecasts must not be labelled as SwissMetNet.
+    assert OPENMETEO_AIR_QUALITY_DEVICE_NAME == "Open-Meteo Air Quality & Pollen"
+    assert "MeteoSwiss" not in OPENMETEO_AIR_QUALITY_DEVICE_NAME
