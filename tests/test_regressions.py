@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
+
 from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
 from homeassistant.const import UnitOfPrecipitationDepth
 from pytest_homeassistant_custom_component.common import MockConfigEntry
@@ -13,10 +15,14 @@ from custom_components.meteoswiss.const import (
     OPENMETEO_AIR_QUALITY_DEVICE_NAME,
     POLLEN_STATIONS,
     SENSOR_PRECIPITATION,
+    SENSOR_PRECIPITATION_CURRENT_HOUR,
     SENSOR_TEMPERATURE,
 )
 from custom_components.meteoswiss.calc import calculate_heating_degree_days
-from custom_components.meteoswiss.coordinator import MeteoSwissDataUpdateCoordinator
+from custom_components.meteoswiss.coordinator import (
+    MeteoSwissDataUpdateCoordinator,
+    _current_hour_precipitation,
+)
 from custom_components.meteoswiss.forecast_coordinator import (
     MeteoSwissForecastCoordinator,
 )
@@ -25,6 +31,7 @@ from custom_components.meteoswiss.sensor import (
     MeteoSwissSensor,
     _daily_mean_for_date,
 )
+from custom_components.meteoswiss.precipitation import _parse_hourly_statistics
 from custom_components.meteoswiss.weather import MeteoSwissWeather
 
 
@@ -36,6 +43,72 @@ def _sensor_description(key: str):
 def test_precipitation_sensor_description() -> None:
     """The parsed precipitation value must be exposed as a HA sensor."""
     description = _sensor_description(SENSOR_PRECIPITATION)
+
+    assert description.device_class is SensorDeviceClass.PRECIPITATION
+    assert description.state_class is SensorStateClass.MEASUREMENT
+    assert (
+        description.native_unit_of_measurement
+        == UnitOfPrecipitationDepth.MILLIMETERS
+    )
+
+
+def test_current_hour_precipitation_counts_every_published_interval() -> None:
+    """All intervals published together must contribute to the current hour."""
+    rows = [
+        {"reference_timestamp": "31.08.2026 00:00", "rre150z0": "9.9"},
+        {"reference_timestamp": "31.08.2026 00:10", "rre150z0": "2.3"},
+        {"reference_timestamp": "31.08.2026 00:20", "rre150z0": "0.7"},
+        {"reference_timestamp": "31.08.2026 00:30", "rre150z0": "0.6"},
+        {"reference_timestamp": "31.08.2026 00:40", "rre150z0": "0.1"},
+        {"reference_timestamp": "31.08.2026 01:00", "rre150z0": "8.8"},
+    ]
+
+    total = _current_hour_precipitation(
+        rows,
+        now=datetime(2026, 8, 31, 0, 45, tzinfo=timezone.utc),
+    )
+
+    assert total == 3.7
+
+
+def test_current_hour_precipitation_counts_repeated_values() -> None:
+    """Identical consecutive intervals are separate precipitation totals."""
+    rows = [
+        {"reference_timestamp": "31.08.2026 00:10", "rre150z0": "0.1"},
+        {"reference_timestamp": "31.08.2026 00:20", "rre150z0": "0.1"},
+    ]
+
+    total = _current_hour_precipitation(
+        rows,
+        now=datetime(2026, 8, 31, 0, 25, tzinfo=timezone.utc),
+    )
+
+    assert total == 0.2
+
+
+def test_official_hourly_precipitation_uses_interval_start() -> None:
+    """OGD end timestamps must be shifted to HA's hourly start timestamp."""
+    content = (
+        "station_abbr;reference_timestamp;rre150h0\n"
+        "KLO;31.08.2026 01:00;3.7\n"
+        "KLO;31.08.2026 02:00;\n"
+    )
+
+    statistics = _parse_hourly_statistics(content)
+
+    assert statistics == [
+        {
+            "start": datetime(2026, 8, 31, 0, 0, tzinfo=timezone.utc),
+            "mean": 3.7,
+            "min": 3.7,
+            "max": 3.7,
+        }
+    ]
+
+
+def test_current_hour_precipitation_sensor_description() -> None:
+    """The running-hour total must be a separate precipitation measurement."""
+    description = _sensor_description(SENSOR_PRECIPITATION_CURRENT_HOUR)
 
     assert description.device_class is SensorDeviceClass.PRECIPITATION
     assert description.state_class is SensorStateClass.MEASUREMENT

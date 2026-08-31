@@ -68,6 +68,7 @@ from .const import (
     SENSOR_PM10,
     SENSOR_PM25,
     SENSOR_PRECIPITATION,
+    SENSOR_PRECIPITATION_CURRENT_HOUR,
     SENSOR_PRESSURE,
     SENSOR_SNOW_DEPTH,
     SENSOR_SUNSHINE,
@@ -143,6 +144,14 @@ SENSOR_DESCRIPTIONS: Final[tuple[MeteoSwissSensorEntityDescription, ...]] = (
         state_class=SensorStateClass.MEASUREMENT,
         native_unit_of_measurement=UnitOfPrecipitationDepth.MILLIMETERS,
         value_key=SENSOR_PRECIPITATION,
+    ),
+    MeteoSwissSensorEntityDescription(
+        key=SENSOR_PRECIPITATION_CURRENT_HOUR,
+        translation_key="precipitation_current_hour",
+        device_class=SensorDeviceClass.PRECIPITATION,
+        state_class=SensorStateClass.MEASUREMENT,
+        native_unit_of_measurement=UnitOfPrecipitationDepth.MILLIMETERS,
+        value_key=SENSOR_PRECIPITATION_CURRENT_HOUR,
     ),
     MeteoSwissSensorEntityDescription(
         key=SENSOR_WIND_GUST,

@@ -67,6 +67,9 @@
       "precipitation": {
         "name": "Niederschlag"
       },
+      "precipitation_current_hour": {
+        "name": "Niederschlag laufende Stunde"
+      },
       "pressure": {
         "name": "Luftdruck"
       },

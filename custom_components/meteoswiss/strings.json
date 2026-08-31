@@ -67,6 +67,9 @@
       "precipitation": {
         "name": "Precipitation"
       },
+      "precipitation_current_hour": {
+        "name": "Precipitation current hour"
+      },
       "pressure": {
         "name": "Pressure"
       },

@@ -30,6 +30,7 @@ from .coordinator import MeteoSwissDataUpdateCoordinator
 from .forecast_coordinator import MeteoSwissForecastCoordinator
 from .openmeteo_coordinator import OpenMeteoDataUpdateCoordinator
 from .pollen_meteoswiss import MeteoSwissPollenCoordinator
+from .precipitation import MeteoSwissHourlyPrecipitationCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -112,6 +113,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             update_interval=3600,
             session=shared_session,
         )
+        hourly_precipitation_coordinator = None
 
     else:
         # Use MeteoSwiss API for current weather
@@ -135,6 +137,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             session=shared_session,
         )
         _LOGGER.debug("Forecast coordinator using Home Assistant location: lat=%s, lon=%s", lat, lon)
+        hourly_precipitation_coordinator = MeteoSwissHourlyPrecipitationCoordinator(
+            hass,
+            station_id=station_id,
+            session=shared_session,
+        )
 
     # Fetch initial data for current weather
     await coordinator.async_config_entry_first_refresh()
@@ -178,6 +185,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN][entry.entry_id]["alerts_coordinator"] = alerts_coordinator
     hass.data[DOMAIN][entry.entry_id]["pollen_coordinator"] = pollen_coordinator
     hass.data[DOMAIN][entry.entry_id]["meteoswiss_pollen_coordinator"] = meteoswiss_pollen_coordinator
+    hass.data[DOMAIN][entry.entry_id]["hourly_precipitation_coordinator"] = hourly_precipitation_coordinator
     hass.data[DOMAIN][entry.entry_id]["data_source"] = data_source
     hass.data[DOMAIN][entry.entry_id]["session"] = shared_session
 
@@ -185,14 +193,18 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     # Refresh optional data in parallel after entities are registered
+    optional_coordinators = [
+        forecast_coordinator,
+        alerts_coordinator,
+        pollen_coordinator,
+        meteoswiss_pollen_coordinator,
+    ]
+    if hourly_precipitation_coordinator is not None:
+        optional_coordinators.append(hourly_precipitation_coordinator)
+
     entry.async_create_background_task(
         hass,
-        _async_refresh_optional_coordinators(
-            forecast_coordinator,
-            alerts_coordinator,
-            pollen_coordinator,
-            meteoswiss_pollen_coordinator,
-        ),
+        _async_refresh_optional_coordinators(*optional_coordinators),
         "MeteoSwiss optional initial refresh",
     )
 
