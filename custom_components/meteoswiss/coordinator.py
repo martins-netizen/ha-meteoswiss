@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import asyncio
 import csv
+import io
 import logging
 import math
 from datetime import datetime, timedelta, timezone
@@ -25,6 +26,7 @@ from .const import (
     SENSOR_GLOBAL_RADIATION,
     SENSOR_HUMIDITY,
     SENSOR_PRECIPITATION,
+    SENSOR_PRECIPITATION_CURRENT_HOUR,
     SENSOR_PRESSURE,
     SENSOR_SNOW_DEPTH,
     SENSOR_SUNSHINE,
@@ -53,6 +55,55 @@ PARAM_GLOBAL_RAD = "gre000z0"  # Globalstrahlung; Zehnminutenmittel (W/m²)
 PARAM_SNOW_DEPTH = "htoauts0"  # Gesamtschneehöhe; Momentanwert (cm)
 PARAM_DEW_POINT = "tde200s0"  # Taupunkt 2m über Boden; Momentanwert (°C)
 PARAM_FOEHN_INDEX = "wcc006s0"  # Föhnindex; Momentanwert (Code)
+
+
+def _parse_reference_timestamp(value: str | None) -> datetime | None:
+    """Parse a MeteoSwiss reference timestamp as UTC."""
+    timestamp = (value or "").strip()
+    if not timestamp:
+        return None
+
+    try:
+        return datetime.strptime(timestamp, "%d.%m.%Y %H:%M").replace(
+            tzinfo=timezone.utc
+        )
+    except ValueError:
+        pass
+
+    try:
+        parsed = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=timezone.utc)
+    return parsed.astimezone(timezone.utc)
+
+
+def _current_hour_precipitation(
+    rows: list[dict[str, str]],
+    now: datetime | None = None,
+) -> float:
+    """Sum published 10-minute precipitation intervals in the current UTC hour."""
+    current = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
+    hour_start = current.replace(minute=0, second=0, microsecond=0)
+    total = 0.0
+
+    for row in rows:
+        reference = _parse_reference_timestamp(row.get("reference_timestamp", ""))
+        if reference is None or not hour_start < reference <= current:
+            continue
+
+        value = (row.get(PARAM_PRECIPITATION) or "").strip()
+        if not value:
+            continue
+
+        try:
+            total += float(value)
+        except (TypeError, ValueError):
+            _LOGGER.debug("Could not parse precipitation interval '%s'", value)
+
+    return round(total, 3)
 
 
 class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -148,45 +199,27 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
             _LOGGER.debug("CSV content length: %d chars", len(content))
 
-            # Parse CSV (semicolon-separated) manually
-            lines = content.strip().split("\n")
+            # Parse every published row. MeteoSwiss can add multiple new
+            # 10-minute intervals between two integration refreshes.
+            all_rows = list(csv.DictReader(io.StringIO(content), delimiter=";"))
 
-            if len(lines) < 2:
-                _LOGGER.error("CSV has no data lines (found %d lines)", len(lines))
+            if not all_rows:
+                _LOGGER.error("CSV has no data rows")
                 return None
 
-            # Get header line
-            header_line = lines[0]
-            headers = [h.strip() for h in header_line.split(";")]
-
-            _LOGGER.debug("CSV headers: %s", headers)
-
-            # Collect recent data rows (last 5 non-empty lines) for fallback parsing
-            recent_rows: list[str] = []
-            for line in reversed(lines[1:]):
-                if line.strip():
-                    recent_rows.append(line.strip())
-                    if len(recent_rows) >= 5:
-                        break
-
-            if not recent_rows:
-                _LOGGER.error("No valid data row found")
-                return None
-
-            # Parse rows into dicts (newest first)
-            row_dicts: list[dict[str, str]] = []
-            for data_row in recent_rows:
-                values = [v.strip() for v in data_row.split(";")]
-                row_dict = {}
-                for i, header in enumerate(headers):
-                    if i < len(values):
-                        row_dict[header] = values[i]
-                row_dicts.append(row_dict)
-
-            _LOGGER.debug("CSV recent rows: %d", len(row_dicts))
-
-            # Parse the data using newest row, with fallback for empty values
-            return self._parse_csv_row_with_fallback(row_dicts)
+            # Existing observation parsing uses the newest row and up to four
+            # older rows as a fallback for sparsely reported parameters.
+            recent_rows = list(reversed(all_rows[-5:]))
+            result = self._parse_csv_row_with_fallback(recent_rows)
+            result[SENSOR_PRECIPITATION_CURRENT_HOUR] = (
+                _current_hour_precipitation(all_rows)
+            )
+            _LOGGER.debug(
+                "Parsed %d rows; current-hour precipitation: %s mm",
+                len(all_rows),
+                result[SENSOR_PRECIPITATION_CURRENT_HOUR],
+            )
+            return result
 
         except Exception as err:
             _LOGGER.exception("Error parsing CSV: %s", err)
@@ -236,6 +269,7 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 SENSOR_WIND_SPEED: None,
                 SENSOR_WIND_DIRECTION: None,
                 SENSOR_PRECIPITATION: None,
+                SENSOR_PRECIPITATION_CURRENT_HOUR: None,
                 SENSOR_PRESSURE: None,
                 SENSOR_WIND_GUST: None,
                 SENSOR_DEW_POINT: None,

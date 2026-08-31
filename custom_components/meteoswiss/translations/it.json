@@ -54,6 +54,7 @@
       "wind_speed": { "name": "Velocità del vento" },
       "wind_direction": { "name": "Direzione del vento" },
       "precipitation": { "name": "Precipitazioni" },
+      "precipitation_current_hour": { "name": "Precipitazioni dell'ora corrente" },
       "pressure": { "name": "Pressione" },
       "wind_gust": { "name": "Raffica di vento" },
       "dew_point": { "name": "Punto di rugiada" },

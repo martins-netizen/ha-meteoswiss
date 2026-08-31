@@ -36,6 +36,7 @@ COORDINATORS = (
     "alerts_coordinator",
     "pollen_coordinator",
     "meteoswiss_pollen_coordinator",
+    "hourly_precipitation_coordinator",
 )
 
 
