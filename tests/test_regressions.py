@@ -31,7 +31,11 @@ from custom_components.meteoswiss.sensor import (
     MeteoSwissSensor,
     _daily_mean_for_date,
 )
-from custom_components.meteoswiss.precipitation import _parse_hourly_statistics
+from custom_components.meteoswiss.precipitation import (
+    _asset_urls_for_period,
+    _parse_hourly_statistics,
+    _subtract_calendar_months,
+)
 from custom_components.meteoswiss.weather import MeteoSwissWeather
 
 
@@ -103,6 +107,53 @@ def test_official_hourly_precipitation_uses_interval_start() -> None:
             "min": 3.7,
             "max": 3.7,
         }
+    ]
+
+
+def test_hourly_archive_is_limited_to_thirteen_calendar_months() -> None:
+    """Archive parsing must exclude data older than the rolling lookback."""
+    now = datetime(2026, 9, 1, 18, 0, tzinfo=timezone.utc)
+    earliest_start = _subtract_calendar_months(now, 13)
+    content = (
+        "station_abbr;reference_timestamp;rre150h0\n"
+        "KLO;01.08.2025 00:00;9.9\n"
+        "KLO;01.08.2025 01:00;1.2\n"
+        "KLO;01.09.2026 18:00;0.0\n"
+    )
+
+    statistics = _parse_hourly_statistics(content, earliest_start)
+
+    assert earliest_start == datetime(2025, 8, 1, 0, 0, tzinfo=timezone.utc)
+    assert [statistic["start"] for statistic in statistics] == [
+        datetime(2025, 8, 1, 0, 0, tzinfo=timezone.utc),
+        datetime(2026, 9, 1, 17, 0, tzinfo=timezone.utc),
+    ]
+
+
+def test_calendar_month_lookback_handles_month_end() -> None:
+    """Calendar subtraction must clamp dates to the target month."""
+    value = datetime(2025, 3, 31, 12, 30, tzinfo=timezone.utc)
+
+    assert _subtract_calendar_months(value, 1) == datetime(
+        2025, 2, 28, 0, 0, tzinfo=timezone.utc
+    )
+
+
+def test_hourly_archive_selects_only_overlapping_decade_assets() -> None:
+    """Archive lookup must handle MeteoSwiss' decade-based filenames."""
+    assets = {
+        "ogd-smn_klo_h_historical_2010-2019.csv": {"href": "2010.csv"},
+        "ogd-smn_klo_h_historical_2020-2029.csv": {"href": "2020.csv"},
+        "ogd-smn_klo_h_historical_2030-2039.csv": {"href": "2030.csv"},
+        "ogd-smn_klo_h_recent.csv": {"href": "recent.csv"},
+    }
+
+    assert _asset_urls_for_period(assets, "klo", "historical", 2028) == [
+        "2020.csv",
+        "2030.csv",
+    ]
+    assert _asset_urls_for_period(assets, "klo", "recent", 2028) == [
+        "recent.csv"
     ]
 
 
