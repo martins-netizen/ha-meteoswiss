@@ -74,6 +74,14 @@ async def _async_refresh_optional_coordinators(*coordinators) -> None:
     )
 
 
+def _keep_coordinator_polling(
+    entry: ConfigEntry,
+    coordinator: MeteoSwissHourlyPrecipitationCoordinator,
+) -> None:
+    """Keep a coordinator without entity listeners polling until unload."""
+    entry.async_on_unload(coordinator.async_add_listener(lambda: None))
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up MeteoSwiss integration from a config entry."""
     _LOGGER.info("Setting up MeteoSwiss integration for station %s", entry.data.get(CONF_STATION_NAME))
@@ -201,6 +209,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     ]
     if hourly_precipitation_coordinator is not None:
         optional_coordinators.append(hourly_precipitation_coordinator)
+        # External Recorder statistics have no CoordinatorEntity listener.
+        # DataUpdateCoordinator only schedules periodic refreshes while at
+        # least one listener is registered.
+        _keep_coordinator_polling(entry, hourly_precipitation_coordinator)
 
     entry.async_create_background_task(
         hass,
