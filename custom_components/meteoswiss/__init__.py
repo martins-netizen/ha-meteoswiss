@@ -30,7 +30,11 @@ from .coordinator import MeteoSwissDataUpdateCoordinator
 from .forecast_coordinator import MeteoSwissForecastCoordinator
 from .openmeteo_coordinator import OpenMeteoDataUpdateCoordinator
 from .pollen_meteoswiss import MeteoSwissPollenCoordinator
-from .precipitation import MeteoSwissHourlyPrecipitationCoordinator
+from .precipitation import (
+    ARCHIVE_LOOKBACK_MONTHS,
+    ARCHIVE_UPDATE_INTERVAL,
+    MeteoSwissHourlyPrecipitationCoordinator,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -122,6 +126,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             session=shared_session,
         )
         hourly_precipitation_coordinator = None
+        precipitation_archive_coordinator = None
 
     else:
         # Use MeteoSwiss API for current weather
@@ -149,6 +154,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             hass,
             station_id=station_id,
             session=shared_session,
+        )
+        precipitation_archive_coordinator = MeteoSwissHourlyPrecipitationCoordinator(
+            hass,
+            station_id=station_id,
+            session=shared_session,
+            asset_periods=("historical", "recent"),
+            update_interval=ARCHIVE_UPDATE_INTERVAL,
+            lookback_months=ARCHIVE_LOOKBACK_MONTHS,
         )
 
     # Fetch initial data for current weather
@@ -194,6 +207,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN][entry.entry_id]["pollen_coordinator"] = pollen_coordinator
     hass.data[DOMAIN][entry.entry_id]["meteoswiss_pollen_coordinator"] = meteoswiss_pollen_coordinator
     hass.data[DOMAIN][entry.entry_id]["hourly_precipitation_coordinator"] = hourly_precipitation_coordinator
+    hass.data[DOMAIN][entry.entry_id]["precipitation_archive_coordinator"] = precipitation_archive_coordinator
     hass.data[DOMAIN][entry.entry_id]["data_source"] = data_source
     hass.data[DOMAIN][entry.entry_id]["session"] = shared_session
 
@@ -213,6 +227,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         # DataUpdateCoordinator only schedules periodic refreshes while at
         # least one listener is registered.
         _keep_coordinator_polling(entry, hourly_precipitation_coordinator)
+    if precipitation_archive_coordinator is not None:
+        optional_coordinators.append(precipitation_archive_coordinator)
+        _keep_coordinator_polling(entry, precipitation_archive_coordinator)
 
     entry.async_create_background_task(
         hass,
