@@ -18,6 +18,7 @@ from custom_components.meteoswiss.const import (
     SENSOR_PRECIPITATION_CURRENT_HOUR,
     SENSOR_TEMPERATURE,
 )
+from custom_components.meteoswiss.alerts import WeatherAlert
 from custom_components.meteoswiss.calc import calculate_heating_degree_days
 from custom_components.meteoswiss.coordinator import (
     MeteoSwissDataUpdateCoordinator,
@@ -391,3 +392,92 @@ def test_hgt_daily_mean_uses_native_calendar_day_value() -> None:
     daily_mean = _daily_mean_for_date(forecast, "2026-08-20")
     assert daily_mean == 7.0
     assert calculate_heating_degree_days(daily_mean) == 13.0
+
+def test_weather_alert_respects_validity_window(monkeypatch) -> None:
+    class FrozenDateTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            value = cls(2026, 9, 4, 18, 0, tzinfo=timezone.utc)
+            return value if tz is None else value.astimezone(tz)
+
+    monkeypatch.setattr(
+        "custom_components.meteoswiss.alerts.datetime",
+        FrozenDateTime,
+    )
+
+    future = WeatherAlert(
+        alert_id="future",
+        warn_type=4,
+        warn_type_name="Wind",
+        warn_level=2,
+        warn_level_name="Level 2",
+        title="Future wind",
+        description="",
+        valid_from=datetime(2026, 9, 4, 19, 0, tzinfo=timezone.utc),
+        valid_to=datetime(2026, 9, 4, 21, 0, tzinfo=timezone.utc),
+    )
+    active = WeatherAlert(
+        alert_id="active",
+        warn_type=4,
+        warn_type_name="Wind",
+        warn_level=2,
+        warn_level_name="Level 2",
+        title="Active wind",
+        description="",
+        valid_from=datetime(2026, 9, 4, 17, 0, tzinfo=timezone.utc),
+        valid_to=datetime(2026, 9, 4, 19, 0, tzinfo=timezone.utc),
+    )
+    expired = WeatherAlert(
+        alert_id="expired",
+        warn_type=4,
+        warn_type_name="Wind",
+        warn_level=2,
+        warn_level_name="Level 2",
+        title="Expired wind",
+        description="",
+        valid_from=datetime(2026, 9, 4, 15, 0, tzinfo=timezone.utc),
+        valid_to=datetime(2026, 9, 4, 17, 0, tzinfo=timezone.utc),
+    )
+
+    assert future.is_active() is False
+    assert active.is_active() is True
+    assert expired.is_active() is False
+
+
+def test_weather_alert_handles_missing_validity_bounds(monkeypatch) -> None:
+    class FrozenDateTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            value = cls(2026, 9, 4, 18, 0, tzinfo=timezone.utc)
+            return value if tz is None else value.astimezone(tz)
+
+    monkeypatch.setattr(
+        "custom_components.meteoswiss.alerts.datetime",
+        FrozenDateTime,
+    )
+
+    no_start = WeatherAlert(
+        alert_id="no-start",
+        warn_type=2,
+        warn_type_name="Rain",
+        warn_level=2,
+        warn_level_name="Level 2",
+        title="Rain",
+        description="",
+        valid_from=None,
+        valid_to=datetime(2026, 9, 4, 19, 0, tzinfo=timezone.utc),
+    )
+    no_end = WeatherAlert(
+        alert_id="no-end",
+        warn_type=2,
+        warn_type_name="Rain",
+        warn_level=2,
+        warn_level_name="Level 2",
+        title="Rain",
+        description="",
+        valid_from=datetime(2026, 9, 4, 17, 0, tzinfo=timezone.utc),
+        valid_to=None,
+    )
+
+    assert no_start.is_active() is True
+    assert no_end.is_active() is True

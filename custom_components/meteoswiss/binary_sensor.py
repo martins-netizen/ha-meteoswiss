@@ -113,8 +113,8 @@ class MeteoSwissAlertsBinarySensor(CoordinatorEntity, BinarySensorEntity):
         warn_type = self.entity_description.warn_type
 
         for alert in alerts:
-            if alert.outlook:
-                continue  # Ignore outlooks
+            if not alert.is_active():
+                continue
 
             if warn_level is not None and alert.warn_level < warn_level:
                 continue
@@ -122,7 +122,7 @@ class MeteoSwissAlertsBinarySensor(CoordinatorEntity, BinarySensorEntity):
             if warn_type is not None and alert.warn_type != warn_type:
                 continue
 
-            return True  # Alert matches criteria
+            return True  # Active alert matches criteria
 
         return False
 
