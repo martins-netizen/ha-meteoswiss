@@ -47,15 +47,19 @@ class WeatherAlert:
     outlook: bool = False
 
     def is_active(self) -> bool:
-        """Check if alert is currently active."""
+        """Check whether the alert is valid at the current time."""
         if self.outlook:
-            return False  # Outlook is not an active alert
-
-        if self.valid_to is None:
-            return True  # No expiry date, assume active
+            return False
 
         now = datetime.now(timezone.utc)
-        return self.valid_from <= now <= self.valid_to
+
+        if self.valid_from is not None and now < self.valid_from:
+            return False
+
+        if self.valid_to is not None and now > self.valid_to:
+            return False
+
+        return True
 
     def is_critical(self) -> bool:
         """Check if alert is critical (level 3 or above)."""
