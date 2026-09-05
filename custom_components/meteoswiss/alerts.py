@@ -61,6 +61,21 @@ class WeatherAlert:
 
         return True
 
+    def is_upcoming(self) -> bool:
+        """Check whether a published alert starts in the future."""
+        if self.outlook or self.valid_from is None:
+            return False
+
+        now = datetime.now(timezone.utc)
+        if now >= self.valid_from:
+            return False
+
+        # Ignore malformed windows that end before they start.
+        if self.valid_to is not None and self.valid_to < self.valid_from:
+            return False
+
+        return True
+
     def is_critical(self) -> bool:
         """Check if alert is critical (level 3 or above)."""
         return self.warn_level >= WARN_LEVEL_3
@@ -79,6 +94,9 @@ class WeatherAlert:
         """Convert to sensor state."""
         if self.outlook:
             return "outlook"
+
+        if self.is_upcoming():
+            return "upcoming"
 
         if self.is_active():
             if self.is_critical():
