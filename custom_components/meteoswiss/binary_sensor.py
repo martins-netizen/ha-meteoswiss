@@ -63,6 +63,40 @@ ALERT_SENSOR_DESCRIPTIONS: Final[tuple[MeteoSwissAlertsBinarySensorDescription, 
 )
 
 
+def _alert_state_attributes(alerts: list[WeatherAlert] | None) -> dict[str, Any]:
+    """Build attributes that keep active and upcoming alerts separate."""
+    if not alerts:
+        return {
+            "active_alerts_count": 0,
+            "alerts": [],
+            "upcoming_alerts_count": 0,
+            "upcoming_alerts": [],
+            "next_alert_start": None,
+        }
+
+    active_alerts = [a for a in alerts if not a.outlook and a.is_active()]
+    upcoming_alerts = sorted(
+        (a for a in alerts if a.is_upcoming()),
+        key=lambda a: (
+            a.valid_from.timestamp()
+            if a.valid_from is not None
+            else float("inf")
+        ),
+    )
+
+    return {
+        "active_alerts_count": len(active_alerts),
+        "alerts": [a.to_dict() for a in active_alerts],
+        "upcoming_alerts_count": len(upcoming_alerts),
+        "upcoming_alerts": [a.to_dict() for a in upcoming_alerts],
+        "next_alert_start": (
+            upcoming_alerts[0].valid_from.isoformat()
+            if upcoming_alerts and upcoming_alerts[0].valid_from is not None
+            else None
+        ),
+    }
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
@@ -144,38 +178,7 @@ class MeteoSwissAlertsBinarySensor(CoordinatorEntity, BinarySensorEntity):
     @property
     def extra_state_attributes(self) -> dict[str, Any] | None:
         """Return active and upcoming alert details."""
-        alerts = self.coordinator.data
-
-        if not alerts:
-            return {
-                "active_alerts_count": 0,
-                "alerts": [],
-                "upcoming_alerts_count": 0,
-                "upcoming_alerts": [],
-                "next_alert_start": None,
-            }
-
-        active_alerts = [a for a in alerts if not a.outlook and a.is_active()]
-        upcoming_alerts = sorted(
-            (a for a in alerts if a.is_upcoming()),
-            key=lambda a: (
-                a.valid_from.timestamp()
-                if a.valid_from is not None
-                else float("inf")
-            ),
-        )
-
-        return {
-            "active_alerts_count": len(active_alerts),
-            "alerts": [a.to_dict() for a in active_alerts],
-            "upcoming_alerts_count": len(upcoming_alerts),
-            "upcoming_alerts": [a.to_dict() for a in upcoming_alerts],
-            "next_alert_start": (
-                upcoming_alerts[0].valid_from.isoformat()
-                if upcoming_alerts and upcoming_alerts[0].valid_from is not None
-                else None
-            ),
-        }
+        return _alert_state_attributes(self.coordinator.data)
 
     @callback
     def _handle_coordinator_update(self) -> None:
