@@ -4,7 +4,7 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 from datetime import timedelta
-from typing import Final
+from typing import Any, Final, Literal
 
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
@@ -33,6 +33,7 @@ class MeteoSwissAlertsBinarySensorDescription(BinarySensorEntityDescription):
 
     warn_level: int | None = None
     warn_type: int | None = None
+    alert_timing: Literal["active", "upcoming"] = "active"
 
 
 ALERT_SENSOR_DESCRIPTIONS: Final[tuple[MeteoSwissAlertsBinarySensorDescription, ...]] = (
@@ -50,6 +51,14 @@ ALERT_SENSOR_DESCRIPTIONS: Final[tuple[MeteoSwissAlertsBinarySensorDescription, 
         name="Critical Weather Alert",
         icon="mdi:alert-octagram",
         warn_level=3,  # Level 3 or above
+    ),
+    MeteoSwissAlertsBinarySensorDescription(
+        key="upcoming_alert",
+        translation_key="upcoming_alert",
+        device_class=BinarySensorDeviceClass.SAFETY,
+        name="Upcoming Weather Alert",
+        icon="mdi:alert-outline",
+        alert_timing="upcoming",
     ),
 )
 
@@ -97,6 +106,12 @@ class MeteoSwissAlertsBinarySensor(CoordinatorEntity, BinarySensorEntity):
         self._attr_attribution = ATTRIBUTION
         self._postal_code = postal_code
 
+    def _matches_alert_timing(self, alert: WeatherAlert) -> bool:
+        """Return whether an alert matches this entity's timing mode."""
+        if self.entity_description.alert_timing == "upcoming":
+            return alert.is_upcoming()
+        return alert.is_active()
+
     @property
     def is_on(self) -> bool | None:
         """Return true if the binary sensor is on."""
@@ -113,7 +128,7 @@ class MeteoSwissAlertsBinarySensor(CoordinatorEntity, BinarySensorEntity):
         warn_type = self.entity_description.warn_type
 
         for alert in alerts:
-            if not alert.is_active():
+            if not self._matches_alert_timing(alert):
                 continue
 
             if warn_level is not None and alert.warn_level < warn_level:
@@ -122,26 +137,44 @@ class MeteoSwissAlertsBinarySensor(CoordinatorEntity, BinarySensorEntity):
             if warn_type is not None and alert.warn_type != warn_type:
                 continue
 
-            return True  # Active alert matches criteria
+            return True  # Alert matches timing and criteria
 
         return False
 
     @property
-    def extra_state_attributes(self) -> dict[str, str | int] | None:
-        """Return the state attributes."""
+    def extra_state_attributes(self) -> dict[str, Any] | None:
+        """Return active and upcoming alert details."""
         alerts = self.coordinator.data
 
         if not alerts:
             return {
                 "active_alerts_count": 0,
                 "alerts": [],
+                "upcoming_alerts_count": 0,
+                "upcoming_alerts": [],
+                "next_alert_start": None,
             }
 
-        active_alerts = [a.to_dict() for a in alerts if not a.outlook and a.is_active()]
+        active_alerts = [a for a in alerts if not a.outlook and a.is_active()]
+        upcoming_alerts = sorted(
+            (a for a in alerts if a.is_upcoming()),
+            key=lambda a: (
+                a.valid_from.timestamp()
+                if a.valid_from is not None
+                else float("inf")
+            ),
+        )
 
         return {
             "active_alerts_count": len(active_alerts),
-            "alerts": active_alerts,
+            "alerts": [a.to_dict() for a in active_alerts],
+            "upcoming_alerts_count": len(upcoming_alerts),
+            "upcoming_alerts": [a.to_dict() for a in upcoming_alerts],
+            "next_alert_start": (
+                upcoming_alerts[0].valid_from.isoformat()
+                if upcoming_alerts and upcoming_alerts[0].valid_from is not None
+                else None
+            ),
         }
 
     @callback
