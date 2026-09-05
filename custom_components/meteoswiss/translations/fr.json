@@ -86,7 +86,8 @@
     },
     "binary_sensor": {
       "any_alert": { "name": "Alerte météo" },
-      "critical_alert": { "name": "Alerte météo critique" }
+      "critical_alert": { "name": "Alerte météo critique" },
+      "upcoming_alert": { "name": "Alerte météo à venir" }
     }
   }
 }

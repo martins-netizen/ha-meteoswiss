@@ -161,6 +161,9 @@
       },
       "critical_alert": {
         "name": "Critical Weather Alert"
+      },
+      "upcoming_alert": {
+        "name": "Upcoming Weather Alert"
       }
     }
   }
