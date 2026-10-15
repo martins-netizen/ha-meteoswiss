@@ -63,8 +63,15 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           persist-credentials: false
+      # Keep the repository's GitHub-owned-actions-only policy. The validator
+      # is an explicitly pinned tool, with read-only source and no networking.
       - name: Validate custom integration
-        uses: home-assistant/actions/hassfest@50baf3a307f87100cf550d4ae127746595030d5d
+        run: >-
+          docker run --rm --network none --cap-drop ALL
+          --security-opt no-new-privileges --read-only
+          --tmpfs /tmp:rw,nosuid,size=256m
+          -v "$PWD:/github/workspace:ro"
+          ghcr.io/home-assistant/hassfest@sha256:4b1adfb1e0a37710af0390708eb8000230b80b2193ccffbeed0a901fa9765181
 
   # Preserve the required branch-protection check name while testing both HAs.
   tests:
