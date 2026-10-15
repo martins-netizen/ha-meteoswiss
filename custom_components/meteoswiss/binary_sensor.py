@@ -3,9 +3,10 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from datetime import timedelta
+from datetime import datetime, timedelta
 from typing import Any, Final, Literal
 
+import aiohttp
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
@@ -14,7 +15,12 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import DeviceInfo
-from homeassistant.helpers.update_coordinator import CoordinatorEntity, DataUpdateCoordinator
+from homeassistant.helpers.update_coordinator import (
+    CoordinatorEntity,
+    DataUpdateCoordinator,
+    UpdateFailed,
+)
+from homeassistant.util import dt as dt_util
 
 from .alerts import MeteoSwissAlertsAPI, WeatherAlert
 from .const import (
@@ -150,7 +156,7 @@ class MeteoSwissAlertsBinarySensor(CoordinatorEntity, BinarySensorEntity):
     def is_on(self) -> bool | None:
         """Return true if the binary sensor is on."""
         if self.coordinator.data is None:
-            return False
+            return None
 
         alerts = self.coordinator.data
 
@@ -178,7 +184,20 @@ class MeteoSwissAlertsBinarySensor(CoordinatorEntity, BinarySensorEntity):
     @property
     def extra_state_attributes(self) -> dict[str, Any] | None:
         """Return active and upcoming alert details."""
-        return _alert_state_attributes(self.coordinator.data)
+        return {
+            **_alert_state_attributes(self.coordinator.data),
+            "data_status": (
+                "current" if self.coordinator.last_update_success
+                and self.coordinator.data is not None else "unavailable"
+            ),
+            "last_successful_update": (
+                self.coordinator.last_successful_update.isoformat()
+                if self.coordinator.last_successful_update else None
+            ),
+            # All languages are supplied so each dashboard can use the
+            # viewing user's language without changing automation values.
+            "warning_labels": self.coordinator.warning_labels,
+        }
 
     @callback
     def _handle_coordinator_update(self) -> None:
@@ -194,9 +213,12 @@ class MeteoSwissAlertsCoordinator(DataUpdateCoordinator[list[WeatherAlert]]):
         hass: HomeAssistant,
         alerts_api: MeteoSwissAlertsAPI,
         update_interval: int = 600,
+        warning_labels: dict | None = None,
     ) -> None:
         """Initialize."""
         self._alerts_api = alerts_api
+        self.warning_labels = warning_labels or {}
+        self.last_successful_update: datetime | None = None
 
         super().__init__(
             hass,
@@ -209,7 +231,12 @@ class MeteoSwissAlertsCoordinator(DataUpdateCoordinator[list[WeatherAlert]]):
         """Fetch alerts from MeteoSwiss App API."""
         _LOGGER.debug("Fetching MeteoSwiss alerts")
 
-        alerts = await self._alerts_api.get_alerts(self._alerts_api.postal_code)
+        try:
+            alerts = await self._alerts_api.get_alerts(self._alerts_api.postal_code)
+        except (aiohttp.ClientError, TimeoutError, ValueError) as err:
+            raise UpdateFailed("Weather warnings could not be updated") from err
+
+        self.last_successful_update = dt_util.utcnow()
 
         _LOGGER.debug("Successfully fetched %d MeteoSwiss alerts", len(alerts))
 

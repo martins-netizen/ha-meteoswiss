@@ -2,11 +2,10 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import logging
 import time
-from dataclasses import dataclass, asdict
-from typing import Any, Callable, Final, Optional
+from dataclasses import asdict, dataclass
+from typing import Any, Callable
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -22,7 +21,7 @@ class CacheEntry:
 
     def is_expired(self) -> bool:
         """Check if cache entry is expired."""
-        return time.time() - self.timestamp > self.ttl
+        return time.monotonic() - self.timestamp > self.ttl
 
     def to_dict(self) -> dict:
         """Convert to dictionary."""
@@ -87,14 +86,14 @@ class MeteoSwissCache:
             return None
 
         if entry.is_expired():
-            _LOGGER.debug("Cache entry expired: %s", key)
+            _LOGGER.debug("Cache entry expired")
             self._evictions += 1
             del self._cache[key]
             self._misses += 1
             return None
 
         self._hits += 1
-        _LOGGER.debug("Cache hit: %s", key)
+        _LOGGER.debug("Cache hit")
         return entry.value
 
     def set(
@@ -116,12 +115,12 @@ class MeteoSwissCache:
         entry = CacheEntry(
             key=key,
             value=value,
-            timestamp=time.time(),
+            timestamp=time.monotonic(),
             ttl=ttl,
         )
 
         self._cache[key] = entry
-        _LOGGER.debug("Cache set: %s (TTL: %s sec)", key, ttl)
+        _LOGGER.debug("Cache set (TTL: %s sec)", ttl)
 
     def get_or_set(
         self,
@@ -157,7 +156,7 @@ class MeteoSwissCache:
         """
         if key in self._cache:
             del self._cache[key]
-            _LOGGER.debug("Cache invalidated: %s", key)
+            _LOGGER.debug("Cache invalidated")
 
     def clear(self) -> None:
         """Clear all cache entries."""

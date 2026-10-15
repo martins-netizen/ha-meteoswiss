@@ -1,18 +1,18 @@
 """Forecast coordinator using Open-Meteo API."""
 from __future__ import annotations
 
-import asyncio
 import logging
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import aiohttp
-
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .cache import get_forecast_cache
-from .const import WMO_WEATHER_CODES
+from .const import DEFAULT_API_TIMEOUT
+from .retry import async_retry_with_backoff
+from .weather_data import FORECAST_TIME_ZONE, forecast_datetime, weather_condition
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -57,16 +57,11 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
             update_interval=timedelta(seconds=update_interval),
         )
 
-    def _map_open_meteo_condition(self, weather_code: int | None, is_night: bool = False) -> str:
-        """Map Open-Meteo weather code to HA condition."""
-        if weather_code is None:
-            return "partlycloudy"
+    def _map_open_meteo_condition(self, weather_code: int | None, is_night: bool = False) -> str | None:
+        """Map a known provider code without manufacturing a clear sky."""
+        return weather_condition(weather_code, is_day=not is_night)
 
-        condition = WMO_WEATHER_CODES.get(weather_code, "partlycloudy")
-        if condition == "sunny" and is_night:
-            return "clear-night"
-        return condition
-
+    @async_retry_with_backoff(max_attempts=3)
     async def _fetch_open_meteo_forecast(self) -> list[dict[str, Any]]:
         """Fetch forecast from Open-Meteo API with retries."""
         if self._latitude is None or self._longitude is None:
@@ -79,47 +74,20 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
             f"{OPEN_METEO_BASE_URL}"
             f"?latitude={self._latitude}"
             f"&longitude={self._longitude}"
-            f"&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,precipitation,windspeed_10m,winddirection_10m,weather_code,snowfall,freezing_level_height"
+            f"&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,precipitation,windspeed_10m,winddirection_10m,weather_code,is_day,snowfall,freezing_level_height"
             f"&forecast_hours=120"
-            f"&daily=temperature_2m_max,temperature_2m_min,temperature_2m_mean"
+            f"&daily=temperature_2m_max,temperature_2m_min,temperature_2m_mean,precipitation_sum,precipitation_probability_max"
             f"&models=meteoswiss_icon_seamless"
-            f"&timezone=Europe/Zurich"
+            f"&timezone=Europe/Zurich&timeformat=unixtime"
         )
 
         _LOGGER.debug("Fetching from Open-Meteo: %s", url)
 
-        # Retry logic with timeout
-        max_retries = 3
-        timeout = aiohttp.ClientTimeout(total=30)  # 30 seconds timeout
-
-        for attempt in range(max_retries):
-            try:
-                async with self._session.get(url, timeout=timeout) as response:
-                    if response.status != 200:
-                        if attempt < max_retries - 1:
-                            _LOGGER.warning("Open-Meteo returned %s, retry %d/%d", response.status, attempt + 1, max_retries)
-                            await asyncio.sleep(2 ** attempt)  # Exponential backoff
-                            continue
-                        raise UpdateFailed(f"Open-Meteo API returned {response.status}")
-
-                    data = await response.json()
-
-            except asyncio.TimeoutError:
-                if attempt < max_retries - 1:
-                    _LOGGER.warning("Open-Meteo timeout, retry %d/%d", attempt + 1, max_retries)
-                    await asyncio.sleep(2 ** attempt)
-                    continue
-                raise UpdateFailed("Open-Meteo API timeout after retries")
-
-            except aiohttp.ClientError as err:
-                if attempt < max_retries - 1:
-                    _LOGGER.warning("Open-Meteo client error %s, retry %d/%d", err, attempt + 1, max_retries)
-                    await asyncio.sleep(2 ** attempt)
-                    continue
-                raise UpdateFailed(f"Open-Meteo API client error: {err}")
-
-            # Success - break retry loop
-            break
+        async with self._session.get(url, timeout=DEFAULT_API_TIMEOUT) as response:
+            response.raise_for_status()
+            data = await response.json()
+        if not isinstance(data, dict):
+            raise ValueError("Expected a forecast response object")
 
         forecast_data = []
         hourly = data.get("hourly", {})
@@ -135,6 +103,7 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
         wind_speed = hourly.get("windspeed_10m", [])
         wind_dir = hourly.get("winddirection_10m", [])
         weather_codes = hourly.get("weather_code", [])
+        daylight = hourly.get("is_day", [])
         snowfall = hourly.get("snowfall", [])
         freezing_level = hourly.get("freezing_level_height", [])
 
@@ -145,39 +114,53 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
         daily_max_temps = daily.get("temperature_2m_max", [])
         daily_min_temps = daily.get("temperature_2m_min", [])
         daily_mean_temps = daily.get("temperature_2m_mean", [])
+        daily_precip = daily.get("precipitation_sum", [])
+        daily_precip_prob = daily.get("precipitation_probability_max", [])
         daily_extrema: dict[str, dict[str, float | None]] = {}
+        # Open-Meteo daily buckets use the response's fixed offset, even
+        # across DST. Preserve their date labels; hourly timestamps use IANA.
+        provider_offset = data.get("utc_offset_seconds")
+        daily_zone = (
+            timezone(timedelta(seconds=provider_offset))
+            if isinstance(provider_offset, (int, float)) else FORECAST_TIME_ZONE
+        )
         for i, day in enumerate(daily_times):
-            daily_extrema[str(day)] = {
+            day_time = forecast_datetime(day)
+            if day_time is None:
+                raise ValueError("Invalid daily forecast timestamp")
+            daily_extrema[day_time.astimezone(daily_zone).date().isoformat()] = {
                 "temperature_max": (
                     daily_max_temps[i] if i < len(daily_max_temps) else None
                 ),
                 "temperature_min": (
                     daily_min_temps[i] if i < len(daily_min_temps) else None
                 ),
+                "precipitation": daily_precip[i] if i < len(daily_precip) else None,
+                "precipitation_probability": daily_precip_prob[i] if i < len(daily_precip_prob) else None,
                 "temperature_mean": (
                     daily_mean_temps[i] if i < len(daily_mean_temps) else None
                 ),
             }
 
-        # Build forecast list (5 days = 120 hours for daily forecast)
-        # Determine day/night for each hour based on time
+        fetched_at = datetime.now(timezone.utc).isoformat()
         for i in range(min(120, len(times))):
-            weather_code = weather_codes[i] if i < len(weather_codes) else None
-            
-            # Check if this hour is nighttime
-            time_str = times[i] if i < len(times) else ""
-            is_night = False
-            if time_str:
-                try:
-                    hour = int(time_str.split("T")[1].split(":")[0])
-                    is_night = hour >= 20 or hour < 6
-                except (IndexError, ValueError):
-                    pass
-            
-            daily_values = daily_extrema.get(time_str[:10], {})
+            code = weather_codes[i] if i < len(weather_codes) else None
+            timestamp = forecast_datetime(times[i])
+            if timestamp is None:
+                raise ValueError("Invalid hourly forecast timestamp")
+            day = timestamp.astimezone(FORECAST_TIME_ZONE).date().isoformat()
+            daily_values = daily_extrema.get(day, {})
+            is_day = bool(daylight[i]) if i < len(daylight) and daylight[i] is not None else None
 
             entry = {
-                "datetime": times[i],
+                "datetime": timestamp.isoformat(),
+                "local_date": day,
+                "fetched_at": fetched_at,
+                "source": "meteoswiss_icon_seamless_via_open_meteo",
+                "weather_code": code,
+                "is_day": is_day,
+                "daily_precipitation": daily_values.get("precipitation"),
+                "daily_precipitation_probability": daily_values.get("precipitation_probability"),
                 "temperature": temps[i] if i < len(temps) else None,
                 "daily_temperature_max": daily_values.get("temperature_max"),
                 "daily_temperature_min": daily_values.get("temperature_min"),
@@ -187,7 +170,7 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
                 "precipitation": precip[i] if i < len(precip) else None,
                 "wind_speed": wind_speed[i] if i < len(wind_speed) else None,
                 "wind_direction": wind_dir[i] if i < len(wind_dir) else None,
-                "condition": self._map_open_meteo_condition(weather_code, is_night=is_night),
+                "condition": weather_condition(code, is_day),
                 "snowfall": snowfall[i] if i < len(snowfall) else None,
                 "freezing_level_height": freezing_level[i] if i < len(freezing_level) else None,
             }
@@ -206,7 +189,7 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
 
         # Get cache
         cache = get_forecast_cache()
-        cache_key = f"forecast:{self._latitude},{self._longitude}"
+        cache_key = f"forecast:v2:icon-seamless:{self._latitude},{self._longitude}"
 
         # Try cache first
         cached_data = cache.get(cache_key)
@@ -226,7 +209,7 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
 
             _LOGGER.debug("Successfully updated forecast from Open-Meteo")
             return data
-        except (aiohttp.ClientError, Exception) as err:
+        except (aiohttp.ClientError, TimeoutError, ValueError, UpdateFailed) as err:
             _LOGGER.error("Error fetching Open-Meteo forecast: %s", err)
             self._consecutive_failures += 1
             if self._consecutive_failures >= 5:
@@ -235,7 +218,7 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
                     "Circuit breaker opened after %d consecutive failures",
                     self._consecutive_failures,
                 )
-            raise UpdateFailed(f"Failed to fetch Open-Meteo forecast: {err}")
+            raise UpdateFailed("Failed to fetch Open-Meteo forecast") from err
 
     @property
     def data_source(self) -> str:

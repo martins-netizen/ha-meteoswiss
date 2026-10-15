@@ -6,7 +6,6 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import aiohttp
-
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
@@ -24,6 +23,11 @@ from .const import (
     WMO_WEATHER_CODES,
 )
 from .retry import async_retry_with_backoff
+from .weather_data import (
+    forecast_datetime,
+    validate_observation_time,
+    weather_condition,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -124,9 +128,10 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         params = {
             "latitude": self.latitude,
             "longitude": self.longitude,
-            "current": "temperature_2m,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m,weather_code,uv_index",
+            "current": "temperature_2m,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m,weather_code,is_day,uv_index",
             "hourly": "temperature_2m,relative_humidity_2m,precipitation_probability,weather_code",
             "timezone": "Europe/Zurich",
+            "timeformat": "unixtime",
         }
 
         try:
@@ -136,19 +141,16 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 self.longitude,
             )
 
-            async with self._session.get(OPENMETEO_BASE_URL, params=params) as response:
-                if response.status != 200:
-                    _LOGGER.error("Open-Meteo API error: %s", response.status)
-                    return None
+            async with self._session.get(OPENMETEO_BASE_URL, params=params, timeout=DEFAULT_API_TIMEOUT) as response:
+                response.raise_for_status()
 
                 data = await response.json()
                 _LOGGER.debug("Open-Meteo response: %s", data)
 
                 return self._parse_response(data)
 
-        except aiohttp.ClientError as err:
-            _LOGGER.error("Open-Meteo API request failed: %s", err)
-            return None
+        except (aiohttp.ClientError, TimeoutError):
+            raise
         except Exception as err:
             _LOGGER.exception("Error fetching Open-Meteo data: %s", err)
             return None
@@ -206,7 +208,7 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             # Weather code
             self.weather_code = current.get("weather_code")
             result["weather_code"] = self.weather_code
-            result["weather_condition"] = self.get_weather_condition(self.weather_code)
+            result["weather_condition"] = weather_condition(self.weather_code, bool(current["is_day"]) if current.get("is_day") is not None else None)
             result["weather_description"] = self.get_weather_description(self.weather_code)
 
             # UV index
@@ -222,7 +224,8 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             # Timestamp
             time = current.get("time")
             if time:
-                result["last_update"] = time
+                timestamp = forecast_datetime(time)
+                result["last_update"] = timestamp.isoformat() if timestamp else None
                 _LOGGER.debug("Last update: %s", time)
 
             # Parse hourly forecast (up to 24 hours)
@@ -236,7 +239,7 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             # Find current hour index
             current_hour_index = 0
             for i, t in enumerate(hourly_time):
-                if time and t.startswith(time[:13]):  # Match hour
+                if time and forecast_datetime(t) == forecast_datetime(time).replace(minute=0, second=0, microsecond=0):
                     current_hour_index = i
                     break
 
@@ -245,7 +248,7 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             for i in range(forecast_hours):
                 idx = current_hour_index + i
                 forecast = {
-                    "datetime": hourly_time[idx],
+                    "datetime": forecast_datetime(hourly_time[idx]).isoformat(),
                     "temperature": hourly_temp[idx] if idx < len(hourly_temp) else None,
                     "humidity": hourly_humidity[idx] if idx < len(hourly_humidity) else None,
                     "precipitation_probability": hourly_precip[idx] if idx < len(hourly_precip) else None,
@@ -279,6 +282,7 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             cached_data = cache.get(cache_key)
             if cached_data is not None:
                 _LOGGER.debug("Using cached Open-Meteo data")
+                validate_observation_time(cached_data)
                 return cached_data
 
             _LOGGER.debug("Cache miss, fetching fresh Open-Meteo data")
@@ -295,6 +299,8 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
             _LOGGER.debug("Successfully fetched Open-Meteo data")
 
+            validate_observation_time(data)
+
             # Circuit breaker: reset on success
             self._consecutive_failures = 0
             self._circuit_open_until = None
@@ -305,7 +311,7 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
             return data
 
-        except UpdateFailed:
+        except (UpdateFailed, aiohttp.ClientError, TimeoutError, ValueError) as err:
             self._consecutive_failures += 1
             if self._consecutive_failures >= 5:
                 self._circuit_open_until = datetime.now(timezone.utc) + timedelta(minutes=5)
@@ -313,7 +319,9 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                     "Circuit breaker opened after %d consecutive failures",
                     self._consecutive_failures,
                 )
-            raise
+            if isinstance(err, UpdateFailed):
+                raise
+            raise UpdateFailed("Weather data source unavailable") from err
 
     async def async_close(self) -> None:
         """Close is handled centrally by the integration setup."""

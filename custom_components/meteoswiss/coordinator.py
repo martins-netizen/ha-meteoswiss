@@ -1,7 +1,6 @@
 """Data update coordinator for MeteoSwiss."""
 from __future__ import annotations
 
-import asyncio
 import csv
 import io
 import logging
@@ -10,16 +9,14 @@ from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import aiohttp
-
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .cache import get_current_weather_cache
 from .const import (
     API_BASE,
-    CONF_POSTAL_CODE,
+    DEFAULT_API_TIMEOUT,
     DOMAIN,
-    GRANULARITY_10MIN,
     MIN_UPDATE_INTERVAL,
     SENSOR_DEW_POINT,
     SENSOR_FOEHN_INDEX,
@@ -37,6 +34,7 @@ from .const import (
     STAC_COLLECTION,
 )
 from .retry import async_retry_with_backoff
+from .weather_data import validate_observation_time
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -149,10 +147,8 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         try:
             url = f"{API_BASE}/collections/{STAC_COLLECTION}/items/{self.station_id}"
             _LOGGER.debug("Fetching station info from: %s", url)
-            async with self._session.get(url) as response:
-                if response.status != 200:
-                    _LOGGER.error("Failed to fetch station info: %s", response.status)
-                    return None
+            async with self._session.get(url, timeout=DEFAULT_API_TIMEOUT) as response:
+                response.raise_for_status()
 
                 data = await response.json()
 
@@ -175,9 +171,8 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 _LOGGER.warning("No t_now.csv or t_recent.csv found for station %s", self.station_id)
                 return None
 
-        except asyncio.TimeoutError:
-            _LOGGER.error("Timeout fetching station info")
-            return None
+        except (aiohttp.ClientError, TimeoutError):
+            raise
         except Exception as err:
             _LOGGER.exception("Error fetching station info: %s", err)
             return None
@@ -190,10 +185,8 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         try:
             _LOGGER.debug("Downloading CSV from: %s", csv_url)
-            async with self._session.get(csv_url) as response:
-                if response.status != 200:
-                    _LOGGER.error("Failed to download CSV: %s", response.status)
-                    return None
+            async with self._session.get(csv_url, timeout=DEFAULT_API_TIMEOUT) as response:
+                response.raise_for_status()
 
                 content = await response.text()
 
@@ -221,6 +214,8 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             )
             return result
 
+        except (aiohttp.ClientError, TimeoutError):
+            raise
         except Exception as err:
             _LOGGER.exception("Error parsing CSV: %s", err)
             return None
@@ -404,19 +399,10 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                     except Exception:
                         pass
 
-            # Parse timestamp
-            timestamp_value = row.get("reference_timestamp")
-            if timestamp_value and timestamp_value.strip():
-                try:
-                    # Parse German date format: "01.01.2025 00:00"
-                    timestamp_str = timestamp_value.strip()
-                    # Convert to ISO format
-                    dt = datetime.strptime(timestamp_str, "%d.%m.%Y %H:%M")
-                    result["last_update"] = dt.isoformat()
-                    _LOGGER.debug("Parsed timestamp: %s", result["last_update"])
-                except ValueError as e:
-                    _LOGGER.error("Could not parse timestamp '%s': %s", timestamp_value, e)
-                    result["last_update"] = datetime.now().isoformat()
+            # Preserve measurement time. A malformed timestamp must never
+            # be replaced with "now", which would hide stale source data.
+            reference = _parse_reference_timestamp(row.get("reference_timestamp"))
+            result["last_update"] = reference.isoformat() if reference else None
 
             # Log final result
             _LOGGER.debug("Parsed result: temp=%s, humidity=%s, wind=%s, dir=%s, pressure=%s",
@@ -449,6 +435,7 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             cached_data = cache.get(cache_key)
             if cached_data is not None:
                 _LOGGER.debug("Using cached data for station %s", self.station_id)
+                validate_observation_time(cached_data)
                 return cached_data
 
             _LOGGER.debug("Cache miss, fetching fresh data for station %s", self.station_id)
@@ -475,7 +462,8 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
             _LOGGER.debug("Successfully parsed data: %s", parsed_data)
 
-            self._last_update = datetime.now()
+            validate_observation_time(parsed_data)
+            self._last_update = datetime.now(timezone.utc)
 
             # Circuit breaker: reset on success
             self._consecutive_failures = 0
@@ -487,7 +475,7 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
             return parsed_data
 
-        except UpdateFailed:
+        except (UpdateFailed, aiohttp.ClientError, TimeoutError, ValueError) as err:
             self._consecutive_failures += 1
             if self._consecutive_failures >= 5:
                 self._circuit_open_until = datetime.now(timezone.utc) + timedelta(minutes=5)
@@ -495,7 +483,9 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                     "Circuit breaker opened after %d consecutive failures",
                     self._consecutive_failures,
                 )
-            raise
+            if isinstance(err, UpdateFailed):
+                raise
+            raise UpdateFailed("Weather data source unavailable") from err
 
     async def async_close(self) -> None:
         """Close is handled centrally by the integration setup."""

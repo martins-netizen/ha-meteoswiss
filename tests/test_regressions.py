@@ -8,6 +8,8 @@ from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
 from homeassistant.const import UnitOfPrecipitationDepth
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from custom_components.meteoswiss.alerts import WeatherAlert
+from custom_components.meteoswiss.calc import calculate_heating_degree_days
 from custom_components.meteoswiss.const import (
     CONF_STATION_NAME,
     DEFAULT_POLLEN_STATION,
@@ -18,8 +20,6 @@ from custom_components.meteoswiss.const import (
     SENSOR_PRECIPITATION_CURRENT_HOUR,
     SENSOR_TEMPERATURE,
 )
-from custom_components.meteoswiss.alerts import WeatherAlert
-from custom_components.meteoswiss.calc import calculate_heating_degree_days
 from custom_components.meteoswiss.coordinator import (
     MeteoSwissDataUpdateCoordinator,
     _current_hour_precipitation,
@@ -27,15 +27,15 @@ from custom_components.meteoswiss.coordinator import (
 from custom_components.meteoswiss.forecast_coordinator import (
     MeteoSwissForecastCoordinator,
 )
-from custom_components.meteoswiss.sensor import (
-    SENSOR_DESCRIPTIONS,
-    MeteoSwissSensor,
-    _daily_mean_for_date,
-)
 from custom_components.meteoswiss.precipitation import (
     _asset_urls_for_period,
     _parse_hourly_statistics,
     _subtract_calendar_months,
+)
+from custom_components.meteoswiss.sensor import (
+    SENSOR_DESCRIPTIONS,
+    MeteoSwissSensor,
+    _daily_mean_for_date,
 )
 from custom_components.meteoswiss.weather import MeteoSwissWeather
 
@@ -198,6 +198,9 @@ class _FakeResponse:
     """Minimal async response for the Open-Meteo request test."""
 
     status = 200
+
+    def raise_for_status(self):
+        """The fixture represents a successful HTTP response."""
 
     async def __aenter__(self):
         return self

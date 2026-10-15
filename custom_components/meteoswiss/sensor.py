@@ -41,17 +41,24 @@ except ImportError:
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
-from homeassistant.helpers.update_coordinator import CoordinatorEntity, DataUpdateCoordinator
+from homeassistant.helpers.update_coordinator import (
+    CoordinatorEntity,
+    DataUpdateCoordinator,
+)
 from homeassistant.util import dt as dt_util
 
 from .cache import get_all_cache_stats
+from .calc import (
+    HEATING_REFERENCE_TEMPERATURE,
+    HEATING_THRESHOLD,
+    calculate_heating_degree_days,
+)
 from .const import (
     ATTRIBUTION,
-    CONF_DATA_SOURCE,
     CONF_POLLEN_STATION,
     CONF_STATION_NAME,
-    DATA_SOURCE_OPENMETEO,
     DEFAULT_POLLEN_STATION,
     DOMAIN,
     OPENMETEO_AIR_QUALITY_ATTRIBUTION,
@@ -80,11 +87,7 @@ from .const import (
 )
 from .coordinator import MeteoSwissDataUpdateCoordinator
 from .stations_map import MeteoSwissStationsMap
-from .calc import (
-    HEATING_REFERENCE_TEMPERATURE,
-    HEATING_THRESHOLD,
-    calculate_heating_degree_days,
-)
+from .weather_data import FORECAST_TIME_ZONE, forecast_datetime
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -226,10 +229,11 @@ async def async_setup_entry(
     # Add stations map sensor (only once)
     if not hass.data[DOMAIN].get("stations_map_sensor_added", False):
         from .stations_map import get_stations_map
-        stations_map = await get_stations_map()
+        stations_map = await get_stations_map(load=False)
         stations_map_sensor = MeteoSwissStationsMapSensor(stations_map)
         entities.append(stations_map_sensor)
         hass.data[DOMAIN]["stations_map_sensor_added"] = True
+        hass.data[DOMAIN]["diagnostic_owner"] = entry.entry_id
         _LOGGER.debug("Added stations map sensor")
 
     # Add cache stats sensor (only once)
@@ -355,7 +359,7 @@ class MeteoSwissStationsMapSensor(SensorEntity):
         """Update stations map."""
         _LOGGER.debug("Updating stations map")
 
-        await self._stations_map.load_stations()
+        await self._stations_map.load_stations(session=async_get_clientsession(self.hass))
         stations = self._stations_map.get_all_stations()
 
         # Update native value with station count
@@ -508,7 +512,11 @@ def _daily_mean_for_date(
 ) -> float | None:
     # Return Open-Meteo's native full-calendar-day mean for a date.
     for entry_data in forecast_data:
-        if not str(entry_data.get("datetime", "")).startswith(day):
+        timestamp = forecast_datetime(entry_data.get("datetime"))
+        local_day = entry_data.get("local_date") or (
+            timestamp.astimezone(FORECAST_TIME_ZONE).date().isoformat() if timestamp else None
+        )
+        if local_day != day:
             continue
         daily_mean = entry_data.get("daily_temperature_mean")
         if daily_mean is not None:

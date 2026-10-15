@@ -2,20 +2,21 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timezone
+from datetime import timedelta
 from typing import Final
 
-from homeassistant.components.weather import WeatherEntity, Forecast
+from homeassistant.components.weather import Forecast, WeatherEntity
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
-    UnitOfPressure,
     UnitOfPrecipitationDepth,
+    UnitOfPressure,
     UnitOfSpeed,
     UnitOfTemperature,
 )
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
+from homeassistant.util import dt as dt_util
 
 from .const import (
     ATTRIBUTION,
@@ -29,10 +30,10 @@ from .const import (
     SENSOR_TEMPERATURE,
     SENSOR_WIND_DIRECTION,
     SENSOR_WIND_SPEED,
-    WMO_WEATHER_CODES,
 )
 from .coordinator import MeteoSwissDataUpdateCoordinator
 from .forecast_coordinator import MeteoSwissForecastCoordinator
+from .weather_data import FORECAST_TIME_ZONE, forecast_datetime, weather_condition
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -128,8 +129,13 @@ class MeteoSwissWeather(CoordinatorEntity[MeteoSwissDataUpdateCoordinator], Weat
             _LOGGER.debug("Forecast coordinator is None!")
             return []
 
+        if not self._forecast_coordinator.last_update_success:
+            return []
         data = self._forecast_coordinator.data
-        _LOGGER.debug("Forecast coordinator data (count): %d", len(data) if data else 0)
+        if data:
+            fetched_at = forecast_datetime(data[0].get("fetched_at"))
+            if fetched_at is not None and dt_util.utcnow() - fetched_at > timedelta(hours=3):
+                return []
         return data if data else []
 
     @callback
@@ -145,101 +151,37 @@ class MeteoSwissWeather(CoordinatorEntity[MeteoSwissDataUpdateCoordinator], Weat
         return WeatherEntityFeature.FORECAST_HOURLY | WeatherEntityFeature.FORECAST_DAILY
 
     def _map_open_meteo_condition(self, weather_code: int | None) -> str | None:
-        """Map Open-Meteo weather code to HA condition."""
-        if weather_code is None:
-            _LOGGER.debug("Open-Meteo weather_code is None")
-            return None
-
-        condition = WMO_WEATHER_CODES.get(weather_code, "partlycloudy")
-        _LOGGER.debug("Mapped Open-Meteo code %s → condition: %s", weather_code, condition)
-        return condition
+        """Map known codes; missing weather is not partly cloudy."""
+        return weather_condition(weather_code)
 
     def _resolve_condition(self) -> str | None:
-        """Resolve current condition with fallback logic.
+        """Use a measured/current condition or the current forecast interval.
 
-        Priority order:
-        1. Open-Meteo current weather (from forecast coordinator)
-        2. MeteoSwiss symbol/icon
-        3. Precipitation-based fallback
-        4. Safe fallback ("partlycloudy") if numeric data exists
-        5. None if absolutely no data
-
-        Returns:
-            HA condition string or None
+        Missing cloud information never implies a clear sky. A positive
+        measured precipitation interval remains an explicitly documented
+        fallback for rain.
         """
-        _LOGGER.debug("=== RESOLVING CURRENT CONDITION ===")
-
-        # Try Open-Meteo current weather first
-        forecast_data = self.forecast_coordinator_data
-        if forecast_data and len(forecast_data) > 0:
-            now = datetime.now(timezone.utc)
-            for entry in forecast_data[:6]:  # Check next 6 hours
-                entry_time = entry.get("datetime")
-                if entry_time:
-                    try:
-                        if isinstance(entry_time, str):
-                            entry_dt = datetime.fromisoformat(entry_time.replace("Z", "+00:00"))
-                            if abs((entry_dt - now).total_seconds()) < 1800:  # 30 min window
-                                weather_code = entry.get("weather_code")
-                                condition = self._map_open_meteo_condition(weather_code)
-                                if condition:
-                                    _LOGGER.debug("Condition resolved via Open-Meteo: %s (code: %s)", condition, weather_code)
-                                    return condition
-                    except Exception as err:
-                        _LOGGER.debug("Error parsing forecast datetime: %s", err)
-                        continue
-
-            # Fallback: use first forecast entry if no close match
-            first_entry = forecast_data[0]
-            weather_code = first_entry.get("weather_code")
-            condition = self._map_open_meteo_condition(weather_code)
-            if condition:
-                _LOGGER.debug("Condition resolved via Open-Meteo (first entry): %s (code: %s)", condition, weather_code)
+        current = self.coordinator_data
+        condition = current.get("weather_condition")
+        if condition:
+            return condition
+        for key in ("symbol", "icon", "condition"):
+            symbol = current.get(key)
+            if symbol and (condition := self.METEOSWISS_CONDITION_MAP.get(str(symbol).lower())):
                 return condition
-            else:
-                _LOGGER.debug("Open-Meteo forecast exists but no valid weather_code")
 
-        else:
-            _LOGGER.debug("Open-Meteo current data not available")
+        now = dt_util.utcnow()
+        for item in self.forecast_coordinator_data:
+            timestamp = forecast_datetime(item.get("datetime"))
+            if timestamp is not None and timestamp <= now < timestamp + timedelta(hours=1):
+                condition = item.get("condition") or weather_condition(
+                    item.get("weather_code"), item.get("is_day")
+                )
+                if condition:
+                    return condition
 
-        # Try MeteoSwiss symbol/icon
-        ms_data = self.coordinator_data
-        if ms_data:
-            for key in ["symbol", "icon", "condition"]:
-                symbol = ms_data.get(key)
-                if symbol:
-                    condition = self.METEOSWISS_CONDITION_MAP.get(str(symbol).lower())
-                    if condition:
-                        _LOGGER.debug("✅ Condition resolved via MeteoSwiss symbol: %s (symbol: %s)", condition, symbol)
-                        return condition
-                    else:
-                        _LOGGER.debug("MeteoSwiss symbol '%s' has no mapping", symbol)
-
-        # Try precipitation-based fallback
-        if ms_data:
-            precip = ms_data.get(SENSOR_PRECIPITATION)
-            if precip is not None:
-                if precip > 0:
-                    _LOGGER.debug("✅ Condition resolved via precipitation fallback: rainy (%s mm)", precip)
-                    return "rainy"
-
-                # Time-based fallback (day/night)
-                now_hour = datetime.now().hour
-                is_night = now_hour >= 20 or now_hour < 6
-                if is_night:
-                    _LOGGER.debug("✅ Condition resolved via time fallback: clear-night")
-                    return "clear-night"
-                else:
-                    _LOGGER.debug("✅ Condition resolved via time fallback: partlycloudy")
-                    return "partlycloudy"
-
-        # Safe fallback if any numeric data exists
-        if ms_data and (ms_data.get(SENSOR_TEMPERATURE) is not None or ms_data.get(SENSOR_HUMIDITY) is not None):
-            _LOGGER.debug("Using safe fallback condition: partlycloudy (no condition source available)")
-            return "partlycloudy"
-
-        # Absolutely no data
-        _LOGGER.error("❌ No condition data available, returning None")
+        if (current.get(SENSOR_PRECIPITATION) or 0) > 0:
+            return "rainy"
         return None
 
     @property
@@ -409,13 +351,20 @@ class MeteoSwissWeather(CoordinatorEntity[MeteoSwissDataUpdateCoordinator], Weat
                 if not dt_str:
                     continue
 
-                date_str = dt_str[:10]  # Get date part (YYYY-MM-DD)
+                timestamp = forecast_datetime(dt_str)
+                if timestamp is None:
+                    continue
+                date_str = entry.get("local_date") or timestamp.astimezone(FORECAST_TIME_ZONE).date().isoformat()
                 if date_str not in daily_data:
                     daily_data[date_str] = []
                 daily_data[date_str].append(entry)
             except Exception as err:
                 _LOGGER.warning("Error processing daily forecast entry: %s", err)
                 continue
+
+        def aggregate_known(entries, key, operation):
+            values = [item[key] for item in entries if item.get(key) is not None]
+            return operation(values) if values else None
 
         # Build daily forecast (one entry per day)
         ha_forecast = []
@@ -424,12 +373,10 @@ class MeteoSwissWeather(CoordinatorEntity[MeteoSwissDataUpdateCoordinator], Weat
                 if not hourly_entries:
                     continue
 
-                # Use midday (12:00-14:00) as representative temperature
                 midday_entries = [
-                    e for e in hourly_entries
-                    if "T12:" in e.get("datetime", "") or
-                    "T13:" in e.get("datetime", "") or
-                    "T14:" in e.get("datetime", "")
+                    item for item in hourly_entries
+                    if (timestamp := forecast_datetime(item.get("datetime"))) is not None
+                    and 12 <= timestamp.astimezone(FORECAST_TIME_ZONE).hour <= 14
                 ]
                 representative = midday_entries[0] if midday_entries else hourly_entries[0]
 
@@ -469,8 +416,14 @@ class MeteoSwissWeather(CoordinatorEntity[MeteoSwissDataUpdateCoordinator], Weat
                         else min(temperatures) if temperatures
                         else None
                     ),
-                    precipitation=sum(e.get("precipitation", 0) for e in hourly_entries),
-                    precipitation_probability=max(e.get("precipitation_probability", 0) for e in hourly_entries),
+                    precipitation=next(
+                        (e["daily_precipitation"] for e in hourly_entries if e.get("daily_precipitation") is not None),
+                        aggregate_known(hourly_entries, "precipitation", sum),
+                    ),
+                    precipitation_probability=next(
+                        (e["daily_precipitation_probability"] for e in hourly_entries if e.get("daily_precipitation_probability") is not None),
+                        aggregate_known(hourly_entries, "precipitation_probability", max),
+                    ),
                     wind_speed=representative.get("wind_speed"),
                     wind_bearing=representative.get("wind_direction"),
                     condition=representative.get("condition"),

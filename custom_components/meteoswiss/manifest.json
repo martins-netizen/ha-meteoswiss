@@ -1,12 +1,17 @@
 {
   "domain": "meteoswiss",
   "name": "MeteoSwiss",
-  "version": "8.0.0",
-  "quality_scale": "platinum",
-  "documentation": "https://github.com/LNKtwo/ha-meteoswiss",
-  "issue_tracker": "https://github.com/LNKtwo/ha-meteoswiss/issues",
-  "codeowners": ["@LNKtwo"],
-  "requirements": [],
+  "after_dependencies": [
+    "recorder"
+  ],
+  "codeowners": [
+    "@martins-netizen"
+  ],
   "config_flow": true,
-  "iot_class": "cloud_polling"
+  "documentation": "https://github.com/martins-netizen/ha-meteoswiss",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/martins-netizen/ha-meteoswiss/issues",
+  "requirements": [],
+  "version": "8.2.0b1"
 }

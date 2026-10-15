@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 ---
 
+## [8.2.0b1] — prepared, not released
+
+- Preserve unavailable warning feeds as failures; never turn HTTP errors,
+  timeouts or malformed warning lists into an all-clear.
+- Use HA-owned HTTP sessions, bounded request timeouts and transient retries.
+- Align forecast conditions, daylight and UTC timestamps; preserve repeated
+  DST hours, native daily totals and the forecast-only meaning of HGT.
+- Reject stale observation times and retain unknown measurements as unknown.
+- Select current-hour pollen/AQ values instead of midnight/future substitutes.
+- Ship complete en/de/fr/it catalogues with reusable warning labels and an
+  optional shared button-card template. Existing codes, IDs and history remain.
+- Document architecture, source contracts, minimum/current HA tests, release
+  procedure and live acceptance. Remove the unverified Platinum claim.
+
+
 ## [8.0.0] — 2026-07-31
 
 ### Tier 3 — Full Documentation, Code Polish, Production Ready
