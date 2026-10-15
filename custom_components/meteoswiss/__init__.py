@@ -145,19 +145,22 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             session=shared_session,
         )
         _LOGGER.debug("Forecast coordinator using Home Assistant location: lat=%s, lon=%s", lat, lon)
-        hourly_precipitation_coordinator = MeteoSwissHourlyPrecipitationCoordinator(
-            hass,
-            station_id=station_id,
-            session=shared_session,
-        )
-        precipitation_archive_coordinator = MeteoSwissHourlyPrecipitationCoordinator(
-            hass,
-            station_id=station_id,
-            session=shared_session,
-            asset_periods=("historical", "recent"),
-            update_interval=ARCHIVE_UPDATE_INTERVAL,
-            lookback_months=ARCHIVE_LOOKBACK_MONTHS,
-        )
+        hourly_precipitation_coordinator = None
+        precipitation_archive_coordinator = None
+        if "recorder" in hass.config.components:
+            hourly_precipitation_coordinator = MeteoSwissHourlyPrecipitationCoordinator(
+                hass,
+                station_id=station_id,
+                session=shared_session,
+            )
+            precipitation_archive_coordinator = MeteoSwissHourlyPrecipitationCoordinator(
+                hass,
+                station_id=station_id,
+                session=shared_session,
+                asset_periods=("historical", "recent"),
+                update_interval=ARCHIVE_UPDATE_INTERVAL,
+                lookback_months=ARCHIVE_LOOKBACK_MONTHS,
+            )
 
     # Fetch initial data for current weather
     await coordinator.async_config_entry_first_refresh()
@@ -248,6 +251,9 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id)
+        if hass.data[DOMAIN].get("diagnostic_owner") == entry.entry_id:
+            for key in ("diagnostic_owner", "stations_map_sensor_added", "cache_stats_sensor_added"):
+                hass.data[DOMAIN].pop(key, None)
 
     return unload_ok
 

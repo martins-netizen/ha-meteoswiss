@@ -401,6 +401,7 @@ def test_hgt_uses_local_calendar_date_after_utc_normalization():
 
 async def test_complete_entry_setup_reload_and_unload(hass, enable_custom_integrations):
     from contextlib import ExitStack
+
     from homeassistant.helpers.aiohttp_client import async_get_clientsession
     from homeassistant.util import dt as dt_util
 
@@ -426,6 +427,7 @@ async def test_complete_entry_setup_reload_and_unload(hass, enable_custom_integr
         "precipitation.MeteoSwissHourlyPrecipitationCoordinator": {},
     }
     with ExitStack() as stack:
+        stack.enter_context(patch("custom_components.meteoswiss.stations_map.MeteoSwissStationsMap.load_stations", return_value={}))
         for target, data in targets.items():
             stack.enter_context(
                 patch(
@@ -435,6 +437,11 @@ async def test_complete_entry_setup_reload_and_unload(hass, enable_custom_integr
             )
         assert await hass.config_entries.async_setup(entry.entry_id)
         await hass.async_block_till_done()
+        from homeassistant.helpers import entity_registry as er
+        registry = er.async_get(hass)
+        map_id = registry.async_get_entity_id("sensor", DOMAIN, f"{DOMAIN}_stations_map")
+        assert map_id and hass.states.get(map_id) is not None
+        assert hass.data[DOMAIN][entry.entry_id]["hourly_precipitation_coordinator"] is None
         session = async_get_clientsession(hass)
         assert hass.data[DOMAIN][entry.entry_id]["session"] is session
         assert not session.closed
@@ -447,6 +454,7 @@ async def test_complete_entry_setup_reload_and_unload(hass, enable_custom_integr
         assert await hass.config_entries.async_reload(entry.entry_id)
         await hass.async_block_till_done()
         assert not session.closed
+        assert hass.states.get(map_id) is not None
         assert await hass.config_entries.async_unload(entry.entry_id)
         await hass.async_block_till_done()
         assert entry.entry_id not in hass.data[DOMAIN]

@@ -41,6 +41,7 @@ except ImportError:
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
@@ -228,10 +229,11 @@ async def async_setup_entry(
     # Add stations map sensor (only once)
     if not hass.data[DOMAIN].get("stations_map_sensor_added", False):
         from .stations_map import get_stations_map
-        stations_map = await get_stations_map()
+        stations_map = await get_stations_map(load=False)
         stations_map_sensor = MeteoSwissStationsMapSensor(stations_map)
         entities.append(stations_map_sensor)
         hass.data[DOMAIN]["stations_map_sensor_added"] = True
+        hass.data[DOMAIN]["diagnostic_owner"] = entry.entry_id
         _LOGGER.debug("Added stations map sensor")
 
     # Add cache stats sensor (only once)
@@ -357,7 +359,7 @@ class MeteoSwissStationsMapSensor(SensorEntity):
         """Update stations map."""
         _LOGGER.debug("Updating stations map")
 
-        await self._stations_map.load_stations()
+        await self._stations_map.load_stations(session=async_get_clientsession(self.hass))
         stations = self._stations_map.get_all_stations()
 
         # Update native value with station count

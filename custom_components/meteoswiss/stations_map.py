@@ -68,7 +68,7 @@ class MeteoSwissStationsMap:
                     content_bytes = await response.read()
             else:
                 async with aiohttp.ClientSession() as session_local:
-                    async with session_local.get(STATIONS_METADATA_URL) as response:
+                    async with session_local.get(STATIONS_METADATA_URL, timeout=DEFAULT_API_TIMEOUT) as response:
                         if response.status != 200:
                             _LOGGER.error("Failed to load stations: %s", response.status)
                             return {}
@@ -241,10 +241,11 @@ class MeteoSwissStationsMap:
 _stations_map: MeteoSwissStationsMap | None = None
 
 
-async def get_stations_map(session: aiohttp.ClientSession | None = None) -> MeteoSwissStationsMap:
+async def get_stations_map(session: aiohttp.ClientSession | None = None, *, load: bool = True) -> MeteoSwissStationsMap:
     """Get global stations map instance."""
     global _stations_map
     if _stations_map is None:
         _stations_map = MeteoSwissStationsMap()
+    if load:
         await _stations_map.load_stations(session=session)
     return _stations_map

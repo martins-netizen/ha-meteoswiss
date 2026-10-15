@@ -15,7 +15,9 @@ local changes. A release is an explicitly tested snapshot of `development`.
   must escape to the coordinator; it must not become an empty successful result.
 - Coordinators own refresh intervals, success/failure status and data caching.
   Optional forecasts, alerts, pollen and precipitation imports cannot delay the
-  required observation setup. Optional initial refresh tasks belong to the entry.
+  required observation setup. The diagnostic stations map is loaded lazily.
+  Optional initial refresh tasks belong to the entry. Recorder is an optional
+  ordered dependency: history imports are created only when it is loaded.
 - Entities expose values and availability; display translations never determine
   automation logic. The native HA update lifecycle handles unload and reload.
 - Home Assistant owns the shared TLS-verified HTTP session. Each request has a
