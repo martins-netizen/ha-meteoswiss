@@ -114,6 +114,7 @@ async def test_permanent_http_error_is_not_retried():
         {"warnings": "broken"},
         {"warnings": [42]},
         {"warnings": [{"warnType": 5}]},
+        {"warnings": [{"warnType": 5, "warnLevel": 2, "outlook": "false"}]},
     ],
 )
 async def test_malformed_warning_feed_is_not_an_all_clear(payload):

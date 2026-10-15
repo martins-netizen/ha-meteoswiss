@@ -236,6 +236,8 @@ class MeteoSwissAlertsAPI:
 
             # Parse outlook flag
             outlook = warning_data.get("outlook", False)
+            if not isinstance(outlook, bool):
+                raise ValueError("Invalid weather-warning outlook flag")
 
             # Generate alert ID
             alert_id = f"{postal_code}_{warn_level}_{warn_type}_{valid_from_ts if valid_from_ts else 'now'}"
