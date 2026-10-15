@@ -41,7 +41,7 @@ listeners/polling, using HA's shared session and a 30-second total timeout.
 | Observations | Selected SwissMetNet station, or configured Open-Meteo location | `last_update` is measurement time, aware UTC. Missing timestamps, age over one hour or more than ten minutes in the future fail the update. |
 | Weather forecast | MeteoSwiss ICON Seamless via Open-Meteo at HA location (explicit coordinates for Open-Meteo entries) | Unix seconds from provider become aware UTC ISO strings. `local_date` is the Europe/Zurich date; `fetched_at` is retrieval time, not model issuance time. |
 | Warnings | MeteoSwiss App API for configured postal code | UTC validity windows; active, upcoming and outlook remain separate. |
-| Measured pollen | Selected MeteoSwiss pollen station | Provider measurement timestamp, independent of weather station. |
+| Measured pollen | Selected MeteoSwiss pollen station | UTC hourly interval-end measurement time; accepted age up to four hours and future skew up to ten minutes, independently of weather observations. Checked on refresh. |
 | Pollen/AQ forecast | Open-Meteo for forecast location | Request Unix seconds and select the actual current hour, never midnight or the next non-null future value. Missing data stays missing; cached prior-hour values cannot extend this window. |
 | Hourly precipitation | Official station CSV, external Recorder statistics | Interval-end times are shifted to interval starts in UTC; IDs remain unchanged. |
 
@@ -56,9 +56,20 @@ Both pollen clients require at least one finite non-negative current tracked
 concentration (integer counts for measured pollen). Zero is valid. A partial
 response keeps missing fields unknown; no valid current concentration fails
 the update. Measured pollen also validates station identity and measurement
-timestamp syntax. Its existing provider timestamp/history format is retained;
-an explicit maximum measurement age for this separate hourly feed remains an
-open freshness-policy task, rather than inheriting the weather-station limit.
+timestamp syntax and freshness. Its existing provider timestamp/history format
+is retained. The hourly source has its own four-hour maximum age and ten-minute
+future tolerance, with inclusive boundaries. The age is recalculated from the
+measurement time on every refresh, never from fetch time. Repeated cached data
+cannot renew the measurement's freshness. There is no separate expiry timer
+between polls: the displayed timestamp remains authoritative for automations.
+
+This conservative integration policy allows hourly aggregation, the documented
+[20-minute pollen publication cycle](https://opendatadocs.meteoswiss.ch/changelog/1.2.0)
+and [up to two-hour asset caching](https://opendatadocs.meteoswiss.ch/general/download).
+It is not a provider SLA. MeteoSwiss reference times are UTC and hourly times
+mark interval ends; neither local timezone nor DST changes their age. A stale
+or implausibly future response fails locally without a transport retry. Normal
+coordinator unavailability/recovery then applies only to measured pollen.
 
 Forecast pollen, AQ/UV and measured-pollen sensors use CoordinatorEntity for
 subscription, unavailability and removal. Values are read directly from current

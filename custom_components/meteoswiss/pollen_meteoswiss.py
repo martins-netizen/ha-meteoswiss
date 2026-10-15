@@ -26,7 +26,7 @@ from __future__ import annotations
 import csv
 import io
 import logging
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import aiohttp
@@ -44,6 +44,12 @@ POLLEN_STAC_COLLECTION_URL = (
     "https://data.geo.admin.ch/api/stac/v1/collections/ch.meteoschweiz.ogd-pollen"
 )
 POLLEN_DATA_BASE_URL = "https://data.geo.admin.ch/ch.meteoschweiz.ogd-pollen"
+
+# Hourly measurement end times, 20-minute publication and up to two-hour asset
+# caching need their own policy, independent of the 10-minute weather feed.
+# Four hours is our conservative acceptance window, not a provider SLA.
+MAX_MEASUREMENT_AGE = timedelta(hours=4)
+MAX_MEASUREMENT_FUTURE_SKEW = timedelta(minutes=10)
 
 # Pollen parameter codes (MeteoSwiss naming convention)
 # Format: ka{genus_abbrev}{time_resolution}{version}
@@ -143,7 +149,11 @@ class MeteoSwissPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         latest = rows[-1]
         timestamp = (latest.get("reference_timestamp") or "").strip()
         station = (latest.get("station_abbr") or "").strip().lower()
-        if station != self._station_id or _parse_reference_timestamp(timestamp) is None:
+        measurement_time = _parse_reference_timestamp(timestamp)
+        if station != self._station_id or measurement_time is None:
+            return {}
+        age = datetime.now(UTC) - measurement_time
+        if age > MAX_MEASUREMENT_AGE or age < -MAX_MEASUREMENT_FUTURE_SKEW:
             return {}
         result: dict[str, Any] = {
             "station_id": self._station_id.upper(),
