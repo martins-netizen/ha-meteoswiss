@@ -9,9 +9,12 @@ from homeassistant.components.sensor import (
     SensorEntity,
     SensorEntityDescription,
 )
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.helpers.update_coordinator import (
+    CoordinatorEntity,
+    DataUpdateCoordinator,
+)
 
 from .const import (
     CONF_STATION_NAME,
@@ -21,7 +24,6 @@ from .const import (
     OPENMETEO_AIR_QUALITY_MANUFACTURER,
     OPENMETEO_AIR_QUALITY_MODEL,
 )
-
 from .runtime_data import MeteoSwissConfigEntry
 
 # Coordinators centralize refreshes; sensor diagnostics use bounded polling.
@@ -40,7 +42,9 @@ POLLEN_RAGWEED = "ragweed_pollen"
 # Pollen level thresholds (grains/m³)
 def _pollen_level(value: float | None, low: float, mod: float, high: float) -> str:
     """Convert pollen concentration to level name."""
-    if value is None or value == 0:
+    if value is None:
+        return "No data"
+    if value == 0:
         return "None"
     elif value < low:
         return "Low"
@@ -139,7 +143,7 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class MeteoSwissPollenSensor(SensorEntity):
+class MeteoSwissPollenSensor(CoordinatorEntity, SensorEntity):
     """Representation of a MeteoSwiss pollen sensor."""
 
     def __init__(
@@ -150,7 +154,7 @@ class MeteoSwissPollenSensor(SensorEntity):
         station_name: str,
     ) -> None:
         """Initialize pollen sensor."""
-        self.coordinator = coordinator
+        super().__init__(coordinator)
         self.entity_description = description
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_pollen_{description.pollen_type}"
         self._attr_device_info = DeviceInfo(
@@ -182,12 +186,6 @@ class MeteoSwissPollenSensor(SensorEntity):
         current = pollen_data.get("current")
         return current if current is not None else None
 
-    @callback
-    def _handle_coordinator_update(self) -> None:
-        """Handle updated data from coordinator."""
-        self.async_write_ha_state()
-        super()._handle_coordinator_update()
-
     @property
     def extra_state_attributes(self) -> dict[str, Any] | None:
         """Return additional state attributes."""
@@ -205,7 +203,7 @@ class MeteoSwissPollenSensor(SensorEntity):
                 "unit": "grains/m³",
             }
 
-        current = pollen_data.get("current", 0)
+        current = pollen_data.get("current")
         thresholds = POLLEN_THRESHOLDS.get(self._pollen_type, (5, 20, 50))
         level_name = _pollen_level(current, *thresholds)
 

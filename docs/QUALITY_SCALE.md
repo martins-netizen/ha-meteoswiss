@@ -22,7 +22,7 @@ remain separate gates after code review and CI.
 | `docs-high-level-description` | README lists data families, scope and fork provenance. |
 | `docs-installation-instructions` | README + usage document prerequisites, approved installation route and setup. Actual first HACS release remains pending. |
 | `docs-removal-instructions` | Usage documents entry/component removal and effects on consumers/history. |
-| `entity-event-setup` | CoordinatorEntity manages observations; weather forecast subscription now belongs to entity add/remove lifecycle. |
+| `entity-event-setup` | CoordinatorEntity manages observations and forecast pollen; weather forecast subscription belongs to entity add/remove lifecycle. Tests verify pollen listeners are removed on unload. |
 | `entity-unique-id` | Existing entry-based and shared diagnostic IDs retained; reload test checks registry mapping stability. |
 | `has-entity-name` | Enabled on active entities, including the main weather entity with its device name. |
 | `runtime-data` | Typed `MeteoSwissConfigEntry` and dataclass; shared diagnostic ownership flags alone remain domain-global. |
@@ -41,9 +41,9 @@ snapshot as having acquired these changes.
 | `action-exceptions` | Exempt: no integration-specific service actions. |
 | `config-entry-unloading` | Native unload/reload; tests verify HA session ownership, replaced runtime state, stable entity IDs and removed observation/forecast listeners. |
 | `docs-configuration-parameters`, `docs-installation-parameters` | Usage includes provider selection, intervals, coordinates, warning postcode and measured pollen station. |
-| `entity-unavailable` | Observations/warnings have failure/recovery tests. Audit all optional pollen/AQ/forecast paths next: some still return empty successful payloads on transport failure. Full rule remains pending. |
+| `entity-unavailable` | Observations/warnings and both pollen/AQ clients have failure/recovery tests, including registered pollen/AQ entity states. All-empty current pollen/AQ payloads fail; partial responses retain unknown fields. Audit remaining optional forecast paths and measured-pollen age policy next. Full rule remains pending. |
 | `integration-owner` | `@martins-netizen` in manifest. Repository Issues are currently disabled: enable a usable fork-specific support route before public release. |
-| `log-when-unavailable` | Coordinators log transitions; remaining client-level repetitive logs and swallowed failures require review alongside availability. Pending. |
+| `log-when-unavailable` | Pollen/AQ and measured pollen use coordinator transition logs, without duplicate raw client errors/coordinate URLs; repeated failure and recovery are tested. Remaining providers still require review. Pending for the full integration. |
 | `parallel-updates` | Explicit platform limits: sensor 1 for diagnostic polling, coordinator-driven weather/binary sensor 0; no device actions. |
 | `reauthentication-flow` | Exempt: the public APIs require no credentials. |
 | `test-coverage` | Pending. [Above 95% for every module](https://developers.home-assistant.io/docs/core/integration-quality-scale/rules/test-coverage/) is required; a passing flow or global average is insufficient. |
@@ -51,15 +51,16 @@ snapshot as having acquired these changes.
 The starting snapshot had 68 passing tests and 54.78% combined line/branch
 coverage (58.50% lines, 40.42% branches). Config flow was 33.79% combined.
 CI now measures **all** integration modules, prints per-module coverage and
-requires full config-flow coverage plus an initial 60% combined floor. This
+requires full config-flow and both pollen-client line/branch coverage plus a
+67% combined floor (raised from the initial 60%). This
 floor prevents regressions at this stage; it is not a substitute for Silver.
 Unused camera/SLF/hydrology placeholders remain visible in the denominator.
 They must be explicitly removed in a reviewed scope or covered; no exclusions
 are introduced just to improve the metric. Current exact results are in the
 PR and each CI job's summary.
 
-Continue with optional-source failure/recovery, provider payload parsing and
-freshness, forecast aggregation/timezones, then entity properties, diagnostics
+Continue with the remaining optional-source failure/recovery, provider payload
+parsing and freshness, forecast aggregation/timezones, then entity properties, diagnostics
 and shared cache/station helpers. Raise the coverage gate as these changes land.
 Gold/Platinum work follows this measured baseline, rather than adding labels.
 

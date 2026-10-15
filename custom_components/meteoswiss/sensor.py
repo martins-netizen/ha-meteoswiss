@@ -500,16 +500,12 @@ class MeteoSwissAirQualitySensor(CoordinatorEntity, SensorEntity):
         self._attr_has_entity_name = True
         self._attr_attribution = OPENMETEO_AIR_QUALITY_ATTRIBUTION
 
-    @callback
-    def _handle_coordinator_update(self) -> None:
-        """Handle updated data from coordinator."""
-        if self.coordinator.data:
-            value_key = self.entity_description.value_key
-            value = self.coordinator.data.get(value_key)
-            self._attr_native_value = value
-        else:
-            self._attr_native_value = None
-        super()._handle_coordinator_update()
+    @property
+    def native_value(self) -> float | None:
+        """Read the current value on initial add as well as later updates."""
+        if self.coordinator.data is None:
+            return None
+        return self.coordinator.data.get(self.entity_description.value_key)
 
 
 # --------------------------------------------------------------------------- #
@@ -706,30 +702,29 @@ class MeteoSwissMeasuredPollenSensor(CoordinatorEntity, SensorEntity):
         self._pollen_type = description.pollen_type
         self._pollen_type_name = description.pollen_type_name
 
-    @callback
-    def _handle_coordinator_update(self) -> None:
-        """Handle updated data from coordinator."""
-        if self.coordinator.data:
-            pollen_data = self.coordinator.data.get(self._pollen_type)
-            if pollen_data and isinstance(pollen_data, dict):
-                self._attr_native_value = pollen_data.get("current")
-                self._attr_extra_state_attributes = {
-                    "pollen_type": self._pollen_type,
-                    "pollen_type_name": self._pollen_type_name,
+    @property
+    def native_value(self) -> int | None:
+        """Read measured counts without waiting for a second refresh."""
+        pollen_data = (self.coordinator.data or {}).get(self._pollen_type)
+        return pollen_data.get("current") if isinstance(pollen_data, dict) else None
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        """Keep attributes aligned with the current source response."""
+        data = self.coordinator.data or {}
+        attributes = {
+            "pollen_type": self._pollen_type,
+            "pollen_type_name": self._pollen_type_name,
+            "station": data.get("station_id", ""),
+        }
+        pollen_data = data.get(self._pollen_type)
+        if isinstance(pollen_data, dict):
+            attributes.update(
+                {
                     "unit": pollen_data.get("unit", "No/m³"),
                     "source": pollen_data.get("source", "MeteoSwiss measured"),
                     "history_24h": pollen_data.get("history_24h", []),
-                    "station": self.coordinator.data.get("station_id", ""),
-                    "last_update": self.coordinator.data.get("last_update", ""),
+                    "last_update": data.get("last_update", ""),
                 }
-            else:
-                self._attr_native_value = None
-                self._attr_extra_state_attributes = {
-                    "pollen_type": self._pollen_type,
-                    "pollen_type_name": self._pollen_type_name,
-                    "station": self.coordinator.data.get("station_id", "") if self.coordinator.data else "",
-                }
-        else:
-            self._attr_native_value = None
-
-        super()._handle_coordinator_update()
+            )
+        return attributes
