@@ -1,7 +1,9 @@
 """Pollen data coordinator using Open-Meteo Air Quality API."""
+
 from __future__ import annotations
 
 import logging
+import math
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -53,6 +55,34 @@ AQ_PARAMETERS = [
 ]
 
 
+def _number(value: Any) -> float | None:
+    """Only finite non-negative concentrations/UV values are observations."""
+    if value is None or isinstance(value, bool):
+        return None
+    try:
+        number = float(value)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    return number if math.isfinite(number) and number >= 0 else None
+
+
+def _has_current_values(data: dict[str, Any]) -> bool:
+    return any(
+        isinstance(data.get(key), dict)
+        and _number(data[key].get("current")) is not None
+        for key in POLLEN_TYPES
+    ) or any(
+        _number(data.get(key)) is not None
+        for key in ("pm25", "pm10", "nitrogen_dioxide", "ozone")
+    )
+
+
+def _is_current_hour(value: Any) -> bool:
+    timestamp = forecast_datetime(value)
+    now = datetime.now(timezone.utc)
+    return timestamp is not None and timestamp <= now < timestamp + timedelta(hours=1)
+
+
 class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Class to manage fetching pollen data from Open-Meteo Air Quality API."""
 
@@ -86,178 +116,109 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         )
 
     @async_retry_with_backoff(max_attempts=4, base_delay=1.0, max_delay=10.0)
-    async def _async_fetch_data(self) -> dict[str, Any] | None:
-        """Fetch data from Open-Meteo Air Quality API."""
+    async def _async_fetch_data(self) -> dict[str, Any]:
+        """Fetch AQ/pollen; UV is optional and cannot rescue an invalid feed."""
         if self._session is None:
-            raise RuntimeError("No aiohttp session provided to OpenMeteoPollenCoordinator")
-
-        # Build API URL with pollen + air quality variables
-        hourly_vars = POLLEN_TYPES + AQ_PARAMETERS
+            raise RuntimeError(
+                "No aiohttp session provided to OpenMeteoPollenCoordinator"
+            )
         params = {
             "latitude": self.latitude,
             "longitude": self.longitude,
-            "hourly": ",".join(hourly_vars),
+            "hourly": ",".join(POLLEN_TYPES + AQ_PARAMETERS),
             "forecast_days": 5,
             "timezone": "Europe/Zurich",
+            "timeformat": "unixtime",
         }
+        async with self._session.get(
+            OPENMETEO_AQ_BASE_URL, params=params, timeout=DEFAULT_API_TIMEOUT
+        ) as response:
+            response.raise_for_status()
+            payload = await response.json()
+        result = self._parse_response(payload)
+        if not result:
+            raise ValueError("No valid current pollen or air quality values")
+        result["uv_index"] = await self._async_fetch_uv()
+        return result
 
+    async def _async_fetch_uv(self) -> float | None:
+        """Keep a separate UV failure local to that optional value."""
+        params = {
+            "latitude": self.latitude,
+            "longitude": self.longitude,
+            "current": "uv_index",
+            "timezone": "Europe/Zurich",
+        }
         try:
-            _LOGGER.debug(
-                "Fetching Open-Meteo Air Quality data for lat=%s, lon=%s",
-                self.latitude,
-                self.longitude,
-            )
-
-            async with self._session.get(OPENMETEO_AQ_BASE_URL, params=params, timeout=DEFAULT_API_TIMEOUT) as response:
+            async with self._session.get(
+                OPENMETEO_FORECAST_URL, params=params, timeout=DEFAULT_API_TIMEOUT
+            ) as response:
                 response.raise_for_status()
-
-                data = await response.json()
-                _LOGGER.debug("Open-Meteo AQ response keys: %s", data.keys())
-
-                result = self._parse_response(data)
-
-                # Also fetch UV index from Open-Meteo Forecast API
-                try:
-                    uv_params = {
-                        "latitude": self.latitude,
-                        "longitude": self.longitude,
-                        "current": "uv_index",
-                        "timezone": "Europe/Zurich",
-                    }
-                    async with self._session.get(OPENMETEO_FORECAST_URL, params=uv_params, timeout=DEFAULT_API_TIMEOUT) as uv_response:
-                        if uv_response.status == 200:
-                            uv_data = await uv_response.json()
-                            uv_current = uv_data.get("current", {})
-                            uv_val = uv_current.get("uv_index")
-                            if uv_val is not None:
-                                result["uv_index"] = float(uv_val)
-                                _LOGGER.debug("Fetched UV index from Open-Meteo: %s", result["uv_index"])
-                except Exception as uv_err:
-                    _LOGGER.debug("Could not fetch UV index: %s", uv_err)
-
-                return result
-
-        except (aiohttp.ClientError, TimeoutError):
-            raise
-        except Exception as err:
-            _LOGGER.exception("Error fetching Open-Meteo AQ data: %s", err)
+                payload = await response.json()
+        except (aiohttp.ClientError, TimeoutError, ValueError) as err:
+            # Raw exception messages/URLs can contain location coordinates.
+            _LOGGER.debug("Optional UV response unavailable (%s)", type(err).__name__)
             return None
+        if not isinstance(payload, dict) or not isinstance(
+            payload.get("current"), dict
+        ):
+            return None
+        return _number(payload["current"].get("uv_index"))
 
-    def _parse_response(self, data: dict[str, Any]) -> dict[str, Any]:
-        """Parse Open-Meteo Air Quality API response."""
-        try:
-            result = {
-                POLLEN_ALDER: None,
-                POLLEN_BIRCH: None,
-                POLLEN_GRASS: None,
-                POLLEN_MUGWORT: None,
-                POLLEN_RAGWEED: None,
-                # Air quality (current values, flat floats)
+    def _parse_response(self, data: Any) -> dict[str, Any]:
+        """Preserve missing fields, require at least one actual current value."""
+        if not isinstance(data, dict) or not isinstance(data.get("hourly"), dict):
+            return {}
+        hourly = data["hourly"]
+        times = hourly.get("time")
+        if not isinstance(times, list):
+            return {}
+        index = next(
+            (i for i, value in enumerate(times) if _is_current_hour(value)), None
+        )
+        if index is None:
+            return {}
+        result = {key: None for key in POLLEN_TYPES}
+        result.update(
+            {
                 "pm25": None,
                 "pm10": None,
                 "nitrogen_dioxide": None,
                 "ozone": None,
-                # UV index from Open-Meteo forecast (fetched separately)
                 "uv_index": None,
-                "last_update": None,
+                "last_update": forecast_datetime(times[index]).isoformat(),
             }
-
-            # Parse hourly data
-            hourly = data.get("hourly", {})
-            hourly_time = hourly.get("time", [])
-            now = datetime.now(timezone.utc)
-            current_index = next((i for i, value in enumerate(hourly_time)
-                if (timestamp := forecast_datetime(value)) is not None
-                and timestamp <= now < timestamp + timedelta(hours=1)), None)
-            if current_index is None:
-                raise ValueError("No current-hour air quality forecast")
-
-            # Parse each pollen type
-            for pollen_type in POLLEN_TYPES:
-                pollen_values = hourly.get(pollen_type, [])
-
-                if pollen_values and len(pollen_values) > 0:
-                    # Get most recent value (current)
-                    result[pollen_type] = {
-                        "current": float(pollen_values[current_index]) if current_index < len(pollen_values) and pollen_values[current_index] is not None else None,
-                        "unit": "Grains/m³",
-                        "forecast": pollen_values[current_index:current_index + 24],  # Next 24 hours
-                    }
-                    _LOGGER.debug(
-                        "Parsed %s: current=%s, forecast_hours=%d",
-                        pollen_type,
-                        result[pollen_type]["current"],
-                        len(result[pollen_type]["forecast"]),
-                    )
-
-            # Parse timestamp
-            if hourly_time and len(hourly_time) > 0:
-                result["last_update"] = forecast_datetime(hourly_time[current_index]).isoformat()
-                _LOGGER.debug("Pollen timestamp: %s", result["last_update"])
-
-            # Parse air quality parameters (current = first available value)
-            for aq_param in AQ_PARAMETERS:
-                aq_values = hourly.get(aq_param, [])
-                if aq_values and len(aq_values) > 0:
-                    sensor_key = "pm25" if aq_param == AQ_PM25 else aq_param
-                    value = aq_values[current_index] if current_index < len(aq_values) else None
-                    result[sensor_key] = round(float(value), 1) if value is not None else None
-                    _LOGGER.debug("Parsed AQ %s: %s", aq_param, result.get("pm25" if aq_param == AQ_PM25 else aq_param))
-
-            # Check if we have any data
-            has_pollen = any(
-                result.get(pt) is not None for pt in POLLEN_TYPES
-            )
-            has_aq = any(
-                result.get(k) is not None for k in ("pm25", "pm10", "nitrogen_dioxide", "ozone")
-            )
-
-            if not has_pollen and not has_aq:
-                _LOGGER.warning("No pollen or air quality data available (possibly outside pollen season)")
-                return {}
-
-            _LOGGER.debug("✅ Successfully parsed pollen data")
-
-            return result
-
-        except Exception as err:
-            _LOGGER.exception("Error parsing Open-Meteo AQ response: %s", err)
-            return {}
+        )
+        for pollen_type in POLLEN_TYPES:
+            values = hourly.get(pollen_type)
+            if not isinstance(values, list) or not values:
+                continue
+            result[pollen_type] = {
+                "current": _number(values[index]) if index < len(values) else None,
+                "unit": "Grains/m³",
+                "forecast": [_number(value) for value in values[index : index + 24]],
+            }
+        for parameter in AQ_PARAMETERS:
+            values = hourly.get(parameter)
+            if not isinstance(values, list) or index >= len(values):
+                continue
+            key = "pm25" if parameter == AQ_PM25 else parameter
+            value = _number(values[index])
+            result[key] = round(value, 1) if value is not None else None
+        return result if _has_current_values(result) else {}
 
     async def _async_update_data(self) -> dict[str, Any]:
-        """Fetch data from API with caching."""
-        _LOGGER.debug("=== FETCHING POLLEN DATA (lat=%s, lon=%s) ===", self.latitude, self.longitude)
-
-        # Get cache
+        """Share a validated current-hour cache and log only HA transitions."""
         cache = get_current_weather_cache()
         cache_key = f"pollen:{self.latitude},{self.longitude}"
-
-        # Try cache first
-        cached_data = cache.get(cache_key)
-        if cached_data is not None:
-            _LOGGER.debug("✅ Using cached pollen data")
-            return cached_data
-
-        _LOGGER.debug("❌ Cache miss, fetching fresh pollen data")
-
-        data = await self._async_fetch_data()
-
-        if data is None:
-            _LOGGER.error("Pollen data is None!")
-            raise UpdateFailed("Failed to fetch pollen data: data is None")
-
-        if not data:
-            _LOGGER.error("Pollen data is empty!")
-            raise UpdateFailed("Failed to fetch pollen data: data is empty")
-
-        _LOGGER.debug("✅ Successfully fetched pollen data")
-
-        # Cache result (TTL: 1800s = 30 min for pollen)
+        data = cache.get(cache_key)
+        if data is not None:
+            if _is_current_hour(data.get("last_update")) and _has_current_values(data):
+                return data
+            cache.invalidate(cache_key)
+        try:
+            data = await self._async_fetch_data()
+        except (aiohttp.ClientError, TimeoutError, ValueError) as err:
+            raise UpdateFailed("Pollen and air quality source unavailable") from err
         cache.set(cache_key, data, ttl=1800.0)
-        _LOGGER.debug("✅ Cached pollen data (TTL: 1800s)")
-
-        _LOGGER.debug("=== POLLEN FETCH COMPLETE ===")
-
         return data
-
-

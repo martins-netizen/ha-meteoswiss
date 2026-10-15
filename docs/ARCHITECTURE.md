@@ -42,7 +42,7 @@ listeners/polling, using HA's shared session and a 30-second total timeout.
 | Weather forecast | MeteoSwiss ICON Seamless via Open-Meteo at HA location (explicit coordinates for Open-Meteo entries) | Unix seconds from provider become aware UTC ISO strings. `local_date` is the Europe/Zurich date; `fetched_at` is retrieval time, not model issuance time. |
 | Warnings | MeteoSwiss App API for configured postal code | UTC validity windows; active, upcoming and outlook remain separate. |
 | Measured pollen | Selected MeteoSwiss pollen station | Provider measurement timestamp, independent of weather station. |
-| Pollen/AQ forecast | Open-Meteo for forecast location | Select the actual current hour, never midnight or the next non-null future value. Missing data stays missing. |
+| Pollen/AQ forecast | Open-Meteo for forecast location | Request Unix seconds and select the actual current hour, never midnight or the next non-null future value. Missing data stays missing; cached prior-hour values cannot extend this window. |
 | Hourly precipitation | Official station CSV, external Recorder statistics | Interval-end times are shifted to interval starts in UTC; IDs remain unchanged. |
 
 Trailing partial station rows (for example rain=0 while instantaneous weather
@@ -51,6 +51,23 @@ measurement time and one-hour age limit remain authoritative. Missing individual
 parameters in a measured row stay missing. Sensors expose `measurement_time`,
 `source_status` and `pending_rows`; see `docs/USAGE.md`. No historic records are
 fabricated or rewritten.
+
+Both pollen clients require at least one finite non-negative current tracked
+concentration (integer counts for measured pollen). Zero is valid. A partial
+response keeps missing fields unknown; no valid current concentration fails
+the update. Measured pollen also validates station identity and measurement
+timestamp syntax. Its existing provider timestamp/history format is retained;
+an explicit maximum measurement age for this separate hourly feed remains an
+open freshness-policy task, rather than inheriting the weather-station limit.
+
+Forecast pollen, AQ/UV and measured-pollen sensors use CoordinatorEntity for
+subscription, unavailability and removal. Values are read directly from current
+coordinator data, including initial addition; a source failure retains prior
+data internally while exposing unavailable states. A valid later response
+recovers automatically. UV is a separate optional request: a failure makes UV
+unknown without discarding valid pollen/AQ. UV alone cannot rescue an invalid
+primary feed. Coordinator transition logs replace repeated client error logs;
+optional UV logs contain only the exception class, never a coordinate URL.
 
 Forecast rows contain `datetime`, `local_date`, `fetched_at`, `source`,
 `weather_code`, `is_day`, `condition`, measurements and optional native daily
@@ -100,7 +117,10 @@ Do not rename established entities during this change.
 
 Tests cover warning failure/recovery, invalid payloads, bounded retries,
 cancellation, HA-owned sessions, stale observations, current-hour AQ data,
-forecast contracts, DST and translation coverage. CI runs minimum and current
+registered pollen/AQ entity states and unload, forecast contracts, DST and
+translation coverage. Both pollen clients have full line/branch coverage,
+enforced in CI alongside config flow; whole-integration Silver remains pending.
+CI runs minimum and current
 HA test environments plus Hassfest and CodeQL. Passing CI is not a live-house
 acceptance test. The `quality_scale: platinum` claim inherited from upstream is
 removed; no HA quality certification is asserted.

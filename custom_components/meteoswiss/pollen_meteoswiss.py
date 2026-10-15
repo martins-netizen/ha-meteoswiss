@@ -3,7 +3,7 @@
 Fetches measured pollen concentrations from MeteoSwiss pollen stations
 via the data.geo.admin.ch STAC API (ch.meteoschweiz.ogd-pollen).
 
-16 stations across Switzerland provide hourly measured concentrations for:
+Automatic stations across Switzerland provide hourly measured concentrations for:
   - Birch (Birke / Betula)
   - Alder (Erle / Alnus)
   - Hazel (Hasel / Corylus)
@@ -20,6 +20,7 @@ via the data.geo.admin.ch STAC API (ch.meteoschweiz.ogd-pollen).
 
 Data source: https://data.geo.admin.ch/api/stac/v1/collections/ch.meteoschweiz.ogd-pollen
 """
+
 from __future__ import annotations
 
 import csv
@@ -33,6 +34,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import DEFAULT_API_TIMEOUT, DOMAIN
+from .coordinator import _parse_reference_timestamp
 from .retry import async_retry_with_backoff
 
 _LOGGER = logging.getLogger(__name__)
@@ -41,23 +43,21 @@ _LOGGER = logging.getLogger(__name__)
 POLLEN_STAC_COLLECTION_URL = (
     "https://data.geo.admin.ch/api/stac/v1/collections/ch.meteoschweiz.ogd-pollen"
 )
-POLLEN_DATA_BASE_URL = (
-    "https://data.geo.admin.ch/ch.meteoschweiz.ogd-pollen"
-)
+POLLEN_DATA_BASE_URL = "https://data.geo.admin.ch/ch.meteoschweiz.ogd-pollen"
 
 # Pollen parameter codes (MeteoSwiss naming convention)
 # Format: ka{genus_abbrev}{time_resolution}{version}
 POLLEN_PARAM_MAP: dict[str, str] = {
     # Common allergens → API column names (hourly data)
-    "birch": "kabetuh0",       # Birke / Betula
-    "alder": "kaalnuh0",       # Erle / Alnus
-    "hazel": "kacoryh0",       # Hasel / Corylus
-    "beech": "kafaguh0",       # Buche / Fagus
-    "ash": "kafraxh0",         # Esche / Fraxinus
-    "oak": "kaqueth0",         # Eiche / Quercus (if available)
-    "grass": "khpoach0",       # Gräser / Poaceae
-    "mugwort": "kaartuh0",     # Beifuss / Artemisia (if available)
-    "ragweed": "kaambh0",      # Ambrosia (if available)
+    "birch": "kabetuh0",  # Birke / Betula
+    "alder": "kaalnuh0",  # Erle / Alnus
+    "hazel": "kacoryh0",  # Hasel / Corylus
+    "beech": "kafaguh0",  # Buche / Fagus
+    "ash": "kafraxh0",  # Esche / Fraxinus
+    "oak": "kaqueth0",  # Eiche / Quercus (if available)
+    "grass": "khpoach0",  # Gräser / Poaceae
+    "mugwort": "kaartuh0",  # Beifuss / Artemisia (if available)
+    "ragweed": "kaambh0",  # Ambrosia (if available)
 }
 
 # All pollen types we track (matching the data columns actually present)
@@ -82,6 +82,15 @@ POLLEN_CSV_COLUMNS: dict[str, str] = {
 }
 
 
+def _count(raw: str | None) -> int | None:
+    """Zero is a measurement; blank, invalid and negative counts are missing."""
+    try:
+        value = int(raw)
+    except (TypeError, ValueError):
+        return None
+    return value if value >= 0 else None
+
+
 class MeteoSwissPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Class to manage fetching measured pollen data from MeteoSwiss."""
 
@@ -104,112 +113,52 @@ class MeteoSwissPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         )
 
     @async_retry_with_backoff(max_attempts=3)
-    async def _async_update_data(self) -> dict[str, Any]:
-        """Fetch pollen data from MeteoSwiss ogd-pollen."""
+    async def _async_fetch_csv(self) -> str:
+        """Retry only transient transport failures, before parsing the payload."""
         if self._session is None:
-            raise RuntimeError("No aiohttp session provided to MeteoSwissPollenCoordinator")
-
-        _LOGGER.debug("Fetching MeteoSwiss pollen data for station %s", self._station_id)
-
-        # Build URL for hourly "now" CSV
-        url = f"{POLLEN_DATA_BASE_URL}/{self._station_id}/ogd-pollen_{self._station_id}_h_now.csv"
-
-        try:
-            async with self._session.get(url, timeout=DEFAULT_API_TIMEOUT) as response:
-                response.raise_for_status()
-
-                content = await response.text()
-
-            data = self._parse_csv(content)
-
-            if not data:
-                _LOGGER.warning("No pollen data parsed for station %s", self._station_id)
-                raise UpdateFailed("No measured pollen data available")
-
-            _LOGGER.debug(
-                "Successfully parsed pollen data for station %s: %d pollen types",
-                self._station_id,
-                sum(1 for k, v in data.items() if isinstance(v, dict) and v.get("current") is not None),
+            raise RuntimeError(
+                "No aiohttp session provided to MeteoSwissPollenCoordinator"
             )
-            return data
+        url = f"{POLLEN_DATA_BASE_URL}/{self._station_id}/ogd-pollen_{self._station_id}_h_now.csv"
+        async with self._session.get(url, timeout=DEFAULT_API_TIMEOUT) as response:
+            response.raise_for_status()
+            return await response.text(encoding="cp1252")
 
-        except (aiohttp.ClientError, TimeoutError) as err:
-            _LOGGER.error("MeteoSwiss pollen API request failed: %s", err)
-            raise
-        except Exception as err:
-            _LOGGER.error("Error fetching MeteoSwiss pollen data: %s", err)
-            raise UpdateFailed("Measured pollen data unavailable") from err
+    async def _async_update_data(self) -> dict[str, Any]:
+        """A failed/invalid feed is unavailable, and a later valid feed recovers."""
+        try:
+            content = await self._async_fetch_csv()
+        except (aiohttp.ClientError, TimeoutError, UnicodeError) as err:
+            raise UpdateFailed("Measured pollen source unavailable") from err
+        data = self._parse_csv(content)
+        if not data:
+            raise UpdateFailed("No valid measured pollen values")
+        return data
 
     def _parse_csv(self, csv_text: str) -> dict[str, Any]:
-        """Parse MeteoSwiss pollen CSV data.
-
-        The CSV has semicolon-separated columns:
-        station_abbr;reference_timestamp;kabetuh0;khpoach0;kaalnuh0;kacoryh0;kafaguh0;kafraxh0;kaquerh0
-
-        Each row is an hourly measurement.
-        """
+        """Validate station/time and retain the existing output/history format."""
+        rows = list(csv.DictReader(io.StringIO(csv_text), delimiter=";"))
+        if not rows:
+            return {}
+        latest = rows[-1]
+        timestamp = (latest.get("reference_timestamp") or "").strip()
+        station = (latest.get("station_abbr") or "").strip().lower()
+        if station != self._station_id or _parse_reference_timestamp(timestamp) is None:
+            return {}
         result: dict[str, Any] = {
             "station_id": self._station_id.upper(),
-            "last_update": None,
+            "last_update": timestamp,
             "source": "MeteoSwiss ogd-pollen",
         }
-
-        try:
-            # Parse CSV with proper handling
-            reader = csv.DictReader(io.StringIO(csv_text), delimiter=";")
-
-            if reader.fieldnames is None:
-                _LOGGER.error("No header row in pollen CSV")
-                return {}
-
-            _LOGGER.debug("Pollen CSV columns: %s", reader.fieldnames)
-
-            # Read all rows, keep the latest (last) one
-            rows = list(reader)
-            if not rows:
-                _LOGGER.warning("No data rows in pollen CSV")
-                return {}
-
-            latest = rows[-1]
-            timestamp = latest.get("reference_timestamp", "")
-            result["last_update"] = timestamp
-
-            # Parse each pollen type
-            for pollen_key, csv_column in POLLEN_CSV_COLUMNS.items():
-                if csv_column not in latest:
-                    _LOGGER.debug("Column %s not found in pollen CSV", csv_column)
-                    result[pollen_key] = {
-                        "current": None,
-                        "unit": "No/m³",
-                        "source": "MeteoSwiss measured",
-                    }
-                    continue
-
-                raw_value = latest.get(csv_column, "")
-                try:
-                    value = int(raw_value) if raw_value else None
-                except ValueError:
-                    value = None
-
-                # Also extract last 24h history
-                history_24h = []
-                for row in rows[-24:]:
-                    hist_raw = row.get(csv_column, "")
-                    try:
-                        hist_val = int(hist_raw) if hist_raw else None
-                    except ValueError:
-                        hist_val = None
-                    history_24h.append(hist_val)
-
-                result[pollen_key] = {
-                    "current": value,
-                    "unit": "No/m³",
-                    "source": "MeteoSwiss measured",
-                    "history_24h": history_24h,
-                }
-
-        except Exception as err:
-            _LOGGER.error("Error parsing pollen CSV: %s", err)
-            return {}
-
-        return result
+        for pollen_key, column in POLLEN_CSV_COLUMNS.items():
+            result[pollen_key] = {
+                "current": _count(latest.get(column)),
+                "unit": "No/m³",
+                "source": "MeteoSwiss measured",
+                "history_24h": [_count(row.get(column)) for row in rows[-24:]],
+            }
+        return (
+            result
+            if any(result[key]["current"] is not None for key in POLLEN_TRACKED)
+            else {}
+        )

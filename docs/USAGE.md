@@ -58,6 +58,22 @@ An unavailable source is not a value of zero or an all-clear. Some parameters
 are not measured at a station and legitimately stay unknown. Foehn index and
 snow can be reported sparsely; their existing limited fallback is retained.
 
+### Pollen, air quality and UV
+
+A valid concentration of `0` means zero; a missing individual field stays
+`unknown`. If a pollen/AQ response contains no valid value for the current hour,
+or the measured-pollen source fails validation/download, the affected source's
+sensors become `unavailable`. They recover after a valid refresh. Missing
+forecast pollen has `level_name: No data`, while a real zero retains `None`.
+These existing English attributes are compatibility values, not UI translations.
+
+UV is optional and fetched separately. Its failure leaves UV unknown while
+valid pollen/AQ remains available. MeteoSwiss measured pollen uses the selected
+pollen station and its own measurement time (`last_update`), independently of
+weather observations. Station/time syntax is validated; an automatic maximum
+measurement age for that hourly feed remains to be defined and tested. Until
+then, availability alone does not establish its freshness for an automation.
+
 ### Partial publication and graph gaps
 
 A Kloten source-file check on 15 October 2026 found a latest row with rain `0`

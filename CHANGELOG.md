@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased — quality baseline and observation publication gaps
+## Unreleased — quality baseline, publication gaps and pollen availability
 
 - Keep typed config-entry runtime state and entity-owned forecast listeners.
 - Validate both setup providers, handle retryable form errors, and prevent
@@ -11,6 +11,14 @@
 - Enforce full config-flow line/branch coverage; report all module coverage in
   both supported HA environments. Document remaining Silver and release gates.
 - Clarify setup/settings text in all four bundled languages.
+- Reject pollen/AQ feeds without valid current concentrations, preserve valid
+  zeros/partial values, and keep optional UV failures local to that value.
+- Bind forecast pollen sensors to coordinator availability/listener lifecycle;
+  read AQ and measured pollen values directly on initial add and later updates.
+- Use UTC seconds for pollen/AQ hours (including autumn DST) and invalidate a
+  previous-hour cache entry even when its transport TTL has not expired.
+- Test real HA entity failure/recovery, bounded transport retries, cancellation
+  and safe logging; enforce full line/branch coverage for both pollen clients.
 
 All notable changes to this project will be documented in this file.
 
