@@ -11,7 +11,7 @@
       },
       "meteoswiss": {
         "title": "MeteoSwiss Stations-Einrichtung",
-        "description": "Wähle eine MeteoSwiss-Station für aktuelle Messwerte und gib die PLZ für Wetterwarnungen ein. Wetter- und Pollenprognosen verwenden den in Home Assistant konfigurierten Standort.",
+        "description": "Wähle eine Schweizer Wetterstation und die Postleitzahl für Wetterwarnungen.",
         "data": {
           "postal_code": "PLZ (Wetterwarnungen)",
           "station_id": "Messstation"
@@ -21,7 +21,7 @@
         "title": "Open-Meteo Einrichtung",
         "description": "Gib die Koordinaten für aktuelle Wetterdaten, Wetter- und Pollenprognosen ein. Die PLZ wird für Wetterwarnungen verwendet.",
         "data": {
-          "postal_code": "PLZ (Wetterwarnungen)",
+          "postal_code": "Postleitzahl für Wetterwarnungen",
           "latitude": "Breitengrad",
           "longitude": "Längengrad"
         }
@@ -33,14 +33,14 @@
       "invalid_location": "Ungültige Koordinaten"
     },
     "abort": {
-      "already_configured": "Diese MeteoSwiss-Messstation und PLZ sind bereits konfiguriert."
+      "already_configured": "Diese Datenquelle und dieser Standort sind bereits eingerichtet."
     }
   },
   "options": {
     "step": {
       "init": {
         "title": "MeteoSwiss Einstellungen",
-        "description": "Update-Intervall und MeteoSwiss-Station für gemessene Pollen anpassen.",
+        "description": "Passe das Aktualisierungsintervall und die Messstation für Pollen an.",
         "data": {
           "update_interval": "Update-Intervall (Sekunden, min. 600)",
           "data_source": "Datenquelle",

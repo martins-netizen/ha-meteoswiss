@@ -179,13 +179,14 @@ async def test_initial_failure_does_not_close_ha_session_or_leave_entry_data(has
         with pytest.raises(ConfigEntryNotReady):
             await async_setup_entry(hass, entry)
     session.close.assert_not_called()
+    assert getattr(entry, "runtime_data", None) is None
     assert entry.entry_id not in hass.data[DOMAIN]
 
 
 async def test_unload_preserves_ha_owned_session(hass):
     session = SimpleNamespace(close=AsyncMock())
     entry = MockConfigEntry(domain=DOMAIN)
-    hass.data[DOMAIN] = {entry.entry_id: {"session": session}}
+    hass.data[DOMAIN] = {}
     with patch.object(hass.config_entries, "async_unload_platforms", return_value=True):
         assert await async_unload_entry(hass, entry)
     session.close.assert_not_called()
@@ -442,22 +443,33 @@ async def test_complete_entry_setup_reload_and_unload(hass, enable_custom_integr
         registry = er.async_get(hass)
         map_id = registry.async_get_entity_id("sensor", DOMAIN, f"{DOMAIN}_stations_map")
         assert map_id and hass.states.get(map_id) is not None
-        assert hass.data[DOMAIN][entry.entry_id]["hourly_precipitation_coordinator"] is None
+        assert entry.runtime_data.hourly_precipitation_coordinator is None
         session = async_get_clientsession(hass)
-        assert hass.data[DOMAIN][entry.entry_id]["session"] is session
+        assert entry.runtime_data.session is session
         assert not session.closed
         assert (
-            hass.data[DOMAIN][entry.entry_id]["alerts_coordinator"].warning_labels[
+            entry.runtime_data.alerts_coordinator.warning_labels[
                 "de"
             ]["types"]["5"]
             == "Bodenfrost"
         )
+        previous_runtime = entry.runtime_data
+        assert previous_runtime.coordinator._listeners
+        assert previous_runtime.forecast_coordinator._listeners
+        registry_ids = {item.unique_id: item.entity_id for item in er.async_entries_for_config_entry(registry, entry.entry_id)}
         assert await hass.config_entries.async_reload(entry.entry_id)
         await hass.async_block_till_done()
+        assert entry.runtime_data is not previous_runtime
+        assert not previous_runtime.coordinator._listeners
+        assert not previous_runtime.forecast_coordinator._listeners
+        assert registry_ids == {item.unique_id: item.entity_id for item in er.async_entries_for_config_entry(registry, entry.entry_id)}
         assert not session.closed
         assert hass.states.get(map_id) is not None
+        final_runtime = entry.runtime_data
         assert await hass.config_entries.async_unload(entry.entry_id)
         await hass.async_block_till_done()
+        assert not final_runtime.coordinator._listeners
+        assert not final_runtime.forecast_coordinator._listeners
         assert entry.entry_id not in hass.data[DOMAIN]
         assert not session.closed
 

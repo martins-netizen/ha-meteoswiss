@@ -34,8 +34,11 @@ The optional [shared warning template](examples/button-card-warnings.yaml) uses
 labels supplied by the integration. It can replace duplicated dashboard warning
 dictionaries after a separate dashboard check; it is not installed automatically.
 
+See [setup, all parameters, removal and troubleshooting](docs/USAGE.md).
+
 ## Development and operation
 
+- [Quality roadmap and measured gaps](docs/QUALITY_SCALE.md)
 - [Architecture and data contracts](docs/ARCHITECTURE.md)
 - [Maintenance, acceptance and releases](docs/MAINTENANCE.md)
 - [Branch policy](DEVELOPMENT.md)
@@ -44,9 +47,11 @@ dictionaries after a separate dashboard check; it is not installed automatically
 ```sh
 python -m pip install -r requirements_test.txt
 python scripts/check_translations.py
-python -m pytest -q
+python -m pytest -q --cov=custom_components.meteoswiss --cov-branch --cov-report=json:coverage.json
+python scripts/check_quality_coverage.py
 ```
 
 `development` is the protected integration branch; `main` tracks upstream.
-Report fork-specific problems in [this repository](https://github.com/martins-netizen/ha-meteoswiss/issues).
+Fork-specific support must be enabled before public release; repository Issues
+are currently disabled. Existing development PRs remain the review record.
 Provider outages must remain distinguishable from a valid empty/no-danger value.

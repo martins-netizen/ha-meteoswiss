@@ -4,7 +4,6 @@ from __future__ import annotations
 import asyncio
 import logging
 
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -35,6 +34,8 @@ from .precipitation import (
     MeteoSwissHourlyPrecipitationCoordinator,
 )
 
+from .runtime_data import MeteoSwissConfigEntry, MeteoSwissRuntimeData
+
 _LOGGER = logging.getLogger(__name__)
 
 PLATFORMS: list[Platform] = [
@@ -46,7 +47,7 @@ PLATFORMS: list[Platform] = [
 
 def _get_forecast_coordinates(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: MeteoSwissConfigEntry,
     data_source: str,
 ) -> tuple[float, float]:
     """Return coordinates used for forecasts and location-based pollen data."""
@@ -78,14 +79,14 @@ async def _async_refresh_optional_coordinators(*coordinators) -> None:
 
 
 def _keep_coordinator_polling(
-    entry: ConfigEntry,
+    entry: MeteoSwissConfigEntry,
     coordinator: MeteoSwissHourlyPrecipitationCoordinator,
 ) -> None:
     """Keep a coordinator without entity listeners polling until unload."""
     entry.async_on_unload(coordinator.async_add_listener(lambda: None))
 
 
-async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -> bool:
     """Set up MeteoSwiss integration from a config entry."""
     _LOGGER.info("Setting up MeteoSwiss integration for station %s", entry.data.get(CONF_STATION_NAME))
 
@@ -200,16 +201,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         session=shared_session,
     )
 
-    hass.data[DOMAIN][entry.entry_id] = {}
-    hass.data[DOMAIN][entry.entry_id]["coordinator"] = coordinator
-    hass.data[DOMAIN][entry.entry_id]["forecast_coordinator"] = forecast_coordinator
-    hass.data[DOMAIN][entry.entry_id]["alerts_coordinator"] = alerts_coordinator
-    hass.data[DOMAIN][entry.entry_id]["pollen_coordinator"] = pollen_coordinator
-    hass.data[DOMAIN][entry.entry_id]["meteoswiss_pollen_coordinator"] = meteoswiss_pollen_coordinator
-    hass.data[DOMAIN][entry.entry_id]["hourly_precipitation_coordinator"] = hourly_precipitation_coordinator
-    hass.data[DOMAIN][entry.entry_id]["precipitation_archive_coordinator"] = precipitation_archive_coordinator
-    hass.data[DOMAIN][entry.entry_id]["data_source"] = data_source
-    hass.data[DOMAIN][entry.entry_id]["session"] = shared_session
+    entry.runtime_data = MeteoSwissRuntimeData(
+        coordinator=coordinator,
+        forecast_coordinator=forecast_coordinator,
+        alerts_coordinator=alerts_coordinator,
+        pollen_coordinator=pollen_coordinator,
+        meteoswiss_pollen_coordinator=meteoswiss_pollen_coordinator,
+        hourly_precipitation_coordinator=hourly_precipitation_coordinator,
+        precipitation_archive_coordinator=precipitation_archive_coordinator,
+        data_source=data_source,
+        session=shared_session,
+    )
 
     # Set up platforms
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -243,14 +245,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return True
 
 
-async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
+async def async_unload_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -> bool:
     """Unload a config entry."""
     _LOGGER.debug("Unloading MeteoSwiss integration")
 
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
     if unload_ok:
-        hass.data[DOMAIN].pop(entry.entry_id)
         if hass.data[DOMAIN].get("diagnostic_owner") == entry.entry_id:
             for key in ("diagnostic_owner", "stations_map_sensor_added", "cache_stats_sensor_added"):
                 hass.data[DOMAIN].pop(key, None)
@@ -258,6 +259,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     return unload_ok
 
 
-async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
+async def async_reload_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -> None:
     """Reload config entry."""
     await hass.config_entries.async_reload(entry.entry_id)

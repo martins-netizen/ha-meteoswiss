@@ -200,10 +200,38 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 _LOGGER.error("CSV has no data rows")
                 return None
 
-            # Existing observation parsing uses the newest row and up to four
-            # older rows as a fallback for sparsely reported parameters.
-            recent_rows = list(reversed(all_rows[-5:]))
+            # The provider may publish a final partial row (often rain=0
+            # with all instantaneous observations still blank).
+            # Select the newest *measured* row as a whole: never mix current
+            # and older individual values to conceal a real missing field.
+            measured_parameters = (
+                PARAM_TEMPERATURE, PARAM_HUMIDITY, PARAM_WIND_SPEED,
+                PARAM_WIND_DIR, PARAM_PRESSURE, PARAM_PRECIPITATION,
+                PARAM_GUST_1S, PARAM_GUST_3S, PARAM_SUNSHINE, PARAM_GLOBAL_RAD,
+                PARAM_SNOW_DEPTH, PARAM_DEW_POINT, PARAM_FOEHN_INDEX,
+            )
+            instantaneous_parameters = (
+                PARAM_TEMPERATURE, PARAM_HUMIDITY, PARAM_WIND_SPEED,
+                PARAM_WIND_DIR, PARAM_PRESSURE, PARAM_GUST_1S, PARAM_GUST_3S,
+                PARAM_GLOBAL_RAD, PARAM_DEW_POINT,
+            )
+            # Rain-only stations must still work. Prefer instantaneous
+            # columns only if this file actually reports any of them.
+            anchor_parameters = instantaneous_parameters if any(
+                (row.get(key) or "").strip()
+                for row in all_rows for key in instantaneous_parameters
+            ) else measured_parameters
+            newest_first = list(reversed(all_rows))
+            observation_index = next((
+                index for index, row in enumerate(newest_first)
+                if any((row.get(key) or "").strip() for key in anchor_parameters)
+            ), None)
+            if observation_index is None:
+                raise UpdateFailed("CSV contains no measured observations")
+            recent_rows = newest_first[observation_index:observation_index + 5]
             result = self._parse_csv_row_with_fallback(recent_rows)
+            result["source_status"] = "partial_update" if observation_index else "current"
+            result["pending_rows"] = observation_index
             result[SENSOR_PRECIPITATION_CURRENT_HOUR] = (
                 _current_hour_precipitation(all_rows)
             )
@@ -214,7 +242,7 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             )
             return result
 
-        except (aiohttp.ClientError, TimeoutError):
+        except (UpdateFailed, aiohttp.ClientError, TimeoutError):
             raise
         except Exception as err:
             _LOGGER.exception("Error parsing CSV: %s", err)
@@ -489,5 +517,5 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     async def async_close(self) -> None:
         """Close is handled centrally by the integration setup."""
-        # Session is shared and closed in async_unload_entry
+        # Home Assistant owns and closes the borrowed shared session.
         pass

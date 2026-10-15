@@ -25,3 +25,6 @@ htmlcov/
 Thumbs.db
 __pycache__/
 *.pyc
+
+# Generated coverage reports
+coverage*.json

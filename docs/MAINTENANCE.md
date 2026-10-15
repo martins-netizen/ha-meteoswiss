@@ -8,7 +8,9 @@
    check `tests` and CodeQL's `Analyze Python`; do not bypass protection.
 3. Run `python scripts/check_translations.py` and the complete tests with both
    `requirements_test_min.txt` (HA 2026.8.3) and `requirements_test.txt`
-   (HA 2026.10.1). Add regression tests for real failures. Review Hassfest and
+   (HA 2026.10.1). Add regression tests for real failures. Measure line/branch coverage and run
+   `scripts/check_quality_coverage.py`; review the per-module report and
+   `docs/QUALITY_SCALE.md` before making any quality-level claim. Review Hassfest and
    CodeQL results; do not suppress a failed check to obtain a release.
 4. Before release, verify the installed source/commit and create a restorable
    backup including the integration and affected dashboard configuration.

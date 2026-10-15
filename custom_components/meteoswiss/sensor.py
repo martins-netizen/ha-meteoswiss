@@ -38,7 +38,6 @@ try:
 except ImportError:
     UnitOfTime = type("UnitOfTime", (), {"MINUTES": "min", "HOURS": "h", "DAYS": "d"})
 
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -88,6 +87,11 @@ from .const import (
 from .coordinator import MeteoSwissDataUpdateCoordinator
 from .stations_map import MeteoSwissStationsMap
 from .weather_data import FORECAST_TIME_ZONE, forecast_datetime
+
+from .runtime_data import MeteoSwissConfigEntry
+
+# Coordinators centralize refreshes; sensor diagnostics use bounded polling.
+PARALLEL_UPDATES = 1
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -212,13 +216,13 @@ SENSOR_DESCRIPTIONS: Final[tuple[MeteoSwissSensorEntityDescription, ...]] = (
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: MeteoSwissConfigEntry,
     async_add_entities,
 ) -> None:
     """Set up sensor platform."""
     _LOGGER.debug("Setting up MeteoSwiss sensor platform for %s", entry.data.get(CONF_STATION_NAME))
 
-    coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
+    coordinator = entry.runtime_data.coordinator
     station_name = entry.data.get(CONF_STATION_NAME, "Unknown")
 
     entities = [
@@ -244,7 +248,7 @@ async def async_setup_entry(
         _LOGGER.debug("Added cache stats sensor")
 
     # Add pollen sensors
-    pollen_coordinator = hass.data[DOMAIN][entry.entry_id].get("pollen_coordinator")
+    pollen_coordinator = entry.runtime_data.pollen_coordinator
     if pollen_coordinator:
         from .pollen_sensor import POLLEN_SENSOR_DESCRIPTIONS, MeteoSwissPollenSensor
         for description in POLLEN_SENSOR_DESCRIPTIONS:
@@ -262,7 +266,7 @@ async def async_setup_entry(
         _LOGGER.debug("Added %d air quality sensors", len(AIR_QUALITY_SENSOR_DESCRIPTIONS))
 
     # Add the calculated daily HGT 12/20 forecast sensor.
-    forecast_coordinator = hass.data[DOMAIN][entry.entry_id].get("forecast_coordinator")
+    forecast_coordinator = entry.runtime_data.forecast_coordinator
     if forecast_coordinator:
         entities.append(
             MeteoSwissHeatingDegreeDaysSensor(forecast_coordinator, entry)
@@ -271,7 +275,7 @@ async def async_setup_entry(
         _LOGGER.debug("Added calculated HGT 12/20 forecast sensor")
 
     # Add MeteoSwiss measured pollen sensors
-    ms_pollen_coordinator = hass.data[DOMAIN][entry.entry_id].get("meteoswiss_pollen_coordinator")
+    ms_pollen_coordinator = entry.runtime_data.meteoswiss_pollen_coordinator
     if ms_pollen_coordinator:
         pollen_station_code = entry.options.get(
             CONF_POLLEN_STATION, DEFAULT_POLLEN_STATION
@@ -299,7 +303,7 @@ class MeteoSwissSensor(CoordinatorEntity[MeteoSwissDataUpdateCoordinator], Senso
     def __init__(
         self,
         coordinator: MeteoSwissDataUpdateCoordinator,
-        entry: ConfigEntry,
+        entry: MeteoSwissConfigEntry,
         description: MeteoSwissSensorEntityDescription,
         station_name: str,
     ) -> None:
@@ -333,6 +337,17 @@ class MeteoSwissSensor(CoordinatorEntity[MeteoSwissDataUpdateCoordinator], Senso
             self._attr_native_value = None
 
         super()._handle_coordinator_update()
+
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        """Expose the selected observation time and source status for diagnosis."""
+        data = self.coordinator.data or {}
+        return {
+            "measurement_time": data.get("last_update"),
+            "source_status": data.get("source_status"),
+            "pending_rows": data.get("pending_rows", 0),
+        }
 
 
 class MeteoSwissStationsMapSensor(SensorEntity):
@@ -468,7 +483,7 @@ class MeteoSwissAirQualitySensor(CoordinatorEntity, SensorEntity):
     def __init__(
         self,
         coordinator: DataUpdateCoordinator,
-        entry: ConfigEntry,
+        entry: MeteoSwissConfigEntry,
         description: MeteoSwissSensorEntityDescription,
         station_name: str,
     ) -> None:
@@ -526,7 +541,7 @@ def _daily_mean_for_date(
 
 def _remove_legacy_season_hgt_entity(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: MeteoSwissConfigEntry,
 ) -> None:
     # Remove the old forecast-only season value because it was not a true total.
     registry = er.async_get(hass)
@@ -546,7 +561,7 @@ class MeteoSwissHeatingDegreeDaysSensor(CoordinatorEntity, SensorEntity):
     def __init__(
         self,
         forecast_coordinator: DataUpdateCoordinator,
-        entry: ConfigEntry,
+        entry: MeteoSwissConfigEntry,
     ) -> None:
         super().__init__(forecast_coordinator)
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_heating_degree_days"
@@ -669,7 +684,7 @@ class MeteoSwissMeasuredPollenSensor(CoordinatorEntity, SensorEntity):
     def __init__(
         self,
         coordinator: DataUpdateCoordinator,
-        entry: ConfigEntry,
+        entry: MeteoSwissConfigEntry,
         description: MS_PollenSensorDescription,
         pollen_station_label: str,
     ) -> None:

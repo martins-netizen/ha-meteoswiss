@@ -52,8 +52,13 @@ jobs:
       - name: Check bundled translations and versions
         run: python scripts/check_translations.py
 
-      - name: Run regression tests
-        run: pytest -q
+      - name: Run regression tests with line and branch coverage
+        run: >-
+          pytest -q --cov=custom_components.meteoswiss --cov-branch
+          --cov-report=term-missing --cov-report=json:coverage.json
+
+      - name: Enforce full config-flow coverage and report all modules
+        run: python scripts/check_quality_coverage.py >> "$GITHUB_STEP_SUMMARY"
 
   hassfest:
     runs-on: ubuntu-latest

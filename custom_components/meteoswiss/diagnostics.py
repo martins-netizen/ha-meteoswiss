@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import Any
 
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.redact import async_redact_data
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
@@ -18,8 +17,8 @@ from .const import (
     CONF_STATION_NAME,
     DATA_SOURCE_METEOSWISS,
     DATA_SOURCE_OPENMETEO,
-    DOMAIN,
 )
+from .runtime_data import MeteoSwissConfigEntry
 
 TO_REDACT = {
     CONF_LATITUDE,
@@ -37,6 +36,7 @@ COORDINATORS = (
     "pollen_coordinator",
     "meteoswiss_pollen_coordinator",
     "hourly_precipitation_coordinator",
+    "precipitation_archive_coordinator",
 )
 
 
@@ -123,15 +123,15 @@ def _coordinator_diagnostics(
 
 async def async_get_config_entry_diagnostics(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: MeteoSwissConfigEntry,
 ) -> dict[str, Any]:
     """Return diagnostics for a MeteoSwiss config entry."""
-    entry_data = hass.data[DOMAIN][entry.entry_id]
+    entry_data = entry.runtime_data
 
     coordinators: dict[str, Any] = {}
 
     for key in COORDINATORS:
-        coordinator = entry_data.get(key)
+        coordinator = getattr(entry_data, key)
         if coordinator is None:
             coordinators[key] = {"available": False}
             continue
@@ -148,7 +148,7 @@ async def async_get_config_entry_diagnostics(
             "version": entry.version,
             "minor_version": entry.minor_version,
         },
-        "data_source": entry_data.get("data_source"),
-        "location_sources": _location_sources(entry_data.get("data_source")),
+        "data_source": entry_data.data_source,
+        "location_sources": _location_sources(entry_data.data_source),
         "coordinators": coordinators,
     }

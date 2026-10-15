@@ -11,7 +11,7 @@
       },
       "meteoswiss": {
         "title": "Configuration MeteoSwiss STAC",
-        "description": "Entrez votre code postal pour trouver les stations météo suisses à proximité.",
+        "description": "Choisissez une station météo suisse et le code postal des alertes météo.",
         "data": {
           "postal_code": "Code postal",
           "station_id": "Station météo"
@@ -21,7 +21,7 @@
         "title": "Configuration Open-Meteo",
         "description": "Entrez vos coordonnées pour l'API Open-Meteo.",
         "data": {
-          "postal_code": "Code postal (facultatif)",
+          "postal_code": "Code postal des alertes météo",
           "latitude": "Latitude",
           "longitude": "Longitude"
         }
@@ -33,14 +33,14 @@
       "invalid_location": "Coordonnées invalides"
     },
     "abort": {
-      "already_configured": "Cette station MeteoSwiss et ce code postal sont déjà configurés."
+      "already_configured": "Cette source de données et cet emplacement sont déjà configurés."
     }
   },
   "options": {
     "step": {
       "init": {
         "title": "Paramètres MeteoSwiss",
-        "description": "Ajuster l'intervalle de mise à jour et la source de données.",
+        "description": "Modifiez la fréquence de mise à jour et la station de mesure du pollen.",
         "data": {
           "update_interval": "Intervalle de mise à jour (secondes, min. 600)",
           "data_source": "Source de données",

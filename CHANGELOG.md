@@ -1,5 +1,17 @@
 # Changelog
 
+## Unreleased — quality baseline and observation publication gaps
+
+- Keep typed config-entry runtime state and entity-owned forecast listeners.
+- Validate both setup providers, handle retryable form errors, and prevent
+  duplicate legacy and current location entries.
+- Skip trailing partial station publication rows while retaining measurement
+  time, age limits, missing-field semantics, zero values and historical IDs.
+- Add observation freshness/source attributes and failure/recovery regressions.
+- Enforce full config-flow line/branch coverage; report all module coverage in
+  both supported HA environments. Document remaining Silver and release gates.
+- Clarify setup/settings text in all four bundled languages.
+
 All notable changes to this project will be documented in this file.
 
 ---
