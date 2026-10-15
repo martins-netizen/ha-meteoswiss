@@ -460,3 +460,20 @@ async def test_complete_entry_setup_reload_and_unload(hass, enable_custom_integr
         await hass.async_block_till_done()
         assert entry.entry_id not in hass.data[DOMAIN]
         assert not session.closed
+
+
+def test_cache_logging_never_contains_location_keys(caplog):
+    import logging
+
+    from custom_components.meteoswiss.cache import MeteoSwissCache
+    key = 'forecast:47.451234,8.561234'
+    cache = MeteoSwissCache()
+    with caplog.at_level(logging.DEBUG, logger='custom_components.meteoswiss.cache'):
+        cache.set(key, {'temperature': 12})
+        assert cache.get(key) is not None
+        cache.invalidate(key)
+        cache.set(key, {'temperature': 12}, ttl=-1)
+        assert cache.get(key) is None
+    assert key not in caplog.text
+    assert '47.451234' not in caplog.text
+    assert '8.561234' not in caplog.text

@@ -86,14 +86,14 @@ class MeteoSwissCache:
             return None
 
         if entry.is_expired():
-            _LOGGER.debug("Cache entry expired: %s", key)
+            _LOGGER.debug("Cache entry expired")
             self._evictions += 1
             del self._cache[key]
             self._misses += 1
             return None
 
         self._hits += 1
-        _LOGGER.debug("Cache hit: %s", key)
+        _LOGGER.debug("Cache hit")
         return entry.value
 
     def set(
@@ -120,7 +120,7 @@ class MeteoSwissCache:
         )
 
         self._cache[key] = entry
-        _LOGGER.debug("Cache set: %s (TTL: %s sec)", key, ttl)
+        _LOGGER.debug("Cache set (TTL: %s sec)", ttl)
 
     def get_or_set(
         self,
@@ -156,7 +156,7 @@ class MeteoSwissCache:
         """
         if key in self._cache:
             del self._cache[key]
-            _LOGGER.debug("Cache invalidated: %s", key)
+            _LOGGER.debug("Cache invalidated")
 
     def clear(self) -> None:
         """Clear all cache entries."""
