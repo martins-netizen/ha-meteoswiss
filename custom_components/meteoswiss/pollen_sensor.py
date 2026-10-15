@@ -9,7 +9,6 @@ from homeassistant.components.sensor import (
     SensorEntity,
     SensorEntityDescription,
 )
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
@@ -22,6 +21,11 @@ from .const import (
     OPENMETEO_AIR_QUALITY_MANUFACTURER,
     OPENMETEO_AIR_QUALITY_MODEL,
 )
+
+from .runtime_data import MeteoSwissConfigEntry
+
+# Coordinators centralize refreshes; sensor diagnostics use bounded polling.
+PARALLEL_UPDATES = 0
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -113,13 +117,13 @@ POLLEN_SENSOR_DESCRIPTIONS: Final[tuple[MeteoSwissPollenSensorEntityDescription,
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: MeteoSwissConfigEntry,
     async_add_entities,
 ) -> None:
     """Set up pollen sensor platform."""
     _LOGGER.debug("Setting up MeteoSwiss pollen sensor platform for %s", entry.data.get(CONF_STATION_NAME))
 
-    coordinator = hass.data[DOMAIN][entry.entry_id].get("pollen_coordinator")
+    coordinator = entry.runtime_data.pollen_coordinator
 
     if coordinator is None:
         _LOGGER.warning("Pollen coordinator not found - pollen sensors not available")
@@ -141,7 +145,7 @@ class MeteoSwissPollenSensor(SensorEntity):
     def __init__(
         self,
         coordinator: DataUpdateCoordinator[dict[str, Any]],
-        entry: ConfigEntry,
+        entry: MeteoSwissConfigEntry,
         description: MeteoSwissPollenSensorEntityDescription,
         station_name: str,
     ) -> None:

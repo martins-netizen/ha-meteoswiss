@@ -1,7 +1,12 @@
-"""Config flow for meteoswiss integration."""
+"""UI setup with source validation, recoverable errors and duplicate guards."""
+
 from __future__ import annotations
 
+import asyncio
+import csv
+import io
 import logging
+import math
 from typing import Any
 
 import aiohttp
@@ -9,6 +14,7 @@ import voluptuous as vol
 from homeassistant.config_entries import ConfigFlow, OptionsFlow
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .const import (
     CONF_DATA_SOURCE,
@@ -28,262 +34,285 @@ from .const import (
     MIN_UPDATE_INTERVAL,
     POLLEN_STATIONS,
     STATIONS_METADATA_URL,
-    _create_ssl_connector,
 )
+from .coordinator import MeteoSwissDataUpdateCoordinator
+from .openmeteo_coordinator import OpenMeteoDataUpdateCoordinator
 
 _LOGGER = logging.getLogger(__name__)
 
 
 def _has_matching_meteoswiss_entry(
-    entries: list[Any],
-    station_id: str,
-    postal_code: str,
+    entries: list[Any], station_id: str, postal_code: str
 ) -> bool:
-    # Return whether the same MeteoSwiss station and alert postcode exists.
-    normalized_station = str(station_id).strip().lower()
-    normalized_postal_code = str(postal_code).strip()
-
+    """Include legacy entries without unique IDs or an explicit source."""
     for entry in entries:
         data = entry.data
-        data_source = data.get(CONF_DATA_SOURCE, DATA_SOURCE_METEOSWISS)
-        if data_source != DATA_SOURCE_METEOSWISS:
+        if data.get(CONF_DATA_SOURCE, DATA_SOURCE_METEOSWISS) != DATA_SOURCE_METEOSWISS:
             continue
-
-        existing_station = str(data.get(CONF_STATION_ID, "")).strip().lower()
-        existing_postal_code = str(data.get(CONF_POSTAL_CODE, "")).strip()
-
         if (
-            existing_station == normalized_station
-            and existing_postal_code == normalized_postal_code
+            str(data.get(CONF_STATION_ID, "")).strip().lower()
+            == station_id.strip().lower()
+            and str(data.get(CONF_POSTAL_CODE, "")).strip() == postal_code.strip()
         ):
             return True
-
     return False
 
+
+def _has_matching_openmeteo_entry(
+    entries: list[Any], latitude: float, longitude: float, postal_code: str
+) -> bool:
+    """Match existing location/postcode entries, including entries without IDs."""
+    for entry in entries:
+        data = entry.data
+        if data.get(CONF_DATA_SOURCE) != DATA_SOURCE_OPENMETEO:
+            continue
+        if (
+            data.get(CONF_LATITUDE) == latitude
+            and data.get(CONF_LONGITUDE) == longitude
+            and str(data.get(CONF_POSTAL_CODE, "")).strip() == postal_code
+        ):
+            return True
+    return False
+
+
+def _parse_stations(content: bytes) -> list[dict[str, Any]]:
+    """Parse the provider's documented Windows-1252 station catalogue."""
+    stations = []
+    rows = csv.reader(io.StringIO(content.decode("cp1252")), delimiter=";")
+    next(rows, None)  # Header.
+    for parts in rows:
+        if len(parts) < 3 or not parts[0].strip() or not parts[1].strip():
+            continue
+        try:
+            lat = float(parts[14]) if len(parts) > 14 and parts[14] else None
+            lon = float(parts[15]) if len(parts) > 15 and parts[15] else None
+        except ValueError:
+            continue
+        station_id, name = parts[0].strip().lower(), parts[1].strip()
+        stations.append(
+            {
+                "id": station_id,
+                "name": name,
+                "canton": parts[2].strip(),
+                "label": f"{name} ({station_id.upper()})",
+                "lat": lat,
+                "lon": lon,
+            }
+        )
+    return sorted(stations, key=lambda station: station["name"])
+
+
 class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for meteoswiss."""
+    """Handle public APIs; no account or authentication is needed."""
 
     VERSION = 1
 
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
-        """Get the options flow handler."""
+        """Return the HA-managed options flow."""
         return MeteoSwissOptionsFlow()
 
     def __init__(self) -> None:
-        """Initialize."""
-        self._data_source: str | None = None
-        self._update_interval: int = 600
+        self._update_interval = DEFAULT_UPDATE_INTERVAL_SEC
+        self._stations: list[dict[str, Any]] = []
 
     async def _load_stations(self) -> list[dict[str, Any]]:
-        """Load stations metadata from CSV."""
+        """Reuse HA's TLS-verified session; a failed catalogue remains retryable."""
+        session = async_get_clientsession(self.hass)
         try:
-            async with aiohttp.ClientSession(connector=_create_ssl_connector()) as session:
-                async with session.get(STATIONS_METADATA_URL, timeout=DEFAULT_API_TIMEOUT) as response:
-                    if response.status != 200:
-                        _LOGGER.error("Failed to load stations: %s", response.status)
-                        return []
-
-                    content_bytes = await response.read()
-
-            # Try different encodings for CSV (MeteoSwiss uses ISO-8859-1 with umlauts)
-            lines = None
-            for encoding in ['iso-8859-1', 'latin-1', 'cp1252', 'utf-8-sig', 'utf-8']:
-                try:
-                    decoded = content_bytes.decode(encoding)
-                    lines = decoded.strip().split("\n")
-                    if len(lines) > 10:  # Check if we got valid data
-                        _LOGGER.debug("Successfully decoded CSV with encoding: %s", encoding)
-                        break
-                except UnicodeDecodeError:
-                    continue
-
-            if not lines or len(lines) < 2:
-                _LOGGER.error("Failed to decode CSV with any encoding")
-                return []
-
-            # Parse CSV (semicolon-separated)
-            stations = []
-            for line in lines[1:]:  # Skip header
-                parts = line.split(";")
-                if len(parts) >= 3:
-                    station_id = parts[0].strip().lower()
-                    station_name = parts[1].strip()
-                    canton = parts[2].strip()
-
-                    # Extract coordinates (WGS84)
-                    lat = float(parts[14]) if len(parts) > 14 and parts[14] else None
-                    lon = float(parts[15]) if len(parts) > 15 and parts[15] else None
-
-                    if station_id and station_id != "station_abbr":
-                        stations.append({
-                            "id": station_id,
-                            "name": station_name,
-                            "canton": canton,
-                            "label": f"{station_name} ({station_id.upper()})",
-                            "lat": lat,
-                            "lon": lon,
-                        })
-
-            stations = sorted(stations, key=lambda x: x["name"])
-            _LOGGER.info("Loaded %d stations", len(stations))
-
-            return stations
-
-        except Exception as err:
-            _LOGGER.error("Error loading stations: %s", err)
+            async with session.get(
+                STATIONS_METADATA_URL, timeout=DEFAULT_API_TIMEOUT
+            ) as response:
+                response.raise_for_status()
+                return _parse_stations(await response.read())
+        except (aiohttp.ClientError, TimeoutError, UnicodeError):
+            _LOGGER.warning("Weather station catalogue temporarily unavailable")
             return []
+
+    async def _validate_source(
+        self,
+        *,
+        station_id: str | None = None,
+        latitude: float = 0,
+        longitude: float = 0,
+    ) -> bool:
+        """Use the same observation contract as setup, with a bounded total wait."""
+        session = async_get_clientsession(self.hass)
+        if station_id is not None:
+            coordinator = MeteoSwissDataUpdateCoordinator(
+                self.hass, station_id, self._update_interval, session=session
+            )
+        else:
+            coordinator = OpenMeteoDataUpdateCoordinator(
+                self.hass, latitude, longitude, self._update_interval, session=session
+            )
+        try:
+            async with asyncio.timeout(DEFAULT_API_TIMEOUT.total):
+                # No listeners are registered, so this schedules no polling.
+                await coordinator.async_refresh()
+        except TimeoutError:
+            return False
+        return coordinator.last_update_success
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
-        """Handle initial step - data source selection."""
-        errors: dict[str, str] = {}
-
-        if user_input is None:
-            return self.async_show_form(
-                step_id="user",
-                data_schema=vol.Schema({
-                    vol.Required(CONF_DATA_SOURCE, default=DATA_SOURCE_OPENMETEO): vol.In({
-                        DATA_SOURCE_OPENMETEO: "Open-Meteo API (Free, Global)",
-                        DATA_SOURCE_METEOSWISS: "MeteoSwiss STAC API (Swiss Stations)",
-                    }),
-                    vol.Optional(CONF_UPDATE_INTERVAL, default=DEFAULT_UPDATE_INTERVAL_SEC): vol.All(
-                        vol.Coerce(int),
-                        vol.Range(min=MIN_UPDATE_INTERVAL),
-                    ),
-                }),
-                errors=errors,
+        """Choose a provider and a minimum-ten-minute polling interval."""
+        if user_input is not None:
+            self._update_interval = user_input.get(
+                CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL_SEC
             )
-
-        # Store data source for next step
-        self._data_source = user_input[CONF_DATA_SOURCE]
-        self._update_interval = user_input.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL_SEC)
-
-        # Route to appropriate step based on data source
-        if self._data_source == DATA_SOURCE_OPENMETEO:
-            return await self.async_step_openmeteo()
-        else:
+            if user_input[CONF_DATA_SOURCE] == DATA_SOURCE_OPENMETEO:
+                return await self.async_step_openmeteo()
             return await self.async_step_meteoswiss()
+        return self.async_show_form(
+            step_id="user",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        CONF_DATA_SOURCE, default=DATA_SOURCE_OPENMETEO
+                    ): vol.In(
+                        {
+                            DATA_SOURCE_OPENMETEO: "Open-Meteo API (Free, Global)",
+                            DATA_SOURCE_METEOSWISS: "MeteoSwiss STAC API (Swiss Stations)",
+                        }
+                    ),
+                    vol.Optional(
+                        CONF_UPDATE_INTERVAL, default=DEFAULT_UPDATE_INTERVAL_SEC
+                    ): vol.All(vol.Coerce(int), vol.Range(min=MIN_UPDATE_INTERVAL)),
+                }
+            ),
+        )
 
     async def async_step_meteoswiss(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
-        """Handle MeteoSwiss STAC API setup."""
-        errors: dict[str, str] = {}
-
-        if user_input is None:
-            # Load stations for dropdown
-            stations = await self._load_stations()
-            station_options = {s["id"]: s["label"] for s in stations}
-
-            return self.async_show_form(
-                step_id="meteoswiss",
-                data_schema=vol.Schema({
-                    vol.Required(CONF_POSTAL_CODE): str,
-                    vol.Required(CONF_STATION_ID, default=""): vol.In(station_options),
-                }),
-                errors=errors,
+        """Validate the selected station before creating a config entry."""
+        errors = {}
+        if user_input is not None:
+            station_id = user_input[CONF_STATION_ID].strip().lower()
+            postcode = user_input[CONF_POSTAL_CODE].strip()
+            if _has_matching_meteoswiss_entry(
+                self._async_current_entries(), station_id, postcode
+            ):
+                return self.async_abort(reason="already_configured")
+            await self.async_set_unique_id(
+                f"{DATA_SOURCE_METEOSWISS}:{station_id}:{postcode}"
             )
-
-        # Process form submission
-        post_code = str(user_input[CONF_POSTAL_CODE]).strip()
-        station_id = str(user_input[CONF_STATION_ID]).strip().lower()
-
-        # Older config entries may not have a unique_id, so explicitly compare
-        # their stored station/postcode before relying on HA's unique-id guard.
-        if _has_matching_meteoswiss_entry(
-            self._async_current_entries(),
-            station_id,
-            post_code,
-        ):
-            return self.async_abort(reason="already_configured")
-
-        await self.async_set_unique_id(
-            f"{DATA_SOURCE_METEOSWISS}:{station_id}:{post_code}"
-        )
-        self._abort_if_unique_id_configured()
-
-        # Find station details
-        stations = await self._load_stations()
-        station = next((s for s in stations if s["id"] == station_id), None)
-        station_name = station["name"] if station else station_id
-        lat = station["lat"] if station else None
-        lon = station["lon"] if station else None
-
-        # Create config entry
-        _LOGGER.debug("Creating MeteoSwiss entry for station: %s (lat=%s, lon=%s)", station_id, lat, lon)
-        return self.async_create_entry(
-            title=f"MeteoSwiss {station_name} ({station_id.upper()})",
-            data={
-                CONF_DATA_SOURCE: self._data_source,
-                CONF_POSTAL_CODE: post_code,
-                CONF_STATION_ID: station_id.lower(),
-                CONF_STATION_NAME: station_name,
-                CONF_LATITUDE: lat,
-                CONF_LONGITUDE: lon,
-                CONF_UPDATE_INTERVAL: self._update_interval,
-            },
+            self._abort_if_unique_id_configured()
+        if not self._stations:
+            self._stations = await self._load_stations()
+        if not self._stations:
+            errors["base"] = "cannot_connect"
+        elif user_input is not None:
+            station = next(
+                (item for item in self._stations if item["id"] == station_id), None
+            )
+            if station is None:
+                errors["base"] = "station_not_found"
+            elif not await self._validate_source(station_id=station_id):
+                errors["base"] = "cannot_connect"
+            else:
+                return self.async_create_entry(
+                    title=f"MeteoSwiss {station['name']} ({station_id.upper()})",
+                    data={
+                        CONF_DATA_SOURCE: DATA_SOURCE_METEOSWISS,
+                        CONF_POSTAL_CODE: postcode,
+                        CONF_STATION_ID: station_id,
+                        CONF_STATION_NAME: station["name"],
+                        CONF_LATITUDE: station["lat"],
+                        CONF_LONGITUDE: station["lon"],
+                        CONF_UPDATE_INTERVAL: self._update_interval,
+                    },
+                )
+        return self.async_show_form(
+            step_id="meteoswiss",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_POSTAL_CODE): str,
+                    # Keep the field usable when loading the catalogue failed: the
+                    # user can submit again to retry, rather than an empty dropdown.
+                    vol.Required(CONF_STATION_ID): vol.In(
+                        {s["id"]: s["label"] for s in self._stations}
+                    )
+                    if self._stations
+                    else str,
+                }
+            ),
+            errors=errors,
         )
 
     async def async_step_openmeteo(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
-        """Handle Open-Meteo API setup."""
-        errors: dict[str, str] = {}
-
-        if user_input is None:
-            return self.async_show_form(
-                step_id="openmeteo",
-                data_schema=vol.Schema({
+        """Validate coordinates and availability, and reject duplicate entries."""
+        errors = {}
+        if user_input is not None:
+            latitude, longitude = user_input[CONF_LATITUDE], user_input[CONF_LONGITUDE]
+            postcode = user_input[CONF_POSTAL_CODE].strip()
+            if not (
+                math.isfinite(latitude)
+                and math.isfinite(longitude)
+                and -90 <= latitude <= 90
+                and -180 <= longitude <= 180
+            ):
+                errors["base"] = "invalid_location"
+            else:
+                if _has_matching_openmeteo_entry(
+                    self._async_current_entries(), latitude, longitude, postcode
+                ):
+                    return self.async_abort(reason="already_configured")
+                await self.async_set_unique_id(
+                    f"{DATA_SOURCE_OPENMETEO}:{latitude}:{longitude}:{postcode}"
+                )
+                self._abort_if_unique_id_configured()
+                if await self._validate_source(latitude=latitude, longitude=longitude):
+                    return self.async_create_entry(
+                        title=f"Open-Meteo ({latitude:.2f}, {longitude:.2f})",
+                        data={
+                            CONF_DATA_SOURCE: DATA_SOURCE_OPENMETEO,
+                            CONF_POSTAL_CODE: postcode,
+                            CONF_LATITUDE: latitude,
+                            CONF_LONGITUDE: longitude,
+                            CONF_STATION_NAME: "Open-Meteo",
+                            CONF_UPDATE_INTERVAL: self._update_interval,
+                        },
+                    )
+                errors["base"] = "cannot_connect"
+        return self.async_show_form(
+            step_id="openmeteo",
+            data_schema=vol.Schema(
+                {
                     vol.Required(CONF_POSTAL_CODE): str,
                     vol.Required(CONF_LATITUDE, default=47.05): vol.Coerce(float),
                     vol.Required(CONF_LONGITUDE, default=8.31): vol.Coerce(float),
-                }),
-                errors=errors,
-            )
-
-        # Process form submission
-        post_code = user_input[CONF_POSTAL_CODE]
-        lat = user_input[CONF_LATITUDE]
-        lon = user_input[CONF_LONGITUDE]
-
-        # Create config entry
-        _LOGGER.debug("Creating Open-Meteo entry for lat=%s, lon=%s", lat, lon)
-        return self.async_create_entry(
-            title=f"Open-Meteo ({lat:.2f}, {lon:.2f})",
-            data={
-                CONF_DATA_SOURCE: self._data_source,
-                CONF_POSTAL_CODE: post_code,
-                CONF_LATITUDE: lat,
-                CONF_LONGITUDE: lon,
-                CONF_STATION_NAME: "Open-Meteo",
-                CONF_UPDATE_INTERVAL: self._update_interval,
-            },
+                }
+            ),
+            errors=errors,
         )
 
 
 class MeteoSwissOptionsFlow(OptionsFlow):
-    """Handle options flow for meteoswiss."""
+    """Edit options without replacing the entry or its entity IDs."""
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
-        """Manage the options."""
-        if user_input is None:
-            current_interval = self.config_entry.options.get(
-                CONF_UPDATE_INTERVAL,
-                self.config_entry.data.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL_SEC),
-            )
-
-
-            return self.async_show_form(
-                step_id="init",
-                data_schema=vol.Schema({
-                    vol.Optional(CONF_UPDATE_INTERVAL, default=current_interval): vol.All(
-                        vol.Coerce(int),
-                        vol.Range(min=MIN_UPDATE_INTERVAL),
+        if user_input is not None:
+            return self.async_create_entry(title="", data=user_input)
+        interval = self.config_entry.options.get(
+            CONF_UPDATE_INTERVAL,
+            self.config_entry.data.get(
+                CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL_SEC
+            ),
+        )
+        return self.async_show_form(
+            step_id="init",
+            data_schema=vol.Schema(
+                {
+                    vol.Optional(CONF_UPDATE_INTERVAL, default=interval): vol.All(
+                        vol.Coerce(int), vol.Range(min=MIN_UPDATE_INTERVAL)
                     ),
                     vol.Optional(
                         CONF_POLLEN_STATION,
@@ -291,7 +320,6 @@ class MeteoSwissOptionsFlow(OptionsFlow):
                             CONF_POLLEN_STATION, DEFAULT_POLLEN_STATION
                         ),
                     ): vol.In(POLLEN_STATIONS),
-                }),
-            )
-
-        return self.async_create_entry(title="", data=user_input)
+                }
+            ),
+        )

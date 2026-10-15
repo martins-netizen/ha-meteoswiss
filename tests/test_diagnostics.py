@@ -19,6 +19,8 @@ from custom_components.meteoswiss.const import (
     DATA_SOURCE_OPENMETEO,
     DOMAIN,
 )
+from custom_components.meteoswiss.runtime_data import MeteoSwissRuntimeData
+
 from custom_components.meteoswiss.diagnostics import (
     async_get_config_entry_diagnostics,
 )
@@ -51,10 +53,7 @@ async def test_diagnostics_redact_location_and_station_identifiers(hass) -> None
         data_source="meteoswiss",
     )
 
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {
-        "coordinator": coordinator,
-        "data_source": "meteoswiss",
-    }
+    entry.runtime_data = MeteoSwissRuntimeData(coordinator=coordinator, data_source="meteoswiss", session=None)
 
     diagnostics = await async_get_config_entry_diagnostics(hass, entry)
     config_data = diagnostics["config_entry"]["data"]
@@ -93,10 +92,7 @@ async def test_diagnostics_summarize_data_without_exposing_values_or_errors(hass
         data_source="meteoswiss",
     )
 
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {
-        "coordinator": coordinator,
-        "data_source": "meteoswiss",
-    }
+    entry.runtime_data = MeteoSwissRuntimeData(coordinator=coordinator, data_source="meteoswiss", session=None)
 
     diagnostics = await async_get_config_entry_diagnostics(hass, entry)
     current = diagnostics["coordinators"]["coordinator"]
@@ -112,7 +108,7 @@ async def test_diagnostics_summarize_data_without_exposing_values_or_errors(hass
         "keys": ["internal_value", "temperature"],
     }
 
-    # Optional coordinators not present in hass.data must be represented
+    # Optional coordinators not present in runtime_data must be represented
     # explicitly rather than causing diagnostics generation to fail.
     assert diagnostics["coordinators"]["forecast_coordinator"] == {
         "available": False
@@ -129,9 +125,7 @@ async def test_diagnostics_summarize_data_without_exposing_values_or_errors(hass
 
 async def test_diagnostics_report_meteoswiss_location_sources(hass) -> None:
     entry = MockConfigEntry(domain=DOMAIN, data={CONF_STATION_ID: "KLO"})
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {
-        "data_source": DATA_SOURCE_METEOSWISS,
-    }
+    entry.runtime_data = MeteoSwissRuntimeData(coordinator=None, data_source=DATA_SOURCE_METEOSWISS, session=None)
 
     diagnostics = await async_get_config_entry_diagnostics(hass, entry)
 
@@ -149,9 +143,7 @@ async def test_diagnostics_report_openmeteo_location_sources(hass) -> None:
         domain=DOMAIN,
         data={CONF_LATITUDE: 46.2, CONF_LONGITUDE: 6.1},
     )
-    hass.data.setdefault(DOMAIN, {})[entry.entry_id] = {
-        "data_source": DATA_SOURCE_OPENMETEO,
-    }
+    entry.runtime_data = MeteoSwissRuntimeData(coordinator=None, data_source=DATA_SOURCE_OPENMETEO, session=None)
 
     diagnostics = await async_get_config_entry_diagnostics(hass, entry)
 

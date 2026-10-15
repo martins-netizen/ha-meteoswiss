@@ -6,7 +6,6 @@ from datetime import timedelta
 from typing import Final
 
 from homeassistant.components.weather import Forecast, WeatherEntity
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     UnitOfPrecipitationDepth,
     UnitOfPressure,
@@ -35,26 +34,25 @@ from .coordinator import MeteoSwissDataUpdateCoordinator
 from .forecast_coordinator import MeteoSwissForecastCoordinator
 from .weather_data import FORECAST_TIME_ZONE, forecast_datetime, weather_condition
 
+from .runtime_data import MeteoSwissConfigEntry
+
+# Coordinators centralize refreshes; sensor diagnostics use bounded polling.
+PARALLEL_UPDATES = 0
+
 _LOGGER = logging.getLogger(__name__)
 
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    entry: MeteoSwissConfigEntry,
     async_add_entities,
 ) -> None:
     """Set up weather platform."""
-    coordinator = hass.data[DOMAIN][entry.entry_id]["coordinator"]
-    forecast_coordinator = hass.data[DOMAIN][entry.entry_id].get("forecast_coordinator")
+    coordinator = entry.runtime_data.coordinator
+    forecast_coordinator = entry.runtime_data.forecast_coordinator
     station_name = entry.data.get(CONF_STATION_NAME, "Unknown")
 
     entity = MeteoSwissWeather(coordinator, forecast_coordinator, entry, station_name)
-
-    # Listen for forecast coordinator updates
-    if forecast_coordinator:
-        unsub = forecast_coordinator.async_add_listener(entity._handle_forecast_update)
-        entry.async_on_unload(unsub)
-        _LOGGER.debug("Subscribed to forecast coordinator updates")
 
     async_add_entities([entity])
 
@@ -82,7 +80,7 @@ class MeteoSwissWeather(CoordinatorEntity[MeteoSwissDataUpdateCoordinator], Weat
         self,
         coordinator: MeteoSwissDataUpdateCoordinator,
         forecast_coordinator: MeteoSwissForecastCoordinator,
-        entry: ConfigEntry,
+        entry: MeteoSwissConfigEntry,
         station_name: str,
     ) -> None:
         """Initialize weather entity."""
@@ -95,6 +93,8 @@ class MeteoSwissWeather(CoordinatorEntity[MeteoSwissDataUpdateCoordinator], Weat
             manufacturer="MeteoSwiss",
             model="SwissMetNet",
         )
+        self._attr_has_entity_name = True
+        self._attr_name = None
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_weather"
         self._attr_attribution = ATTRIBUTION
         self._attr_native_temperature_unit = UnitOfTemperature.CELSIUS
@@ -106,6 +106,14 @@ class MeteoSwissWeather(CoordinatorEntity[MeteoSwissDataUpdateCoordinator], Weat
         lat = entry.data.get(CONF_LATITUDE)
         lon = entry.data.get(CONF_LONGITUDE)
         _LOGGER.debug("WeatherEntity initialized - station: %s, lat/lon: %s/%s", station_name, lat, lon)
+
+    async def async_added_to_hass(self) -> None:
+        """Subscribe only while the entity is in Home Assistant."""
+        await super().async_added_to_hass()
+        if self._forecast_coordinator:
+            self.async_on_remove(
+                self._forecast_coordinator.async_add_listener(self._handle_forecast_update)
+            )
 
     @property
     def coordinator_data(self) -> dict:

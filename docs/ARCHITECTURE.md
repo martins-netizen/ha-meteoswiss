@@ -27,6 +27,13 @@ local changes. A release is an explicitly tested snapshot of `development`.
   are not retried. A numeric Retry-After above the local delay limit defers the
   operation to a later refresh instead of retrying prematurely.
 
+Entry-specific coordinators and the borrowed session live in typed
+`entry.runtime_data` (`MeteoSwissRuntimeData`). Domain-global flags only coordinate
+the single shared diagnostic devices. Weather forecast listeners are registered
+when the entity is added and removed with that entity. Configuration validates
+the chosen observation provider with the same coordinator contract, without
+listeners/polling, using HA's shared session and a 30-second total timeout.
+
 ## Sources and time
 
 | Data | Source and location | Time semantics |
@@ -37,6 +44,13 @@ local changes. A release is an explicitly tested snapshot of `development`.
 | Measured pollen | Selected MeteoSwiss pollen station | Provider measurement timestamp, independent of weather station. |
 | Pollen/AQ forecast | Open-Meteo for forecast location | Select the actual current hour, never midnight or the next non-null future value. Missing data stays missing. |
 | Hourly precipitation | Official station CSV, external Recorder statistics | Interval-end times are shifted to interval starts in UTC; IDs remain unchanged. |
+
+Trailing partial station rows (for example rain=0 while instantaneous weather
+is still blank) do not replace the latest measured observation row. The original
+measurement time and one-hour age limit remain authoritative. Missing individual
+parameters in a measured row stay missing. Sensors expose `measurement_time`,
+`source_status` and `pending_rows`; see `docs/USAGE.md`. No historic records are
+fabricated or rewritten.
 
 Forecast rows contain `datetime`, `local_date`, `fetched_at`, `source`,
 `weather_code`, `is_day`, `condition`, measurements and optional native daily
