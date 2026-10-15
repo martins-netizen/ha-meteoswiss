@@ -5,6 +5,8 @@ from __future__ import annotations
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock
 
+from pytest_homeassistant_custom_component.common import MockConfigEntry
+
 from custom_components.meteoswiss import (
     _async_refresh_optional_coordinators,
     _get_forecast_coordinates,
@@ -17,7 +19,6 @@ from custom_components.meteoswiss.const import (
     DATA_SOURCE_OPENMETEO,
     DOMAIN,
 )
-from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 
 async def test_optional_coordinator_refresh_is_resilient() -> None:

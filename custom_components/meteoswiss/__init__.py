@@ -4,20 +4,18 @@ from __future__ import annotations
 import asyncio
 import logging
 
-import aiohttp
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .alerts import MeteoSwissAlertsAPI
 from .const import (
-    DEFAULT_API_TIMEOUT,
-    _create_ssl_connector,
     CONF_DATA_SOURCE,
     CONF_LATITUDE,
     CONF_LONGITUDE,
-    CONF_POSTAL_CODE,
     CONF_POLLEN_STATION,
+    CONF_POSTAL_CODE,
     CONF_STATION_ID,
     CONF_STATION_NAME,
     CONF_UPDATE_INTERVAL,
@@ -28,6 +26,7 @@ from .const import (
 )
 from .coordinator import MeteoSwissDataUpdateCoordinator
 from .forecast_coordinator import MeteoSwissForecastCoordinator
+from .localization import async_load_warning_labels
 from .openmeteo_coordinator import OpenMeteoDataUpdateCoordinator
 from .pollen_meteoswiss import MeteoSwissPollenCoordinator
 from .precipitation import (
@@ -91,13 +90,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     _LOGGER.info("Setting up MeteoSwiss integration for station %s", entry.data.get(CONF_STATION_NAME))
 
     hass.data.setdefault(DOMAIN, {})
-    hass.data[DOMAIN][entry.entry_id] = {}
-
-    # Create a single shared aiohttp session for all coordinators
-    shared_session = aiohttp.ClientSession(
-        connector=_create_ssl_connector(),
-        timeout=DEFAULT_API_TIMEOUT,
-    )
+    # HA owns this verified-TLS session, including when initial setup fails.
+    # Coordinators borrow it and must never close it themselves.
+    shared_session = async_get_clientsession(hass)
 
     # Create coordinator based on data source
     update_interval = entry.options.get(CONF_UPDATE_INTERVAL, entry.data.get(CONF_UPDATE_INTERVAL, 600))
@@ -176,6 +171,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         hass,
         alerts_api=alerts_api,
         update_interval=600,  # 10 minutes
+        warning_labels=await async_load_warning_labels(hass),
     )
 
     # Create pollen API and coordinator (using Open-Meteo Air Quality API)
@@ -201,6 +197,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         session=shared_session,
     )
 
+    hass.data[DOMAIN][entry.entry_id] = {}
     hass.data[DOMAIN][entry.entry_id]["coordinator"] = coordinator
     hass.data[DOMAIN][entry.entry_id]["forecast_coordinator"] = forecast_coordinator
     hass.data[DOMAIN][entry.entry_id]["alerts_coordinator"] = alerts_coordinator
@@ -250,13 +247,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
     if unload_ok:
-        entry_data = hass.data[DOMAIN].get(entry.entry_id, {})
-
-        # Close shared session
-        session = entry_data.get("session")
-        if session and not session.closed:
-            await session.close()
-
         hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
@@ -264,5 +254,4 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_reload_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Reload config entry."""
-    await async_unload_entry(hass, entry)
-    await async_setup_entry(hass, entry)
+    await hass.config_entries.async_reload(entry.entry_id)

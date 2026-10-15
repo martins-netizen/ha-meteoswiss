@@ -1,13 +1,12 @@
 """MeteoSwiss Stations Map - Display all weather stations on a map."""
 from __future__ import annotations
 
-import aiohttp
-import json
 import logging
-from dataclasses import dataclass, asdict
-from typing import Final
+from dataclasses import asdict, dataclass
 
-from .const import STATIONS_METADATA_URL
+import aiohttp
+
+from .const import DEFAULT_API_TIMEOUT, STATIONS_METADATA_URL
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -61,7 +60,7 @@ class MeteoSwissStationsMap:
 
         try:
             if session is not None:
-                async with session.get(STATIONS_METADATA_URL) as response:
+                async with session.get(STATIONS_METADATA_URL, timeout=DEFAULT_API_TIMEOUT) as response:
                     if response.status != 200:
                         _LOGGER.error("Failed to load stations: %s", response.status)
                         return {}
@@ -96,8 +95,6 @@ class MeteoSwissStationsMap:
             headers = [h.strip().lower() for h in lines[0].split(";")]
 
             # Find column indices
-            col_id = headers[0] if len(headers) > 0 else "station_id"
-            col_name = headers[3] if len(headers) > 3 else "name"
             col_altitude = headers[6] if len(headers) > 6 else None
             col_canton = headers[7] if len(headers) > 7 else None
             col_start = headers[8] if len(headers) > 8 else None
@@ -182,7 +179,7 @@ class MeteoSwissStationsMap:
         lat2: float, lon2: float
     ) -> float:
         """Calculate distance between two coordinates (Haversine formula)."""
-        from math import radians, cos, sin, asin, sqrt
+        from math import asin, cos, radians, sin, sqrt
 
         # Convert to radians
         lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])

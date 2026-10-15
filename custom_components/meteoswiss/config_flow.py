@@ -5,31 +5,30 @@ import logging
 from typing import Any
 
 import aiohttp
-
 import voluptuous as vol
-
 from homeassistant.config_entries import ConfigFlow, OptionsFlow
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 
 from .const import (
-    _create_ssl_connector,
     CONF_DATA_SOURCE,
     CONF_LATITUDE,
     CONF_LONGITUDE,
-    CONF_POSTAL_CODE,
     CONF_POLLEN_STATION,
+    CONF_POSTAL_CODE,
     CONF_STATION_ID,
     CONF_STATION_NAME,
     CONF_UPDATE_INTERVAL,
     DATA_SOURCE_METEOSWISS,
     DATA_SOURCE_OPENMETEO,
+    DEFAULT_API_TIMEOUT,
     DEFAULT_POLLEN_STATION,
     DEFAULT_UPDATE_INTERVAL_SEC,
     DOMAIN,
     MIN_UPDATE_INTERVAL,
     POLLEN_STATIONS,
     STATIONS_METADATA_URL,
+    _create_ssl_connector,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -81,7 +80,7 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
         """Load stations metadata from CSV."""
         try:
             async with aiohttp.ClientSession(connector=_create_ssl_connector()) as session:
-                async with session.get(STATIONS_METADATA_URL) as response:
+                async with session.get(STATIONS_METADATA_URL, timeout=DEFAULT_API_TIMEOUT) as response:
                     if response.status != 200:
                         _LOGGER.error("Failed to load stations: %s", response.status)
                         return []
@@ -259,7 +258,7 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
                 CONF_POSTAL_CODE: post_code,
                 CONF_LATITUDE: lat,
                 CONF_LONGITUDE: lon,
-                CONF_STATION_NAME: f"Open-Meteo",
+                CONF_STATION_NAME: "Open-Meteo",
                 CONF_UPDATE_INTERVAL: self._update_interval,
             },
         )
@@ -277,10 +276,7 @@ class MeteoSwissOptionsFlow(OptionsFlow):
                 CONF_UPDATE_INTERVAL,
                 self.config_entry.data.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL_SEC),
             )
-            current_source = self.config_entry.options.get(
-                CONF_DATA_SOURCE,
-                self.config_entry.data.get(CONF_DATA_SOURCE, DATA_SOURCE_OPENMETEO),
-            )
+
 
             return self.async_show_form(
                 step_id="init",

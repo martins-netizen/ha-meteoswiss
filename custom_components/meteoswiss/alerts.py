@@ -2,12 +2,13 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from typing import Any
 
 import aiohttp
 
+from .const import DEFAULT_API_TIMEOUT
 from .retry import async_retry_with_backoff
 
 _LOGGER = logging.getLogger(__name__)
@@ -129,30 +130,20 @@ class MeteoSwissAlertsAPI:
         if self._session is None:
             raise RuntimeError("No session provided")
 
-        try:
-            # Format PLZ: add "00" suffix (e.g., "8001" -> "800100")
-            plz_formatted = f"{postal_code}00"
-            url = f"{METEOSWISS_APP_API_URL}?plz={plz_formatted}"
-
-            alerts = await self._fetch_and_parse_alerts(url, postal_code)
-            _LOGGER.debug("Found %d alerts for postal code %s", len(alerts), postal_code)
-
-            return alerts
-
-        except Exception as err:
-            _LOGGER.error("Error fetching MeteoSwiss alerts: %s", err)
-            return []
+        # Only an empty successful result means no warnings. Propagate errors
+        # so Home Assistant cannot mistake an unavailable feed for an all-clear.
+        if not postal_code:
+            raise ValueError("A postal code is required for weather warnings")
+        url = f"{METEOSWISS_APP_API_URL}?plz={postal_code}00"
+        return await self._fetch_and_parse_alerts(url, postal_code)
 
     @async_retry_with_backoff(max_attempts=4, base_delay=1.0, max_delay=10.0)
     async def _fetch_and_parse_alerts(self, url: str, postal_code: str) -> list:
         """Fetch and parse alerts from API with retry logic."""
         _LOGGER.debug("Fetching alerts from: %s", url)
 
-        async with self._session.get(url) as response:
-            if response.status != 200:
-                _LOGGER.error("MeteoSwiss App API error: %s", response.status)
-                return []
-
+        async with self._session.get(url, timeout=DEFAULT_API_TIMEOUT) as response:
+            response.raise_for_status()
             data = await response.json()
             return self._parse_alerts(data, postal_code)
 
@@ -164,6 +155,9 @@ class MeteoSwissAlertsAPI:
         """
         alerts: list[WeatherAlert] = []
 
+        if not isinstance(data, dict):
+            raise ValueError("Expected a weather-warning response object")
+
         # Check for warnings field
         if "warnings" not in data:
             _LOGGER.debug("No warnings field in response")
@@ -171,7 +165,7 @@ class MeteoSwissAlertsAPI:
 
         warnings_data = data["warnings"]
 
-        if not warnings_data:
+        if warnings_data is None or warnings_data == []:
             _LOGGER.debug("No warnings in response")
             return alerts
 
@@ -179,17 +173,20 @@ class MeteoSwissAlertsAPI:
         if isinstance(warnings_data, list):
             # Multiple alerts
             for warning in warnings_data:
-                if isinstance(warning, dict):
-                    alert = self._parse_single_alert(warning, postal_code)
-                    if alert:
-                        alerts.append(alert)
+                if not isinstance(warning, dict):
+                    raise ValueError("Invalid weather-warning entry")
+                alert = self._parse_single_alert(warning, postal_code)
+                if alert is None:
+                    raise ValueError("Could not decode a published weather warning")
+                alerts.append(alert)
         elif isinstance(warnings_data, dict):
             # Single alert
             alert = self._parse_single_alert(warnings_data, postal_code)
-            if alert:
-                alerts.append(alert)
+            if alert is None:
+                raise ValueError("Could not decode a published weather warning")
+            alerts.append(alert)
         else:
-            _LOGGER.warning("Unexpected warnings format: %s", type(warnings_data))
+            raise ValueError("Unexpected weather-warning format")
 
         return alerts
 
@@ -206,13 +203,14 @@ class MeteoSwissAlertsAPI:
         try:
             # Parse warning text (HTML or text format)
             warning_text = warning_data.get("text", "")
-            html_text = warning_data.get("htmlText", "")
 
             # Parse warning level
-            warn_level = warning_data.get("warnLevel", 0)
+            warn_level = int(warning_data["warnLevel"])
+            if not 1 <= warn_level <= 5:
+                raise ValueError("Invalid weather-warning level")
 
             # Parse warning type
-            warn_type = warning_data.get("warnType", 0)
+            warn_type = int(warning_data["warnType"])
 
             # Parse valid from/to (Unix timestamps)
             valid_from_ts = warning_data.get("validFrom")
@@ -224,14 +222,17 @@ class MeteoSwissAlertsAPI:
             if valid_from_ts:
                 try:
                     valid_from = datetime.fromtimestamp(valid_from_ts / 1000, tz=timezone.utc)
-                except (ValueError, TypeError):
-                    pass
+                except (ValueError, TypeError, OverflowError) as err:
+                    raise ValueError("Invalid weather-warning start") from err
 
             if valid_to_ts:
                 try:
                     valid_to = datetime.fromtimestamp(valid_to_ts / 1000, tz=timezone.utc)
-                except (ValueError, TypeError):
-                    pass
+                except (ValueError, TypeError, OverflowError) as err:
+                    raise ValueError("Invalid weather-warning end") from err
+
+            if valid_from and valid_to and valid_to < valid_from:
+                raise ValueError("Weather-warning end precedes its start")
 
             # Parse outlook flag
             outlook = warning_data.get("outlook", False)

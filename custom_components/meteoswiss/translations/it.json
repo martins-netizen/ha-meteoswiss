@@ -31,6 +31,9 @@
       "cannot_connect": "Impossibile connettersi all'API meteo",
       "station_not_found": "Stazione non trovata",
       "invalid_location": "Coordinate non valide"
+    },
+    "abort": {
+      "already_configured": "Questa stazione MeteoSwiss e questo codice postale sono già configurati."
     }
   },
   "options": {
@@ -49,45 +52,151 @@
   "title": "MeteoSwiss",
   "entity": {
     "sensor": {
-      "temperature": { "name": "Temperatura" },
-      "humidity": { "name": "Umidità" },
-      "wind_speed": { "name": "Velocità del vento" },
-      "wind_direction": { "name": "Direzione del vento" },
-      "precipitation": { "name": "Precipitazioni" },
-      "precipitation_current_hour": { "name": "Precipitazioni dell'ora corrente" },
-      "pressure": { "name": "Pressione" },
-      "wind_gust": { "name": "Raffica di vento" },
-      "dew_point": { "name": "Punto di rugiada" },
-      "sunshine_duration": { "name": "Durata del soleggiamento" },
-      "global_radiation": { "name": "Radiazione globale" },
-      "uv_index": { "name": "Indice UV" },
-      "snow_depth": { "name": "Altezza della neve" },
-      "foehn_index": { "name": "Indice di favonio" },
-      "soil_temperature_5cm": { "name": "Temperatura del suolo 5 cm" },
-      "soil_temperature_10cm": { "name": "Temperatura del suolo 10 cm" },
-      "soil_temperature_20cm": { "name": "Temperatura del suolo 20 cm" },
-      "pm25": { "name": "PM2.5" },
-      "pm10": { "name": "PM10" },
-      "nitrogen_dioxide": { "name": "Diossido di azoto" },
-      "ozone": { "name": "Ozono" },
-      "heating_degree_days": { "name": "Gradi giorno di riscaldamento" },
-      "season_heating_degree_days": { "name": "Gradi giorno di riscaldamento (stagione)" },
-      "pollen_birch": { "name": "Pollini di betulla" },
-      "pollen_alder": { "name": "Pollini di ontano" },
-      "pollen_grass": { "name": "Pollini di graminacee" },
-      "pollen_mugwort": { "name": "Pollini di artemisia" },
-      "pollen_ambrosia": { "name": "Pollini di ambrosia" },
-      "ms_pollen_birch": { "name": "Pollini di betulla (misurati)" },
-      "ms_pollen_alder": { "name": "Pollini di ontano (misurati)" },
-      "ms_pollen_hazel": { "name": "Pollini di nocciolo (misurati)" },
-      "ms_pollen_grass": { "name": "Pollini di graminacee (misurati)" },
-      "ms_pollen_beech": { "name": "Pollini di faggio (misurati)" },
-      "ms_pollen_ash": { "name": "Pollini di frassino (misurati)" }
+      "temperature": {
+        "name": "Temperatura"
+      },
+      "humidity": {
+        "name": "Umidità"
+      },
+      "wind_speed": {
+        "name": "Velocità del vento"
+      },
+      "wind_direction": {
+        "name": "Direzione del vento"
+      },
+      "precipitation": {
+        "name": "Precipitazioni"
+      },
+      "precipitation_current_hour": {
+        "name": "Precipitazioni dell'ora corrente"
+      },
+      "pressure": {
+        "name": "Pressione"
+      },
+      "wind_gust": {
+        "name": "Raffica di vento"
+      },
+      "dew_point": {
+        "name": "Punto di rugiada"
+      },
+      "sunshine_duration": {
+        "name": "Durata del soleggiamento"
+      },
+      "global_radiation": {
+        "name": "Radiazione globale"
+      },
+      "uv_index": {
+        "name": "Indice UV"
+      },
+      "snow_depth": {
+        "name": "Altezza della neve"
+      },
+      "foehn_index": {
+        "name": "Indice di favonio"
+      },
+      "soil_temperature_5cm": {
+        "name": "Temperatura del suolo 5 cm"
+      },
+      "soil_temperature_10cm": {
+        "name": "Temperatura del suolo 10 cm"
+      },
+      "soil_temperature_20cm": {
+        "name": "Temperatura del suolo 20 cm"
+      },
+      "pm25": {
+        "name": "PM2.5"
+      },
+      "pm10": {
+        "name": "PM10"
+      },
+      "nitrogen_dioxide": {
+        "name": "Diossido di azoto"
+      },
+      "ozone": {
+        "name": "Ozono"
+      },
+      "heating_degree_days": {
+        "name": "Gradi giorno 12/20 di oggi (previsione)"
+      },
+      "season_heating_degree_days": {
+        "name": "Gradi giorno di riscaldamento (stagione)"
+      },
+      "pollen_birch": {
+        "name": "Pollini di betulla"
+      },
+      "pollen_alder": {
+        "name": "Pollini di ontano"
+      },
+      "pollen_grass": {
+        "name": "Pollini di graminacee"
+      },
+      "pollen_mugwort": {
+        "name": "Pollini di artemisia"
+      },
+      "pollen_ambrosia": {
+        "name": "Pollini di ambrosia"
+      },
+      "ms_pollen_birch": {
+        "name": "Pollini di betulla (misurati)"
+      },
+      "ms_pollen_alder": {
+        "name": "Pollini di ontano (misurati)"
+      },
+      "ms_pollen_hazel": {
+        "name": "Pollini di nocciolo (misurati)"
+      },
+      "ms_pollen_grass": {
+        "name": "Pollini di graminacee (misurati)"
+      },
+      "ms_pollen_beech": {
+        "name": "Pollini di faggio (misurati)"
+      },
+      "ms_pollen_ash": {
+        "name": "Pollini di frassino (misurati)"
+      }
     },
     "binary_sensor": {
-      "any_alert": { "name": "Allerta meteo" },
-      "critical_alert": { "name": "Allerta meteo critica" },
-      "upcoming_alert": { "name": "Allerta meteo imminente" }
+      "any_alert": {
+        "name": "Allerta meteo"
+      },
+      "critical_alert": {
+        "name": "Allerta meteo critica"
+      },
+      "upcoming_alert": {
+        "name": "Allerta meteo imminente"
+      }
+    }
+  },
+  "selector": {
+    "warning_type": {
+      "options": {
+        "1": "Temporali",
+        "2": "Pioggia",
+        "3": "Neve",
+        "4": "Vento",
+        "5": "Gelate al suolo",
+        "10": "Incendio di boschi",
+        "11": "Piena",
+        "unknown": "Tipo di pericolo sconosciuto"
+      }
+    },
+    "warning_level": {
+      "options": {
+        "1": "Grado 1 – pericolo nullo o debole",
+        "2": "Grado 2 – pericolo moderato",
+        "3": "Grado 3 – pericolo marcato",
+        "4": "Grado 4 – pericolo forte",
+        "5": "Grado 5 – pericolo molto forte",
+        "unknown": "Grado di pericolo sconosciuto"
+      }
+    },
+    "warning_data_status": {
+      "options": {
+        "current": "Aggiornato",
+        "unavailable": "Allerte meteo non disponibili",
+        "unknown": "Nessun dato di allerta ricevuto",
+        "no_alerts": "Nessuna allerta meteo"
+      }
     }
   }
 }

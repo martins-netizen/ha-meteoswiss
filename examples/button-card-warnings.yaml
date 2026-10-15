@@ -1,0 +1,46 @@
+# Merge button_card_templates into the dashboard's existing template section.
+# Use template: meteoswiss_warning_text on existing custom:button-card cards.
+# Labels come from the integration; this template contains no warning dictionary.
+button_card_templates:
+  meteoswiss_warning_text:
+    variables:
+      warning_timing: active
+      warning_language: null
+    show_name: false
+    show_label: true
+    styles:
+      label:
+        - white-space: normal
+        - text-align: left
+    label: |
+      [[[
+        const catalogue = entity?.attributes?.warning_labels || {};
+        const requested = variables.warning_language || hass.locale?.language || hass.language || 'en';
+        const language = requested.toLowerCase().replace('_', '-').split('-')[0];
+        const text = catalogue[language] || catalogue.en;
+        const escape = value => String(value).replace(/[&<>"']/g,
+          char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+        if (!text) return escape(entity?.state || 'unavailable');
+        if (!entity || ['unknown', 'unavailable'].includes(entity.state)
+            || entity.attributes.data_status !== 'current') {
+          return escape(text.status.unavailable);
+        }
+        const key = variables.warning_timing === 'upcoming' ? 'upcoming_alerts' : 'alerts';
+        const alerts = entity.attributes[key] || [];
+        if (!alerts.length) return escape(text.status.no_alerts);
+        return alerts.map(alert => {
+          const type = text.types[String(alert.warn_type)]
+            || `${text.types.unknown} (${alert.warn_type})`;
+          const level = text.levels[String(alert.warn_level)]
+            || `${text.levels.unknown} (${alert.warn_level})`;
+          return `${escape(type)}: ${escape(level)}`;
+        }).join('<br>');
+      ]]]
+
+# Example card (inside a view's cards list):
+# type: custom:button-card
+# entity: binary_sensor.meteoswiss_alerts_8302_weather_alert
+# template: meteoswiss_warning_text
+# variables:
+#   warning_timing: active  # or upcoming
+#   warning_language: de   # omit to use the viewing user's language

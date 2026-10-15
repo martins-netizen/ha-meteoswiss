@@ -1,84 +1,51 @@
-"""Retry decorator with exponential backoff."""
+"""Bounded retries for transient HTTP failures only."""
+
 from __future__ import annotations
 
 import asyncio
-import logging
-from typing import Callable, TypeVar
+from functools import wraps
+from typing import Any, Callable
 
-_LOGGER = logging.getLogger(__name__)
-
-T = TypeVar("T")
+import aiohttp
 
 
 def async_retry_with_backoff(
     max_attempts: int = 4,
     base_delay: float = 1.0,
     max_delay: float = 10.0,
-) -> Callable[..., T]:
-    """Decorator to retry async functions with exponential backoff.
+) -> Callable:
+    """Retry timeouts, connection errors, HTTP 408/429 and server errors.
 
-    Args:
-        max_attempts: Maximum number of attempts (default: 4)
-        base_delay: Initial delay in seconds (default: 1.0)
-        max_delay: Maximum delay in seconds (default: 10.0)
-
-    Returns:
-        Decorated async function
+    Invalid payloads and permanent HTTP errors propagate immediately.
+    Cancellation is never intercepted.
     """
+    if max_attempts < 1:
+        raise ValueError("max_attempts must be positive")
 
-    def decorator(func: Callable[..., T]) -> Callable[..., T]:
-        async def wrapper(*args, **kwargs):
-            last_exception = None
-
-            for attempt in range(1, max_attempts + 1):
+    def decorator(func: Callable) -> Callable:
+        @wraps(func)
+        async def wrapper(*args: Any, **kwargs: Any) -> Any:
+            for attempt in range(max_attempts):
                 try:
-                    _LOGGER.debug(
-                        "Attempt %d/%d for %s",
-                        attempt,
-                        max_attempts,
-                        func.__name__,
-                    )
                     return await func(*args, **kwargs)
-
-                except asyncio.TimeoutError as e:
-                    last_exception = e
-                    if attempt < max_attempts:
-                        delay = min(base_delay * (2 ** (attempt - 1)), max_delay)
-                        _LOGGER.warning(
-                            "Timeout on attempt %d for %s, retrying in %.1fs",
-                            attempt,
-                            func.__name__,
-                            delay,
-                        )
-                        await asyncio.sleep(delay)
-                    else:
-                        _LOGGER.error(
-                            "Max attempts (%d) reached for %s (timeout)",
-                            max_attempts,
-                            func.__name__,
-                        )
+                except (aiohttp.ClientError, TimeoutError) as err:
+                    if isinstance(err, aiohttp.ClientResponseError):
+                        if err.status not in (408, 429) and err.status < 500:
+                            raise
+                    if attempt + 1 == max_attempts:
                         raise
-
-                except Exception as e:
-                    last_exception = e
-                    if attempt < max_attempts:
-                        delay = min(base_delay * (2 ** (attempt - 1)), max_delay)
-                        _LOGGER.warning(
-                            "Error on attempt %d for %s: %s, retrying in %.1fs",
-                            attempt,
-                            func.__name__,
-                            e,
-                            delay,
-                        )
-                        await asyncio.sleep(delay)
-                    else:
-                        _LOGGER.error(
-                            "Max attempts (%d) reached for %s: %s",
-                            max_attempts,
-                            func.__name__,
-                            e,
-                        )
-                        raise
+                    delay = min(base_delay * 2**attempt, max_delay)
+                    if isinstance(err, aiohttp.ClientResponseError) and err.headers:
+                        try:
+                            retry_after = float(err.headers.get("Retry-After", delay))
+                            if retry_after > max_delay:
+                                # Defer to the next coordinator refresh rather
+                                # than retrying earlier than the server allows.
+                                raise err
+                            delay = min(max(retry_after, delay), max_delay)
+                        except (TypeError, ValueError):
+                            pass
+                    await asyncio.sleep(delay)
 
         return wrapper
 

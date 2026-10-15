@@ -25,15 +25,15 @@ from __future__ import annotations
 import csv
 import io
 import logging
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import Any
 
 import aiohttp
-
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DOMAIN
+from .const import DEFAULT_API_TIMEOUT, DOMAIN
+from .retry import async_retry_with_backoff
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -103,6 +103,7 @@ class MeteoSwissPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             update_interval=timedelta(seconds=update_interval),
         )
 
+    @async_retry_with_backoff(max_attempts=3)
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch pollen data from MeteoSwiss ogd-pollen."""
         if self._session is None:
@@ -114,14 +115,8 @@ class MeteoSwissPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         url = f"{POLLEN_DATA_BASE_URL}/{self._station_id}/ogd-pollen_{self._station_id}_h_now.csv"
 
         try:
-            async with self._session.get(url) as response:
-                if response.status != 200:
-                    _LOGGER.error(
-                        "MeteoSwiss pollen API returned %s for station %s",
-                        response.status,
-                        self._station_id,
-                    )
-                    return {}
+            async with self._session.get(url, timeout=DEFAULT_API_TIMEOUT) as response:
+                response.raise_for_status()
 
                 content = await response.text()
 
@@ -129,7 +124,7 @@ class MeteoSwissPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
             if not data:
                 _LOGGER.warning("No pollen data parsed for station %s", self._station_id)
-                return {}
+                raise UpdateFailed("No measured pollen data available")
 
             _LOGGER.debug(
                 "Successfully parsed pollen data for station %s: %d pollen types",
@@ -138,12 +133,12 @@ class MeteoSwissPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             )
             return data
 
-        except aiohttp.ClientError as err:
+        except (aiohttp.ClientError, TimeoutError) as err:
             _LOGGER.error("MeteoSwiss pollen API request failed: %s", err)
-            return {}
+            raise
         except Exception as err:
             _LOGGER.error("Error fetching MeteoSwiss pollen data: %s", err)
-            return {}
+            raise UpdateFailed("Measured pollen data unavailable") from err
 
     def _parse_csv(self, csv_text: str) -> dict[str, Any]:
         """Parse MeteoSwiss pollen CSV data.

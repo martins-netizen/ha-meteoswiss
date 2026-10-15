@@ -2,11 +2,10 @@
 from __future__ import annotations
 
 import hashlib
-import json
 import logging
 import time
-from dataclasses import dataclass, asdict
-from typing import Any, Callable, Final, Optional
+from dataclasses import asdict, dataclass
+from typing import Any, Callable
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -22,7 +21,7 @@ class CacheEntry:
 
     def is_expired(self) -> bool:
         """Check if cache entry is expired."""
-        return time.time() - self.timestamp > self.ttl
+        return time.monotonic() - self.timestamp > self.ttl
 
     def to_dict(self) -> dict:
         """Convert to dictionary."""
@@ -116,7 +115,7 @@ class MeteoSwissCache:
         entry = CacheEntry(
             key=key,
             value=value,
-            timestamp=time.time(),
+            timestamp=time.monotonic(),
             ttl=ttl,
         )
 

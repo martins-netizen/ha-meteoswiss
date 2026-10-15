@@ -12,7 +12,6 @@ from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import aiohttp
-
 from homeassistant.components.recorder.models import (
     StatisticData,
     StatisticMeanType,
@@ -23,7 +22,7 @@ from homeassistant.const import UnitOfPrecipitationDepth
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import API_BASE, DOMAIN, STAC_COLLECTION
+from .const import API_BASE, DEFAULT_API_TIMEOUT, DOMAIN, STAC_COLLECTION
 from .coordinator import _parse_reference_timestamp
 from .retry import async_retry_with_backoff
 
@@ -152,7 +151,7 @@ class MeteoSwissHourlyPrecipitationCoordinator(
         """Return the requested station-specific hourly CSV URLs."""
         try:
             url = f"{API_BASE}/collections/{STAC_COLLECTION}/items/{self.station_id}"
-            async with self._session.get(url) as response:
+            async with self._session.get(url, timeout=DEFAULT_API_TIMEOUT) as response:
                 if response.status != 200:
                     _LOGGER.error(
                         "Failed to fetch hourly station info: %s", response.status
@@ -190,7 +189,7 @@ class MeteoSwissHourlyPrecipitationCoordinator(
     ) -> str | None:
         """Download the official hourly CSV."""
         try:
-            async with self._session.get(csv_url) as response:
+            async with self._session.get(csv_url, timeout=DEFAULT_API_TIMEOUT) as response:
                 if response.status != 200:
                     _LOGGER.error(
                         "Failed to download hourly CSV: %s", response.status

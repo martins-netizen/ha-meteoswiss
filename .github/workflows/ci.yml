@@ -17,7 +17,16 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  tests:
+  compatibility:
+    name: HA ${{ matrix.ha }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ha: '2026.8.3'
+            requirements: requirements_test_min.txt
+          - ha: '2026.10.1'
+            requirements: requirements_test.txt
     runs-on: ubuntu-latest
     timeout-minutes: 20
 
@@ -32,13 +41,40 @@ jobs:
         with:
           python-version: "3.14"
           cache: pip
-          cache-dependency-path: requirements_test.txt
+          cache-dependency-path: ${{ matrix.requirements }}
 
       - name: Install test dependencies
-        run: python -m pip install --disable-pip-version-check -r requirements_test.txt
+        run: python -m pip install --disable-pip-version-check -r "${{ matrix.requirements }}"
 
       - name: Compile Python sources
         run: python -m compileall -q custom_components/meteoswiss tests
 
+      - name: Check bundled translations and versions
+        run: python scripts/check_translations.py
+
       - name: Run regression tests
         run: pytest -q
+
+  hassfest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Validate custom integration
+        uses: home-assistant/actions/hassfest@50baf3a307f87100cf550d4ae127746595030d5d
+
+  # Preserve the required branch-protection check name while testing both HAs.
+  tests:
+    if: always()
+    needs: [compatibility, hassfest]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require both compatibility environments and Hassfest
+        env:
+          COMPATIBILITY: ${{ needs.compatibility.result }}
+          HASSFEST: ${{ needs.hassfest.result }}
+        run: test "$COMPATIBILITY" = success && test "$HASSFEST" = success

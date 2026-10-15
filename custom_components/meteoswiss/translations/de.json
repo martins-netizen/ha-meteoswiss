@@ -166,5 +166,37 @@
         "name": "Angekündigte Wetterwarnung"
       }
     }
+  },
+  "selector": {
+    "warning_type": {
+      "options": {
+        "1": "Gewitter",
+        "2": "Regen",
+        "3": "Schnee",
+        "4": "Wind",
+        "5": "Bodenfrost",
+        "10": "Waldbrand",
+        "11": "Hochwasser",
+        "unknown": "Unbekannte Warnungsart"
+      }
+    },
+    "warning_level": {
+      "options": {
+        "1": "Stufe 1 – keine oder geringe Gefahr",
+        "2": "Stufe 2 – mässige Gefahr",
+        "3": "Stufe 3 – erhebliche Gefahr",
+        "4": "Stufe 4 – grosse Gefahr",
+        "5": "Stufe 5 – sehr grosse Gefahr",
+        "unknown": "Unbekannte Gefahrenstufe"
+      }
+    },
+    "warning_data_status": {
+      "options": {
+        "current": "Aktuell",
+        "unavailable": "Warnungsabfrage nicht verfügbar",
+        "unknown": "Noch keine Warnungsdaten",
+        "no_alerts": "Keine Wetterwarnung"
+      }
+    }
   }
 }

@@ -2,17 +2,17 @@
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import aiohttp
-
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .cache import get_current_weather_cache
-from .const import DOMAIN, MIN_UPDATE_INTERVAL
+from .const import DEFAULT_API_TIMEOUT, DOMAIN, MIN_UPDATE_INTERVAL
 from .retry import async_retry_with_backoff
+from .weather_data import forecast_datetime
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -108,10 +108,8 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 self.longitude,
             )
 
-            async with self._session.get(OPENMETEO_AQ_BASE_URL, params=params) as response:
-                if response.status != 200:
-                    _LOGGER.error("Open-Meteo AQ API error: %s", response.status)
-                    return None
+            async with self._session.get(OPENMETEO_AQ_BASE_URL, params=params, timeout=DEFAULT_API_TIMEOUT) as response:
+                response.raise_for_status()
 
                 data = await response.json()
                 _LOGGER.debug("Open-Meteo AQ response keys: %s", data.keys())
@@ -126,7 +124,7 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                         "current": "uv_index",
                         "timezone": "Europe/Zurich",
                     }
-                    async with self._session.get(OPENMETEO_FORECAST_URL, params=uv_params) as uv_response:
+                    async with self._session.get(OPENMETEO_FORECAST_URL, params=uv_params, timeout=DEFAULT_API_TIMEOUT) as uv_response:
                         if uv_response.status == 200:
                             uv_data = await uv_response.json()
                             uv_current = uv_data.get("current", {})
@@ -139,9 +137,8 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
                 return result
 
-        except aiohttp.ClientError as err:
-            _LOGGER.error("Open-Meteo AQ API request failed: %s", err)
-            return None
+        except (aiohttp.ClientError, TimeoutError):
+            raise
         except Exception as err:
             _LOGGER.exception("Error fetching Open-Meteo AQ data: %s", err)
             return None
@@ -168,6 +165,12 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             # Parse hourly data
             hourly = data.get("hourly", {})
             hourly_time = hourly.get("time", [])
+            now = datetime.now(timezone.utc)
+            current_index = next((i for i, value in enumerate(hourly_time)
+                if (timestamp := forecast_datetime(value)) is not None
+                and timestamp <= now < timestamp + timedelta(hours=1)), None)
+            if current_index is None:
+                raise ValueError("No current-hour air quality forecast")
 
             # Parse each pollen type
             for pollen_type in POLLEN_TYPES:
@@ -176,9 +179,9 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 if pollen_values and len(pollen_values) > 0:
                     # Get most recent value (current)
                     result[pollen_type] = {
-                        "current": float(pollen_values[0]) if pollen_values[0] is not None else 0,
+                        "current": float(pollen_values[current_index]) if current_index < len(pollen_values) and pollen_values[current_index] is not None else None,
                         "unit": "Grains/m³",
-                        "forecast": pollen_values[:24] if len(pollen_values) > 0 else [],  # Next 24 hours
+                        "forecast": pollen_values[current_index:current_index + 24],  # Next 24 hours
                     }
                     _LOGGER.debug(
                         "Parsed %s: current=%s, forecast_hours=%d",
@@ -189,20 +192,16 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
             # Parse timestamp
             if hourly_time and len(hourly_time) > 0:
-                result["last_update"] = hourly_time[0]
+                result["last_update"] = forecast_datetime(hourly_time[current_index]).isoformat()
                 _LOGGER.debug("Pollen timestamp: %s", result["last_update"])
 
             # Parse air quality parameters (current = first available value)
             for aq_param in AQ_PARAMETERS:
                 aq_values = hourly.get(aq_param, [])
                 if aq_values and len(aq_values) > 0:
-                    # Find first non-null value
-                    for v in aq_values:
-                        if v is not None:
-                            # Map API parameter names to sensor keys
-                            sensor_key = "pm25" if aq_param == AQ_PM25 else aq_param
-                            result[sensor_key] = round(float(v), 1)
-                            break
+                    sensor_key = "pm25" if aq_param == AQ_PM25 else aq_param
+                    value = aq_values[current_index] if current_index < len(aq_values) else None
+                    result[sensor_key] = round(float(value), 1) if value is not None else None
                     _LOGGER.debug("Parsed AQ %s: %s", aq_param, result.get("pm25" if aq_param == AQ_PM25 else aq_param))
 
             # Check if we have any data

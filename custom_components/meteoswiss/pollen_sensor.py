@@ -15,7 +15,6 @@ from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .const import (
-    CONF_POSTAL_CODE,
     CONF_STATION_NAME,
     DOMAIN,
     OPENMETEO_AIR_QUALITY_ATTRIBUTION,
@@ -126,7 +125,6 @@ async def async_setup_entry(
         _LOGGER.warning("Pollen coordinator not found - pollen sensors not available")
         return
 
-    postal_code = entry.data.get(CONF_POSTAL_CODE)
     station_name = entry.data.get(CONF_STATION_NAME, "Unknown")
 
     entities = [
