@@ -413,7 +413,7 @@ def test_weather_alert_respects_validity_window(monkeypatch) -> None:
 
     future = WeatherAlert(
         alert_id="future",
-        warn_type=4,
+        warn_type=0,
         warn_type_name="Wind",
         warn_level=2,
         warn_level_name="Level 2",
@@ -424,7 +424,7 @@ def test_weather_alert_respects_validity_window(monkeypatch) -> None:
     )
     active = WeatherAlert(
         alert_id="active",
-        warn_type=4,
+        warn_type=0,
         warn_type_name="Wind",
         warn_level=2,
         warn_level_name="Level 2",
@@ -435,7 +435,7 @@ def test_weather_alert_respects_validity_window(monkeypatch) -> None:
     )
     expired = WeatherAlert(
         alert_id="expired",
-        warn_type=4,
+        warn_type=0,
         warn_type_name="Wind",
         warn_level=2,
         warn_level_name="Level 2",

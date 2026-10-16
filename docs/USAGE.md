@@ -217,8 +217,8 @@ and warning request/parser logs omit postcodes, URLs and raw payload errors.
 HA owns the borrowed HTTP session and logs availability loss/recovery once.
 The station observation client's broader legacy logging still needs review.
 
-The existing warning-name mapping is **not** approved as a complete API code
-specification. See [the source investigation](API_SOURCES.md#warning-types-legacy-implementation-labels-not-an-api-specification),
+The proposed warning-name mapping is **not** approved as a complete API code
+specification. See [the source investigation](WARNING_CODES.md),
 particularly the `0`/`4` wind-versus-slippery-roads discrepancy. Verify numeric
 meanings and existing dashboard/awning filters before a deployment or release;
 do not change a safety filter solely because a translated label changed.

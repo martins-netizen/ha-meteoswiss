@@ -170,13 +170,18 @@
   "selector": {
     "warning_type": {
       "options": {
+        "0": "Vent",
         "1": "Orages",
         "2": "Pluie",
         "3": "Neige",
-        "4": "Vent",
+        "4": "Chaussées glissantes",
         "5": "Gel au sol",
+        "7": "Canicule",
+        "8": "Avalanches",
+        "9": "Séismes",
         "10": "Incendie de forêt",
         "11": "Crue",
+        "12": "Sécheresse",
         "unknown": "Type de danger inconnu"
       }
     },

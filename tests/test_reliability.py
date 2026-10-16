@@ -292,16 +292,7 @@ async def test_warning_labels_ship_all_supported_languages(hass):
     assert set(labels) == {"de", "en", "fr", "it"}
     assert labels["de"]["types"]["5"] == "Bodenfrost"
     for language in labels.values():
-        assert set(language["types"]) == {
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "10",
-            "11",
-            "unknown",
-        }
+        assert set(language["types"]) == {str(code) for code in range(13) if code != 6} | {"unknown"}
         assert set(language["levels"]) == {"1", "2", "3", "4", "5", "unknown"}
         assert language["status"]["unavailable"]
 

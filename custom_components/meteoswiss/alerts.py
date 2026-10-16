@@ -19,14 +19,20 @@ _LOGGER = logging.getLogger(__name__)
 # MeteoSwiss App API
 METEOSWISS_APP_API_URL = "https://app-prod-ws.meteoswiss-app.ch/v1/plzDetail"
 
-# Legacy label mapping, pending separate App API numeric-code verification.
+# Proposed App API labels; provider-code verification is pending.
+# See docs/WARNING_CODES.md. This branch is not approved for deployment.
+WARN_TYPE_WIND = 0
 WARN_TYPE_THUNDERSTORM = 1
 WARN_TYPE_RAIN = 2
 WARN_TYPE_SNOW = 3
-WARN_TYPE_WIND = 4
+WARN_TYPE_SLIPPERY_ROADS = 4
 WARN_TYPE_GROUND_FROST = 5
+WARN_TYPE_HEAT = 7
+WARN_TYPE_AVALANCHES = 8
+WARN_TYPE_EARTHQUAKES = 9
 WARN_TYPE_FOREST_FIRE = 10
 WARN_TYPE_FLOOD = 11
+WARN_TYPE_DROUGHT = 12
 
 # Warning levels
 WARN_LEVEL_1 = 1  # No or minor danger
@@ -280,9 +286,14 @@ class MeteoSwissAlertsAPI:
             WARN_TYPE_RAIN: "Rain",
             WARN_TYPE_SNOW: "Snow",
             WARN_TYPE_WIND: "Wind",
+            WARN_TYPE_SLIPPERY_ROADS: "Slippery Roads",
             WARN_TYPE_GROUND_FROST: "Ground Frost",
+            WARN_TYPE_HEAT: "Heat",
+            WARN_TYPE_AVALANCHES: "Avalanches",
+            WARN_TYPE_EARTHQUAKES: "Earthquakes",
             WARN_TYPE_FOREST_FIRE: "Forest Fire",
             WARN_TYPE_FLOOD: "Flood",
+            WARN_TYPE_DROUGHT: "Drought",
         }
         return warn_type_names.get(warn_type, f"Unknown ({warn_type})")
 
