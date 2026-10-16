@@ -41,7 +41,7 @@ snapshot as having acquired these changes.
 | `action-exceptions` | Exempt: no integration-specific service actions. |
 | `config-entry-unloading` | Native unload/reload; tests verify HA session ownership, replaced runtime state, stable entity IDs and removed observation/forecast listeners. |
 | `docs-configuration-parameters`, `docs-installation-parameters` | Usage includes provider selection, intervals, coordinates, warning postcode and measured pollen station. |
-| `entity-unavailable` | Observations/warnings and both pollen/AQ clients have failure/recovery tests, including registered pollen/AQ entity states. All-empty current pollen/AQ payloads fail; partial responses retain unknown fields. Measured pollen rejects age over four hours or future skew over ten minutes on refresh. Both weather forecast services return empty lists on forecast failure and recover, while valid observations remain available. Alternative Open-Meteo current conditions have registered weather/temperature entity outage and recovery tests; invalid individual measurements stay unknown and an all-empty source fails. Remaining optional per-entity paths still require review; full rule remains pending. |
+| `entity-unavailable` | Observations/warnings and both pollen/AQ clients have failure/recovery tests, including registered pollen/AQ entity states. All-empty current pollen/AQ payloads fail; partial responses retain unknown fields. Measured pollen rejects age over four hours or future skew over ten minutes on refresh. Both weather forecast services return empty lists on forecast failure and recover, while valid observations remain available. Alternative Open-Meteo current conditions have registered weather/temperature entity outage and recovery tests; invalid individual measurements stay unknown and an all-empty source fails. Registered weather attributes use native HA properties and unit conversion; forecast subscribers receive fresh/empty/recovered payloads, including through HA WebSocket. Remaining optional per-entity paths still require review; full rule remains pending. |
 | `integration-owner` | `@martins-netizen` in manifest. Repository Issues are currently disabled: enable a usable fork-specific support route before public release. |
 | `log-when-unavailable` | Pollen/AQ, measured pollen and the ICON forecast client use coordinator transition logs. Forecast failures suppress raw coordinate URLs/HTTP exception chains even in debug logs; repeated failure and recovery are tested. The alternative Open-Meteo current client also suppresses coordinate URLs/raw error chains and tests repeated failure and recovery. Remaining providers still require review. Pending for the full integration. |
 | `parallel-updates` | Explicit platform limits: sensor 1 for diagnostic polling, coordinator-driven weather/binary sensor 0; no device actions. |
@@ -51,10 +51,11 @@ snapshot as having acquired these changes.
 The starting snapshot had 68 passing tests and 54.78% combined line/branch
 coverage (58.50% lines, 40.42% branches). Config flow was 33.79% combined.
 CI now measures **all** integration modules, prints per-module coverage and
-requires full config-flow, both pollen-client, ICON forecast-client, alternative Open-Meteo current-client, hourly
+requires full config-flow, both pollen-client, ICON forecast-client, alternative
+Open-Meteo current-client, weather-entity, shared weather-data, hourly
 precipitation and HGT utility line/branch coverage. The station coordinator has
 separate minimums of 95% for lines and branches. The combined integration floor
-is 86% (raised from 80%, previously 71%, 67% and initially 60%). This
+is 89% (raised from 86%, previously 80%, 71%, 67% and initially 60%). This
 floor prevents regressions at this stage; it is not a substitute for Silver.
 Unused camera/SLF/hydrology placeholders remain visible in the denominator.
 They must be explicitly removed in a reviewed scope or covered; no exclusions
@@ -72,9 +73,16 @@ zero/negative temperatures, invalid individual numbers, optional preview isolati
 observation freshness, bounded retries, cache TTL, circuit recovery, private logs
 and registered HA entity states are tested on both supported HA versions.
 
-Continue with the remaining optional-source failure/recovery, provider payload
-parsing and freshness, forecast aggregation/timezones, then entity properties, diagnostics
-and shared cache/station helpers. Raise the coverage gate as these changes land.
+The weather entity and shared number/time contract have full line/branch
+coverage. Native observations, HA unit conversion, service responses and actual
+WebSocket forecast subscriptions are tested. Aggregation covers full native
+daily extrema, missing/gapped rain, Swiss midnight and 23/25-hour DST days.
+Original regression tests reproduce missing weather attributes and a forecast
+subscriber receiving no refresh before the fix.
+
+Continue with remaining sensor/diagnostic paths and shared cache/station helpers,
+then review source/logging rules across every active family. Raise the coverage
+gate as these changes land.
 Gold/Platinum work follows this measured baseline, rather than adding labels.
 
 ## Reproduce

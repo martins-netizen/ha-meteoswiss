@@ -145,7 +145,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
             update_interval=3600,
             session=shared_session,
         )
-        _LOGGER.debug("Forecast coordinator using Home Assistant location: lat=%s, lon=%s", lat, lon)
+        _LOGGER.debug("Forecast coordinator uses Home Assistant location")
         hourly_precipitation_coordinator = None
         precipitation_archive_coordinator = None
         if "recorder" in hass.config.components:

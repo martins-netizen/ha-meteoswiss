@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import math
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -29,6 +28,7 @@ from .weather_data import (
     forecast_datetime,
     validate_observation_time,
     weather_condition,
+    weather_number,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -69,30 +69,9 @@ WMO_CODE_DESCRIPTIONS: dict[int, dict[str, str]] = {
 }
 
 
-def _number(
-    raw: Any, minimum: float | None = None, maximum: float | None = None
-) -> float | None:
-    """Missing/invalid values stay missing; zero is a valid measurement."""
-    if raw is None or isinstance(raw, bool):
-        return None
-    try:
-        value = float(raw)
-    except (TypeError, ValueError, OverflowError):
-        return None
-    if (
-        not math.isfinite(value)
-        or minimum is not None
-        and value < minimum
-        or maximum is not None
-        and value > maximum
-    ):
-        return None
-    return value
-
-
 def _code(raw: Any) -> int | None:
     """Only known integral WMO codes can describe the weather."""
-    value = _number(raw)
+    value = weather_number(raw)
     return int(value) if value in WMO_WEATHER_CODES else None
 
 
@@ -183,22 +162,26 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             raise TypeError("Invalid current weather response")
         current = data["current"]
         raw_time = current.get("time")
-        timestamp = None if isinstance(raw_time, bool) else forecast_datetime(raw_time)
+        timestamp = forecast_datetime(raw_time)
         if timestamp is None:
             raise ValueError("Invalid current weather timestamp")
         result = {
-            SENSOR_TEMPERATURE: _number(current.get("temperature_2m")),
-            SENSOR_HUMIDITY: _number(current.get("relative_humidity_2m"), 0, 100),
-            SENSOR_WIND_SPEED: _number(current.get("wind_speed_10m"), 0),
-            SENSOR_WIND_DIRECTION: _number(current.get("wind_direction_10m"), 0, 360),
-            SENSOR_PRECIPITATION: _number(current.get("precipitation"), 0),
-            SENSOR_PRESSURE: _number(current.get("pressure_msl"), 0),
-            "uv_index": _number(current.get("uv_index"), 0),
+            SENSOR_TEMPERATURE: weather_number(current.get("temperature_2m")),
+            SENSOR_HUMIDITY: weather_number(
+                current.get("relative_humidity_2m"), 0, 100
+            ),
+            SENSOR_WIND_SPEED: weather_number(current.get("wind_speed_10m"), 0),
+            SENSOR_WIND_DIRECTION: weather_number(
+                current.get("wind_direction_10m"), 0, 360
+            ),
+            SENSOR_PRECIPITATION: weather_number(current.get("precipitation"), 0),
+            SENSOR_PRESSURE: weather_number(current.get("pressure_msl"), 0),
+            "uv_index": weather_number(current.get("uv_index"), 0),
         }
         if all(value is None for value in result.values()):
             raise ValueError("No usable current weather values")
         code = _code(current.get("weather_code"))
-        is_day = _number(current.get("is_day"), 0, 1)
+        is_day = weather_number(current.get("is_day"), 0, 1)
         result.update(
             weather_code=code,
             weather_condition=weather_condition(
@@ -208,7 +191,7 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             last_update=timestamp.isoformat(),
             # Current precipitation is the provider's backwards-looking interval
             # amount, NOT an hourly total or a precipitation rate.
-            precipitation_interval_seconds=_number(current.get("interval"), 1),
+            precipitation_interval_seconds=weather_number(current.get("interval"), 1),
             hourly_forecast=self._parse_hourly(data.get("hourly")),
         )
         return result
@@ -236,9 +219,7 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         result = []
         previous = None
         for index, raw_time in enumerate(hourly.get("time", [])):
-            timestamp = (
-                None if isinstance(raw_time, bool) else forecast_datetime(raw_time)
-            )
+            timestamp = forecast_datetime(raw_time)
             if (
                 timestamp is None
                 or timestamp.minute
@@ -257,7 +238,7 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 else None
                 for key in keys[1:]
             }
-            temperature = _number(values["temperature_2m"])
+            temperature = weather_number(values["temperature_2m"])
             if temperature is None:
                 continue
             code = _code(values["weather_code"])
@@ -265,8 +246,8 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 {
                     "datetime": timestamp.isoformat(),
                     "temperature": temperature,
-                    "humidity": _number(values["relative_humidity_2m"], 0, 100),
-                    "precipitation_probability": _number(
+                    "humidity": weather_number(values["relative_humidity_2m"], 0, 100),
+                    "precipitation_probability": weather_number(
                         values["precipitation_probability"], 0, 100
                     ),
                     "weather_code": code,

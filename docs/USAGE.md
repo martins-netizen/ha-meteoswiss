@@ -92,6 +92,28 @@ temperature values remain valid. A response with absent daily aggregates can
 use the existing hourly fallback, which may cover only part of today. The
 existing 30-minute cache and three-hour age guard in weather forecasts remain.
 
+### Current weather attributes and ongoing forecast subscriptions
+
+The weather entity supplies current temperature, pressure and wind using HA's
+native properties, so HA can apply your selected display units. Existing entity
+IDs and public attribute/service names remain unchanged. A missing current
+field remains absent; a failed observation source makes the entity unavailable
+until recovery.
+
+Forecast updates are also pushed to existing hourly/daily subscribers, including
+HA's weather WebSocket API. Failure pushes an empty forecast and a valid refresh
+restores it without requiring a new subscription. Actual dashboard rendering
+still belongs to the separate live acceptance.
+
+Hourly forecasts omit completed intervals and show up to 24 hours from the
+current hour. Daily forecasts show at most five Swiss calendar days, retaining
+provider full-day highs/lows even when the hourly window begins in the afternoon.
+If native daily aggregates are missing, extrema/probability can use available
+hours; these may cover only part of today. A fallback rain sum stays unknown
+when a represented hourly value is missing or an internal time gap exists.
+Valid zero rain stays zero. Provider native daily totals are used when present;
+the integration does not recalculate them as local measurement totals.
+
 ### Pollen, air quality and UV
 
 A valid concentration of `0` means zero; a missing individual field stays

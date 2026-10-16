@@ -263,8 +263,9 @@ async def test_forecast_request_uses_rolling_meteoswiss_seamless_model(hass, fre
     assert forecast[0]["daily_temperature_mean"] == 24.1
 
 
-async def test_daily_forecast_uses_maximum_and_minimum_temperature(hass) -> None:
+async def test_daily_forecast_uses_maximum_and_minimum_temperature(hass, freezer) -> None:
     """Daily forecast must expose max temperature and native minimum temperature."""
+    freezer.move_to("2026-08-20T05:20:00Z")
     current = MeteoSwissDataUpdateCoordinator(
         hass,
         station_id="KLO",
@@ -308,11 +309,12 @@ async def test_daily_forecast_uses_maximum_and_minimum_temperature(hass) -> None
     daily = await entity.async_forecast_daily()
 
     assert len(daily) == 1
-    assert daily[0]["temperature"] == 28.8
+    assert daily[0]["native_temperature"] == 28.8
     assert daily[0]["native_templow"] == 19.2
 
-async def test_daily_forecast_prefers_native_calendar_day_extrema(hass) -> None:
+async def test_daily_forecast_prefers_native_calendar_day_extrema(hass, freezer) -> None:
     """Current-day extrema must include hours before the rolling forecast starts."""
+    freezer.move_to("2026-08-20T05:20:00Z")
     current = MeteoSwissDataUpdateCoordinator(
         hass,
         station_id="KLO",
@@ -356,7 +358,7 @@ async def test_daily_forecast_prefers_native_calendar_day_extrema(hass) -> None:
     daily = await entity.async_forecast_daily()
 
     assert len(daily) == 1
-    assert daily[0]["temperature"] == 33.3
+    assert daily[0]["native_temperature"] == 33.3
     assert daily[0]["native_templow"] == 18.1
 
 def test_measured_pollen_default_is_a_known_station() -> None:
