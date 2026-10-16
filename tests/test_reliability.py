@@ -202,7 +202,8 @@ async def test_reload_uses_managed_ha_lifecycle(hass):
     reload.assert_awaited_once_with(entry.entry_id)
 
 
-async def test_forecast_contract_preserves_repeated_dst_hour_and_daylight(hass):
+async def test_forecast_contract_preserves_repeated_dst_hour_and_daylight(hass, freezer):
+    freezer.move_to("2026-10-25T00:20:00+00:00")
     times = [datetime(2026, 10, 25, hour, tzinfo=UTC).timestamp() for hour in (0, 1)]
     session = Session(
         Response(

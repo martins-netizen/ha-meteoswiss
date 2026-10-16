@@ -235,8 +235,9 @@ class _FakeSession:
         return _FakeResponse()
 
 
-async def test_forecast_request_uses_rolling_meteoswiss_seamless_model(hass) -> None:
+async def test_forecast_request_uses_rolling_meteoswiss_seamless_model(hass, freezer) -> None:
     """Forecast request must start now and explicitly use MeteoSwiss ICON Seamless."""
+    freezer.move_to("2026-08-20T10:20:00+00:00")
     session = _FakeSession()
     coordinator = MeteoSwissForecastCoordinator(
         hass,

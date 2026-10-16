@@ -58,6 +58,23 @@ An unavailable source is not a value of zero or an all-clear. Some parameters
 are not measured at a station and legitimately stay unknown. Foehn index and
 snow can be reported sparsely; their existing limited fallback is retained.
 
+### Weather forecast availability
+
+A failed download, malformed response or empty/unusable hourly forecast makes
+the hourly and daily `weather.get_forecasts` results empty. Valid station
+observations remain available. A later valid refresh restores the forecast
+automatically; retained old coordinator data is not served as a successful
+forecast during an outage. The client logs an availability transition once,
+rather than repeating raw errors with the location URL.
+
+The requested rolling forecast must have ordered, valid times extending beyond
+now, start no more than one hour ahead and contain a valid temperature in an
+unexpired hour. This checks the returned horizon, not the model's issuance time.
+Individual missing/invalid values stay missing; valid zero and negative
+temperature values remain valid. A response with absent daily aggregates can
+use the existing hourly fallback, which may cover only part of today. The
+existing 30-minute cache and three-hour age guard in weather forecasts remain.
+
 ### Pollen, air quality and UV
 
 A valid concentration of `0` means zero; a missing individual field stays

@@ -57,7 +57,7 @@ jobs:
           pytest -q --cov=custom_components.meteoswiss --cov-branch
           --cov-report=term-missing --cov-report=json:coverage.json
 
-      - name: Enforce flow/pollen coverage and report all modules
+      - name: Enforce flow, pollen and forecast coverage and report all modules
         run: python scripts/check_quality_coverage.py >> "$GITHUB_STEP_SUMMARY"
 
   hassfest:
