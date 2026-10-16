@@ -2,6 +2,11 @@
 
 ## Unreleased — quality baseline, publication gaps and pollen availability
 
+- Respect Retry-After HTTP dates as well as seconds during bounded retries;
+  ignore malformed delay values and fail immediately on invalid URLs/TLS errors.
+- Cover complete setup/reload/unload with and without Recorder, both current
+  weather providers, zero/legacy coordinates and optional-refresh cancellation.
+  Enforce full setup/retry coverage and raise the combined floor to 98.5%.
 - Keep typed config-entry runtime state and entity-owned forecast listeners.
 - Validate both setup providers, handle retryable form errors, and prevent
   duplicate legacy and current location entries.

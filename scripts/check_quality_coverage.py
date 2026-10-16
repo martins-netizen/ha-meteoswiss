@@ -32,6 +32,8 @@ def validate(path: Path) -> None:
     if flow["missing_lines"] or flow["missing_branches"]:
         raise SystemExit("Config flow must have 100% line and branch coverage")
     for module in (
+        "__init__.py",
+        "retry.py",
         "pollen_coordinator_openmeteo.py",
         "pollen_meteoswiss.py",
         "forecast_coordinator.py",
@@ -59,8 +61,8 @@ def validate(path: Path) -> None:
         raise SystemExit(
             "Station coordinator must retain at least 95% line and branch coverage"
         )
-    if total < 98:
-        raise SystemExit("Integration coverage fell below the current 98% floor")
+    if total < 98.5:
+        raise SystemExit("Integration coverage fell below the current 98.5% floor")
 
 
 if __name__ == "__main__":
