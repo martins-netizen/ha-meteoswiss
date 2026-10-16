@@ -1,4 +1,5 @@
 """Pollen sensor platform for MeteoSwiss integration."""
+
 from __future__ import annotations
 
 import logging
@@ -75,7 +76,9 @@ class MeteoSwissPollenSensorEntityDescription(SensorEntityDescription):
     pollen_type_name: str = ""
 
 
-POLLEN_SENSOR_DESCRIPTIONS: Final[tuple[MeteoSwissPollenSensorEntityDescription, ...]] = (
+POLLEN_SENSOR_DESCRIPTIONS: Final[
+    tuple[MeteoSwissPollenSensorEntityDescription, ...]
+] = (
     MeteoSwissPollenSensorEntityDescription(
         key="birch_pollen",
         translation_key="pollen_birch",
@@ -125,7 +128,7 @@ async def async_setup_entry(
     async_add_entities,
 ) -> None:
     """Set up pollen sensor platform."""
-    _LOGGER.debug("Setting up MeteoSwiss pollen sensor platform for %s", entry.data.get(CONF_STATION_NAME))
+    _LOGGER.debug("Setting up MeteoSwiss pollen sensor platform")
 
     coordinator = entry.runtime_data.pollen_coordinator
 
@@ -156,7 +159,9 @@ class MeteoSwissPollenSensor(CoordinatorEntity, SensorEntity):
         """Initialize pollen sensor."""
         super().__init__(coordinator)
         self.entity_description = description
-        self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_pollen_{description.pollen_type}"
+        self._attr_unique_id = (
+            f"{DOMAIN}_{entry.entry_id}_pollen_{description.pollen_type}"
+        )
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, f"pollen_{entry.entry_id}")},
             name=OPENMETEO_AIR_QUALITY_DEVICE_NAME,
@@ -165,10 +170,7 @@ class MeteoSwissPollenSensor(CoordinatorEntity, SensorEntity):
         )
         self._attr_has_entity_name = True
         self._attr_attribution = OPENMETEO_AIR_QUALITY_ATTRIBUTION
-        try:
-            self._attr_entity_category = EntityCategory.HEALTH
-        except AttributeError:
-            self._attr_entity_category = EntityCategory.DIAGNOSTIC
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._pollen_type = description.pollen_type
         self._pollen_type_name = description.pollen_type_name
 

@@ -1,22 +1,25 @@
 """MeteoSwiss Alerts Module using MeteoSwiss App API."""
+
 from __future__ import annotations
 
+import asyncio
 import logging
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 import aiohttp
 
 from .const import DEFAULT_API_TIMEOUT
 from .retry import async_retry_with_backoff
+from .weather_data import weather_number
 
 _LOGGER = logging.getLogger(__name__)
 
 # MeteoSwiss App API
 METEOSWISS_APP_API_URL = "https://app-prod-ws.meteoswiss-app.ch/v1/plzDetail"
 
-# Warning types (from MeteoSwiss documentation)
+# Legacy label mapping, pending separate App API numeric-code verification.
 WARN_TYPE_THUNDERSTORM = 1
 WARN_TYPE_RAIN = 2
 WARN_TYPE_SNOW = 3
@@ -31,6 +34,24 @@ WARN_LEVEL_2 = 2  # Moderate danger
 WARN_LEVEL_3 = 3  # Significant danger
 WARN_LEVEL_4 = 4  # High danger
 WARN_LEVEL_5 = 5  # Very high danger
+
+
+def _warning_integer(raw: Any) -> int:
+    """Reject boolean, fractional and non-finite provider codes."""
+    value = weather_number(raw, 0)
+    if value is None or not value.is_integer():
+        raise ValueError("Invalid weather-warning integer")
+    return int(value)
+
+
+def _warning_timestamp(raw: Any) -> datetime | None:
+    """Missing bounds stay missing; epoch zero is a real timestamp."""
+    if raw is None:
+        return None
+    value = weather_number(raw)
+    if value is None:
+        raise ValueError("Invalid weather-warning time")
+    return datetime.fromtimestamp(value / 1000, tz=UTC)
 
 
 @dataclass
@@ -53,30 +74,24 @@ class WeatherAlert:
         if self.outlook:
             return False
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         if self.valid_from is not None and now < self.valid_from:
             return False
 
-        if self.valid_to is not None and now > self.valid_to:
-            return False
-
-        return True
+        return self.valid_to is None or now <= self.valid_to
 
     def is_upcoming(self) -> bool:
         """Check whether a published alert starts in the future."""
         if self.outlook or self.valid_from is None:
             return False
 
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         if now >= self.valid_from:
             return False
 
         # Ignore malformed windows that end before they start.
-        if self.valid_to is not None and self.valid_to < self.valid_from:
-            return False
-
-        return True
+        return self.valid_to is None or self.valid_to >= self.valid_from
 
     def is_critical(self) -> bool:
         """Check if alert is critical (level 3 or above)."""
@@ -135,19 +150,22 @@ class MeteoSwissAlertsAPI:
         if not postal_code:
             raise ValueError("A postal code is required for weather warnings")
         url = f"{METEOSWISS_APP_API_URL}?plz={postal_code}00"
-        return await self._fetch_and_parse_alerts(url, postal_code)
+        async with asyncio.timeout(DEFAULT_API_TIMEOUT.total):
+            return await self._fetch_and_parse_alerts(url, postal_code)
 
     @async_retry_with_backoff(max_attempts=4, base_delay=1.0, max_delay=10.0)
     async def _fetch_and_parse_alerts(self, url: str, postal_code: str) -> list:
         """Fetch and parse alerts from API with retry logic."""
-        _LOGGER.debug("Fetching alerts from: %s", url)
+        _LOGGER.debug("Fetching weather warnings")
 
         async with self._session.get(url, timeout=DEFAULT_API_TIMEOUT) as response:
             response.raise_for_status()
             data = await response.json()
             return self._parse_alerts(data, postal_code)
 
-    def _parse_alerts(self, data: dict[str, Any], postal_code: str) -> list[WeatherAlert]:
+    def _parse_alerts(
+        self, data: dict[str, Any], postal_code: str
+    ) -> list[WeatherAlert]:
         """Parse alerts from API response.
 
         The API returns data with optional 'warnings' field.
@@ -190,7 +208,9 @@ class MeteoSwissAlertsAPI:
 
         return alerts
 
-    def _parse_single_alert(self, warning_data: dict[str, Any], postal_code: str) -> WeatherAlert | None:
+    def _parse_single_alert(
+        self, warning_data: dict[str, Any], postal_code: str
+    ) -> WeatherAlert | None:
         """Parse a single alert from warning data.
 
         Args:
@@ -203,33 +223,23 @@ class MeteoSwissAlertsAPI:
         try:
             # Parse warning text (HTML or text format)
             warning_text = warning_data.get("text", "")
+            if not isinstance(warning_text, str):
+                raise ValueError("Invalid weather-warning text")
 
             # Parse warning level
-            warn_level = int(warning_data["warnLevel"])
+            warn_level = _warning_integer(warning_data["warnLevel"])
             if not 1 <= warn_level <= 5:
                 raise ValueError("Invalid weather-warning level")
 
             # Parse warning type
-            warn_type = int(warning_data["warnType"])
+            warn_type = _warning_integer(warning_data["warnType"])
 
             # Parse valid from/to (Unix timestamps)
             valid_from_ts = warning_data.get("validFrom")
             valid_to_ts = warning_data.get("validTo")
 
-            valid_from = None
-            valid_to = None
-
-            if valid_from_ts:
-                try:
-                    valid_from = datetime.fromtimestamp(valid_from_ts / 1000, tz=timezone.utc)
-                except (ValueError, TypeError, OverflowError) as err:
-                    raise ValueError("Invalid weather-warning start") from err
-
-            if valid_to_ts:
-                try:
-                    valid_to = datetime.fromtimestamp(valid_to_ts / 1000, tz=timezone.utc)
-                except (ValueError, TypeError, OverflowError) as err:
-                    raise ValueError("Invalid weather-warning end") from err
+            valid_from = _warning_timestamp(valid_from_ts)
+            valid_to = _warning_timestamp(valid_to_ts)
 
             if valid_from and valid_to and valid_to < valid_from:
                 raise ValueError("Weather-warning end precedes its start")
@@ -240,7 +250,7 @@ class MeteoSwissAlertsAPI:
                 raise ValueError("Invalid weather-warning outlook flag")
 
             # Generate alert ID
-            alert_id = f"{postal_code}_{warn_level}_{warn_type}_{valid_from_ts if valid_from_ts else 'now'}"
+            alert_id = f"{postal_code}_{warn_level}_{warn_type}_{valid_from_ts if valid_from_ts is not None else 'now'}"
 
             # Create alert
             alert = WeatherAlert(
@@ -258,8 +268,8 @@ class MeteoSwissAlertsAPI:
 
             return alert
 
-        except Exception as err:
-            _LOGGER.error("Error parsing alert: %s", err)
+        except (KeyError, TypeError, ValueError, OverflowError, OSError) as err:
+            _LOGGER.debug("Invalid published weather warning (%s)", type(err).__name__)
             return None
 
     @staticmethod
@@ -290,5 +300,4 @@ class MeteoSwissAlertsAPI:
 
     async def close(self) -> None:
         """Close is handled centrally by the integration setup."""
-        # Session is shared and closed in async_unload_entry
-        pass
+        # Home Assistant owns the borrowed session.

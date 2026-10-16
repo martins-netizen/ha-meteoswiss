@@ -1,4 +1,5 @@
 """Binary sensor platform for MeteoSwiss weather alerts."""
+
 from __future__ import annotations
 
 import logging
@@ -25,10 +26,8 @@ from .alerts import MeteoSwissAlertsAPI, WeatherAlert
 from .const import (
     ATTRIBUTION,
     CONF_POSTAL_CODE,
-    CONF_STATION_NAME,
     DOMAIN,
 )
-
 from .runtime_data import MeteoSwissConfigEntry
 
 # Coordinators centralize refreshes; sensor diagnostics use bounded polling.
@@ -46,7 +45,9 @@ class MeteoSwissAlertsBinarySensorDescription(BinarySensorEntityDescription):
     alert_timing: Literal["active", "upcoming"] = "active"
 
 
-ALERT_SENSOR_DESCRIPTIONS: Final[tuple[MeteoSwissAlertsBinarySensorDescription, ...]] = (
+ALERT_SENSOR_DESCRIPTIONS: Final[
+    tuple[MeteoSwissAlertsBinarySensorDescription, ...]
+] = (
     MeteoSwissAlertsBinarySensorDescription(
         key="any_alert",
         translation_key="any_alert",
@@ -88,9 +89,7 @@ def _alert_state_attributes(alerts: list[WeatherAlert] | None) -> dict[str, Any]
     upcoming_alerts = sorted(
         (a for a in alerts if a.is_upcoming()),
         key=lambda a: (
-            a.valid_from.timestamp()
-            if a.valid_from is not None
-            else float("inf")
+            a.valid_from.timestamp() if a.valid_from is not None else float("inf")
         ),
     )
 
@@ -113,7 +112,7 @@ async def async_setup_entry(
     async_add_entities,
 ) -> None:
     """Set up binary sensor platform."""
-    _LOGGER.debug("Setting up MeteoSwiss alerts binary sensor platform for %s", entry.data.get(CONF_STATION_NAME))
+    _LOGGER.debug("Setting up MeteoSwiss alerts binary sensor platform")
 
     coordinator = entry.runtime_data.alerts_coordinator
     postal_code = entry.data.get(CONF_POSTAL_CODE)
@@ -191,12 +190,15 @@ class MeteoSwissAlertsBinarySensor(CoordinatorEntity, BinarySensorEntity):
         return {
             **_alert_state_attributes(self.coordinator.data),
             "data_status": (
-                "current" if self.coordinator.last_update_success
-                and self.coordinator.data is not None else "unavailable"
+                "current"
+                if self.coordinator.last_update_success
+                and self.coordinator.data is not None
+                else "unavailable"
             ),
             "last_successful_update": (
                 self.coordinator.last_successful_update.isoformat()
-                if self.coordinator.last_successful_update else None
+                if self.coordinator.last_successful_update
+                else None
             ),
             # All languages are supplied so each dashboard can use the
             # viewing user's language without changing automation values.
@@ -237,8 +239,8 @@ class MeteoSwissAlertsCoordinator(DataUpdateCoordinator[list[WeatherAlert]]):
 
         try:
             alerts = await self._alerts_api.get_alerts(self._alerts_api.postal_code)
-        except (aiohttp.ClientError, TimeoutError, ValueError) as err:
-            raise UpdateFailed("Weather warnings could not be updated") from err
+        except (aiohttp.ClientError, TimeoutError, ValueError, UnicodeError):
+            raise UpdateFailed("Weather warnings could not be updated") from None
 
         self.last_successful_update = dt_util.utcnow()
 

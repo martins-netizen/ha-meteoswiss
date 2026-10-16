@@ -193,6 +193,35 @@ Daily HGT 12/20 remains a forecast-based calculation: at a daily mean of 12 °C
 or lower, HGT is 20 minus that mean; above 12 °C it is zero. Missing/non-finite
 temperatures remain missing. Existing season helper functions are tested, but
 this change does not introduce a measured seasonal HGT archive or new sensors.
+The entity reads an existing valid daily mean immediately on initial addition,
+and uses the current Europe/Zurich calendar day on each state write. Missing,
+boolean or non-finite means stay unknown. Availability follows the independent
+forecast coordinator; a failed forecast does not make old HGT data current.
+
+### Warning validation, privacy and remaining numeric-code verification
+
+Only a successful empty warning feed means no alerts. Malformed published
+warnings fail the entire refresh, retaining last-good coordinator data while
+registered binary sensors become unavailable. A later valid feed recovers
+without changing entity IDs. Active, upcoming, outlook and expired warnings
+remain separate. Provider codes and severity must be whole, finite non-boolean
+numbers; severity is 1–5. Missing validity bounds stay missing, while timestamp
+zero means the Unix epoch. Invalid/reversed bounds or malformed text/outlook
+values cannot silently disappear as an all-clear. Unknown whole numeric types
+remain visible with their original number.
+
+The warning request has a total 30-second budget including bounded transport
+retries. Expected warning and pollen transport errors do not expose raw HTTP
+exception chains in HA debug logs. Setup/platform messages omit station names,
+and warning request/parser logs omit postcodes, URLs and raw payload errors.
+HA owns the borrowed HTTP session and logs availability loss/recovery once.
+The station observation client's broader legacy logging still needs review.
+
+The existing warning-name mapping is **not** approved as a complete API code
+specification. See [the source investigation](API_SOURCES.md#warning-types-legacy-implementation-labels-not-an-api-specification),
+particularly the `0`/`4` wind-versus-slippery-roads discrepancy. Verify numeric
+meanings and existing dashboard/awning filters before a deployment or release;
+do not change a safety filter solely because a translated label changed.
 
 ## Diagnostics and the station catalogue
 

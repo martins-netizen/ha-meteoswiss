@@ -1,4 +1,5 @@
 """The meteoswiss integration."""
+
 from __future__ import annotations
 
 import asyncio
@@ -16,7 +17,6 @@ from .const import (
     CONF_POLLEN_STATION,
     CONF_POSTAL_CODE,
     CONF_STATION_ID,
-    CONF_STATION_NAME,
     CONF_UPDATE_INTERVAL,
     DATA_SOURCE_METEOSWISS,
     DATA_SOURCE_OPENMETEO,
@@ -33,7 +33,6 @@ from .precipitation import (
     ARCHIVE_UPDATE_INTERVAL,
     MeteoSwissHourlyPrecipitationCoordinator,
 )
-
 from .runtime_data import MeteoSwissConfigEntry, MeteoSwissRuntimeData
 
 _LOGGER = logging.getLogger(__name__)
@@ -69,7 +68,6 @@ def _get_forecast_coordinates(
     return latitude, longitude
 
 
-
 async def _async_refresh_optional_coordinators(*coordinators) -> None:
     """Refresh optional coordinators without delaying config entry setup."""
     await asyncio.gather(
@@ -88,7 +86,7 @@ def _keep_coordinator_polling(
 
 async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -> bool:
     """Set up MeteoSwiss integration from a config entry."""
-    _LOGGER.info("Setting up MeteoSwiss integration for station %s", entry.data.get(CONF_STATION_NAME))
+    _LOGGER.info("Setting up MeteoSwiss integration")
 
     hass.data.setdefault(DOMAIN, {})
     # HA owns this verified-TLS session, including when initial setup fails.
@@ -96,7 +94,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
     shared_session = async_get_clientsession(hass)
 
     # Create coordinator based on data source
-    update_interval = entry.options.get(CONF_UPDATE_INTERVAL, entry.data.get(CONF_UPDATE_INTERVAL, 600))
+    update_interval = entry.options.get(
+        CONF_UPDATE_INTERVAL, entry.data.get(CONF_UPDATE_INTERVAL, 600)
+    )
     data_source = entry.data.get(CONF_DATA_SOURCE, DATA_SOURCE_METEOSWISS)
     station_id = entry.data.get(CONF_STATION_ID)
     post_code = entry.data.get(CONF_POSTAL_CODE)
@@ -132,7 +132,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
             update_interval=update_interval,
             session=shared_session,
         )
-        _LOGGER.debug("Using MeteoSwiss API for station %s", station_id)
+        _LOGGER.debug("Using MeteoSwiss station observations")
 
         # Forecasts are location-based and intentionally independent from
         # the selected observation station.
@@ -154,13 +154,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
                 station_id=station_id,
                 session=shared_session,
             )
-            precipitation_archive_coordinator = MeteoSwissHourlyPrecipitationCoordinator(
-                hass,
-                station_id=station_id,
-                session=shared_session,
-                asset_periods=("historical", "recent"),
-                update_interval=ARCHIVE_UPDATE_INTERVAL,
-                lookback_months=ARCHIVE_LOOKBACK_MONTHS,
+            precipitation_archive_coordinator = (
+                MeteoSwissHourlyPrecipitationCoordinator(
+                    hass,
+                    station_id=station_id,
+                    session=shared_session,
+                    asset_periods=("historical", "recent"),
+                    update_interval=ARCHIVE_UPDATE_INTERVAL,
+                    lookback_months=ARCHIVE_LOOKBACK_MONTHS,
+                )
             )
 
     # Fetch initial data for current weather
@@ -171,6 +173,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
     alerts_api.postal_code = post_code
 
     from .binary_sensor import MeteoSwissAlertsCoordinator
+
     alerts_coordinator = MeteoSwissAlertsCoordinator(
         hass,
         alerts_api=alerts_api,
@@ -191,9 +194,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
     )
 
     # Create MeteoSwiss measured pollen coordinator
-    pollen_station = entry.options.get(
-        CONF_POLLEN_STATION, DEFAULT_POLLEN_STATION
-    )
+    pollen_station = entry.options.get(CONF_POLLEN_STATION, DEFAULT_POLLEN_STATION)
     meteoswiss_pollen_coordinator = MeteoSwissPollenCoordinator(
         hass,
         station_id=pollen_station,
@@ -251,10 +252,13 @@ async def async_unload_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) 
 
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
-    if unload_ok:
-        if hass.data[DOMAIN].get("diagnostic_owner") == entry.entry_id:
-            for key in ("diagnostic_owner", "stations_map_sensor_added", "cache_stats_sensor_added"):
-                hass.data[DOMAIN].pop(key, None)
+    if unload_ok and hass.data[DOMAIN].get("diagnostic_owner") == entry.entry_id:
+        for key in (
+            "diagnostic_owner",
+            "stations_map_sensor_added",
+            "cache_stats_sensor_added",
+        ):
+            hass.data[DOMAIN].pop(key, None)
 
     return unload_ok
 
