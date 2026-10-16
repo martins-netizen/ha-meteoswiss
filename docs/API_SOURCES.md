@@ -45,7 +45,15 @@ This document describes all data sources used by the MeteoSwiss integration.
 | **Auth** | None required |
 | **Attribution** | © MeteoSwiss |
 
-### Warning Types
+### Warning types: legacy implementation labels, not an API specification
+
+The following table describes the existing implementation. It is **not** a
+verified complete provider-code specification. Investigation on 16 October 2026
+found a conflict with the independent MeteoSwissApi reference client, which
+uses `0` for wind and `4` for slippery roads. The current `4 = Wind` label below
+must not be used as evidence for new safety-related automation filters.
+Numeric corrections and additional labels require a separately reviewed change;
+this validation/availability change preserves the raw provider `warn_type`.
 
 | Code | Type |
 |---|---|
@@ -56,6 +64,17 @@ This document describes all data sources used by the MeteoSwiss integration.
 | 5 | Ground Frost |
 | 10 | Forest Fire |
 | 11 | Flood |
+
+The official [natural-hazards portal](https://www.naturgefahren.ch/) lists twelve
+current hazard families, including slippery roads, heat, avalanches, earthquakes
+and drought. Its current frontend uses semantic identifiers such as `wind` and
+`slippery-roads`, not a published complete App API numeric table. Code `6` is
+labelled mass movements in the independent reference client, but is not one of
+the twelve current portal families; it remains unconfirmed here. Do not infer
+that this integration fetches every portal layer merely from a label list.
+
+Reference for the discrepancy (independent client, not an official specification):
+[MeteoSwissApi WarnType at 33ade33](https://github.com/thomasgalliker/MeteoSwissApi/blob/33ade33ec2de8b51a9867e6412d31288b06c0a67/MeteoSwissApi/Models/WarnType.cs).
 
 ### Warning Levels
 

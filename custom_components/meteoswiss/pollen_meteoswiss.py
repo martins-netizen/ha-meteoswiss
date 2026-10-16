@@ -134,8 +134,8 @@ class MeteoSwissPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         """A failed/invalid feed is unavailable, and a later valid feed recovers."""
         try:
             content = await self._async_fetch_csv()
-        except (aiohttp.ClientError, TimeoutError, UnicodeError) as err:
-            raise UpdateFailed("Measured pollen source unavailable") from err
+        except (aiohttp.ClientError, TimeoutError, UnicodeError):
+            raise UpdateFailed("Measured pollen source unavailable") from None
         data = self._parse_csv(content)
         if not data:
             raise UpdateFailed("No valid measured pollen values")

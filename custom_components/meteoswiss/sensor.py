@@ -1,4 +1,5 @@
 """Sensor platform for meteoswiss integration."""
+
 from __future__ import annotations
 
 import logging
@@ -13,30 +14,18 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.const import (
     PERCENTAGE,
+    UnitOfIrradiance,
     UnitOfLength,
     UnitOfPrecipitationDepth,
     UnitOfPressure,
     UnitOfSpeed,
     UnitOfTemperature,
+    UnitOfTime,
 )
 
-try:
-    from homeassistant.components.sensor import SensorDeviceClass as _SDC
-    _CONCENTRATION_MICROGRAMS_PER_CUBIC_METER = getattr(
-        _SDC, "CONCENTRATION_MICROGRAMS_PER_CUBIC_METER", "µg/m³"
-    )
-except ImportError:
-    _CONCENTRATION_MICROGRAMS_PER_CUBIC_METER = "µg/m³"
-
-try:
-    from homeassistant.const import UnitOfIrradiance
-except ImportError:
-    UnitOfIrradiance = type("UnitOfIrradiance", (), {"WATTS_PER_SQUARE_METER": "W/m²"})
-
-try:
-    from homeassistant.const import UnitOfTime
-except ImportError:
-    UnitOfTime = type("UnitOfTime", (), {"MINUTES": "min", "HOURS": "h", "DAYS": "d"})
+# Retain the existing unit spelling and Recorder metadata. The supported HA
+# baseline (2026.8.3) provides UnitOfIrradiance and UnitOfTime directly.
+_CONCENTRATION_MICROGRAMS_PER_CUBIC_METER = "µg/m³"
 
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import entity_registry as er
@@ -85,10 +74,9 @@ from .const import (
     SENSOR_WIND_SPEED,
 )
 from .coordinator import MeteoSwissDataUpdateCoordinator
-from .stations_map import MeteoSwissStationsMap
-from .weather_data import FORECAST_TIME_ZONE, forecast_datetime
-
 from .runtime_data import MeteoSwissConfigEntry
+from .stations_map import MeteoSwissStationsMap
+from .weather_data import FORECAST_TIME_ZONE, forecast_datetime, weather_number
 
 # Coordinators centralize refreshes; sensor diagnostics use bounded polling.
 PARALLEL_UPDATES = 1
@@ -220,7 +208,7 @@ async def async_setup_entry(
     async_add_entities,
 ) -> None:
     """Set up sensor platform."""
-    _LOGGER.debug("Setting up MeteoSwiss sensor platform for %s", entry.data.get(CONF_STATION_NAME))
+    _LOGGER.debug("Setting up MeteoSwiss sensor platform")
 
     coordinator = entry.runtime_data.coordinator
     station_name = entry.data.get(CONF_STATION_NAME, "Unknown")
@@ -233,6 +221,7 @@ async def async_setup_entry(
     # Add stations map sensor (only once)
     if not hass.data[DOMAIN].get("stations_map_sensor_added", False):
         from .stations_map import get_stations_map
+
         stations_map = await get_stations_map(load=False)
         stations_map_sensor = MeteoSwissStationsMapSensor(stations_map)
         entities.append(stations_map_sensor)
@@ -251,26 +240,31 @@ async def async_setup_entry(
     pollen_coordinator = entry.runtime_data.pollen_coordinator
     if pollen_coordinator:
         from .pollen_sensor import POLLEN_SENSOR_DESCRIPTIONS, MeteoSwissPollenSensor
+
         for description in POLLEN_SENSOR_DESCRIPTIONS:
             entities.append(
-                MeteoSwissPollenSensor(pollen_coordinator, entry, description, station_name)
+                MeteoSwissPollenSensor(
+                    pollen_coordinator, entry, description, station_name
+                )
             )
         _LOGGER.debug("Added %d pollen sensors", len(POLLEN_SENSOR_DESCRIPTIONS))
 
     # Add air quality sensors (from pollen/AQ coordinator)
     if pollen_coordinator:
         entities.extend(
-            MeteoSwissAirQualitySensor(pollen_coordinator, entry, description, station_name)
+            MeteoSwissAirQualitySensor(
+                pollen_coordinator, entry, description, station_name
+            )
             for description in AIR_QUALITY_SENSOR_DESCRIPTIONS
         )
-        _LOGGER.debug("Added %d air quality sensors", len(AIR_QUALITY_SENSOR_DESCRIPTIONS))
+        _LOGGER.debug(
+            "Added %d air quality sensors", len(AIR_QUALITY_SENSOR_DESCRIPTIONS)
+        )
 
     # Add the calculated daily HGT 12/20 forecast sensor.
     forecast_coordinator = entry.runtime_data.forecast_coordinator
     if forecast_coordinator:
-        entities.append(
-            MeteoSwissHeatingDegreeDaysSensor(forecast_coordinator, entry)
-        )
+        entities.append(MeteoSwissHeatingDegreeDaysSensor(forecast_coordinator, entry))
         _remove_legacy_season_hgt_entity(hass, entry)
         _LOGGER.debug("Added calculated HGT 12/20 forecast sensor")
 
@@ -292,12 +286,17 @@ async def async_setup_entry(
                     pollen_station_label,
                 )
             )
-        _LOGGER.debug("Added %d MeteoSwiss measured pollen sensors", len(MS_POLLEN_SENSOR_DESCRIPTIONS))
+        _LOGGER.debug(
+            "Added %d MeteoSwiss measured pollen sensors",
+            len(MS_POLLEN_SENSOR_DESCRIPTIONS),
+        )
 
     async_add_entities(entities)
 
 
-class MeteoSwissSensor(CoordinatorEntity[MeteoSwissDataUpdateCoordinator], SensorEntity):
+class MeteoSwissSensor(
+    CoordinatorEntity[MeteoSwissDataUpdateCoordinator], SensorEntity
+):
     """Representation of a meteoswiss sensor."""
 
     def __init__(
@@ -320,9 +319,7 @@ class MeteoSwissSensor(CoordinatorEntity[MeteoSwissDataUpdateCoordinator], Senso
         self._attr_has_entity_name = True
         self._attr_attribution = ATTRIBUTION
         self._attr_native_value = (
-            coordinator.data.get(description.value_key)
-            if coordinator.data
-            else None
+            coordinator.data.get(description.value_key) if coordinator.data else None
         )
 
     @callback
@@ -333,11 +330,12 @@ class MeteoSwissSensor(CoordinatorEntity[MeteoSwissDataUpdateCoordinator], Senso
             value = self.coordinator.data.get(value_key)
             self._attr_native_value = value
         else:
-            _LOGGER.debug("Coordinator data is None or empty for %s", self.entity_description.key)
+            _LOGGER.debug(
+                "Coordinator data is None or empty for %s", self.entity_description.key
+            )
             self._attr_native_value = None
 
         super()._handle_coordinator_update()
-
 
     @property
     def extra_state_attributes(self) -> dict:
@@ -383,7 +381,9 @@ class MeteoSwissStationsMapSensor(SensorEntity):
         """Update stations map."""
         _LOGGER.debug("Updating stations map")
 
-        await self._stations_map.load_stations(session=async_get_clientsession(self.hass))
+        await self._stations_map.load_stations(
+            session=async_get_clientsession(self.hass)
+        )
         stations = self._stations_map.get_all_stations()
         self._attr_available = bool(stations)
 
@@ -429,7 +429,9 @@ class MeteoSwissCacheStatsSensor(SensorEntity):
         total_hits = sum(values["hits"] for values in stats.values())
         total_misses = sum(values["misses"] for values in stats.values())
         total_requests = total_hits + total_misses
-        overall_hit_rate = (total_hits / total_requests * 100) if total_requests > 0 else 0.0
+        overall_hit_rate = (
+            (total_hits / total_requests * 100) if total_requests > 0 else 0.0
+        )
 
         self._attr_native_value = f"{overall_hit_rate:.1f}% hit rate"
         self._attr_extra_state_attributes = {
@@ -444,7 +446,9 @@ class MeteoSwissCacheStatsSensor(SensorEntity):
 # Air Quality Sensors (from Open-Meteo Air Quality API)                       #
 # --------------------------------------------------------------------------- #
 
-AIR_QUALITY_SENSOR_DESCRIPTIONS: Final[tuple[MeteoSwissSensorEntityDescription, ...]] = (
+AIR_QUALITY_SENSOR_DESCRIPTIONS: Final[
+    tuple[MeteoSwissSensorEntityDescription, ...]
+] = (
     MeteoSwissSensorEntityDescription(
         key=SENSOR_PM25,
         translation_key="pm25",
@@ -523,9 +527,7 @@ class MeteoSwissAirQualitySensor(CoordinatorEntity, SensorEntity):
 # Heating Degree Days (Heizgradtage)                                          #
 # --------------------------------------------------------------------------- #
 
-HGT_ATTRIBUTION = (
-    "Calculated from MeteoSwiss ICON Seamless forecast via Open-Meteo"
-)
+HGT_ATTRIBUTION = "Calculated from MeteoSwiss ICON Seamless forecast via Open-Meteo"
 
 
 def _daily_mean_for_date(
@@ -536,13 +538,15 @@ def _daily_mean_for_date(
     for entry_data in forecast_data:
         timestamp = forecast_datetime(entry_data.get("datetime"))
         local_day = entry_data.get("local_date") or (
-            timestamp.astimezone(FORECAST_TIME_ZONE).date().isoformat() if timestamp else None
+            timestamp.astimezone(FORECAST_TIME_ZONE).date().isoformat()
+            if timestamp
+            else None
         )
         if local_day != day:
             continue
-        daily_mean = entry_data.get("daily_temperature_mean")
+        daily_mean = weather_number(entry_data.get("daily_temperature_mean"))
         if daily_mean is not None:
-            return float(daily_mean)
+            return daily_mean
     return None
 
 
@@ -556,10 +560,7 @@ def _remove_legacy_season_hgt_entity(
     entity_id = registry.async_get_entity_id("sensor", DOMAIN, unique_id)
     if entity_id is not None:
         registry.async_remove(entity_id)
-        _LOGGER.info(
-            "Removed legacy season HGT entity %s because it was not a true season total",
-            entity_id,
-        )
+        _LOGGER.info("Removed legacy forecast-only season HGT entity")
 
 
 class MeteoSwissHeatingDegreeDaysSensor(CoordinatorEntity, SensorEntity):
@@ -587,37 +588,33 @@ class MeteoSwissHeatingDegreeDaysSensor(CoordinatorEntity, SensorEntity):
             icon="mdi:thermostat",
         )
 
-    @callback
-    def _handle_coordinator_update(self) -> None:
-        """Calculate today's HGT 12/20 from the complete daily mean."""
+    def _daily_mean(self) -> float | None:
+        today = dt_util.utcnow().astimezone(FORECAST_TIME_ZONE).date().isoformat()
+        return _daily_mean_for_date(self.coordinator.data or [], today)
+
+    @property
+    def native_value(self) -> float | None:
+        """Read today's full-day mean on initial add and every state write."""
+        hgt = calculate_heating_degree_days(self._daily_mean())
+        return round(hgt, 1) if hgt is not None else None
+
+    @property
+    def extra_state_attributes(self) -> dict | None:
         if not self.coordinator.data:
-            self._attr_native_value = None
-            self._attr_extra_state_attributes = None
-            super()._handle_coordinator_update()
-            return
-
-        today = dt_util.now().date().isoformat()
-        daily_mean = _daily_mean_for_date(self.coordinator.data, today)
-
-        if daily_mean is None:
-            self._attr_native_value = None
-            self._attr_extra_state_attributes = {
-                "method": "HGT 12/20",
-                "source": "MeteoSwiss ICON Seamless via Open-Meteo",
-            }
-        else:
-            hgt = calculate_heating_degree_days(daily_mean)
-            self._attr_native_value = round(hgt, 1) if hgt is not None else None
-            self._attr_extra_state_attributes = {
-                "daily_mean_temperature": round(daily_mean, 1),
-                "heating_day_threshold": HEATING_THRESHOLD,
-                "reference_indoor_temperature": HEATING_REFERENCE_TEMPERATURE,
-                "method": "HGT 12/20",
-                "source": "MeteoSwiss ICON Seamless via Open-Meteo",
-                "value_type": "forecast",
-            }
-
-        super()._handle_coordinator_update()
+            return None
+        attributes = {
+            "method": "HGT 12/20",
+            "source": "MeteoSwiss ICON Seamless via Open-Meteo",
+        }
+        daily_mean = self._daily_mean()
+        if daily_mean is not None:
+            attributes.update(
+                daily_mean_temperature=round(daily_mean, 1),
+                heating_day_threshold=HEATING_THRESHOLD,
+                reference_indoor_temperature=HEATING_REFERENCE_TEMPERATURE,
+                value_type="forecast",
+            )
+        return attributes
 
 
 # --------------------------------------------------------------------------- #
@@ -697,7 +694,9 @@ class MeteoSwissMeasuredPollenSensor(CoordinatorEntity, SensorEntity):
     ) -> None:
         super().__init__(coordinator)
         self.entity_description = description
-        self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_ms_pollen_{description.pollen_type}"
+        self._attr_unique_id = (
+            f"{DOMAIN}_{entry.entry_id}_ms_pollen_{description.pollen_type}"
+        )
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, f"ms_pollen_{entry.entry_id}")},
             name=f"MeteoSwiss Pollen (Measured) - {pollen_station_label}",
@@ -706,10 +705,7 @@ class MeteoSwissMeasuredPollenSensor(CoordinatorEntity, SensorEntity):
         )
         self._attr_has_entity_name = True
         self._attr_attribution = "Source: MeteoSwiss ogd-pollen"
-        try:
-            self._attr_entity_category = EntityCategory.HEALTH
-        except AttributeError:
-            self._attr_entity_category = EntityCategory.DIAGNOSTIC
+        self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._pollen_type = description.pollen_type
         self._pollen_type_name = description.pollen_type_name
 

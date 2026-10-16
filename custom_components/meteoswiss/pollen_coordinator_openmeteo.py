@@ -218,7 +218,7 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             cache.invalidate(cache_key)
         try:
             data = await self._async_fetch_data()
-        except (aiohttp.ClientError, TimeoutError, ValueError) as err:
-            raise UpdateFailed("Pollen and air quality source unavailable") from err
+        except (aiohttp.ClientError, TimeoutError, ValueError):
+            raise UpdateFailed("Pollen and air quality source unavailable") from None
         cache.set(cache_key, data, ttl=1800.0)
         return data

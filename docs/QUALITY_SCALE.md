@@ -53,10 +53,11 @@ coverage (58.50% lines, 40.42% branches). Config flow was 33.79% combined.
 CI now measures **all** integration modules, prints per-module coverage and
 requires full config-flow, both pollen-client, ICON forecast-client, alternative
 Open-Meteo current-client, weather-entity, shared weather-data, hourly
-precipitation, HGT utility, cache, diagnostics and station-catalogue line/branch
+precipitation, HGT utility, cache, diagnostics, station-catalogue, warning-parser,
+warning-entity, numeric-sensor and pollen-sensor line/branch
 coverage. The station coordinator has
 separate minimums of 95% for lines and branches. The combined integration floor
-is 95% (raised from 89%, previously 86%, 80%, 71%, 67% and initially 60%). This
+is 98% (raised from 95%, previously 89%, 86%, 80%, 71%, 67% and initially 60%). This
 floor prevents regressions at this stage; it is not a substitute for Silver.
 Unused camera/SLF/hydrology placeholders remain visible in the denominator.
 They must be explicitly removed in a reviewed scope or covered; no exclusions
@@ -90,8 +91,23 @@ omit raw dictionary keys/names/cache values and expose only safe status/time
 metadata. The parser was additionally checked against the live public catalogue
 on 16 October 2026 (159 stations, including KLO).
 
-Continue with remaining sensor/entity paths and review source/logging rules
-across every active family. Public support, live acceptance and release/HACS
+Warning parser and all active sensor platforms have full line/branch coverage.
+Registered binary sensors preserve identity across active/upcoming, malformed-feed
+failure and empty-feed recovery. HGT reads preloaded forecasts immediately and
+uses the Swiss calendar day; optional missing families and empty observations
+remain unknown. Invalid levels, boolean/fractional codes, epoch-zero bounds,
+total timeout, cancellation and private error chains have regression coverage.
+Only compatibility shims below the declared minimum HA are removed; existing
+air-quality unit spelling and effective diagnostic entity categories are kept.
+
+The full warning-name/number catalogue is a separate verification gate, including
+the legacy `4 = Wind` conflict. No new numeric meanings are approved by these
+tests. The official portal's named hazard families alone cannot prove the old
+App API numeric identifiers. Source/privacy review of station observations,
+inactive placeholders and the remaining per-module gaps remain open.
+
+Continue with source/logging rules across every active family. Public support,
+numeric warning-code verification, live acceptance and release/HACS
 validation remain separate gates. Raise coverage as these changes land.
 Gold/Platinum work follows this measured baseline, rather than adding labels.
 
