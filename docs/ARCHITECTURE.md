@@ -50,7 +50,32 @@ is still blank) do not replace the latest measured observation row. The original
 measurement time and one-hour age limit remain authoritative. Missing individual
 parameters in a measured row stay missing. Sensors expose `measurement_time`,
 `source_status` and `pending_rows`; see `docs/USAGE.md`. No historic records are
-fabricated or rewritten.
+fabricated to fill observation gaps.
+
+Station CSVs use the provider's Windows-1252 encoding and must identify the
+selected station on every row. Non-finite individual measurements stay missing;
+an all-invalid measured row fails the update. Sparse snow/foehn fallback keeps
+its existing limited scope and skips invalid older values. The running-hour
+rain total deduplicates by interval timestamp (latest valid value wins), ignores
+non-finite/negative amounts and is missing if no valid current-hour interval
+exists. A measured zero remains zero; equal amounts in distinct intervals still
+add up. Its station observation timestamp is not an aggregate completeness claim.
+
+The separate hourly precipitation importer validates station, finite
+non-negative totals and completed whole-hour UTC interval ends before shifting
+them to Recorder interval starts. Existing statistic IDs, units and mean
+metadata remain unchanged. Historical/recent/now ordering retains later valid
+corrections for overlapping hours. Transient metadata/download errors receive
+the bounded transport retries; malformed data is not retried. Valid subsets of
+an archive can still be queued if another file fails, with `partial_import`
+and `failed_downloads` in coordinator results. All-invalid or all-failed data
+fails without queuing empty statistics. A real in-memory Recorder test confirms
+repeat-import upserts and correction of an existing hour without duplicate rows.
+
+HGT 12/20 retains its existing threshold and reference temperature. Missing,
+boolean and non-finite temperatures do not become zero heating demand or
+contaminate totals. Tests cover daily boundaries and the existing season helper
+functions; no new seasonal history collection or HA entities are introduced.
 
 Both pollen clients require at least one finite non-negative current tracked
 concentration (integer counts for measured pollen). Zero is valid. A partial
@@ -151,8 +176,10 @@ Tests cover warning failure/recovery, invalid payloads, bounded retries,
 cancellation, HA-owned sessions, stale observations, current-hour AQ data,
 registered pollen/AQ entity states and unload, forecast service failure/recovery,
 contracts, DST and translation coverage. Both pollen clients and the ICON
-forecast client have full line/branch coverage, enforced in CI alongside config
-flow; whole-integration Silver remains pending.
+forecast client, hourly precipitation importer and HGT utilities have full
+line/branch coverage, enforced in CI alongside config flow. The station client
+must retain at least 95% line and branch coverage, and the whole-integration
+floor is 80%; Silver remains pending.
 CI runs minimum and current
 HA test environments plus Hassfest and CodeQL. Passing CI is not a live-house
 acceptance test. The `quality_scale: platinum` claim inherited from upstream is

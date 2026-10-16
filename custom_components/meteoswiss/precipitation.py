@@ -2,11 +2,11 @@
 
 from __future__ import annotations
 
-import asyncio
 import calendar
 import csv
 import io
 import logging
+import math
 import re
 from datetime import UTC, datetime, timedelta
 from typing import Any
@@ -43,17 +43,16 @@ def _asset_urls_for_period(
     """Return matching hourly asset URLs for a period."""
     prefix = f"ogd-smn_{station_id}_h_{period}"
     if period != "historical":
-        href = assets.get(f"{prefix}.csv", {}).get("href")
-        return [href] if href else []
+        asset = assets.get(f"{prefix}.csv")
+        href = asset.get("href") if isinstance(asset, dict) else None
+        return [href] if isinstance(href, str) and href.strip() else []
 
-    historical_pattern = re.compile(
-        rf"^{re.escape(prefix)}_(\d{{4}})-(\d{{4}})\.csv$"
-    )
+    historical_pattern = re.compile(rf"^{re.escape(prefix)}_(\d{{4}})-(\d{{4}})\.csv$")
     matches: list[tuple[int, str]] = []
     for asset_key, asset in assets.items():
         match = historical_pattern.fullmatch(asset_key)
-        href = asset.get("href")
-        if match is None or not href:
+        href = asset.get("href") if isinstance(asset, dict) else None
+        if match is None or not isinstance(href, str) or not href.strip():
             continue
         start_year, end_year = (int(year) for year in match.groups())
         if earliest_year is None or end_year >= earliest_year:
@@ -82,19 +81,36 @@ def _subtract_calendar_months(value: datetime, months: int) -> datetime:
 def _parse_hourly_statistics(
     content: str,
     earliest_start: datetime | None = None,
+    station_id: str | None = None,
 ) -> list[StatisticData]:
     """Convert official hourly totals to Recorder statistics."""
     values_by_start: dict[datetime, float] = {}
+    now = datetime.now(UTC)
 
     for row in csv.DictReader(io.StringIO(content), delimiter=";"):
+        if (
+            station_id is not None
+            and (row.get("station_abbr") or "").strip().lower() != station_id.lower()
+        ):
+            continue
         reference = _parse_reference_timestamp(row.get("reference_timestamp", ""))
         value = (row.get(PARAM_PRECIPITATION_HOURLY) or "").strip()
-        if reference is None or not value:
+        if (
+            reference is None
+            or not value
+            or reference > now
+            or reference.minute
+            or reference.second
+            or reference.microsecond
+        ):
             continue
 
         try:
             precipitation = float(value)
         except (TypeError, ValueError):
+            continue
+
+        if not math.isfinite(precipitation) or precipitation < 0:
             continue
 
         # MeteoSwiss timestamps mark the end of an aggregation interval;
@@ -115,9 +131,7 @@ def _parse_hourly_statistics(
     ]
 
 
-class MeteoSwissHourlyPrecipitationCoordinator(
-    DataUpdateCoordinator[dict[str, Any]]
-):
+class MeteoSwissHourlyPrecipitationCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     """Import official, quality-controlled hourly precipitation totals."""
 
     def __init__(
@@ -149,59 +163,28 @@ class MeteoSwissHourlyPrecipitationCoordinator(
         earliest_year: int | None = None,
     ) -> dict[str, list[str]]:
         """Return the requested station-specific hourly CSV URLs."""
-        try:
-            url = f"{API_BASE}/collections/{STAC_COLLECTION}/items/{self.station_id}"
-            async with self._session.get(url, timeout=DEFAULT_API_TIMEOUT) as response:
-                if response.status != 200:
-                    _LOGGER.error(
-                        "Failed to fetch hourly station info: %s", response.status
-                    )
-                    return {}
-
-                assets = (await response.json()).get("assets", {})
-
-            urls: dict[str, list[str]] = {}
-            for period in self._asset_periods:
-                period_urls = _asset_urls_for_period(
-                    assets,
-                    self.station_id,
-                    period,
-                    earliest_year,
-                )
-                if not period_urls:
-                    _LOGGER.warning(
-                        "No matching h_%s CSV found for station %s",
-                        period,
-                        self.station_id,
-                    )
-                    continue
+        url = f"{API_BASE}/collections/{STAC_COLLECTION}/items/{self.station_id}"
+        async with self._session.get(url, timeout=DEFAULT_API_TIMEOUT) as response:
+            response.raise_for_status()
+            data = await response.json()
+        if not isinstance(data, dict) or not isinstance(data.get("assets"), dict):
+            raise TypeError("Invalid hourly station metadata")
+        assets = data["assets"]
+        urls: dict[str, list[str]] = {}
+        for period in self._asset_periods:
+            period_urls = _asset_urls_for_period(
+                assets, self.station_id, period, earliest_year
+            )
+            if period_urls:
                 urls[period] = period_urls
-            return urls
-        except asyncio.TimeoutError:
-            _LOGGER.error("Timeout fetching hourly station info")
-            return {}
+        return urls
 
     @async_retry_with_backoff(max_attempts=4, base_delay=1.0, max_delay=10.0)
-    async def _async_download_hourly_csv(
-        self,
-        csv_url: str,
-        period: str,
-    ) -> str | None:
-        """Download the official hourly CSV."""
-        try:
-            async with self._session.get(csv_url, timeout=DEFAULT_API_TIMEOUT) as response:
-                if response.status != 200:
-                    _LOGGER.error(
-                        "Failed to download hourly CSV: %s", response.status
-                    )
-                    return None
-                return await response.text(encoding="cp1252")
-        except asyncio.TimeoutError:
-            _LOGGER.error(
-                "Timeout downloading h_%s hourly precipitation CSV",
-                period,
-            )
-            return None
+    async def _async_download_hourly_csv(self, csv_url: str, period: str) -> str:
+        """Retry transient HTTP failures; CSV validation belongs to the importer."""
+        async with self._session.get(csv_url, timeout=DEFAULT_API_TIMEOUT) as response:
+            response.raise_for_status()
+            return await response.text(encoding="cp1252")
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch official hourly totals and queue them for Recorder import."""
@@ -212,31 +195,44 @@ class MeteoSwissHourlyPrecipitationCoordinator(
                 self._lookback_months,
             )
 
-        csv_urls = await self._async_get_hourly_urls(
-            earliest_start.year if earliest_start is not None else None
-        )
+        try:
+            csv_urls = await self._async_get_hourly_urls(
+                earliest_start.year if earliest_start is not None else None
+            )
+        except (aiohttp.ClientError, TimeoutError, ValueError, TypeError):
+            raise UpdateFailed("Hourly precipitation metadata unavailable") from None
         if not csv_urls:
             raise UpdateFailed("Could not find hourly precipitation URLs")
 
         statistics_by_start: dict[datetime, StatisticData] = {}
         imported_periods: list[str] = []
+        failed_downloads = 0
         for period in self._asset_periods:
             period_urls = csv_urls.get(period)
             if period_urls is None:
                 continue
             imported_period = False
             for csv_url in period_urls:
-                content = await self._async_download_hourly_csv(csv_url, period)
-                if content is None:
+                try:
+                    content = await self._async_download_hourly_csv(csv_url, period)
+                    parsed = await self.hass.async_add_executor_job(
+                        _parse_hourly_statistics,
+                        content,
+                        earliest_start,
+                        self.station_id,
+                    )
+                except (
+                    aiohttp.ClientError,
+                    TimeoutError,
+                    ValueError,
+                    TypeError,
+                    csv.Error,
+                ):
+                    failed_downloads += 1
                     continue
-                parsed = await self.hass.async_add_executor_job(
-                    _parse_hourly_statistics,
-                    content,
-                    earliest_start,
-                )
                 for statistic in parsed:
                     statistics_by_start[statistic["start"]] = statistic
-                imported_period = True
+                imported_period = imported_period or bool(parsed)
             if imported_period:
                 imported_periods.append(period)
 
@@ -255,11 +251,19 @@ class MeteoSwissHourlyPrecipitationCoordinator(
             "unit_class": "distance",
             "unit_of_measurement": UnitOfPrecipitationDepth.MILLIMETERS,
         }
-        async_add_external_statistics(self.hass, metadata, statistics)
+        try:
+            async_add_external_statistics(self.hass, metadata, statistics)
+        except (ValueError, TypeError):
+            raise UpdateFailed(
+                "Could not queue hourly precipitation statistics"
+            ) from None
 
         return {
             "statistic_id": self.statistic_id,
             "imported_hours": len(statistics),
             "imported_periods": imported_periods,
             "latest_start": statistics[-1]["start"].isoformat(),
+            "failed_downloads": failed_downloads,
+            "partial_import": bool(failed_downloads)
+            or len(imported_periods) < len(self._asset_periods),
         }
