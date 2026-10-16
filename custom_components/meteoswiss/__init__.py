@@ -103,7 +103,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
     lat, lon = _get_forecast_coordinates(hass, entry, data_source)
 
     if data_source == DATA_SOURCE_OPENMETEO:
-        # Use Open-Meteo API for current weather AND forecast
+        # Alternative modelled current conditions; ICON forecasts stay separate.
         coordinator = OpenMeteoDataUpdateCoordinator(
             hass,
             latitude=lat,
@@ -111,7 +111,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
             update_interval=update_interval,
             session=shared_session,
         )
-        _LOGGER.debug("Using Open-Meteo API for lat=%s, lon=%s", lat, lon)
+        _LOGGER.debug("Using Open-Meteo current conditions")
 
         forecast_coordinator = MeteoSwissForecastCoordinator(
             hass,

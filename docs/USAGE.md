@@ -58,6 +58,23 @@ An unavailable source is not a value of zero or an all-clear. Some parameters
 are not measured at a station and legitimately stay unknown. Foehn index and
 snow can be reported sparsely; their existing limited fallback is retained.
 
+### Alternative Open-Meteo current weather
+
+Choose this source explicitly for **modelled** current weather at coordinates;
+it is not a measured Swiss station or an automatic fallback from your station.
+The independent weather forecast still uses MeteoSwiss ICON Seamless.
+
+Invalid individual measurements stay unknown while valid fields remain usable.
+An all-empty or invalid/stale current response makes the source's entities
+unavailable; a later valid refresh restores them automatically. Observation
+freshness uses the provider timestamp, not the time of the download.
+
+For this source, precipitation in mm covers the provider's backward-looking
+interval. Check the precipitation sensor's `measurement_interval_seconds`
+attribute (normally 900 for 15 minutes); it is **not** an hourly total or mm/h.
+If the provider omits that duration, it remains unknown. The station-specific
+running-hour and archived hourly totals are not calculated for this source.
+
 ### Weather forecast availability
 
 A failed download, malformed response or empty/unusable hourly forecast makes

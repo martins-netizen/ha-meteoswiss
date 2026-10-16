@@ -121,6 +121,21 @@ GET https://data.geo.admin.ch/ch.meteoschweiz.ogd-pollen/{station}/ogd-pollen_{s
 
 ---
 
+### Alternative current-weather source
+
+An entry explicitly configured as Open-Meteo also reads `current` values at its
+configured coordinates: temperature, humidity, sea-level pressure, wind speed
+and direction, precipitation, WMO code, day/night and optional UV. These are
+modelled current conditions, not SwissMetNet measurements. Units are explicitly
+Celsius, km/h and mm; times are Unix seconds. Its default model selection does
+not change the separate `meteoswiss_icon_seamless` forecast request.
+
+Current precipitation covers the backward-looking `current.interval` duration,
+which is retained on the precipitation sensor as `measurement_interval_seconds`.
+It must not be interpreted as an hourly sum or rate. The optional legacy hourly
+preview is bounded to 24 hours and does not drive HA weather forecast services.
+See [the provider's current-response contract](https://open-meteo.com/en/docs).
+
 ## 5. Open-Meteo Air Quality API
 
 | Property | Value |
