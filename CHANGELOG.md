@@ -2,6 +2,12 @@
 
 ## Unreleased — quality baseline, publication gaps and pollen availability
 
+- Remove station identifiers, raw CSV fields and source URLs from observation
+  logs, including debug-level HTTP exception chains. Let the coordinator report
+  unavailable/recovery transitions once; keep expected decoding failures quiet.
+- Validate station asset/row shapes and retain unexpected programming errors.
+  Enforce full station-coordinator coverage and a 99.0% integration floor.
+
 - Respect Retry-After HTTP dates as well as seconds during bounded retries;
   ignore malformed delay values and fail immediately on invalid URLs/TLS errors.
 - Cover complete setup/reload/unload with and without Recorder, both current
