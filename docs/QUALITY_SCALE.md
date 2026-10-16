@@ -51,13 +51,21 @@ snapshot as having acquired these changes.
 The starting snapshot had 68 passing tests and 54.78% combined line/branch
 coverage (58.50% lines, 40.42% branches). Config flow was 33.79% combined.
 CI now measures **all** integration modules, prints per-module coverage and
-requires full config-flow, both pollen-client and ICON forecast-client line/branch coverage plus a
-71% combined floor (raised from 67%, initially 60%). This
+requires full config-flow, both pollen-client, ICON forecast-client, hourly
+precipitation and HGT utility line/branch coverage. The station coordinator has
+separate minimums of 95% for lines and branches. The combined integration floor
+is 80% (raised from 71%, previously 67% and initially 60%). This
 floor prevents regressions at this stage; it is not a substitute for Silver.
 Unused camera/SLF/hydrology placeholders remain visible in the denominator.
 They must be explicitly removed in a reviewed scope or covered; no exclusions
 are introduced just to improve the metric. Current exact results are in the
 PR and each CI job's summary.
+
+Station CSV parsing, zero/non-finite values, sparse fallback, source failures and
+recovery are covered. Hourly imports include a real Recorder roundtrip proving
+stable statistic identity, repeat-import upserts and corrected hour values;
+archive failures preserve valid subsets and never queue all-invalid data.
+HGT tests cover 12/20 thresholds, season boundaries and missing/invalid entries.
 
 Continue with the remaining optional-source failure/recovery, provider payload
 parsing and freshness, forecast aggregation/timezones, then entity properties, diagnostics

@@ -5,9 +5,11 @@ Implements Swiss HGT 12/20:
   - On a heating day: HGT = 20 °C - daily mean outdoor temperature.
   - Above 12 °C daily mean: HGT = 0.
 """
+
 from __future__ import annotations
 
 import logging
+import math
 from datetime import date, datetime
 from typing import Any
 
@@ -19,8 +21,8 @@ HEATING_REFERENCE_TEMPERATURE: float = 20.0
 
 # Heating season boundaries
 HEATING_SEASON_START_MONTH: int = 10  # October
-HEATING_SEASON_END_MONTH: int = 4     # April
-HEATING_SEASON_END_DAY: int = 30      # April 30
+HEATING_SEASON_END_MONTH: int = 4  # April
+HEATING_SEASON_END_DAY: int = 30  # April 30
 
 
 def calculate_heating_degree_days(daily_mean_temp: float | None) -> float | None:
@@ -32,7 +34,11 @@ def calculate_heating_degree_days(daily_mean_temp: float | None) -> float | None
     Returns:
         Heating degree days value, or None if input is None.
     """
-    if daily_mean_temp is None:
+    if (
+        daily_mean_temp is None
+        or isinstance(daily_mean_temp, bool)
+        or not math.isfinite(daily_mean_temp)
+    ):
         return None
     if daily_mean_temp <= HEATING_THRESHOLD:
         return HEATING_REFERENCE_TEMPERATURE - daily_mean_temp
@@ -54,9 +60,7 @@ def is_in_heating_season(d: date | None = None) -> bool:
     month = d.month
     if month >= HEATING_SEASON_START_MONTH:  # Oct–Dec
         return True
-    if month <= HEATING_SEASON_END_MONTH:    # Jan–Apr
-        return True
-    return False
+    return month <= HEATING_SEASON_END_MONTH  # Jan–Apr
 
 
 def get_heating_season_start_date(d: date | None = None) -> date:
@@ -112,7 +116,7 @@ def compute_season_hgt(daily_temperatures: list[dict[str, Any]]) -> dict[str, An
                 continue
 
             temp_mean = entry.get("temperature_mean")
-            if temp_mean is None:
+            if temp_mean is None or isinstance(temp_mean, bool):
                 continue
 
             hgt = calculate_heating_degree_days(float(temp_mean))

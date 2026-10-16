@@ -111,7 +111,7 @@ when this file supplies those parameters. It skips trailing rows that only
 contain accumulation/sparse fields, preserving the chosen observation's true UTC
 time. Rain-only stations use their measured fields instead. This does not merge
 older individual values into a newer row: a missing gust in an otherwise valid
-new row remains unknown. Hourly precipitation imports are separate and unchanged.
+new row remains unknown. Hourly precipitation imports remain a separate path.
 
 Observation sensors expose these machine-readable attributes:
 
@@ -124,6 +124,12 @@ Observation sensors expose these machine-readable attributes:
 `current` describes row selection, not a guarantee that every parameter exists.
 The running-hour precipitation sensor aggregates published intervals separately;
 its `measurement_time` describes the station observation, not the aggregate end.
+If no valid rain interval has been published in the current UTC hour, this
+total stays unknown, including before the first interval arrives after the hour
+changes. A valid zero is displayed as zero. Invalid/negative rain amounts are
+skipped and a repeated interval timestamp is counted once; equal amounts at
+different timestamps remain separate intervals. This sum does not assert that
+every interval in the hour was received.
 The one-hour observation age limit remains in force. All-empty, invalid-time,
 future-time and stale sources fail updates and make coordinator entities
 unavailable. A valid zero remains zero. No synthetic historical measurements
@@ -134,6 +140,20 @@ ID, entity state (`unknown` versus `unavailable`), the attributes above, and
 redacted integration diagnostics/logs. Compare simultaneous observation sensors
 and HA restarts/Recorder operation with the original source timestamps. A
 screenshot alone cannot determine the cause of every earlier interruption.
+
+### Hourly precipitation archive and heating degree days
+
+Official hourly imports keep the existing statistic ID and unit. Only valid,
+non-negative totals for the selected station and completed whole-hour UTC
+intervals are queued. Repeated imports update existing hours, including provider
+corrections, without creating duplicate hours. If one archive file fails, valid
+files can still be imported; missing data is not filled with zero. No valid
+records means a failed importer update, preserving the previously stored data.
+
+Daily HGT 12/20 remains a forecast-based calculation: at a daily mean of 12 °C
+or lower, HGT is 20 minus that mean; above 12 °C it is zero. Missing/non-finite
+temperatures remain missing. Existing season helper functions are tested, but
+this change does not introduce a measured seasonal HGT archive or new sensors.
 
 ## Remove an entry
 
