@@ -261,25 +261,23 @@ async def test_concurrent_loads_share_one_inflight_fetch(hass):
     assert fetcher.call_count == 1
 
 
-async def test_owned_session_closes_and_cancellation_is_not_a_source_failure(
-    aioclient_mock, hass
-):
-    original = aiohttp.ClientSession
-    created = []
-
-    def factory(*args, **kwargs):
-        session = original(*args, **kwargs)
-        created.append(session)
-        return session
-
-    aioclient_mock.get(STATIONS_METADATA_URL, content=catalogue())
+async def test_owned_session_closes_and_cancellation_is_not_a_source_failure(hass):
+    # Test integration context ownership, not aiohttp's transport internals.
+    # Replacing the constructor around aioclient_mock can bypass its patch.
+    owned_session = AsyncMock()
+    owned_session.__aenter__.return_value = owned_session
     loader = MeteoSwissStationsMap()
-    with patch(
-        "custom_components.meteoswiss.stations_map.aiohttp.ClientSession",
-        side_effect=factory,
+    with (
+        patch(
+            "custom_components.meteoswiss.stations_map.aiohttp.ClientSession",
+            return_value=owned_session,
+        ),
+        patch.object(loader, "_async_download", return_value=catalogue()) as download,
     ):
         await loader.load_stations()
-    assert created[0].closed
+    download.assert_awaited_once_with(owned_session)
+    owned_session.__aenter__.assert_awaited_once()
+    owned_session.__aexit__.assert_awaited_once()
     loader = MeteoSwissStationsMap()
     # Force a network attempt rather than the valid shared cache.
     from custom_components.meteoswiss.cache import get_stations_cache
