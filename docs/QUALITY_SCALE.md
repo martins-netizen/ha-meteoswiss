@@ -41,9 +41,9 @@ snapshot as having acquired these changes.
 | `action-exceptions` | Exempt: no integration-specific service actions. |
 | `config-entry-unloading` | Native unload/reload; tests verify HA session ownership, replaced runtime state, stable entity IDs and removed observation/forecast listeners. |
 | `docs-configuration-parameters`, `docs-installation-parameters` | Usage includes provider selection, intervals, coordinates, warning postcode and measured pollen station. |
-| `entity-unavailable` | Observations/warnings and both pollen/AQ clients have failure/recovery tests, including registered pollen/AQ entity states. All-empty current pollen/AQ payloads fail; partial responses retain unknown fields. Measured pollen rejects age over four hours or future skew over ten minutes on refresh; boundary, DST, repeated-cache and registered-entity recovery tests cover it. Audit remaining optional forecast paths next. Full rule remains pending. |
+| `entity-unavailable` | Observations/warnings and both pollen/AQ clients have failure/recovery tests, including registered pollen/AQ entity states. All-empty current pollen/AQ payloads fail; partial responses retain unknown fields. Measured pollen rejects age over four hours or future skew over ten minutes on refresh. Both weather forecast services return empty lists on forecast failure and recover, while valid observations remain available. Remaining optional per-entity paths still require review; full rule remains pending. |
 | `integration-owner` | `@martins-netizen` in manifest. Repository Issues are currently disabled: enable a usable fork-specific support route before public release. |
-| `log-when-unavailable` | Pollen/AQ and measured pollen use coordinator transition logs, without duplicate raw client errors/coordinate URLs; repeated failure and recovery are tested. Remaining providers still require review. Pending for the full integration. |
+| `log-when-unavailable` | Pollen/AQ, measured pollen and the ICON forecast client use coordinator transition logs. Forecast failures suppress raw coordinate URLs/HTTP exception chains even in debug logs; repeated failure and recovery are tested. Remaining providers still require review. Pending for the full integration. |
 | `parallel-updates` | Explicit platform limits: sensor 1 for diagnostic polling, coordinator-driven weather/binary sensor 0; no device actions. |
 | `reauthentication-flow` | Exempt: the public APIs require no credentials. |
 | `test-coverage` | Pending. [Above 95% for every module](https://developers.home-assistant.io/docs/core/integration-quality-scale/rules/test-coverage/) is required; a passing flow or global average is insufficient. |
@@ -51,8 +51,8 @@ snapshot as having acquired these changes.
 The starting snapshot had 68 passing tests and 54.78% combined line/branch
 coverage (58.50% lines, 40.42% branches). Config flow was 33.79% combined.
 CI now measures **all** integration modules, prints per-module coverage and
-requires full config-flow and both pollen-client line/branch coverage plus a
-67% combined floor (raised from the initial 60%). This
+requires full config-flow, both pollen-client and ICON forecast-client line/branch coverage plus a
+71% combined floor (raised from 67%, initially 60%). This
 floor prevents regressions at this stage; it is not a substitute for Silver.
 Unused camera/SLF/hydrology placeholders remain visible in the denominator.
 They must be explicitly removed in a reviewed scope or covered; no exclusions

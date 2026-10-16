@@ -89,6 +89,27 @@ are provider buckets and are not claimed to be recalculated 23/25-hour local
 measurement days. Missing aggregates can fall back to available hourly values;
 for today these may cover only the remaining hours.
 
+The ICON forecast client separates transport retries from response validation.
+It requires structured hourly/daily objects, list-valued series and nonempty,
+strictly ordered timestamps. The rolling horizon must extend beyond now and
+start no more than one hour ahead, with at least one finite temperature in an
+unexpired hour. This is a payload-consistency guard for the requested rolling
+forecast, not a model-issuance-time guarantee. Missing daily data can still
+fall back to hourly aggregates. Invalid individual numbers stay missing;
+valid zero values and negative temperatures are retained. Humidity and
+probability are bounded to 0–100, bearings to 0–360, and negative precipitation,
+snowfall or wind speeds are missing. Unknown codes cannot manufacture clear sky.
+
+Only validated forecasts enter the versioned 30-minute cache. Transient
+transport failures retry at most three times; malformed data is not retried.
+Five failed refreshes retain the existing five-minute circuit-breaker pause.
+The weather entity continues exposing valid observations during a forecast
+failure, while its hourly/daily forecast services return empty lists. A valid
+refresh restores forecasts automatically. Coordinator transition logs replace
+duplicate client errors; the client logs neither the coordinate URL nor raw
+HTTP exception chains, including at debug level. Tests exercise the registered
+weather entity through both HA forecast services and verify unload cleanup.
+
 Failed or more than three-hour-old forecasts are not used as current conditions.
 Numeric temperature or zero rain does not establish a clear/partly cloudy sky.
 The positive station-rain fallback is a precipitation-interval estimate, not a
@@ -128,9 +149,10 @@ Do not rename established entities during this change.
 
 Tests cover warning failure/recovery, invalid payloads, bounded retries,
 cancellation, HA-owned sessions, stale observations, current-hour AQ data,
-registered pollen/AQ entity states and unload, forecast contracts, DST and
-translation coverage. Both pollen clients have full line/branch coverage,
-enforced in CI alongside config flow; whole-integration Silver remains pending.
+registered pollen/AQ entity states and unload, forecast service failure/recovery,
+contracts, DST and translation coverage. Both pollen clients and the ICON
+forecast client have full line/branch coverage, enforced in CI alongside config
+flow; whole-integration Silver remains pending.
 CI runs minimum and current
 HA test environments plus Hassfest and CodeQL. Passing CI is not a live-house
 acceptance test. The `quality_scale: platinum` claim inherited from upstream is

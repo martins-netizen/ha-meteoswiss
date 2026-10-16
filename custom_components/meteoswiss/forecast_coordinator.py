@@ -1,8 +1,11 @@
 """Forecast coordinator using Open-Meteo API."""
+
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timedelta, timezone
+import math
+from datetime import UTC, datetime, timedelta, timezone
+from itertools import pairwise
 from typing import Any
 
 import aiohttp
@@ -18,6 +21,47 @@ _LOGGER = logging.getLogger(__name__)
 
 # Open-Meteo API
 OPEN_METEO_BASE_URL = "https://api.open-meteo.com/v1/forecast"
+
+
+def _series(block: dict[str, Any], key: str) -> list[Any]:
+    """Missing series remain missing; an invalid container is not a forecast."""
+    values = block.get(key, [])
+    if not isinstance(values, list):
+        raise TypeError("Invalid forecast series")
+    return values
+
+
+def _value(
+    values: list[Any],
+    index: int,
+    minimum: float | None = None,
+    maximum: float | None = None,
+) -> float | None:
+    """Keep finite numeric values, including zero and negative temperatures."""
+    raw = values[index] if index < len(values) else None
+    if raw is None or isinstance(raw, bool):
+        return None
+    try:
+        value = float(raw)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if (
+        not math.isfinite(value)
+        or minimum is not None
+        and value < minimum
+        or maximum is not None
+        and value > maximum
+    ):
+        return None
+    return value
+
+
+def _timestamp(raw: Any) -> datetime:
+    """Provider timestamps must be valid and must not be boolean numbers."""
+    value = None if isinstance(raw, bool) else forecast_datetime(raw)
+    if value is None:
+        raise ValueError("Invalid forecast timestamp")
+    return value
 
 
 class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]]):
@@ -57,13 +101,14 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
             update_interval=timedelta(seconds=update_interval),
         )
 
-    def _map_open_meteo_condition(self, weather_code: int | None, is_night: bool = False) -> str | None:
+    def _map_open_meteo_condition(
+        self, weather_code: int | None, is_night: bool = False
+    ) -> str | None:
         """Map a known provider code without manufacturing a clear sky."""
         return weather_condition(weather_code, is_day=not is_night)
 
-    @async_retry_with_backoff(max_attempts=3)
     async def _fetch_open_meteo_forecast(self) -> list[dict[str, Any]]:
-        """Fetch forecast from Open-Meteo API with retries."""
+        """Fetch and validate once; only transport failures are retried."""
         if self._latitude is None or self._longitude is None:
             raise UpdateFailed("No coordinates available for Open-Meteo")
 
@@ -81,76 +126,91 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
             f"&timezone=Europe/Zurich&timeformat=unixtime"
         )
 
-        _LOGGER.debug("Fetching from Open-Meteo: %s", url)
+        return self._parse_response(await self._async_fetch_payload(url))
 
+    @async_retry_with_backoff(max_attempts=3)
+    async def _async_fetch_payload(self, url: str) -> Any:
+        """Retry transient HTTP failures without logging the location URL."""
         async with self._session.get(url, timeout=DEFAULT_API_TIMEOUT) as response:
             response.raise_for_status()
-            data = await response.json()
+            return await response.json()
+
+    def _parse_response(self, data: Any) -> list[dict[str, Any]]:
+        """Normalize a usable rolling forecast without manufacturing values."""
         if not isinstance(data, dict):
-            raise ValueError("Expected a forecast response object")
+            raise TypeError("Expected a forecast response object")
 
         forecast_data = []
         hourly = data.get("hourly", {})
 
-        if not hourly:
-            raise UpdateFailed("Open-Meteo API returned no hourly data")
+        if not isinstance(hourly, dict):
+            raise TypeError("Invalid hourly forecast object")
 
-        times = hourly.get("time", [])
-        temps = hourly.get("temperature_2m", [])
-        humidity = hourly.get("relative_humidity_2m", [])
-        precip_prob = hourly.get("precipitation_probability", [])
-        precip = hourly.get("precipitation", [])
-        wind_speed = hourly.get("windspeed_10m", [])
-        wind_dir = hourly.get("winddirection_10m", [])
-        weather_codes = hourly.get("weather_code", [])
-        daylight = hourly.get("is_day", [])
-        snowfall = hourly.get("snowfall", [])
-        freezing_level = hourly.get("freezing_level_height", [])
+        times = _series(hourly, "time")
+        timestamps = [_timestamp(raw) for raw in times[:120]]
+        if not timestamps or any(a >= b for a, b in pairwise(timestamps)):
+            raise ValueError("Forecast times are empty or out of order")
+        now = datetime.now(UTC)
+        if (
+            timestamps[0] > now + timedelta(hours=1)
+            or timestamps[-1] + timedelta(hours=1) <= now
+        ):
+            raise ValueError("Forecast does not cover the requested rolling period")
+        temps = _series(hourly, "temperature_2m")
+        humidity = _series(hourly, "relative_humidity_2m")
+        precip_prob = _series(hourly, "precipitation_probability")
+        precip = _series(hourly, "precipitation")
+        wind_speed = _series(hourly, "windspeed_10m")
+        wind_dir = _series(hourly, "winddirection_10m")
+        weather_codes = _series(hourly, "weather_code")
+        daylight = _series(hourly, "is_day")
+        snowfall = _series(hourly, "snowfall")
+        freezing_level = _series(hourly, "freezing_level_height")
 
         # Native calendar-day extrema from Open-Meteo. These remain complete
         # for the current day even though hourly data starts at the current hour.
         daily = data.get("daily", {})
-        daily_times = daily.get("time", [])
-        daily_max_temps = daily.get("temperature_2m_max", [])
-        daily_min_temps = daily.get("temperature_2m_min", [])
-        daily_mean_temps = daily.get("temperature_2m_mean", [])
-        daily_precip = daily.get("precipitation_sum", [])
-        daily_precip_prob = daily.get("precipitation_probability_max", [])
+        if not isinstance(daily, dict):
+            raise TypeError("Invalid daily forecast object")
+        daily_times = _series(daily, "time")
+        daily_max_temps = _series(daily, "temperature_2m_max")
+        daily_min_temps = _series(daily, "temperature_2m_min")
+        daily_mean_temps = _series(daily, "temperature_2m_mean")
+        daily_precip = _series(daily, "precipitation_sum")
+        daily_precip_prob = _series(daily, "precipitation_probability_max")
         daily_extrema: dict[str, dict[str, float | None]] = {}
         # Open-Meteo daily buckets use the response's fixed offset, even
         # across DST. Preserve their date labels; hourly timestamps use IANA.
         provider_offset = data.get("utc_offset_seconds")
-        daily_zone = (
-            timezone(timedelta(seconds=provider_offset))
-            if isinstance(provider_offset, (int, float)) else FORECAST_TIME_ZONE
-        )
+        daily_zone = FORECAST_TIME_ZONE
+        if provider_offset is not None:
+            offset = _value([provider_offset], 0)
+            if offset is None or abs(offset) >= 86400:
+                raise ValueError("Invalid forecast UTC offset")
+            daily_zone = timezone(timedelta(seconds=offset))
         for i, day in enumerate(daily_times):
-            day_time = forecast_datetime(day)
-            if day_time is None:
-                raise ValueError("Invalid daily forecast timestamp")
+            day_time = _timestamp(day)
             daily_extrema[day_time.astimezone(daily_zone).date().isoformat()] = {
-                "temperature_max": (
-                    daily_max_temps[i] if i < len(daily_max_temps) else None
-                ),
-                "temperature_min": (
-                    daily_min_temps[i] if i < len(daily_min_temps) else None
-                ),
-                "precipitation": daily_precip[i] if i < len(daily_precip) else None,
-                "precipitation_probability": daily_precip_prob[i] if i < len(daily_precip_prob) else None,
-                "temperature_mean": (
-                    daily_mean_temps[i] if i < len(daily_mean_temps) else None
-                ),
+                "temperature_max": _value(daily_max_temps, i),
+                "temperature_min": _value(daily_min_temps, i),
+                "precipitation": _value(daily_precip, i, 0),
+                "precipitation_probability": _value(daily_precip_prob, i, 0, 100),
+                "temperature_mean": _value(daily_mean_temps, i),
             }
 
-        fetched_at = datetime.now(timezone.utc).isoformat()
+        fetched_at = datetime.now(UTC).isoformat()
         for i in range(min(120, len(times))):
-            code = weather_codes[i] if i < len(weather_codes) else None
-            timestamp = forecast_datetime(times[i])
-            if timestamp is None:
-                raise ValueError("Invalid hourly forecast timestamp")
+            raw_code = _value(weather_codes, i, 0)
+            code = (
+                int(raw_code)
+                if raw_code is not None and raw_code.is_integer()
+                else None
+            )
+            timestamp = timestamps[i]
             day = timestamp.astimezone(FORECAST_TIME_ZONE).date().isoformat()
             daily_values = daily_extrema.get(day, {})
-            is_day = bool(daylight[i]) if i < len(daylight) and daylight[i] is not None else None
+            day_value = _value(daylight, i, 0, 1)
+            is_day = bool(day_value) if day_value in (0, 1) else None
 
             entry = {
                 "datetime": timestamp.isoformat(),
@@ -160,41 +220,52 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
                 "weather_code": code,
                 "is_day": is_day,
                 "daily_precipitation": daily_values.get("precipitation"),
-                "daily_precipitation_probability": daily_values.get("precipitation_probability"),
-                "temperature": temps[i] if i < len(temps) else None,
+                "daily_precipitation_probability": daily_values.get(
+                    "precipitation_probability"
+                ),
+                "temperature": _value(temps, i),
                 "daily_temperature_max": daily_values.get("temperature_max"),
                 "daily_temperature_min": daily_values.get("temperature_min"),
                 "daily_temperature_mean": daily_values.get("temperature_mean"),
-                "humidity": humidity[i] if i < len(humidity) else None,
-                "precipitation_probability": precip_prob[i] if i < len(precip_prob) else None,
-                "precipitation": precip[i] if i < len(precip) else None,
-                "wind_speed": wind_speed[i] if i < len(wind_speed) else None,
-                "wind_direction": wind_dir[i] if i < len(wind_dir) else None,
+                "humidity": _value(humidity, i, 0, 100),
+                "precipitation_probability": _value(precip_prob, i, 0, 100),
+                "precipitation": _value(precip, i, 0),
+                "wind_speed": _value(wind_speed, i, 0),
+                "wind_direction": _value(wind_dir, i, 0, 360),
                 "condition": weather_condition(code, is_day),
-                "snowfall": snowfall[i] if i < len(snowfall) else None,
-                "freezing_level_height": freezing_level[i] if i < len(freezing_level) else None,
+                "snowfall": _value(snowfall, i, 0),
+                "freezing_level_height": _value(freezing_level, i),
             }
             forecast_data.append(entry)
 
-        _LOGGER.debug("Fetched %d hours of forecast from Open-Meteo", len(forecast_data))
+        if not any(
+            row["temperature"] is not None and timestamps[i] + timedelta(hours=1) > now
+            for i, row in enumerate(forecast_data)
+        ):
+            raise ValueError("Forecast contains no usable hourly temperature")
+        _LOGGER.debug(
+            "Fetched %d hours of forecast from Open-Meteo", len(forecast_data)
+        )
         return forecast_data
 
     async def _async_update_data(self) -> list[dict[str, Any]]:
         """Fetch forecast data from Open-Meteo API with caching."""
         # Circuit breaker check
-        if self._circuit_open_until and datetime.now(timezone.utc) < self._circuit_open_until:
+        if self._circuit_open_until and datetime.now(UTC) < self._circuit_open_until:
             raise UpdateFailed("Circuit breaker open — API temporarily unavailable")
 
         _LOGGER.debug("Fetching forecast from Open-Meteo API")
 
         # Get cache
         cache = get_forecast_cache()
-        cache_key = f"forecast:v2:icon-seamless:{self._latitude},{self._longitude}"
+        cache_key = f"forecast:v3:icon-seamless:{self._latitude},{self._longitude}"
 
         # Try cache first
         cached_data = cache.get(cache_key)
-        if cached_data is not None:
+        if cached_data:
             _LOGGER.debug("Using cached forecast data")
+            self._consecutive_failures = 0
+            self._circuit_open_until = None
             return cached_data
 
         try:
@@ -209,16 +280,19 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
 
             _LOGGER.debug("Successfully updated forecast from Open-Meteo")
             return data
-        except (aiohttp.ClientError, TimeoutError, ValueError, UpdateFailed) as err:
-            _LOGGER.error("Error fetching Open-Meteo forecast: %s", err)
+        except (
+            aiohttp.ClientError,
+            TimeoutError,
+            TypeError,
+            ValueError,
+            UpdateFailed,
+        ):
             self._consecutive_failures += 1
             if self._consecutive_failures >= 5:
-                self._circuit_open_until = datetime.now(timezone.utc) + timedelta(minutes=5)
-                _LOGGER.warning(
-                    "Circuit breaker opened after %d consecutive failures",
-                    self._consecutive_failures,
-                )
-            raise UpdateFailed("Failed to fetch Open-Meteo forecast") from err
+                self._circuit_open_until = datetime.now(UTC) + timedelta(minutes=5)
+            # HA logs availability transitions. Suppress raw HTTP exception chains,
+            # including coordinate URLs, even when coordinator debug logs are on.
+            raise UpdateFailed("Failed to fetch Open-Meteo forecast") from None
 
     @property
     def data_source(self) -> str:
@@ -228,4 +302,3 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
     async def async_close(self) -> None:
         """Close is handled centrally by the integration setup."""
         # Session is shared and closed in async_unload_entry
-        pass

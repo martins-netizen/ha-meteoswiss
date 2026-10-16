@@ -31,12 +31,16 @@ def validate(path: Path) -> None:
     flow = files["custom_components/meteoswiss/config_flow.py"]
     if flow["missing_lines"] or flow["missing_branches"]:
         raise SystemExit("Config flow must have 100% line and branch coverage")
-    for module in ("pollen_coordinator_openmeteo.py", "pollen_meteoswiss.py"):
+    for module in (
+        "pollen_coordinator_openmeteo.py",
+        "pollen_meteoswiss.py",
+        "forecast_coordinator.py",
+    ):
         source = files[f"custom_components/meteoswiss/{module}"]
         if source["missing_lines"] or source["missing_branches"]:
             raise SystemExit(f"{module} must retain full line and branch coverage")
-    if total < 67:
-        raise SystemExit("Integration coverage fell below the current 67% floor")
+    if total < 71:
+        raise SystemExit("Integration coverage fell below the current 71% floor")
 
 
 if __name__ == "__main__":
