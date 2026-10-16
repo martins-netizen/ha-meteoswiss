@@ -100,7 +100,7 @@ def _current_hour_precipitation(
             if math.isfinite(amount) and amount >= 0:
                 amounts[reference] = amount
         except (TypeError, ValueError):
-            _LOGGER.debug("Could not parse precipitation interval '%s'", value)
+            _LOGGER.debug("Could not parse precipitation interval")
 
     return round(sum(amounts.values()), 3) if amounts else None
 
@@ -147,37 +147,53 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         try:
             url = f"{API_BASE}/collections/{STAC_COLLECTION}/items/{self.station_id}"
-            _LOGGER.debug("Fetching station info from: %s", url)
+            _LOGGER.debug("Fetching station metadata")
             async with self._session.get(url, timeout=DEFAULT_API_TIMEOUT) as response:
                 response.raise_for_status()
 
                 data = await response.json()
 
                 # Find the t_now.csv asset (most recent 10-min data)
+                if not isinstance(data, dict) or not isinstance(
+                    data.get("assets", {}), dict
+                ):
+                    raise TypeError("Invalid station metadata")
                 assets = data.get("assets", {})
                 asset_key = f"ogd-smn_{self.station_id}_t_now.csv"
 
                 if asset_key in assets:
-                    csv_url = assets[asset_key].get("href")
-                    _LOGGER.debug("Found CSV URL: %s", csv_url)
+                    asset = assets[asset_key]
+                    if (
+                        not isinstance(asset, dict)
+                        or not isinstance(asset.get("href"), str)
+                        or not asset["href"].strip()
+                    ):
+                        raise ValueError("Invalid station asset")
+                    csv_url = asset["href"]
+                    _LOGGER.debug("Selected station measurement asset")
                     return csv_url
 
                 # Fallback to t_recent.csv if t_now.csv not available
                 asset_key = f"ogd-smn_{self.station_id}_t_recent.csv"
                 if asset_key in assets:
-                    csv_url = assets[asset_key].get("href")
-                    _LOGGER.debug("Found CSV URL (fallback): %s", csv_url)
+                    asset = assets[asset_key]
+                    if (
+                        not isinstance(asset, dict)
+                        or not isinstance(asset.get("href"), str)
+                        or not asset["href"].strip()
+                    ):
+                        raise ValueError("Invalid station asset")
+                    csv_url = asset["href"]
+                    _LOGGER.debug("Selected station measurement asset")
                     return csv_url
 
-                _LOGGER.warning(
-                    "No t_now.csv or t_recent.csv found for station %s", self.station_id
-                )
+                _LOGGER.debug("Station metadata has no current or recent asset")
                 return None
 
         except (aiohttp.ClientError, TimeoutError):
             raise
-        except Exception:
-            _LOGGER.exception("Error fetching station info")
+        except (ValueError, TypeError, csv.Error):
+            _LOGGER.debug("Station source decoding failed")
             return None
 
     @async_retry_with_backoff(max_attempts=4, base_delay=1.0, max_delay=10.0)
@@ -189,7 +205,7 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             raise RuntimeError("No session provided")
 
         try:
-            _LOGGER.debug("Downloading CSV from: %s", csv_url)
+            _LOGGER.debug("Fetching station measurements")
             async with self._session.get(
                 csv_url, timeout=DEFAULT_API_TIMEOUT
             ) as response:
@@ -204,7 +220,7 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             all_rows = list(csv.DictReader(io.StringIO(content), delimiter=";"))
 
             if not all_rows:
-                _LOGGER.error("CSV has no data rows")
+                _LOGGER.debug("CSV has no data rows")
                 return None
 
             if any(
@@ -290,17 +306,13 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             result[SENSOR_PRECIPITATION_CURRENT_HOUR] = _current_hour_precipitation(
                 all_rows
             )
-            _LOGGER.debug(
-                "Parsed %d rows; current-hour precipitation: %s mm",
-                len(all_rows),
-                result[SENSOR_PRECIPITATION_CURRENT_HOUR],
-            )
+            _LOGGER.debug("Decoded %d station CSV rows", len(all_rows))
             return result
 
         except (UpdateFailed, aiohttp.ClientError, TimeoutError):
             raise
-        except Exception:
-            _LOGGER.exception("Error parsing CSV")
+        except (ValueError, TypeError, csv.Error):
+            _LOGGER.debug("Station source decoding failed")
             return None
 
     def _parse_csv_row_with_fallback(
@@ -337,9 +349,7 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                             else:
                                 result[sensor_key] = float(val)
                             _LOGGER.debug(
-                                "Fallback %s from older row: %s",
-                                sensor_key,
-                                result[sensor_key],
+                                "Optional measurement fallback used for %s", sensor_key
                             )
                             break
                         except (ValueError, TypeError, OverflowError):
@@ -349,201 +359,167 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     def _parse_csv_row(self, row: dict[str, str]) -> dict[str, Any]:
         """Parse a CSV row into normalized data."""
-        try:
-            result = {
-                SENSOR_TEMPERATURE: None,
-                SENSOR_HUMIDITY: None,
-                SENSOR_WIND_SPEED: None,
-                SENSOR_WIND_DIRECTION: None,
-                SENSOR_PRECIPITATION: None,
-                SENSOR_PRECIPITATION_CURRENT_HOUR: None,
-                SENSOR_PRESSURE: None,
-                SENSOR_WIND_GUST: None,
-                SENSOR_DEW_POINT: None,
-                SENSOR_SUNSHINE: None,
-                SENSOR_GLOBAL_RADIATION: None,
-                SENSOR_SNOW_DEPTH: None,
-                SENSOR_FOEHN_INDEX: None,
-                "last_update": None,
-            }
-
-            # Parse temperature (in °C)
-            temp_value = row.get(PARAM_TEMPERATURE)
-            if temp_value and temp_value.strip():
-                try:
-                    result[SENSOR_TEMPERATURE] = float(temp_value)
-                    _LOGGER.debug(
-                        "Parsed temperature: %s °C", result[SENSOR_TEMPERATURE]
-                    )
-                except (ValueError, TypeError, OverflowError) as e:
-                    _LOGGER.error("Could not parse temperature '%s': %s", temp_value, e)
-
-            # Parse humidity (in %)
-            hum_value = row.get(PARAM_HUMIDITY)
-            if hum_value and hum_value.strip():
-                try:
-                    result[SENSOR_HUMIDITY] = float(hum_value)
-                    _LOGGER.debug("Parsed humidity: %s %%", result[SENSOR_HUMIDITY])
-                except (ValueError, TypeError, OverflowError) as e:
-                    _LOGGER.error("Could not parse humidity '%s': %s", hum_value, e)
-
-            # Parse wind speed (in km/h)
-            wind_value = row.get(PARAM_WIND_SPEED)
-            if wind_value and wind_value.strip():
-                try:
-                    result[SENSOR_WIND_SPEED] = float(wind_value)
-                    _LOGGER.debug(
-                        "Parsed wind speed: %s km/h", result[SENSOR_WIND_SPEED]
-                    )
-                except (ValueError, TypeError, OverflowError) as e:
-                    _LOGGER.error("Could not parse wind speed '%s': %s", wind_value, e)
-
-            # Parse wind direction (in degrees)
-            dir_value = row.get(PARAM_WIND_DIR)
-            if dir_value and dir_value.strip():
-                try:
-                    result[SENSOR_WIND_DIRECTION] = int(float(dir_value))
-                    _LOGGER.debug(
-                        "Parsed wind direction: %s °", result[SENSOR_WIND_DIRECTION]
-                    )
-                except (ValueError, TypeError, OverflowError) as e:
-                    _LOGGER.error(
-                        "Could not parse wind direction '%s': %s", dir_value, e
-                    )
-
-            # Parse pressure (in hPa)
-            press_value = row.get(PARAM_PRESSURE)
-            if press_value and press_value.strip():
-                try:
-                    result[SENSOR_PRESSURE] = float(press_value)
-                    _LOGGER.debug("Parsed pressure: %s hPa", result[SENSOR_PRESSURE])
-                except (ValueError, TypeError, OverflowError) as e:
-                    _LOGGER.error("Could not parse pressure '%s': %s", press_value, e)
-
-            # Parse precipitation (in mm)
-            precip_value = row.get(PARAM_PRECIPITATION)
-            if precip_value and precip_value.strip():
-                try:
-                    result[SENSOR_PRECIPITATION] = float(precip_value)
-                    _LOGGER.debug(
-                        "Parsed precipitation: %s mm", result[SENSOR_PRECIPITATION]
-                    )
-                except (ValueError, TypeError, OverflowError) as e:
-                    _LOGGER.error(
-                        "Could not parse precipitation '%s': %s", precip_value, e
-                    )
-
-            # Parse wind gust (1-second, in km/h)
-            gust_value = row.get(PARAM_GUST_1S)
-            if gust_value and gust_value.strip():
-                try:
-                    result[SENSOR_WIND_GUST] = float(gust_value)
-                except (ValueError, TypeError, OverflowError) as e:
-                    _LOGGER.debug("Could not parse wind gust '%s': %s", gust_value, e)
-
-            # Parse sunshine duration (10-min sum, in minutes)
-            sun_value = row.get(PARAM_SUNSHINE)
-            if sun_value and sun_value.strip():
-                try:
-                    result[SENSOR_SUNSHINE] = float(sun_value)
-                except (ValueError, TypeError, OverflowError) as e:
-                    _LOGGER.debug("Could not parse sunshine '%s': %s", sun_value, e)
-
-            # Parse global radiation (W/m²)
-            rad_value = row.get(PARAM_GLOBAL_RAD)
-            if rad_value and rad_value.strip():
-                try:
-                    result[SENSOR_GLOBAL_RADIATION] = float(rad_value)
-                except (ValueError, TypeError, OverflowError) as e:
-                    _LOGGER.debug(
-                        "Could not parse global radiation '%s': %s", rad_value, e
-                    )
-
-            # Parse snow depth (cm)
-            snow_value = row.get(PARAM_SNOW_DEPTH)
-            if snow_value and snow_value.strip():
-                try:
-                    result[SENSOR_SNOW_DEPTH] = float(snow_value)
-                    _LOGGER.debug("Parsed snow depth: %s cm", result[SENSOR_SNOW_DEPTH])
-                except (ValueError, TypeError, OverflowError) as e:
-                    _LOGGER.debug("Could not parse snow depth '%s': %s", snow_value, e)
-
-            # Parse foehn index (code)
-            foehn_value = row.get(PARAM_FOEHN_INDEX)
-            if foehn_value and foehn_value.strip():
-                try:
-                    result[SENSOR_FOEHN_INDEX] = int(float(foehn_value))
-                    _LOGGER.debug("Parsed foehn index: %s", result[SENSOR_FOEHN_INDEX])
-                except (ValueError, TypeError, OverflowError) as e:
-                    _LOGGER.debug(
-                        "Could not parse foehn index '%s': %s", foehn_value, e
-                    )
-
-            # Parse soil temperatures — removed (most stations don't measure)
-            # (parsing block removed)
-
-            # Dew point: use measured value if available, otherwise calculate via Magnus formula
-            dew_measured = row.get(PARAM_DEW_POINT)
-            if dew_measured and dew_measured.strip():
-                try:
-                    result[SENSOR_DEW_POINT] = round(float(dew_measured), 1)
-                    _LOGGER.debug(
-                        "Using measured dew point: %s °C", result[SENSOR_DEW_POINT]
-                    )
-                except (ValueError, TypeError, OverflowError) as e:
-                    _LOGGER.debug(
-                        "Could not parse measured dew point '%s': %s", dew_measured, e
-                    )
-
-            # Non-finite values must not leak into HA or poison derived values.
-            for key, value in result.items():
-                if isinstance(value, (int, float)) and not math.isfinite(value):
-                    result[key] = None
-
-            # Fallback: calculate dew point from temperature and humidity using Magnus formula
-            if result[SENSOR_DEW_POINT] is None:
-                temp = result.get(SENSOR_TEMPERATURE)
-                hum = result.get(SENSOR_HUMIDITY)
-                if temp is not None and hum is not None:
-                    try:
-                        # Magnus formula
-                        a = 17.625
-                        b = 243.04
-                        alpha = ((a * temp) / (b + temp)) + math.log(
-                            max(hum, 1.0) / 100.0
-                        )
-                        dew = (b * alpha) / (a - alpha)
-                        if math.isfinite(dew):
-                            result[SENSOR_DEW_POINT] = round(dew, 1)
-                        _LOGGER.debug(
-                            "Calculated dew point (Magnus): %s °C",
-                            result[SENSOR_DEW_POINT],
-                        )
-                    except (ValueError, ZeroDivisionError, OverflowError):
-                        _LOGGER.debug(
-                            "Dew point cannot be derived from this measurement"
-                        )
-
-            # Preserve measurement time. A malformed timestamp must never
-            # be replaced with "now", which would hide stale source data.
-            reference = _parse_reference_timestamp(row.get("reference_timestamp"))
-            result["last_update"] = reference.isoformat() if reference else None
-
-            # Log final result
-            _LOGGER.debug(
-                "Parsed result: temp=%s, humidity=%s, wind=%s, dir=%s, pressure=%s",
-                result[SENSOR_TEMPERATURE],
-                result[SENSOR_HUMIDITY],
-                result[SENSOR_WIND_SPEED],
-                result[SENSOR_WIND_DIRECTION],
-                result[SENSOR_PRESSURE],
-            )
-
-            return result
-
-        except Exception:
-            _LOGGER.exception("Error parsing CSV row")
+        if not isinstance(row, dict) or any(
+            value is not None and not isinstance(value, str) for value in row.values()
+        ):
+            _LOGGER.debug("Invalid station CSV row shape")
             return {}
+        result = {
+            SENSOR_TEMPERATURE: None,
+            SENSOR_HUMIDITY: None,
+            SENSOR_WIND_SPEED: None,
+            SENSOR_WIND_DIRECTION: None,
+            SENSOR_PRECIPITATION: None,
+            SENSOR_PRECIPITATION_CURRENT_HOUR: None,
+            SENSOR_PRESSURE: None,
+            SENSOR_WIND_GUST: None,
+            SENSOR_DEW_POINT: None,
+            SENSOR_SUNSHINE: None,
+            SENSOR_GLOBAL_RADIATION: None,
+            SENSOR_SNOW_DEPTH: None,
+            SENSOR_FOEHN_INDEX: None,
+            "last_update": None,
+        }
+
+        # Parse temperature (in °C)
+        temp_value = row.get(PARAM_TEMPERATURE)
+        if temp_value and temp_value.strip():
+            try:
+                result[SENSOR_TEMPERATURE] = float(temp_value)
+                _LOGGER.debug("Parsed temperature")
+            except (ValueError, TypeError, OverflowError):
+                _LOGGER.debug("Could not parse temperature")
+
+        # Parse humidity (in %)
+        hum_value = row.get(PARAM_HUMIDITY)
+        if hum_value and hum_value.strip():
+            try:
+                result[SENSOR_HUMIDITY] = float(hum_value)
+                _LOGGER.debug("Parsed humidity")
+            except (ValueError, TypeError, OverflowError):
+                _LOGGER.debug("Could not parse humidity")
+
+        # Parse wind speed (in km/h)
+        wind_value = row.get(PARAM_WIND_SPEED)
+        if wind_value and wind_value.strip():
+            try:
+                result[SENSOR_WIND_SPEED] = float(wind_value)
+                _LOGGER.debug("Parsed wind speed")
+            except (ValueError, TypeError, OverflowError):
+                _LOGGER.debug("Could not parse wind speed")
+
+        # Parse wind direction (in degrees)
+        dir_value = row.get(PARAM_WIND_DIR)
+        if dir_value and dir_value.strip():
+            try:
+                result[SENSOR_WIND_DIRECTION] = int(float(dir_value))
+                _LOGGER.debug("Parsed wind direction")
+            except (ValueError, TypeError, OverflowError):
+                _LOGGER.debug("Could not parse wind direction")
+
+        # Parse pressure (in hPa)
+        press_value = row.get(PARAM_PRESSURE)
+        if press_value and press_value.strip():
+            try:
+                result[SENSOR_PRESSURE] = float(press_value)
+                _LOGGER.debug("Parsed pressure")
+            except (ValueError, TypeError, OverflowError):
+                _LOGGER.debug("Could not parse pressure")
+
+        # Parse precipitation (in mm)
+        precip_value = row.get(PARAM_PRECIPITATION)
+        if precip_value and precip_value.strip():
+            try:
+                result[SENSOR_PRECIPITATION] = float(precip_value)
+                _LOGGER.debug("Parsed precipitation")
+            except (ValueError, TypeError, OverflowError):
+                _LOGGER.debug("Could not parse precipitation")
+
+        # Parse wind gust (1-second, in km/h)
+        gust_value = row.get(PARAM_GUST_1S)
+        if gust_value and gust_value.strip():
+            try:
+                result[SENSOR_WIND_GUST] = float(gust_value)
+            except (ValueError, TypeError, OverflowError):
+                _LOGGER.debug("Could not parse wind gust")
+
+        # Parse sunshine duration (10-min sum, in minutes)
+        sun_value = row.get(PARAM_SUNSHINE)
+        if sun_value and sun_value.strip():
+            try:
+                result[SENSOR_SUNSHINE] = float(sun_value)
+            except (ValueError, TypeError, OverflowError):
+                _LOGGER.debug("Could not parse sunshine")
+
+        # Parse global radiation (W/m²)
+        rad_value = row.get(PARAM_GLOBAL_RAD)
+        if rad_value and rad_value.strip():
+            try:
+                result[SENSOR_GLOBAL_RADIATION] = float(rad_value)
+            except (ValueError, TypeError, OverflowError):
+                _LOGGER.debug("Could not parse global radiation")
+
+        # Parse snow depth (cm)
+        snow_value = row.get(PARAM_SNOW_DEPTH)
+        if snow_value and snow_value.strip():
+            try:
+                result[SENSOR_SNOW_DEPTH] = float(snow_value)
+                _LOGGER.debug("Parsed snow depth")
+            except (ValueError, TypeError, OverflowError):
+                _LOGGER.debug("Could not parse snow depth")
+
+        # Parse foehn index (code)
+        foehn_value = row.get(PARAM_FOEHN_INDEX)
+        if foehn_value and foehn_value.strip():
+            try:
+                result[SENSOR_FOEHN_INDEX] = int(float(foehn_value))
+                _LOGGER.debug("Parsed foehn index")
+            except (ValueError, TypeError, OverflowError):
+                _LOGGER.debug("Could not parse foehn index")
+
+        # Parse soil temperatures — removed (most stations don't measure)
+        # (parsing block removed)
+
+        # Dew point: use measured value if available, otherwise calculate via Magnus formula
+        dew_measured = row.get(PARAM_DEW_POINT)
+        if dew_measured and dew_measured.strip():
+            try:
+                result[SENSOR_DEW_POINT] = round(float(dew_measured), 1)
+                _LOGGER.debug("Using measured dew point")
+            except (ValueError, TypeError, OverflowError):
+                _LOGGER.debug("Could not parse measured dew point")
+
+        # Non-finite values must not leak into HA or poison derived values.
+        for key, value in result.items():
+            if isinstance(value, (int, float)) and not math.isfinite(value):
+                result[key] = None
+
+        # Fallback: calculate dew point from temperature and humidity using Magnus formula
+        if result[SENSOR_DEW_POINT] is None:
+            temp = result.get(SENSOR_TEMPERATURE)
+            hum = result.get(SENSOR_HUMIDITY)
+            if temp is not None and hum is not None:
+                try:
+                    # Magnus formula
+                    a = 17.625
+                    b = 243.04
+                    alpha = ((a * temp) / (b + temp)) + math.log(max(hum, 1.0) / 100.0)
+                    dew = (b * alpha) / (a - alpha)
+                    if math.isfinite(dew):
+                        result[SENSOR_DEW_POINT] = round(dew, 1)
+                    _LOGGER.debug("Calculated dew point (Magnus)")
+                except (ValueError, ZeroDivisionError, OverflowError):
+                    _LOGGER.debug("Dew point cannot be derived from this measurement")
+
+        # Preserve measurement time. A malformed timestamp must never
+        # be replaced with "now", which would hide stale source data.
+        reference = _parse_reference_timestamp(row.get("reference_timestamp"))
+        result["last_update"] = reference.isoformat() if reference else None
+
+        # Log final result
+        _LOGGER.debug("Station measurements decoded")
+
+        return result
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from API with caching."""
@@ -552,7 +528,7 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             raise UpdateFailed("Circuit breaker open — API temporarily unavailable")
 
         try:
-            _LOGGER.debug("Fetching data for station %s", self.station_id)
+            _LOGGER.debug("Fetching data for station observations")
 
             # Get cache
             cache = get_current_weather_cache()
@@ -561,37 +537,35 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             # Try cache first
             cached_data = cache.get(cache_key)
             if cached_data is not None:
-                _LOGGER.debug("Using cached data for station %s", self.station_id)
+                _LOGGER.debug("Using cached data for station observations")
                 validate_observation_time(cached_data)
                 self._consecutive_failures = 0
                 self._circuit_open_until = None
                 return cached_data
 
-            _LOGGER.debug(
-                "Cache miss, fetching fresh data for station %s", self.station_id
-            )
+            _LOGGER.debug("Cache miss, fetching fresh data for station observations")
 
             # Get CSV URL
             csv_url = await self._async_get_station_data_url()
 
             if csv_url is None:
-                _LOGGER.error("Failed to find station data URL")
+                _LOGGER.debug("Failed to find station data URL")
                 raise UpdateFailed("Could not find station data URL")
 
-            _LOGGER.debug("Fetching CSV from: %s", csv_url)
+            _LOGGER.debug("Fetching station measurements")
 
             # Download and parse CSV
             parsed_data = await self._async_download_and_parse_csv(csv_url)
 
             if parsed_data is None:
-                _LOGGER.error("Parsed data is None!")
+                _LOGGER.debug("Parsed data is None!")
                 raise UpdateFailed("Failed to parse station data: parsed_data is None")
 
             if not parsed_data:
-                _LOGGER.error("Parsed data is empty!")
+                _LOGGER.debug("Parsed data is empty!")
                 raise UpdateFailed("Failed to parse station data: parsed_data is empty")
 
-            _LOGGER.debug("Successfully parsed data: %s", parsed_data)
+            _LOGGER.debug("Station measurements decoded")
 
             validate_observation_time(parsed_data)
             self._last_update = datetime.now(UTC)
@@ -602,7 +576,7 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
             # Cache result
             cache.set(cache_key, parsed_data)
-            _LOGGER.debug("Cached data for station %s (TTL: 600s)", self.station_id)
+            _LOGGER.debug("Cached data for station observations (TTL: 600s)")
 
             return parsed_data
 
@@ -610,13 +584,13 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             self._consecutive_failures += 1
             if self._consecutive_failures >= 5:
                 self._circuit_open_until = datetime.now(UTC) + timedelta(minutes=5)
-                _LOGGER.warning(
-                    "Circuit breaker opened after %d consecutive failures",
+                _LOGGER.debug(
+                    "Station source circuit paused after %d failures",
                     self._consecutive_failures,
                 )
             if isinstance(err, UpdateFailed):
-                raise
-            raise UpdateFailed("Weather data source unavailable") from err
+                raise err from None
+            raise UpdateFailed("Weather data source unavailable") from None
 
     async def async_close(self) -> None:
         """Close is handled centrally by the integration setup."""

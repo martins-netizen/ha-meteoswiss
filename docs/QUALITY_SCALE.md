@@ -43,7 +43,7 @@ snapshot as having acquired these changes.
 | `docs-configuration-parameters`, `docs-installation-parameters` | Usage includes provider selection, intervals, coordinates, warning postcode and measured pollen station. |
 | `entity-unavailable` | Observations/warnings and both pollen/AQ clients have failure/recovery tests, including registered pollen/AQ entity states. All-empty current pollen/AQ payloads fail; partial responses retain unknown fields. Measured pollen rejects age over four hours or future skew over ten minutes on refresh. Both weather forecast services return empty lists on forecast failure and recover, while valid observations remain available. Alternative Open-Meteo current conditions have registered weather/temperature entity outage and recovery tests; invalid individual measurements stay unknown and an all-empty source fails. Registered weather attributes use native HA properties and unit conversion; forecast subscribers receive fresh/empty/recovered payloads, including through HA WebSocket. Remaining optional per-entity paths still require review; full rule remains pending. |
 | `integration-owner` | `@martins-netizen` in manifest. Repository Issues are currently disabled: enable a usable fork-specific support route before public release. |
-| `log-when-unavailable` | Pollen/AQ, measured pollen and the ICON forecast client use coordinator transition logs. Forecast failures suppress raw coordinate URLs/HTTP exception chains even in debug logs; repeated failure and recovery are tested. The alternative Open-Meteo current client also suppresses coordinate URLs/raw error chains and tests repeated failure and recovery. Remaining providers still require review. Pending for the full integration. |
+| `log-when-unavailable` | Pollen/AQ, measured pollen and the ICON forecast client use coordinator transition logs. Forecast failures suppress raw coordinate URLs/HTTP exception chains even in debug logs; repeated failure and recovery are tested. The alternative Open-Meteo current client also suppresses coordinate URLs/raw error chains and tests repeated failure and recovery. The station observation client now uses the same once-per-transition logging; selected station IDs, CSV values, asset URLs and expected HTTP error chains stay absent even in debug logs. Pending for the full integration until the remaining active-family audit is complete. |
 | `parallel-updates` | Explicit platform limits: sensor 1 for diagnostic polling, coordinator-driven weather/binary sensor 0; no device actions. |
 | `reauthentication-flow` | Exempt: the public APIs require no credentials. |
 | `test-coverage` | Pending. [Above 95% for every module](https://developers.home-assistant.io/docs/core/integration-quality-scale/rules/test-coverage/) is required; a passing flow or global average is insufficient. |
@@ -113,11 +113,20 @@ This is not a persistent cross-refresh provider cooldown. Attempt counts,
 delay caps, outer total timeouts and cancellation are preserved. Header/error
 contents are never logged by the retry helper.
 
+Station observation logs also have regression coverage for private source URLs,
+selected station identifiers, invalid numeric fields and once-per-transition
+failure/recovery. Malformed metadata/row shapes are handled explicitly;
+unexpected programming errors are no longer swallowed as an empty source.
+Existing measurement selection, missing/zero values and timestamps are retained.
+The complete station coordinator has full line/branch coverage on both supported
+HA versions, with the same full-module CI gate and a 99.0% overall floor.
+
 The full warning-name/number catalogue is a separate verification gate, including
 the legacy `4 = Wind` conflict. No new numeric meanings are approved by these
 tests. The official portal's named hazard families alone cannot prove the old
-App API numeric identifiers. Source/privacy review of station observations,
-inactive placeholders and the remaining per-module gaps remain open.
+App API numeric identifiers. Source/privacy review of station observations is now covered by failure/recovery
+and malformed-source regressions. Inactive placeholders and the remaining
+per-module gaps remain open.
 
 Continue with source/logging rules across every active family. Public support,
 numeric warning-code verification, live acceptance and release/HACS

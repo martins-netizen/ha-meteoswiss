@@ -34,6 +34,7 @@ def validate(path: Path) -> None:
     for module in (
         "__init__.py",
         "retry.py",
+        "coordinator.py",
         "pollen_coordinator_openmeteo.py",
         "pollen_meteoswiss.py",
         "forecast_coordinator.py",
@@ -53,16 +54,8 @@ def validate(path: Path) -> None:
         source = files[f"custom_components/meteoswiss/{module}"]
         if source["missing_lines"] or source["missing_branches"]:
             raise SystemExit(f"{module} must retain full line and branch coverage")
-    observations = files["custom_components/meteoswiss/coordinator.py"]["summary"]
-    if (
-        observations["covered_lines"] < 0.95 * observations["num_statements"]
-        or observations["covered_branches"] < 0.95 * observations["num_branches"]
-    ):
-        raise SystemExit(
-            "Station coordinator must retain at least 95% line and branch coverage"
-        )
-    if total < 98.5:
-        raise SystemExit("Integration coverage fell below the current 98.5% floor")
+    if total < 99.0:
+        raise SystemExit("Integration coverage fell below the current 99.0% floor")
 
 
 if __name__ == "__main__":
