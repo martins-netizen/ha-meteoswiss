@@ -194,6 +194,28 @@ or lower, HGT is 20 minus that mean; above 12 °C it is zero. Missing/non-finite
 temperatures remain missing. Existing season helper functions are tested, but
 this change does not introduce a measured seasonal HGT archive or new sensors.
 
+## Diagnostics and the station catalogue
+
+HA's integration diagnostics download includes source status, validated UTC
+timestamps, cache counts/hit rates and catalogue status. It works even for an
+unloaded entry. Known location settings are redacted; raw provider data, raw
+error messages, arbitrary data keys and cache keys/values are omitted. The
+download does not trigger a catalogue request.
+
+Setup and the optional stations diagnostic share the same 24-hour station
+catalogue. `current` means valid cached metadata, `stale` means retained last-good
+metadata after expiry/failure, and `unavailable` means no valid catalogue has
+been loaded. These are catalogue states, not weather measurement freshness.
+Setup still validates the selected station's actual observation source.
+Automatic retries wait five minutes after a failure; retrying setup explicitly
+can try immediately. A repeated cache hit does not renew the download time.
+
+The station helper keeps its existing entity identity and registry setting;
+this change does not enable a helper you disabled. Public station GeoJSON is
+retained. The generated picture-elements configuration is absent (`None`)
+unless a caller explicitly supplies an image and entity ID; no placeholder
+third-party image is used. Cache hit-rate totals include all three caches.
+
 ## Remove an entry
 
 In **Settings → Devices & services → MeteoSwiss**, open the relevant entry's menu

@@ -486,7 +486,7 @@ def test_cache_logging_never_contains_location_keys(caplog):
         cache.set(key, {'temperature': 12})
         assert cache.get(key) is not None
         cache.invalidate(key)
-        cache.set(key, {'temperature': 12}, ttl=-1)
+        cache.set(key, {'temperature': 12}, ttl=0)
         assert cache.get(key) is None
     assert key not in caplog.text
     assert '47.451234' not in caplog.text

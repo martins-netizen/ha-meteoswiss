@@ -53,9 +53,10 @@ coverage (58.50% lines, 40.42% branches). Config flow was 33.79% combined.
 CI now measures **all** integration modules, prints per-module coverage and
 requires full config-flow, both pollen-client, ICON forecast-client, alternative
 Open-Meteo current-client, weather-entity, shared weather-data, hourly
-precipitation and HGT utility line/branch coverage. The station coordinator has
+precipitation, HGT utility, cache, diagnostics and station-catalogue line/branch
+coverage. The station coordinator has
 separate minimums of 95% for lines and branches. The combined integration floor
-is 89% (raised from 86%, previously 80%, 71%, 67% and initially 60%). This
+is 95% (raised from 89%, previously 86%, 80%, 71%, 67% and initially 60%). This
 floor prevents regressions at this stage; it is not a substitute for Silver.
 Unused camera/SLF/hydrology placeholders remain visible in the denominator.
 They must be explicitly removed in a reviewed scope or covered; no exclusions
@@ -80,9 +81,18 @@ daily extrema, missing/gapped rain, Swiss midnight and 23/25-hour DST days.
 Original regression tests reproduce missing weather attributes and a forecast
 subscriber receiving no refresh before the fix.
 
-Continue with remaining sensor/diagnostic paths and shared cache/station helpers,
-then review source/logging rules across every active family. Raise the coverage
-gate as these changes land.
+Cache, diagnostics and the shared station catalogue have full line/branch
+coverage. Tests reproduce the exact TTL boundary, the provider-column parser
+failure and diagnostics on an unloaded entry before the fixes. Catalogue tests
+cover cache expiry, concurrent loads, stale/failure/recovery, total timeout,
+manual retry, cancellation, session ownership and geographic exports. Diagnostics
+omit raw dictionary keys/names/cache values and expose only safe status/time
+metadata. The parser was additionally checked against the live public catalogue
+on 16 October 2026 (159 stations, including KLO).
+
+Continue with remaining sensor/entity paths and review source/logging rules
+across every active family. Public support, live acceptance and release/HACS
+validation remain separate gates. Raise coverage as these changes land.
 Gold/Platinum work follows this measured baseline, rather than adding labels.
 
 ## Reproduce
