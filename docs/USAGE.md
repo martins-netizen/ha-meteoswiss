@@ -70,9 +70,15 @@ These existing English attributes are compatibility values, not UI translations.
 UV is optional and fetched separately. Its failure leaves UV unknown while
 valid pollen/AQ remains available. MeteoSwiss measured pollen uses the selected
 pollen station and its own measurement time (`last_update`), independently of
-weather observations. Station/time syntax is validated; an automatic maximum
-measurement age for that hourly feed remains to be defined and tested. Until
-then, availability alone does not establish its freshness for an automation.
+weather observations. The provider timestamp is UTC and marks the end of the
+measured hour. On each refresh, data older than four hours or more than ten
+minutes in the future makes measured-pollen sensors unavailable. Exact limits
+are accepted; a later valid response recovers automatically. This conservative
+policy accommodates hourly data and provider caching, and is not a guarantee
+of publication latency. No independent expiry timer runs between polls: check
+`last_update` in automations that need a tighter age limit. A rejected response
+does not overwrite the last valid measurement/history or affect weather,
+modelled pollen or air-quality availability.
 
 ### Partial publication and graph gaps
 

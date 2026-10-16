@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from contextlib import ExitStack
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, patch
 
 import aiohttp
@@ -175,6 +175,80 @@ def test_missing_csv_columns_do_not_mask_a_valid_partial_measurement(hass):
 
 
 @pytest.mark.parametrize(
+    "age,accepted",
+    [
+        (timedelta(), True),
+        (timedelta(hours=1, minutes=16), True),
+        (timedelta(hours=3, minutes=20), True),
+        (timedelta(hours=4), True),
+        (timedelta(hours=4, microseconds=1), False),
+        (timedelta(days=1), False),
+        (-timedelta(minutes=10), True),
+        (-timedelta(minutes=10, microseconds=1), False),
+    ],
+)
+async def test_measured_age_bounds_use_measurement_time_not_fetch_time(
+    hass, aioclient_mock, age, accepted
+):
+    stamp = (datetime.now(UTC) - age).isoformat()
+    aioclient_mock.get(CSV_URL, text=CSV_HEADER + f"PLZ;{stamp};0;0;0;0;0;0")
+    coordinator = MeteoSwissPollenCoordinator(
+        hass, "PLZ", session=async_get_clientsession(hass)
+    )
+    if accepted:
+        data = await coordinator._async_update_data()
+        assert data["last_update"] == stamp
+        assert data["birch"]["current"] == 0
+        assert data["birch"]["history_24h"] == [0]
+    else:
+        with pytest.raises(UpdateFailed):
+            await coordinator._async_update_data()
+    assert len(aioclient_mock.mock_calls) == 1
+
+
+@pytest.mark.parametrize(
+    "now,stamp",
+    [
+        ("2026-10-15T19:16:00+00:00", "15.10.2026 18:00"),
+        ("2026-10-25T00:20:00+00:00", "24.10.2026 21:00"),
+        ("2026-10-25T01:20:00+00:00", "24.10.2026 22:00"),
+        ("2026-03-29T01:20:00+00:00", "28.03.2026 22:00"),
+    ],
+)
+def test_measured_provider_times_stay_utc_across_zurich_dst(hass, freezer, now, stamp):
+    freezer.move_to(now)
+    data = MeteoSwissPollenCoordinator(hass, "PLZ")._parse_csv(
+        CSV_HEADER + f"PLZ;{stamp};0;;;;;"
+    )
+    assert data["last_update"] == stamp
+    assert data["birch"]["current"] == 0
+    assert data["alder"]["current"] is None
+
+
+async def test_repeated_cached_measurement_cannot_extend_freshness(
+    hass, aioclient_mock, freezer
+):
+    aioclient_mock.get(CSV_URL, text=CSV_ZERO)
+    coordinator = MeteoSwissPollenCoordinator(
+        hass, "PLZ", session=async_get_clientsession(hass)
+    )
+    freezer.move_to("2026-10-15T14:00:00+00:00")
+    await coordinator.async_refresh()
+    assert coordinator.last_update_success
+    saved = coordinator.data
+    freezer.move_to("2026-10-15T14:00:01+00:00")
+    await coordinator.async_refresh()
+    assert not coordinator.last_update_success
+    assert coordinator.data == saved
+    assert coordinator.data["last_update"] == "15.10.2026 10:00"
+    aioclient_mock.clear_requests()
+    aioclient_mock.get(CSV_URL, text=CSV_ZERO.replace("10:00", "14:00"))
+    await coordinator.async_refresh()
+    assert coordinator.last_update_success
+    assert coordinator.data["last_update"] == "15.10.2026 14:00"
+
+
+@pytest.mark.parametrize(
     "payload,expected",
     [
         ({"current": {"uv_index": 0}}, 0),
@@ -253,11 +327,13 @@ async def test_transport_failures_are_bounded(
         if is_open
         else MeteoSwissPollenCoordinator(hass, "PLZ", session=session)
     )
-    with patch(
-        "custom_components.meteoswiss.retry.asyncio.sleep", new_callable=AsyncMock
+    with (
+        patch(
+            "custom_components.meteoswiss.retry.asyncio.sleep", new_callable=AsyncMock
+        ),
+        pytest.raises(UpdateFailed) as caught,
     ):
-        with pytest.raises(UpdateFailed) as caught:
-            await coordinator._async_update_data()
+        await coordinator._async_update_data()
     assert len(aioclient_mock.mock_calls) == (attempts or (4 if is_open else 3))
     assert "47.451234" not in str(caught.value)
     assert "8.561234" not in str(caught.value)
@@ -375,8 +451,9 @@ def test_missing_pollen_is_not_zero_risk(value, expected):
     assert _pollen_level(value, 10, 50, 200) == expected
 
 
+@pytest.mark.parametrize("measured_failure", ["empty", "stale", "future"])
 async def test_real_entities_start_failure_recovery_and_unload(
-    hass, aioclient_mock, enable_custom_integrations, caplog
+    hass, aioclient_mock, enable_custom_integrations, caplog, measured_failure
 ):
     """Exercise registered entities, rather than only the coordinator's flag."""
     entry = MockConfigEntry(
@@ -439,16 +516,35 @@ async def test_real_entities_start_failure_recovery_and_unload(
         assert state("pollen").attributes["level_name"] == "None"
         assert state("measured").attributes["last_update"] == "15.10.2026 10:00"
         saved = runtime.pollen_coordinator.data
+        measured_saved = runtime.meteoswiss_pollen_coordinator.data
         clear_all_caches()
         aioclient_mock.clear_requests()
-        aioclient_mock.get(OPENMETEO_AQ_BASE_URL, json=aq_payload(birch_pollen=[None]))
-        aioclient_mock.get(CSV_URL, text=CSV_HEADER + "PLZ;15.10.2026 10:00;;;;;;")
+        aioclient_mock.get(
+            OPENMETEO_AQ_BASE_URL,
+            json=aq_payload(birch_pollen=[None])
+            if measured_failure == "empty"
+            else aq_payload(birch_pollen=[0], pm10=[4]),
+        )
+        aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {"uv_index": 0}})
+        failed_csv = {
+            "empty": CSV_HEADER + "PLZ;15.10.2026 10:00;;;;;;",
+            "stale": CSV_ZERO.replace("10:00", "06:00"),
+            "future": CSV_ZERO.replace("10:00", "11:00"),
+        }[measured_failure]
+        aioclient_mock.get(CSV_URL, text=failed_csv)
         caplog.clear()
         for _ in range(2):
             await runtime.pollen_coordinator.async_refresh()
             await runtime.meteoswiss_pollen_coordinator.async_refresh()
         assert runtime.pollen_coordinator.data == saved
-        assert all(state(key).state == "unavailable" for key in entity_ids)
+        assert runtime.meteoswiss_pollen_coordinator.data == measured_saved
+        assert state("measured").state == "unavailable"
+        assert measured_saved["last_update"] == "15.10.2026 10:00"
+        if measured_failure == "empty":
+            assert all(state(key).state == "unavailable" for key in entity_ids)
+        else:
+            assert state("pollen").state == "0.0"
+            assert state("aq").state == "4.0"
         records = [
             r
             for r in caplog.records
@@ -458,7 +554,10 @@ async def test_real_entities_start_failure_recovery_and_unload(
                 runtime.meteoswiss_pollen_coordinator.logger.name,
             )
         ]
-        assert len([r for r in records if r.levelno == logging.ERROR]) == 2
+        assert len([r for r in records if r.levelno == logging.ERROR]) == (
+            2 if measured_failure == "empty" else 1
+        )
+        clear_all_caches()
         aioclient_mock.clear_requests()
         aioclient_mock.get(
             OPENMETEO_AQ_BASE_URL, json=aq_payload(birch_pollen=[None], pm10=[0])
