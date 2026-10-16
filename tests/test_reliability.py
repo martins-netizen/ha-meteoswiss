@@ -367,7 +367,8 @@ async def test_server_retry_after_is_not_ignored():
     sleep.assert_not_awaited()
 
 
-async def test_daily_missing_precipitation_is_not_zero(hass):
+async def test_daily_missing_precipitation_is_not_zero(hass, freezer):
+    freezer.move_to("2026-10-15T12:20:00Z")
     current = MeteoSwissDataUpdateCoordinator(
         hass, station_id="KLO", update_interval=600
     )
@@ -384,7 +385,7 @@ async def test_daily_missing_precipitation_is_not_zero(hass):
         current, forecast, MockConfigEntry(domain=DOMAIN), "Kloten"
     )
     daily = await entity.async_forecast_daily()
-    assert daily[0]["precipitation"] is None
+    assert daily[0]["native_precipitation"] is None
     assert daily[0]["precipitation_probability"] is None
 
 

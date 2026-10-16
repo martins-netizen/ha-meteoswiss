@@ -108,7 +108,7 @@ optional UV logs contain only the exception class, never a coordinate URL.
 Forecast rows contain `datetime`, `local_date`, `fetched_at`, `source`,
 `weather_code`, `is_day`, `condition`, measurements and optional native daily
 aggregates. Producer and consumer use `weather_data.py` for time/condition
-normalisation. The two hours repeated at autumn DST remain distinct. Daily
+normalisation and finite-number validation. The two hours repeated at autumn DST remain distinct. Daily
 labels respect Open-Meteo's returned fixed UTC offset; native daily aggregates
 are provider buckets and are not claimed to be recalculated 23/25-hour local
 measurement days. Missing aggregates can fall back to available hourly values;
@@ -139,6 +139,44 @@ Failed or more than three-hour-old forecasts are not used as current conditions.
 Numeric temperature or zero rain does not establish a clear/partly cloudy sky.
 The positive station-rain fallback is a precipitation-interval estimate, not a
 separate cloud observation. Daily HGT 12/20 remains explicitly a forecast.
+
+## Native weather entity and forecast subscribers
+
+Current temperature, pressure and wind use HA's `native_temperature`,
+`native_pressure` and `native_wind_speed` properties. HA converts them, and
+native forecast fields, into the user's configured units. Public state/service
+keys remain `temperature`, `pressure`, `wind_speed` and forecast `templow`.
+Humidity and wind bearing retain valid zero; failed observations supply no old
+current attributes while HA retains the accepted coordinator data for recovery.
+Entity/config-entry IDs and device identifiers are unchanged.
+
+A forecast-coordinator callback updates the weather condition and schedules
+`async_update_listeners` for hourly/daily subscribers with an entry-owned task.
+Existing HA WebSocket subscribers receive updated forecasts, an empty list on
+forecast failure, and new values on recovery without resubscribing. Unload
+removes both observation and forecast coordinator listeners. A forecast failure
+does not mark valid station measurements unavailable.
+
+The hourly projection selects usable temperatures in the current hour plus
+23 hours; completed intervals and past days are not returned as upcoming data.
+Daily buckets follow Europe/Zurich dates, recomputed from aware UTC timestamps,
+with at most five current/future calendar days. The first 12:00-14:00 local
+entry represents the day's condition/wind, or the first available hour if that
+window is absent. Native provider maxima/minima and precipitation/probability
+aggregates take priority, including valid zeros. Fallback extrema use available
+finite hourly values and can describe only part of today. A precipitation sum
+requires every represented hour to have valid rain and consecutive UTC times;
+missing values or an internal time gap leave the fallback sum unknown. This
+continuity check does not turn a partial-day window into a full-day estimate.
+The 23/25-hour local DST days remain continuous in UTC. Native provider daily
+buckets retain their documented fixed-offset meaning.
+
+Failed/malformed or older-than-three-hour fetched forecasts are suppressed;
+metadata more than ten minutes in the future is rejected. Legacy rows without
+retrieval metadata retain compatibility, with their actual interval/day still
+filtered. Weather projection logs no raw payload or coordinates. Numbers and
+boolean/time guards live in `weather_data.py` and are reused by both weather
+clients, avoiding divergent copies of the validation rules.
 
 ## Alternative Open-Meteo current conditions
 
@@ -208,9 +246,10 @@ cancellation, HA-owned sessions, stale observations, current-hour AQ data,
 registered pollen/AQ entity states and unload, forecast service failure/recovery,
 contracts, DST and translation coverage. Both pollen clients and the ICON
 forecast client, alternative Open-Meteo current client, hourly precipitation importer and HGT utilities have full
-line/branch coverage, enforced in CI alongside config flow. The station client
+line/branch coverage, enforced in CI alongside config flow. The weather entity
+and shared weather-data contract also require full line/branch coverage. The station client
 must retain at least 95% line and branch coverage, and the whole-integration
-floor is 86%; Silver remains pending.
+floor is 89%; Silver remains pending.
 CI runs minimum and current
 HA test environments plus Hassfest and CodeQL. Passing CI is not a live-house
 acceptance test. The `quality_scale: platinum` claim inherited from upstream is

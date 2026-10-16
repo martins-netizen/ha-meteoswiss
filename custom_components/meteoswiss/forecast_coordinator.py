@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import math
 from datetime import UTC, datetime, timedelta, timezone
 from itertools import pairwise
 from typing import Any
@@ -15,7 +14,12 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from .cache import get_forecast_cache
 from .const import DEFAULT_API_TIMEOUT
 from .retry import async_retry_with_backoff
-from .weather_data import FORECAST_TIME_ZONE, forecast_datetime, weather_condition
+from .weather_data import (
+    FORECAST_TIME_ZONE,
+    forecast_datetime,
+    weather_condition,
+    weather_number,
+)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -38,27 +42,14 @@ def _value(
     maximum: float | None = None,
 ) -> float | None:
     """Keep finite numeric values, including zero and negative temperatures."""
-    raw = values[index] if index < len(values) else None
-    if raw is None or isinstance(raw, bool):
-        return None
-    try:
-        value = float(raw)
-    except (TypeError, ValueError, OverflowError):
-        return None
-    if (
-        not math.isfinite(value)
-        or minimum is not None
-        and value < minimum
-        or maximum is not None
-        and value > maximum
-    ):
-        return None
-    return value
+    return weather_number(
+        values[index] if index < len(values) else None, minimum, maximum
+    )
 
 
 def _timestamp(raw: Any) -> datetime:
     """Provider timestamps must be valid and must not be boolean numbers."""
-    value = None if isinstance(raw, bool) else forecast_datetime(raw)
+    value = forecast_datetime(raw)
     if value is None:
         raise ValueError("Invalid forecast timestamp")
     return value
