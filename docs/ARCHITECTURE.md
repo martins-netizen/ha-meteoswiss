@@ -140,6 +140,37 @@ Numeric temperature or zero rain does not establish a clear/partly cloudy sky.
 The positive station-rain fallback is a precipitation-interval estimate, not a
 separate cloud observation. Daily HGT 12/20 remains explicitly a forecast.
 
+## Alternative Open-Meteo current conditions
+
+This explicitly selected source uses Open-Meteo's modelled current conditions;
+it is not a SwissMetNet station measurement and is never an automatic fallback
+for a failed selected station. Its default model selection is independent from
+the weather entity's explicit MeteoSwiss ICON Seamless forecast coordinator.
+The current request fixes Celsius, km/h, mm and Unix seconds.
+
+Current values are validated individually for finite numbers and sensible
+ranges. Valid zero and negative temperatures are retained. A current response
+with no usable measurement, an invalid timestamp, age over one hour or a future
+skew over ten minutes fails without replacing the accepted data or weather code.
+Only validated data enters the versioned ten-minute cache; a cache hit resets
+failure counters without extending the original TTL. Five failed updates keep
+the five-minute circuit pause. Only transient transports retry (at most four
+attempts); malformed payloads do not retry. HA logs unavailable/recovered
+transitions; client logging suppresses private request URLs and raw HTTP causes.
+Cancellation propagates and the borrowed HA session remains open on close.
+
+Current precipitation is the amount over the provider's backward-looking
+`current.interval` in seconds, not an hourly total or rate. The precipitation
+sensor exposes it as `measurement_interval_seconds`; an absent interval stays
+unknown rather than assuming one hour. The separate station hourly statistics
+and running-hour sensor are not supplied by this alternative source.
+
+The legacy optional hourly preview is isolated from current observations:
+invalid containers/timestamps discard the preview only, partial numbers stay
+missing, and it selects usable temperatures within the current UTC hour plus
+23 hours. A missing current hour never causes a midnight fallback. The HA
+forecast services continue to use their independent ICON forecast coordinator.
+
 ## Warnings and safety-dependent consumers
 
 Only a valid, successfully decoded response without warnings means no warnings.
@@ -176,10 +207,10 @@ Tests cover warning failure/recovery, invalid payloads, bounded retries,
 cancellation, HA-owned sessions, stale observations, current-hour AQ data,
 registered pollen/AQ entity states and unload, forecast service failure/recovery,
 contracts, DST and translation coverage. Both pollen clients and the ICON
-forecast client, hourly precipitation importer and HGT utilities have full
+forecast client, alternative Open-Meteo current client, hourly precipitation importer and HGT utilities have full
 line/branch coverage, enforced in CI alongside config flow. The station client
 must retain at least 95% line and branch coverage, and the whole-integration
-floor is 80%; Silver remains pending.
+floor is 86%; Silver remains pending.
 CI runs minimum and current
 HA test environments plus Hassfest and CodeQL. Passing CI is not a live-house
 acceptance test. The `quality_scale: platinum` claim inherited from upstream is

@@ -1,8 +1,10 @@
 """Data update coordinator for Open-Meteo API."""
+
 from __future__ import annotations
 
 import logging
-from datetime import datetime, timedelta, timezone
+import math
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import aiohttp
@@ -35,7 +37,7 @@ _LOGGER = logging.getLogger(__name__)
 OPENMETEO_BASE_URL = "https://api.open-meteo.com/v1/forecast"
 
 # WMO code descriptions (condition comes from const.WMO_WEATHER_CODES)
-WMO_CODE_DESCRIPTIONS: dict[int, str] = {
+WMO_CODE_DESCRIPTIONS: dict[int, dict[str, str]] = {
     0: {"condition": "clear", "description": "Clear sky"},
     1: {"condition": "mainly_clear", "description": "Mainly clear"},
     2: {"condition": "partly_cloudy", "description": "Partly cloudy"},
@@ -65,6 +67,33 @@ WMO_CODE_DESCRIPTIONS: dict[int, str] = {
     96: {"condition": "lightning", "description": "Thunderstorm with slight hail"},
     99: {"condition": "lightning", "description": "Thunderstorm with heavy hail"},
 }
+
+
+def _number(
+    raw: Any, minimum: float | None = None, maximum: float | None = None
+) -> float | None:
+    """Missing/invalid values stay missing; zero is a valid measurement."""
+    if raw is None or isinstance(raw, bool):
+        return None
+    try:
+        value = float(raw)
+    except (TypeError, ValueError, OverflowError):
+        return None
+    if (
+        not math.isfinite(value)
+        or minimum is not None
+        and value < minimum
+        or maximum is not None
+        and value > maximum
+    ):
+        return None
+    return value
+
+
+def _code(raw: Any) -> int | None:
+    """Only known integral WMO codes can describe the weather."""
+    value = _number(raw)
+    return int(value) if value in WMO_WEATHER_CODES else None
 
 
 class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -119,211 +148,165 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         return weather_info["description"]
 
     @async_retry_with_backoff(max_attempts=4, base_delay=1.0, max_delay=10.0)
-    async def _async_fetch_data(self) -> dict[str, Any] | None:
-        """Fetch data from Open-Meteo API."""
+    async def _async_request(self) -> Any:
+        """Retry transport failures only, without logging private request URLs."""
         if self._session is None:
             raise RuntimeError("No session provided")
-
-        # Build API URL with current weather and hourly forecast
         params = {
             "latitude": self.latitude,
             "longitude": self.longitude,
-            "current": "temperature_2m,relative_humidity_2m,pressure_msl,wind_speed_10m,wind_direction_10m,weather_code,is_day,uv_index",
+            "current": (
+                "temperature_2m,relative_humidity_2m,pressure_msl,wind_speed_10m,"
+                "wind_direction_10m,precipitation,weather_code,is_day,uv_index"
+            ),
             "hourly": "temperature_2m,relative_humidity_2m,precipitation_probability,weather_code",
+            "forecast_hours": 24,
+            "temperature_unit": "celsius",
+            "wind_speed_unit": "kmh",
+            "precipitation_unit": "mm",
             "timezone": "Europe/Zurich",
             "timeformat": "unixtime",
         }
+        async with self._session.get(
+            OPENMETEO_BASE_URL, params=params, timeout=DEFAULT_API_TIMEOUT
+        ) as response:
+            response.raise_for_status()
+            return await response.json()
 
-        try:
-            _LOGGER.debug(
-                "Fetching Open-Meteo data for lat=%s, lon=%s",
-                self.latitude,
-                self.longitude,
+    async def _async_fetch_data(self) -> dict[str, Any]:
+        """Validate the payload separately from transport retries."""
+        return self._parse_response(await self._async_request())
+
+    def _parse_response(self, data: Any) -> dict[str, Any]:
+        """Keep valid individual values; reject an empty current source."""
+        if not isinstance(data, dict) or not isinstance(data.get("current"), dict):
+            raise TypeError("Invalid current weather response")
+        current = data["current"]
+        raw_time = current.get("time")
+        timestamp = None if isinstance(raw_time, bool) else forecast_datetime(raw_time)
+        if timestamp is None:
+            raise ValueError("Invalid current weather timestamp")
+        result = {
+            SENSOR_TEMPERATURE: _number(current.get("temperature_2m")),
+            SENSOR_HUMIDITY: _number(current.get("relative_humidity_2m"), 0, 100),
+            SENSOR_WIND_SPEED: _number(current.get("wind_speed_10m"), 0),
+            SENSOR_WIND_DIRECTION: _number(current.get("wind_direction_10m"), 0, 360),
+            SENSOR_PRECIPITATION: _number(current.get("precipitation"), 0),
+            SENSOR_PRESSURE: _number(current.get("pressure_msl"), 0),
+            "uv_index": _number(current.get("uv_index"), 0),
+        }
+        if all(value is None for value in result.values()):
+            raise ValueError("No usable current weather values")
+        code = _code(current.get("weather_code"))
+        is_day = _number(current.get("is_day"), 0, 1)
+        result.update(
+            weather_code=code,
+            weather_condition=weather_condition(
+                code, is_day=bool(is_day) if is_day in (0, 1) else None
+            ),
+            weather_description=self.get_weather_description(code),
+            last_update=timestamp.isoformat(),
+            # Current precipitation is the provider's backwards-looking interval
+            # amount, NOT an hourly total or a precipitation rate.
+            precipitation_interval_seconds=_number(current.get("interval"), 1),
+            hourly_forecast=self._parse_hourly(data.get("hourly")),
+        )
+        return result
+
+    def _parse_hourly(self, hourly: Any) -> list[dict[str, Any]]:
+        """Optional legacy preview must never invalidate current observations.
+
+        HA weather forecasts use the independent ICON Seamless coordinator.
+        Keep this preview bounded to the next 24 UTC hours without falling
+        back to midnight when the current hour is missing.
+        """
+        if not isinstance(hourly, dict):
+            return []
+        keys = (
+            "time",
+            "temperature_2m",
+            "relative_humidity_2m",
+            "precipitation_probability",
+            "weather_code",
+        )
+        if any(not isinstance(hourly.get(key, []), list) for key in keys):
+            return []
+        now_hour = datetime.now(UTC).replace(minute=0, second=0, microsecond=0)
+        end = now_hour + timedelta(hours=24)
+        result = []
+        previous = None
+        for index, raw_time in enumerate(hourly.get("time", [])):
+            timestamp = (
+                None if isinstance(raw_time, bool) else forecast_datetime(raw_time)
             )
-
-            async with self._session.get(OPENMETEO_BASE_URL, params=params, timeout=DEFAULT_API_TIMEOUT) as response:
-                response.raise_for_status()
-
-                data = await response.json()
-                _LOGGER.debug("Open-Meteo response: %s", data)
-
-                return self._parse_response(data)
-
-        except (aiohttp.ClientError, TimeoutError):
-            raise
-        except Exception as err:
-            _LOGGER.exception("Error fetching Open-Meteo data: %s", err)
-            return None
-
-    def _parse_response(self, data: dict[str, Any]) -> dict[str, Any]:
-        """Parse Open-Meteo API response."""
-        try:
-            result = {
-                SENSOR_TEMPERATURE: None,
-                SENSOR_HUMIDITY: None,
-                SENSOR_WIND_SPEED: None,
-                SENSOR_WIND_DIRECTION: None,
-                SENSOR_PRECIPITATION: None,
-                SENSOR_PRESSURE: None,
-                "weather_code": None,
-                "weather_condition": None,
-                "weather_description": None,
-                "last_update": None,
-                "hourly_forecast": [],
+            if (
+                timestamp is None
+                or timestamp.minute
+                or timestamp.second
+                or timestamp.microsecond
+                or previous is not None
+                and timestamp <= previous
+            ):
+                return []
+            previous = timestamp
+            if not now_hour <= timestamp < end:
+                continue
+            values = {
+                key: hourly.get(key, [])[index]
+                if index < len(hourly.get(key, []))
+                else None
+                for key in keys[1:]
             }
-
-            # Parse current weather
-            current = data.get("current", {})
-
-            # Temperature
-            temp = current.get("temperature_2m")
-            if temp is not None:
-                result[SENSOR_TEMPERATURE] = float(temp)
-                _LOGGER.debug("Current temperature: %s °C", result[SENSOR_TEMPERATURE])
-
-            # Humidity
-            humidity = current.get("relative_humidity_2m")
-            if humidity is not None:
-                result[SENSOR_HUMIDITY] = float(humidity)
-                _LOGGER.debug("Current humidity: %s %%", result[SENSOR_HUMIDITY])
-
-            # Wind speed
-            wind_speed = current.get("wind_speed_10m")
-            if wind_speed is not None:
-                result[SENSOR_WIND_SPEED] = float(wind_speed)
-                _LOGGER.debug("Current wind speed: %s km/h", result[SENSOR_WIND_SPEED])
-
-            # Wind direction
-            wind_dir = current.get("wind_direction_10m")
-            if wind_dir is not None:
-                result[SENSOR_WIND_DIRECTION] = int(wind_dir)
-                _LOGGER.debug("Current wind direction: %s °", result[SENSOR_WIND_DIRECTION])
-
-            # Pressure
-            pressure = current.get("pressure_msl")
-            if pressure is not None:
-                result[SENSOR_PRESSURE] = float(pressure)
-                _LOGGER.debug("Current pressure: %s hPa", result[SENSOR_PRESSURE])
-
-            # Weather code
-            self.weather_code = current.get("weather_code")
-            result["weather_code"] = self.weather_code
-            result["weather_condition"] = weather_condition(self.weather_code, bool(current["is_day"]) if current.get("is_day") is not None else None)
-            result["weather_description"] = self.get_weather_description(self.weather_code)
-
-            # UV index
-            uv = current.get("uv_index")
-            if uv is not None:
-                result["uv_index"] = float(uv)
-                _LOGGER.debug("Current UV index: %s", result["uv_index"])
-            _LOGGER.debug("Weather code: %s (%s: %s)",
-                         self.weather_code,
-                         result["weather_condition"],
-                         result["weather_description"])
-
-            # Timestamp
-            time = current.get("time")
-            if time:
-                timestamp = forecast_datetime(time)
-                result["last_update"] = timestamp.isoformat() if timestamp else None
-                _LOGGER.debug("Last update: %s", time)
-
-            # Parse hourly forecast (up to 24 hours)
-            hourly = data.get("hourly", {})
-            hourly_time = hourly.get("time", [])
-            hourly_temp = hourly.get("temperature_2m", [])
-            hourly_humidity = hourly.get("relative_humidity_2m", [])
-            hourly_precip = hourly.get("precipitation_probability", [])
-            hourly_code = hourly.get("weather_code", [])
-
-            # Find current hour index
-            current_hour_index = 0
-            for i, t in enumerate(hourly_time):
-                if time and forecast_datetime(t) == forecast_datetime(time).replace(minute=0, second=0, microsecond=0):
-                    current_hour_index = i
-                    break
-
-            # Build hourly forecast (next 24 hours)
-            forecast_hours = min(24, len(hourly_time) - current_hour_index)
-            for i in range(forecast_hours):
-                idx = current_hour_index + i
-                forecast = {
-                    "datetime": forecast_datetime(hourly_time[idx]).isoformat(),
-                    "temperature": hourly_temp[idx] if idx < len(hourly_temp) else None,
-                    "humidity": hourly_humidity[idx] if idx < len(hourly_humidity) else None,
-                    "precipitation_probability": hourly_precip[idx] if idx < len(hourly_precip) else None,
-                    "weather_code": hourly_code[idx] if idx < len(hourly_code) else None,
-                    "condition": self.get_weather_condition(hourly_code[idx] if idx < len(hourly_code) else None),
+            temperature = _number(values["temperature_2m"])
+            if temperature is None:
+                continue
+            code = _code(values["weather_code"])
+            result.append(
+                {
+                    "datetime": timestamp.isoformat(),
+                    "temperature": temperature,
+                    "humidity": _number(values["relative_humidity_2m"], 0, 100),
+                    "precipitation_probability": _number(
+                        values["precipitation_probability"], 0, 100
+                    ),
+                    "weather_code": code,
+                    "condition": self.get_weather_condition(code),
                 }
-                result["hourly_forecast"].append(forecast)
-
-            _LOGGER.debug("Parsed %d hours of forecast", len(result["hourly_forecast"]))
-
-            return result
-
-        except Exception as err:
-            _LOGGER.exception("Error parsing Open-Meteo response: %s", err)
-            return {}
+            )
+        return result
 
     async def _async_update_data(self) -> dict[str, Any]:
-        """Fetch data from API with caching."""
-        # Circuit breaker check
-        if self._circuit_open_until and datetime.now(timezone.utc) < self._circuit_open_until:
+        """Commit only valid, current data; HA logs failure/recovery transitions."""
+        if self._circuit_open_until and datetime.now(UTC) < self._circuit_open_until:
             raise UpdateFailed("Circuit breaker open — API temporarily unavailable")
-
         try:
-            _LOGGER.debug("Fetching Open-Meteo data (lat=%s, lon=%s)", self.latitude, self.longitude)
-
-            # Get cache
             cache = get_current_weather_cache()
-            cache_key = f"openmeteo:{self.latitude},{self.longitude}"
-
-            # Try cache first
-            cached_data = cache.get(cache_key)
-            if cached_data is not None:
-                _LOGGER.debug("Using cached Open-Meteo data")
-                validate_observation_time(cached_data)
-                return cached_data
-
-            _LOGGER.debug("Cache miss, fetching fresh Open-Meteo data")
-
-            data = await self._async_fetch_data()
-
-            if data is None:
-                _LOGGER.error("Open-Meteo data is None!")
-                raise UpdateFailed("Failed to fetch Open-Meteo data: data is None")
-
-            if not data:
-                _LOGGER.error("Open-Meteo data is empty!")
-                raise UpdateFailed("Failed to fetch Open-Meteo data: data is empty")
-
-            _LOGGER.debug("Successfully fetched Open-Meteo data")
-
+            cache_key = f"openmeteo:v2:{self.latitude},{self.longitude}"
+            cached = cache.get(cache_key)
+            data = cached if cached is not None else await self._async_fetch_data()
+            if not isinstance(data, dict):
+                raise TypeError("Invalid current weather data")
             validate_observation_time(data)
-
-            # Circuit breaker: reset on success
             self._consecutive_failures = 0
             self._circuit_open_until = None
-
-            # Cache the result
-            cache.set(cache_key, data)
-            _LOGGER.debug("Cached Open-Meteo data (TTL: 600s)")
-
+            self.weather_code = data.get("weather_code")
+            # Reusing a cache hit must not extend its original TTL.
+            if cached is None:
+                cache.set(cache_key, data)
             return data
-
-        except (UpdateFailed, aiohttp.ClientError, TimeoutError, ValueError) as err:
+        except (
+            aiohttp.ClientError,
+            TimeoutError,
+            ValueError,
+            TypeError,
+            UnicodeError,
+            RuntimeError,
+        ):
             self._consecutive_failures += 1
             if self._consecutive_failures >= 5:
-                self._circuit_open_until = datetime.now(timezone.utc) + timedelta(minutes=5)
-                _LOGGER.warning(
-                    "Circuit breaker opened after %d consecutive failures",
-                    self._consecutive_failures,
-                )
-            if isinstance(err, UpdateFailed):
-                raise
-            raise UpdateFailed("Weather data source unavailable") from err
+                self._circuit_open_until = datetime.now(UTC) + timedelta(minutes=5)
+            # Raw HTTP causes may contain coordinates, even in HA's debug log.
+            raise UpdateFailed("Failed to fetch Open-Meteo current weather") from None
 
     async def async_close(self) -> None:
-        """Close is handled centrally by the integration setup."""
-        # Session is shared and closed in async_unload_entry
-        pass
+        """The borrowed session is owned and closed by Home Assistant."""

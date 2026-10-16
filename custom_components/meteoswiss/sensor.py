@@ -343,11 +343,19 @@ class MeteoSwissSensor(CoordinatorEntity[MeteoSwissDataUpdateCoordinator], Senso
     def extra_state_attributes(self) -> dict:
         """Expose the selected observation time and source status for diagnosis."""
         data = self.coordinator.data or {}
-        return {
+        attributes = {
             "measurement_time": data.get("last_update"),
             "source_status": data.get("source_status"),
             "pending_rows": data.get("pending_rows", 0),
         }
+        if (
+            self.entity_description.key == SENSOR_PRECIPITATION
+            and "precipitation_interval_seconds" in data
+        ):
+            attributes["measurement_interval_seconds"] = data[
+                "precipitation_interval_seconds"
+            ]
+        return attributes
 
 
 class MeteoSwissStationsMapSensor(SensorEntity):

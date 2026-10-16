@@ -35,6 +35,7 @@ def validate(path: Path) -> None:
         "pollen_coordinator_openmeteo.py",
         "pollen_meteoswiss.py",
         "forecast_coordinator.py",
+        "openmeteo_coordinator.py",
         "precipitation.py",
         "calc.py",
     ):
@@ -49,8 +50,8 @@ def validate(path: Path) -> None:
         raise SystemExit(
             "Station coordinator must retain at least 95% line and branch coverage"
         )
-    if total < 80:
-        raise SystemExit("Integration coverage fell below the current 80% floor")
+    if total < 86:
+        raise SystemExit("Integration coverage fell below the current 86% floor")
 
 
 if __name__ == "__main__":
