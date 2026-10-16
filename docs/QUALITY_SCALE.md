@@ -39,7 +39,7 @@ snapshot as having acquired these changes.
 | Rule | Current assessment / next action |
 |---|---|
 | `action-exceptions` | Exempt: no integration-specific service actions. |
-| `config-entry-unloading` | Native unload/reload; tests verify HA session ownership, replaced runtime state, stable entity IDs and removed observation/forecast listeners. |
+| `config-entry-unloading` | Native unload/reload; tests verify HA session ownership, replaced runtime state, stable entity IDs and removed observation/forecast listeners. Real-Recorder entry lifecycles cover both providers and remove the listener-backed hourly/archive importers on reload/unload; cancelling optional startup cancels every inflight child refresh. |
 | `docs-configuration-parameters`, `docs-installation-parameters` | Usage includes provider selection, intervals, coordinates, warning postcode and measured pollen station. |
 | `entity-unavailable` | Observations/warnings and both pollen/AQ clients have failure/recovery tests, including registered pollen/AQ entity states. All-empty current pollen/AQ payloads fail; partial responses retain unknown fields. Measured pollen rejects age over four hours or future skew over ten minutes on refresh. Both weather forecast services return empty lists on forecast failure and recover, while valid observations remain available. Alternative Open-Meteo current conditions have registered weather/temperature entity outage and recovery tests; invalid individual measurements stay unknown and an all-empty source fails. Registered weather attributes use native HA properties and unit conversion; forecast subscribers receive fresh/empty/recovered payloads, including through HA WebSocket. Remaining optional per-entity paths still require review; full rule remains pending. |
 | `integration-owner` | `@martins-netizen` in manifest. Repository Issues are currently disabled: enable a usable fork-specific support route before public release. |
@@ -54,10 +54,10 @@ CI now measures **all** integration modules, prints per-module coverage and
 requires full config-flow, both pollen-client, ICON forecast-client, alternative
 Open-Meteo current-client, weather-entity, shared weather-data, hourly
 precipitation, HGT utility, cache, diagnostics, station-catalogue, warning-parser,
-warning-entity, numeric-sensor and pollen-sensor line/branch
+warning-entity, numeric-sensor, pollen-sensor, config-entry setup and retry line/branch
 coverage. The station coordinator has
 separate minimums of 95% for lines and branches. The combined integration floor
-is 98% (raised from 95%, previously 89%, 86%, 80%, 71%, 67% and initially 60%). This
+is 98.5% (raised from 98%, previously 95%, 89%, 86%, 80%, 71%, 67% and initially 60%). This
 floor prevents regressions at this stage; it is not a substitute for Silver.
 Unused camera/SLF/hydrology placeholders remain visible in the denominator.
 They must be explicitly removed in a reviewed scope or covered; no exclusions
@@ -99,6 +99,19 @@ remain unknown. Invalid levels, boolean/fractional codes, epoch-zero bounds,
 total timeout, cancellation and private error chains have regression coverage.
 Only compatibility shims below the declared minimum HA are removed; existing
 air-quality unit spelling and effective diagnostic entity categories are kept.
+
+Config-entry setup and transport retries also have full line/branch coverage.
+Real-Recorder setup/reload/unload exercises both current-weather providers,
+station hourly/archive polling without entity listeners, stable registry IDs,
+HA-owned sessions, optional-task cancellation and independent legacy-coordinate
+fallbacks (including valid zero coordinates). Regression tests reproduce ignored
+HTTP-date Retry-After values, non-finite delays and repeated permanent URL/TLS
+errors before the fix. RFC 9110 seconds and HTTP-date pauses are now respected
+within the retry sequence. A pause longer than the configured maximum stops
+that sequence; the next coordinator refresh still follows its normal schedule.
+This is not a persistent cross-refresh provider cooldown. Attempt counts,
+delay caps, outer total timeouts and cancellation are preserved. Header/error
+contents are never logged by the retry helper.
 
 The full warning-name/number catalogue is a separate verification gate, including
 the legacy `4 = Wind` conflict. No new numeric meanings are approved by these

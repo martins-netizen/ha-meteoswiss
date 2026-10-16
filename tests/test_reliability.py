@@ -404,6 +404,19 @@ def test_hgt_uses_local_calendar_date_after_utc_normalization():
 
 
 async def test_complete_entry_setup_reload_and_unload(hass, enable_custom_integrations):
+    await _exercise_entry_lifecycle(hass, "meteoswiss", with_recorder=False)
+
+
+@pytest.mark.parametrize("source", ["meteoswiss", "openmeteo"])
+async def test_complete_entry_with_recorder_removes_all_polling_listeners(
+    recorder_mock, hass, enable_custom_integrations, source
+):
+    """Statistics-only refreshes stay alive until HA unloads their entry."""
+    assert "recorder" in hass.config.components
+    await _exercise_entry_lifecycle(hass, source, with_recorder=True)
+
+
+async def _exercise_entry_lifecycle(hass, source, *, with_recorder):
     from contextlib import ExitStack
 
     from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -415,12 +428,18 @@ async def test_complete_entry_setup_reload_and_unload(hass, enable_custom_integr
             "station_id": "KLO",
             "station_name": "Kloten",
             "postal_code": "8302",
-            "data_source": "meteoswiss",
+            "data_source": source,
+            "latitude": 0,
+            "longitude": 0,
         },
     )
     entry.add_to_hass(hass)
     targets = {
         "coordinator.MeteoSwissDataUpdateCoordinator": {
+            SENSOR_TEMPERATURE: 12,
+            "last_update": dt_util.utcnow().isoformat(),
+        },
+        "openmeteo_coordinator.OpenMeteoDataUpdateCoordinator": {
             SENSOR_TEMPERATURE: 12,
             "last_update": dt_util.utcnow().isoformat(),
         },
@@ -445,7 +464,18 @@ async def test_complete_entry_setup_reload_and_unload(hass, enable_custom_integr
         registry = er.async_get(hass)
         map_id = registry.async_get_entity_id("sensor", DOMAIN, f"{DOMAIN}_stations_map")
         assert map_id and hass.states.get(map_id) is not None
-        assert entry.runtime_data.hourly_precipitation_coordinator is None
+        has_statistics = with_recorder and source == "meteoswiss"
+        importers = (
+            entry.runtime_data.hourly_precipitation_coordinator,
+            entry.runtime_data.precipitation_archive_coordinator,
+        )
+        if has_statistics:
+            assert all(importer is not None and importer._listeners for importer in importers)
+        else:
+            assert importers == (None, None)
+        if source == "openmeteo":
+            assert entry.runtime_data.coordinator.latitude == 0
+            assert entry.runtime_data.forecast_coordinator._longitude == 0
         session = async_get_clientsession(hass)
         assert entry.runtime_data.session is session
         assert not session.closed
@@ -464,6 +494,10 @@ async def test_complete_entry_setup_reload_and_unload(hass, enable_custom_integr
         assert entry.runtime_data is not previous_runtime
         assert not previous_runtime.coordinator._listeners
         assert not previous_runtime.forecast_coordinator._listeners
+        if has_statistics:
+            assert all(not importer._listeners for importer in importers)
+            assert entry.runtime_data.hourly_precipitation_coordinator._listeners
+            assert entry.runtime_data.precipitation_archive_coordinator._listeners
         assert registry_ids == {item.unique_id: item.entity_id for item in er.async_entries_for_config_entry(registry, entry.entry_id)}
         assert not session.closed
         assert hass.states.get(map_id) is not None
@@ -472,6 +506,9 @@ async def test_complete_entry_setup_reload_and_unload(hass, enable_custom_integr
         await hass.async_block_till_done()
         assert not final_runtime.coordinator._listeners
         assert not final_runtime.forecast_coordinator._listeners
+        if has_statistics:
+            assert not final_runtime.hourly_precipitation_coordinator._listeners
+            assert not final_runtime.precipitation_archive_coordinator._listeners
         assert entry.entry_id not in hass.data[DOMAIN]
         assert not session.closed
 
