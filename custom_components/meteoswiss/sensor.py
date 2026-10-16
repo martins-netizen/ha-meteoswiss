@@ -376,7 +376,8 @@ class MeteoSwissStationsMapSensor(SensorEntity):
         self._attr_has_entity_name = True
         self._attr_attribution = ATTRIBUTION
         self._attr_name = "Weather Stations"
-        self._attr_native_value = "Loading..."
+        self._attr_native_value = None
+        self._attr_available = False
 
     async def async_update(self) -> None:
         """Update stations map."""
@@ -384,10 +385,12 @@ class MeteoSwissStationsMapSensor(SensorEntity):
 
         await self._stations_map.load_stations(session=async_get_clientsession(self.hass))
         stations = self._stations_map.get_all_stations()
+        self._attr_available = bool(stations)
 
         # Update native value with station count
         self._attr_native_value = f"{len(stations)} stations"
         self._attr_extra_state_attributes = {
+            "catalogue_status": self._stations_map.get_status(),
             "station_count": len(stations),
             "stations": [s.to_dict() for s in stations[:20]],  # Limit to first 20
             "geojson": self._stations_map.to_geojson(),
@@ -423,8 +426,8 @@ class MeteoSwissCacheStatsSensor(SensorEntity):
         stats = get_all_cache_stats()
 
         # Calculate overall hit rate
-        total_hits = stats["current_weather"]["hits"] + stats["forecast"]["hits"]
-        total_misses = stats["current_weather"]["misses"] + stats["forecast"]["misses"]
+        total_hits = sum(values["hits"] for values in stats.values())
+        total_misses = sum(values["misses"] for values in stats.values())
         total_requests = total_hits + total_misses
         overall_hit_rate = (total_hits / total_requests * 100) if total_requests > 0 else 0.0
 

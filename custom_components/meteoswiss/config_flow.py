@@ -3,13 +3,9 @@
 from __future__ import annotations
 
 import asyncio
-import csv
-import io
-import logging
 import math
 from typing import Any
 
-import aiohttp
 import voluptuous as vol
 from homeassistant.config_entries import ConfigFlow, OptionsFlow
 from homeassistant.core import callback
@@ -33,12 +29,10 @@ from .const import (
     DOMAIN,
     MIN_UPDATE_INTERVAL,
     POLLEN_STATIONS,
-    STATIONS_METADATA_URL,
 )
 from .coordinator import MeteoSwissDataUpdateCoordinator
 from .openmeteo_coordinator import OpenMeteoDataUpdateCoordinator
-
-_LOGGER = logging.getLogger(__name__)
+from .stations_map import WeatherStation, get_stations_map, parse_station_catalogue
 
 
 def _has_matching_meteoswiss_entry(
@@ -75,31 +69,26 @@ def _has_matching_openmeteo_entry(
     return False
 
 
+def _station_choices(stations: list[WeatherStation]) -> list[dict[str, Any]]:
+    return [
+        {
+            "id": station.station_id.lower(),
+            "name": station.name,
+            "canton": station.canton or "",
+            "label": f"{station.name} ({station.station_id.upper()})",
+            "lat": station.latitude,
+            "lon": station.longitude,
+        }
+        for station in sorted(stations, key=lambda item: item.name)
+    ]
+
+
 def _parse_stations(content: bytes) -> list[dict[str, Any]]:
-    """Parse the provider's documented Windows-1252 station catalogue."""
-    stations = []
-    rows = csv.reader(io.StringIO(content.decode("cp1252")), delimiter=";")
-    next(rows, None)  # Header.
-    for parts in rows:
-        if len(parts) < 3 or not parts[0].strip() or not parts[1].strip():
-            continue
-        try:
-            lat = float(parts[14]) if len(parts) > 14 and parts[14] else None
-            lon = float(parts[15]) if len(parts) > 15 and parts[15] else None
-        except ValueError:
-            continue
-        station_id, name = parts[0].strip().lower(), parts[1].strip()
-        stations.append(
-            {
-                "id": station_id,
-                "name": name,
-                "canton": parts[2].strip(),
-                "label": f"{name} ({station_id.upper()})",
-                "lat": lat,
-                "lon": lon,
-            }
-        )
-    return sorted(stations, key=lambda station: station["name"])
+    """Compatibility projection of the shared provider-column parser."""
+    try:
+        return _station_choices(list(parse_station_catalogue(content).values()))
+    except (ValueError, UnicodeError):
+        return []
 
 
 class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -119,16 +108,10 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
 
     async def _load_stations(self) -> list[dict[str, Any]]:
         """Reuse HA's TLS-verified session; a failed catalogue remains retryable."""
-        session = async_get_clientsession(self.hass)
-        try:
-            async with session.get(
-                STATIONS_METADATA_URL, timeout=DEFAULT_API_TIMEOUT
-            ) as response:
-                response.raise_for_status()
-                return _parse_stations(await response.read())
-        except (aiohttp.ClientError, TimeoutError, UnicodeError):
-            _LOGGER.warning("Weather station catalogue temporarily unavailable")
-            return []
+        stations = await get_stations_map(
+            session=async_get_clientsession(self.hass), retry=True
+        )
+        return _station_choices(stations.get_all_stations())
 
     async def _validate_source(
         self,

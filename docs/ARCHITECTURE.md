@@ -209,6 +209,56 @@ missing, and it selects usable temperatures within the current UTC hour plus
 23 hours. A missing current hour never causes a midnight fallback. The HA
 forecast services continue to use their independent ICON forecast coordinator.
 
+## Shared station catalogue, cache and diagnostics
+
+Setup and the optional station diagnostic use one named-column parser and
+shared catalogue loader. The old map-only parser read WIGOS/type columns as
+name/height and could commit an empty result. The shared parser uses official
+column names, Windows-1252 (or explicit UTF-8 BOM), quoted semicolon CSV and a
+2 MiB validated-payload limit. Unknown/invalid rows are skipped; a conflicting
+duplicate identifier or an all-invalid catalogue fails atomically. Stations
+without coordinates remain selectable metadata but have null GeoJSON geometry;
+finite coordinates including zero are valid. Existing station/config/entity IDs
+are retained.
+
+The shared catalogue cache is valid for 24 hours on the monotonic clock; cache
+hits preserve the original successful-download time and deadline. One loader
+lock shares in-flight downloads between setup/diagnostic consumers. Only valid
+snapshots are committed. An expired catalogue remains as last-good metadata
+with `stale` status after download failure; no successful catalogue means
+`unavailable`, not a successful zero-station result. Automatic retry waits five
+minutes, while an explicit setup retry may try immediately. Only transient
+transports retry, at most three attempts within a total 30-second budget.
+Cancellation propagates. HA sessions are borrowed; the standalone fallback
+owns and closes its session. The selected observation coordinator still checks
+actual weather independently; stale metadata is never a substitute measurement.
+
+The generic cache expires at the exact TTL deadline, rejects invalid/negative
+lifetimes and permits zero only for immediate expiry. Cache reads do not extend
+TTL. Empty/false values are valid; `None` is not negative-cached. Cleanup on
+set/statistics prevents unrequested expired entries being reported as current.
+Canonical key creation isolates types, argument boundaries and keyword order,
+with long keys hashed. Existing weather/forecast cache key namespaces and their
+600/1800-second lifetimes stay unchanged. The cache diagnostic's overall hit
+rate now includes the station cache as well.
+
+Integration diagnostics also work when an entry has no runtime data. They use
+fixed coordinator roles, data type/count, safe UTC timestamps and exception
+class names. They omit raw data/keys, free coordinator names, raw errors, cache
+keys/values and known location fields (redacted recursively in configuration).
+The current coordinators already use static names; role-based export is a
+further guard for legacy/future sources, not evidence of a live data leak.
+Downloading diagnostics performs no catalogue network request. `available` in
+the coordinator summary means an instance exists; `last_update_success` carries
+the separate fetch result.
+
+The station diagnostic exposes catalogue status and last successful download,
+with unavailable state until a valid catalogue exists. Last-good metadata can
+stay available with an explicit `stale` label. Its GeoJSON remains available;
+the picture-elements helper now requires an explicit map image and actual
+entity ID instead of inventing an external image URL/entity. Its Swiss fixed
+bounds are north-up. Existing registry disabled/enabled flags are unchanged.
+
 ## Warnings and safety-dependent consumers
 
 Only a valid, successfully decoded response without warnings means no warnings.
@@ -247,9 +297,10 @@ registered pollen/AQ entity states and unload, forecast service failure/recovery
 contracts, DST and translation coverage. Both pollen clients and the ICON
 forecast client, alternative Open-Meteo current client, hourly precipitation importer and HGT utilities have full
 line/branch coverage, enforced in CI alongside config flow. The weather entity
-and shared weather-data contract also require full line/branch coverage. The station client
+and shared weather-data contract also require full line/branch coverage. Cache,
+diagnostics and the shared station catalogue now have the same CI requirement. The station client
 must retain at least 95% line and branch coverage, and the whole-integration
-floor is 89%; Silver remains pending.
+floor is 95%; Silver remains pending.
 CI runs minimum and current
 HA test environments plus Hassfest and CodeQL. Passing CI is not a live-house
 acceptance test. The `quality_scale: platinum` claim inherited from upstream is

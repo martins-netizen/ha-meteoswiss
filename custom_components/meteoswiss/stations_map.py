@@ -1,154 +1,242 @@
-"""MeteoSwiss Stations Map - Display all weather stations on a map."""
+"""Shared, bounded station catalogue and public geographic metadata."""
+
 from __future__ import annotations
 
+import asyncio
+import csv
+import io
 import logging
+import math
+import time
 from dataclasses import asdict, dataclass
+from datetime import UTC, datetime
 
 import aiohttp
 
+from .cache import get_stations_cache
 from .const import DEFAULT_API_TIMEOUT, STATIONS_METADATA_URL
+from .retry import async_retry_with_backoff
+from .weather_data import weather_number
 
 _LOGGER = logging.getLogger(__name__)
+CATALOGUE_TTL = 86400.0
+CATALOGUE_RETRY_DELAY = 300.0
+MAX_CATALOGUE_BYTES = 2 * 1024 * 1024
 
 
-@dataclass
+@dataclass(frozen=True)
 class WeatherStation:
-    """Weather station data."""
+    """Public station metadata; incomplete coordinates do not invent a point."""
 
     station_id: str
     name: str
-    latitude: float
-    longitude: float
+    latitude: float | None
+    longitude: float | None
     altitude: float | None = None
     canton: str | None = None
     start_date: str | None = None
 
+    @property
+    def has_coordinates(self) -> bool:
+        return self.latitude is not None and self.longitude is not None
+
     def to_dict(self) -> dict:
-        """Convert to dictionary."""
         return asdict(self)
 
     def to_geojson_feature(self) -> dict:
-        """Convert to GeoJSON feature."""
         return {
             "type": "Feature",
             "properties": {
-                "station_id": self.station_id,
-                "name": self.name,
-                "altitude": self.altitude,
-                "canton": self.canton,
-                "start_date": self.start_date,
+                key: value
+                for key, value in self.to_dict().items()
+                if key not in ("latitude", "longitude")
             },
             "geometry": {
                 "type": "Point",
                 "coordinates": [self.longitude, self.latitude],
-            },
+            }
+            if self.has_coordinates
+            else None,
         }
 
 
+def _parse_station_catalogue(content: bytes) -> dict[str, WeatherStation]:
+    """Read named provider columns, documented cp1252 or explicit UTF-8 BOM."""
+    if len(content) > MAX_CATALOGUE_BYTES:
+        raise ValueError("Station catalogue exceeds size limit")
+    encoding = "utf-8-sig" if content.startswith(b"\xef\xbb\xbf") else "cp1252"
+    rows = csv.reader(io.StringIO(content.decode(encoding)), delimiter=";", strict=True)
+    headers = [name.strip().lower() for name in next(rows, [])]
+    aliases = {
+        "id": ("station_abbr", "station", "id"),
+        "name": ("station_name", "name"),
+        "canton": ("station_canton", "canton"),
+        "latitude": ("station_coordinates_wgs84_lat", "lat", "latitude"),
+        "longitude": ("station_coordinates_wgs84_lon", "lon", "longitude"),
+        "altitude": ("station_height_masl", "altitude"),
+        "start_date": ("station_data_since", "start_date"),
+    }
+    columns = {
+        key: next((name for name in names if name in headers), None)
+        for key, names in aliases.items()
+    }
+    if (
+        not columns["id"]
+        or not columns["name"]
+        or len(set(filter(None, headers))) != len(list(filter(None, headers)))
+    ):
+        raise ValueError("Invalid station catalogue columns")
+    stations = {}
+    for parts in rows:
+        if not parts or len(parts) > len(headers):
+            continue
+        values = dict(
+            zip(headers, parts + [""] * (len(headers) - len(parts)), strict=True)
+        )
+        fields = {
+            key: values.get(column, "").strip() for key, column in columns.items()
+        }
+        if not fields["id"] or not fields["name"]:
+            continue
+        latitude = weather_number(fields["latitude"], -90, 90)
+        longitude = weather_number(fields["longitude"], -180, 180)
+        if (
+            fields["latitude"]
+            and latitude is None
+            or fields["longitude"]
+            and longitude is None
+        ):
+            continue
+        if latitude is None or longitude is None:
+            latitude = longitude = None
+        station = WeatherStation(
+            station_id=fields["id"].upper(),
+            name=fields["name"],
+            latitude=latitude,
+            longitude=longitude,
+            altitude=weather_number(fields["altitude"]),
+            canton=fields["canton"] or None,
+            start_date=fields["start_date"] or None,
+        )
+        key = station.station_id.lower()
+        if key in stations and stations[key] != station:
+            raise ValueError("Conflicting duplicate station identifier")
+        stations[key] = station
+    if not stations:
+        raise ValueError("Station catalogue contains no valid stations")
+    return stations
+
+
+def parse_station_catalogue(content: bytes) -> dict[str, WeatherStation]:
+    """Invalid CSV is a payload failure, never a transient transport retry."""
+    try:
+        return _parse_station_catalogue(content)
+    except csv.Error:
+        raise ValueError("Malformed station catalogue CSV") from None
+
+
 class MeteoSwissStationsMap:
-    """MeteoSwiss stations map loader."""
+    """Entry-independent catalogue with explicit stale/unavailable status."""
 
     def __init__(self) -> None:
-        """Initialize."""
         self._stations: dict[str, WeatherStation] = {}
-        self._loaded = False
+        self._lock = asyncio.Lock()
+        self._expires_at = 0.0
+        self._retry_at = 0.0
+        self.last_update_success: bool | None = None
+        self.last_successful_update: str | None = None
+        self.last_exception: str | None = None
 
-    async def load_stations(self, session: aiohttp.ClientSession | None = None) -> dict[str, WeatherStation]:
-        """Load all weather stations from MeteoSwiss metadata."""
-        if self._loaded:
-            return self._stations
+    @property
+    def data_status(self) -> str:
+        if not self._stations:
+            return "unavailable"
+        return (
+            "current"
+            if self.last_update_success and time.monotonic() < self._expires_at
+            else "stale"
+        )
 
-        try:
+    def get_status(self) -> dict:
+        return {
+            "data_status": self.data_status,
+            "last_update_success": self.last_update_success,
+            "last_successful_update": self.last_successful_update,
+            "last_exception": self.last_exception,
+        }
+
+    @async_retry_with_backoff(max_attempts=3, base_delay=1.0, max_delay=10.0)
+    async def _async_download(self, session: aiohttp.ClientSession) -> bytes:
+        async with session.get(
+            STATIONS_METADATA_URL, timeout=DEFAULT_API_TIMEOUT
+        ) as response:
+            response.raise_for_status()
+            return await response.read()
+
+    async def _async_content(self, session: aiohttp.ClientSession | None) -> bytes:
+        async with asyncio.timeout(DEFAULT_API_TIMEOUT.total):
             if session is not None:
-                async with session.get(STATIONS_METADATA_URL, timeout=DEFAULT_API_TIMEOUT) as response:
-                    if response.status != 200:
-                        _LOGGER.error("Failed to load stations: %s", response.status)
-                        return {}
+                return await self._async_download(session)
+            async with aiohttp.ClientSession() as owned_session:
+                return await self._async_download(owned_session)
 
-                    content_bytes = await response.read()
-            else:
-                async with aiohttp.ClientSession() as session_local:
-                    async with session_local.get(STATIONS_METADATA_URL, timeout=DEFAULT_API_TIMEOUT) as response:
-                        if response.status != 200:
-                            _LOGGER.error("Failed to load stations: %s", response.status)
-                            return {}
+    def _accept(self, snapshot: dict) -> dict[str, WeatherStation]:
+        if self.last_update_success is False:
+            _LOGGER.info("Weather station catalogue recovered")
+        self._stations = dict(snapshot["stations"])
+        self.last_successful_update = snapshot["last_successful_update"]
+        self._expires_at = snapshot["expires_at"]
+        self.last_update_success = True
+        self.last_exception = None
+        self._retry_at = 0.0
+        return dict(self._stations)
 
-                        content_bytes = await response.read()
-
-            # Try different encodings for CSV
-            lines = None
-            for encoding in ['iso-8859-1', 'latin-1', 'cp1252', 'utf-8-sig', 'utf-8']:
-                try:
-                    decoded = content_bytes.decode(encoding)
-                    lines = decoded.strip().split("\n")
-                    if len(lines) > 10:
-                        _LOGGER.debug("Successfully decoded CSV with encoding: %s", encoding)
-                        break
-                except UnicodeDecodeError:
-                    continue
-
-            if not lines or len(lines) < 2:
-                _LOGGER.error("Failed to decode stations CSV")
-                return {}
-
-            # Parse CSV headers
-            headers = [h.strip().lower() for h in lines[0].split(";")]
-
-            # Find column indices
-            col_altitude = headers[6] if len(headers) > 6 else None
-            col_canton = headers[7] if len(headers) > 7 else None
-            col_start = headers[8] if len(headers) > 8 else None
-
-            # Parse CSV rows
-            for line in lines[1:]:
-                parts = line.split(";")
-                if len(parts) > 15:
-                    try:
-                        station_id = parts[0].strip()
-                        name = parts[3].strip() if len(parts) > 3 else station_id
-                        lat = float(parts[14]) if parts[14] else None
-                        lon = float(parts[15]) if parts[15] else None
-                        altitude = float(parts[6]) if parts[6] and col_altitude else None
-                        canton = parts[7].strip() if len(parts) > 7 and col_canton else None
-                        start_date = parts[8].strip() if len(parts) > 8 and col_start else None
-
-                        if lat and lon:
-                            station = WeatherStation(
-                                station_id=station_id,
-                                name=name,
-                                latitude=lat,
-                                longitude=lon,
-                                altitude=altitude,
-                                canton=canton,
-                                start_date=start_date,
-                            )
-                            self._stations[station_id.lower()] = station
-                    except (ValueError, TypeError) as e:
-                        _LOGGER.debug("Could not parse station: %s - %s", parts[0], e)
-                        continue
-
-            self._loaded = True
-            _LOGGER.debug("Loaded %d weather stations from MeteoSwiss", len(self._stations))
-            return self._stations
-
-        except Exception as err:
-            _LOGGER.error("Error loading stations: %s", err)
-            return {}
+    async def load_stations(
+        self, session: aiohttp.ClientSession | None = None, *, retry: bool = False
+    ) -> dict[str, WeatherStation]:
+        """Refresh after 24 hours; preserve/label last good metadata on failure."""
+        async with self._lock:
+            cache = get_stations_cache()
+            key = cache.make_key("station-catalogue:v2", STATIONS_METADATA_URL)
+            cached = cache.get(key)
+            if cached is not None and time.monotonic() < cached["expires_at"]:
+                return self._accept(cached)
+            if not retry and time.monotonic() < self._retry_at:
+                return dict(self._stations)
+            try:
+                stations = parse_station_catalogue(await self._async_content(session))
+            except (
+                aiohttp.ClientError,
+                TimeoutError,
+                UnicodeError,
+                ValueError,
+                csv.Error,
+            ) as err:
+                if self.last_update_success is not False:
+                    _LOGGER.warning("Weather station catalogue unavailable")
+                self.last_update_success = False
+                self.last_exception = type(err).__name__
+                self._retry_at = time.monotonic() + CATALOGUE_RETRY_DELAY
+                return dict(self._stations)
+            snapshot = {
+                "stations": stations,
+                "last_successful_update": datetime.now(UTC).isoformat(),
+                "expires_at": time.monotonic() + CATALOGUE_TTL,
+            }
+            cache.set(key, snapshot, ttl=CATALOGUE_TTL)
+            return self._accept(snapshot)
 
     def get_station(self, station_id: str) -> WeatherStation | None:
-        """Get a specific station by ID."""
         return self._stations.get(station_id.lower())
 
     def get_all_stations(self) -> list[WeatherStation]:
-        """Get all stations."""
-        return list(self._stations.values())
+        return sorted(self._stations.values(), key=lambda station: station.name)
 
     def get_stations_by_canton(self, canton: str) -> list[WeatherStation]:
-        """Get stations by canton."""
-        canton_lower = canton.lower()
         return [
-            s for s in self._stations.values()
-            if s.canton and s.canton.lower() == canton_lower
+            station
+            for station in self.get_all_stations()
+            if station.canton and station.canton.casefold() == canton.casefold()
         ]
 
     def get_nearby_stations(
@@ -158,94 +246,87 @@ class MeteoSwissStationsMap:
         max_distance_km: float = 50.0,
         limit: int = 10,
     ) -> list[tuple[WeatherStation, float]]:
-        """Get nearby stations sorted by distance."""
-        stations_with_distance = []
-
-        for station in self._stations.values():
+        latitude = weather_number(latitude, -90, 90)
+        longitude = weather_number(longitude, -180, 180)
+        max_distance_km = weather_number(max_distance_km, 0)
+        if (
+            latitude is None
+            or longitude is None
+            or max_distance_km is None
+            or isinstance(limit, bool)
+            or not isinstance(limit, int)
+            or limit < 0
+        ):
+            raise ValueError("Invalid nearby station search bounds")
+        found = []
+        for station in self.get_all_stations():
+            if not station.has_coordinates:
+                continue
             distance = self._calculate_distance(
-                latitude, longitude,
-                station.latitude, station.longitude
+                latitude, longitude, station.latitude, station.longitude
             )
             if distance <= max_distance_km:
-                stations_with_distance.append((station, distance))
-
-        # Sort by distance and limit
-        stations_with_distance.sort(key=lambda x: x[1])
-        return stations_with_distance[:limit]
+                found.append((station, distance))
+        return sorted(found, key=lambda item: item[1])[:limit]
 
     @staticmethod
     def _calculate_distance(
-        lat1: float, lon1: float,
-        lat2: float, lon2: float
+        lat1: float, lon1: float, lat2: float, lon2: float
     ) -> float:
-        """Calculate distance between two coordinates (Haversine formula)."""
-        from math import asin, cos, radians, sin, sqrt
-
-        # Convert to radians
-        lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
-
-        # Haversine formula
-        dlat = lat2 - lat1
-        dlon = lon2 - lon1
-        a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
-        c = 2 * asin(sqrt(a))
-        r = 6371  # Earth radius in km
-
-        return c * r
+        lat1, lon1, lat2, lon2 = map(math.radians, (lat1, lon1, lat2, lon2))
+        a = (
+            math.sin((lat2 - lat1) / 2) ** 2
+            + math.cos(lat1) * math.cos(lat2) * math.sin((lon2 - lon1) / 2) ** 2
+        )
+        return 6371 * 2 * math.asin(math.sqrt(max(0.0, min(1.0, a))))
 
     def to_geojson(self) -> dict:
-        """Convert all stations to GeoJSON FeatureCollection."""
-        features = [station.to_geojson_feature() for station in self._stations.values()]
         return {
             "type": "FeatureCollection",
-            "features": features,
+            "features": [
+                station.to_geojson_feature() for station in self.get_all_stations()
+            ],
         }
 
-    def to_picture_elements_config(self) -> dict:
-        """Convert stations to Picture Elements Card configuration."""
+    def to_picture_elements_config(
+        self, *, image: str | None = None, entity_id: str | None = None
+    ) -> dict | None:
+        """Generate a north-up map only with an explicitly supplied image/entity."""
+        if not image or not entity_id:
+            return None
         elements = []
-
-        # Normalize coordinates to percentage (0-100)
-        # Switzerland bounds roughly: lat 45.8-47.8, lon 5.9-10.5
-        min_lat, max_lat = 45.8, 47.8
-        min_lon, max_lon = 5.9, 10.5
-
-        for station in self._stations.values():
-            # Calculate position
-            x = ((station.longitude - min_lon) / (max_lon - min_lon)) * 100
-            y = ((station.latitude - min_lat) / (max_lat - min_lat)) * 100
-
-            # Ensure within bounds
-            x = max(0, min(100, x))
-            y = max(0, min(100, y))
-
-            elements.append({
-                "type": "state-label",
-                "entity": "sensor.meteoswiss_weather_stations",
-                "style": {
-                    "top": f"{y}%",
-                    "left": f"{x}%",
-                    "transform": "translate(-50%, -50%)",
-                },
-                "title": f"{station.name} ({station.station_id})",
-            })
-
-        return {
-            "type": "picture-elements",
-            "image": "https://i.imgur.com/XYZ.jpg",  # Placeholder for map image
-            "elements": elements[:50],  # Limit to 50 elements
-        }
+        for station in self.get_all_stations():
+            if not station.has_coordinates:
+                continue
+            x = max(0, min(100, (station.longitude - 5.9) / (10.5 - 5.9) * 100))
+            y = max(0, min(100, (47.8 - station.latitude) / (47.8 - 45.8) * 100))
+            elements.append(
+                {
+                    "type": "state-label",
+                    "entity": entity_id,
+                    "style": {
+                        "top": f"{y}%",
+                        "left": f"{x}%",
+                        "transform": "translate(-50%, -50%)",
+                    },
+                    "title": f"{station.name} ({station.station_id})",
+                }
+            )
+        return {"type": "picture-elements", "image": image, "elements": elements[:50]}
 
 
-# Global instance
 _stations_map: MeteoSwissStationsMap | None = None
 
 
-async def get_stations_map(session: aiohttp.ClientSession | None = None, *, load: bool = True) -> MeteoSwissStationsMap:
-    """Get global stations map instance."""
+async def get_stations_map(
+    session: aiohttp.ClientSession | None = None,
+    *,
+    load: bool = True,
+    retry: bool = False,
+) -> MeteoSwissStationsMap:
     global _stations_map
     if _stations_map is None:
         _stations_map = MeteoSwissStationsMap()
     if load:
-        await _stations_map.load_stations(session=session)
+        await _stations_map.load_stations(session=session, retry=retry)
     return _stations_map

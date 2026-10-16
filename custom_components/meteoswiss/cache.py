@@ -1,13 +1,30 @@
 """Caching module for MeteoSwiss API calls."""
+
 from __future__ import annotations
 
 import hashlib
+import json
 import logging
+import math
 import time
+from collections.abc import Callable
 from dataclasses import asdict, dataclass
-from typing import Any, Callable
+from typing import Any
 
 _LOGGER = logging.getLogger(__name__)
+
+
+def _validate_ttl(raw: float) -> float:
+    """An invalid lifetime must never create an immortal cache entry."""
+    if isinstance(raw, bool):
+        raise TypeError("Cache TTL must be finite and non-negative")
+    try:
+        value = float(raw)
+    except (ValueError, TypeError, OverflowError):
+        raise ValueError("Cache TTL must be finite and non-negative") from None
+    if not math.isfinite(value) or value < 0:
+        raise ValueError("Cache TTL must be finite and non-negative")
+    return value
 
 
 @dataclass
@@ -19,9 +36,12 @@ class CacheEntry:
     timestamp: float
     ttl: float  # Time to live in seconds
 
+    def __post_init__(self) -> None:
+        self.ttl = _validate_ttl(self.ttl)
+
     def is_expired(self) -> bool:
         """Check if cache entry is expired."""
-        return time.monotonic() - self.timestamp > self.ttl
+        return time.monotonic() - self.timestamp >= self.ttl
 
     def to_dict(self) -> dict:
         """Convert to dictionary."""
@@ -38,37 +58,21 @@ class MeteoSwissCache:
             default_ttl: Default time-to-live in seconds (default: 5 minutes)
         """
         self._cache: dict[str, CacheEntry] = {}
-        self._default_ttl = default_ttl
+        self._default_ttl = _validate_ttl(default_ttl)
         self._hits = 0
         self._misses = 0
         self._evictions = 0
 
-    def _generate_key(self, prefix: str, *args: Any, **kwargs: Any) -> str:
-        """Generate a cache key from arguments.
-
-        Args:
-            prefix: Prefix for the key
-            *args: Positional arguments
-            **kwargs: Keyword arguments
-
-        Returns:
-            Cache key string
-        """
-        key_parts = [prefix]
-
-        for arg in args:
-            key_parts.append(str(arg))
-
-        for k, v in sorted(kwargs.items()):
-            key_parts.append(f"{k}={v}")
-
-        key_str = ":".join(key_parts)
-
-        # Hash long keys
-        if len(key_str) > 200:
-            key_str = hashlib.md5(key_str.encode()).hexdigest()
-
-        return key_str
+    def make_key(self, prefix: str, *args: Any, **kwargs: Any) -> str:
+        """Canonical keys isolate types/arguments and bound very long URLs."""
+        key = json.dumps(
+            [prefix, args, kwargs],
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=False,
+            allow_nan=False,
+        )
+        return hashlib.sha256(key.encode()).hexdigest() if len(key) > 200 else key
 
     def get(self, key: str) -> Any | None:
         """Get value from cache.
@@ -119,6 +123,10 @@ class MeteoSwissCache:
             ttl=ttl,
         )
 
+        self.cleanup_expired()
+        if value is None:
+            self.invalidate(key)
+            return
         self._cache[key] = entry
         _LOGGER.debug("Cache set (TTL: %s sec)", ttl)
 
@@ -170,17 +178,16 @@ class MeteoSwissCache:
         Returns:
             Number of expired entries removed
         """
-        expired_keys = [
-            key for key, entry in self._cache.items()
-            if entry.is_expired()
-        ]
+        expired_keys = [key for key, entry in self._cache.items() if entry.is_expired()]
 
         for key in expired_keys:
             del self._cache[key]
 
         if expired_keys:
             self._evictions += len(expired_keys)
-            _LOGGER.debug("Cache cleanup: %d expired entries removed", len(expired_keys))
+            _LOGGER.debug(
+                "Cache cleanup: %d expired entries removed", len(expired_keys)
+            )
 
         return len(expired_keys)
 
@@ -190,6 +197,7 @@ class MeteoSwissCache:
         Returns:
             Dictionary with cache statistics
         """
+        self.cleanup_expired()
         total = self._hits + self._misses
         hit_rate = (self._hits / total * 100) if total > 0 else 0.0
 
@@ -250,8 +258,6 @@ def get_stations_cache() -> MeteoSwissCache:
 
 def clear_all_caches() -> None:
     """Clear all global caches."""
-    global _current_weather_cache, _forecast_cache, _stations_cache
-
     if _current_weather_cache:
         _current_weather_cache.clear()
     if _forecast_cache:

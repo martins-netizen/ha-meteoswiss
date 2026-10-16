@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
 from typing import Any
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.redact import async_redact_data
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
+from .cache import get_all_cache_stats
 from .const import (
     CONF_LATITUDE,
     CONF_LONGITUDE,
@@ -19,6 +21,8 @@ from .const import (
     DATA_SOURCE_OPENMETEO,
 )
 from .runtime_data import MeteoSwissConfigEntry
+from .stations_map import get_stations_map
+from .weather_data import forecast_datetime
 
 TO_REDACT = {
     CONF_LATITUDE,
@@ -82,7 +86,6 @@ def _summarize_data(data: Any) -> dict[str, Any]:
         return {
             "type": "dict",
             "item_count": len(data),
-            "keys": sorted(str(key) for key in data),
         }
 
     if isinstance(data, (list, tuple, set, frozenset)):
@@ -98,12 +101,13 @@ def _summarize_data(data: Any) -> dict[str, Any]:
 
 def _coordinator_diagnostics(
     coordinator: DataUpdateCoordinator[Any],
+    role: str,
 ) -> dict[str, Any]:
     """Return non-sensitive diagnostics for a coordinator."""
     update_interval = coordinator.update_interval
 
     diagnostics: dict[str, Any] = {
-        "name": coordinator.name,
+        "name": role,
         "last_update_success": coordinator.last_update_success,
         "update_interval_seconds": (
             update_interval.total_seconds() if update_interval is not None else None
@@ -116,9 +120,37 @@ def _coordinator_diagnostics(
 
     data_source = getattr(coordinator, "data_source", None)
     if data_source is not None:
-        diagnostics["data_source"] = data_source
+        diagnostics["data_source"] = _data_source(data_source)
 
+    sample = coordinator.data
+    if isinstance(sample, (list, tuple)):
+        sample = next((item for item in sample if isinstance(item, dict)), {})
+    if isinstance(sample, dict):
+        timestamp = _safe_timestamp(
+            sample.get("last_update") or sample.get("fetched_at")
+        )
+        if timestamp is not None:
+            diagnostics["data_timestamp"] = timestamp
+    last_success = _safe_timestamp(getattr(coordinator, "last_successful_update", None))
+    if last_success is not None:
+        diagnostics["last_successful_update"] = last_success
     return diagnostics
+
+
+def _data_source(value: Any) -> str:
+    return (
+        value
+        if isinstance(value, str)
+        and value in {DATA_SOURCE_METEOSWISS, DATA_SOURCE_OPENMETEO, "open-meteo"}
+        else "unknown"
+    )
+
+
+def _safe_timestamp(value: Any) -> str | None:
+    if isinstance(value, datetime):
+        return value.astimezone(UTC).isoformat() if value.tzinfo is not None else None
+    timestamp = forecast_datetime(value)
+    return timestamp.isoformat() if timestamp is not None else None
 
 
 async def async_get_config_entry_diagnostics(
@@ -126,19 +158,26 @@ async def async_get_config_entry_diagnostics(
     entry: MeteoSwissConfigEntry,
 ) -> dict[str, Any]:
     """Return diagnostics for a MeteoSwiss config entry."""
-    entry_data = entry.runtime_data
+    entry_data = getattr(entry, "runtime_data", None)
+    data_source = _data_source(
+        getattr(
+            entry_data,
+            "data_source",
+            entry.data.get("data_source", DATA_SOURCE_METEOSWISS),
+        )
+    )
 
     coordinators: dict[str, Any] = {}
 
     for key in COORDINATORS:
-        coordinator = getattr(entry_data, key)
+        coordinator = getattr(entry_data, key, None)
         if coordinator is None:
             coordinators[key] = {"available": False}
             continue
 
         coordinators[key] = {
             "available": True,
-            **_coordinator_diagnostics(coordinator),
+            **_coordinator_diagnostics(coordinator, key),
         }
 
     return {
@@ -148,7 +187,10 @@ async def async_get_config_entry_diagnostics(
             "version": entry.version,
             "minor_version": entry.minor_version,
         },
-        "data_source": entry_data.data_source,
-        "location_sources": _location_sources(entry_data.data_source),
+        "data_source": data_source,
+        "location_sources": _location_sources(data_source),
+        "runtime_data_present": entry_data is not None,
+        "cache": get_all_cache_stats(),
+        "station_catalogue": (await get_stations_map(load=False)).get_status(),
         "coordinators": coordinators,
     }
