@@ -158,13 +158,25 @@
     },
     "binary_sensor": {
       "any_alert": {
-        "name": "Weather Alert"
+        "name": "Weather Alert",
+        "state": {
+          "off": "No active warning",
+          "on": "Warning active"
+        }
       },
       "critical_alert": {
-        "name": "Critical Weather Alert"
+        "name": "Critical Weather Alert",
+        "state": {
+          "off": "No critical warning",
+          "on": "Critical warning active"
+        }
       },
       "upcoming_alert": {
-        "name": "Upcoming Weather Alert"
+        "name": "Upcoming Weather Alert",
+        "state": {
+          "off": "No upcoming warning",
+          "on": "Warning announced"
+        }
       }
     }
   },
