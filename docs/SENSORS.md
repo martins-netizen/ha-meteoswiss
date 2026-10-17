@@ -136,6 +136,12 @@ All three expose active `alerts`, separate `upcoming_alerts`, counts,
 `warning_labels` catalogue. A failed source is not off or an all-clear. Original
 numeric types/levels and provider text remain intact.
 
+The postcode feed carries weather and natural-hazard warnings. Avalanche (8)
+and flood (11) warnings are processed by these same sensors when supplied for
+the selected postcode. They do not require the inactive standalone SLF/BAFU
+modules. A custom dashboard or automation can still exclude these families
+with its own filters. See [scope and official source](WARNING_CODES.md#natural-hazard-scope).
+
 Use the [verified catalogue](WARNING_CODES.md#numeric-warning-families):
 **0 is Wind; 4 is Slippery Roads.** Severity is a separate number from 1 to 5.
 The critical sensor's threshold is not a universal threshold for an awning.
@@ -152,5 +158,7 @@ helper's unique ID. Existing entity names can differ. Integration diagnostics
 download a redacted technical summary.
 
 Camera/radar, standalone SLF and standalone BAFU modules are inactive placeholders;
-they do not create additional entities. Hazard families in the postcode warning
-feed are a separate capability.
+they do not create additional entities. This does not exclude avalanche or
+flood warnings supplied through the postcode feed. Standalone river-gauge
+measurements and full avalanche-bulletin products are not provided by those
+placeholders.

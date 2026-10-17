@@ -39,6 +39,25 @@ not observed; the client recognizes it if actually supplied, without inventing
 a warning or claiming that the provider currently issues it. Future unknown
 integer types remain visible as `Unknown (number)` with their original code.
 
+## Natural-hazard scope
+
+MeteoSwiss distributes warnings from the federal natural-hazard authorities as
+well as its own weather warnings. SLF's [official distribution-channel overview](https://www.slf.ch/de/lawinenbulletin-und-schneesituation/wissen-zum-lawinenbulletin/bezugskanaele/)
+describes the MeteoSwiss app's shared hazard overview and names MeteoSwiss,
+BAFU, SLF and SED as publishers (checked 17 October 2026).
+
+The integration processes **Avalanches (8)** and **Flood (11)** in the same
+postcode warning feed as the other families, whenever the provider includes
+them for the selected postcode. They retain the supplied level, timing and text;
+the parser and warning sensors do not exclude these two families. The catalogue
+does not guarantee a warning for every hazard at every postcode or time.
+Own dashboard/automation filters can hide a family even when HA has received it.
+
+This capability is independent of the inactive `slf.py` and `hydro.py`
+placeholders. Those do not supply standalone river-gauge measurements or the
+full SLF avalanche bulletin. A shared hazard warning is not a replacement for
+those more detailed products.
+
 ## Provenance of the numeric mapping
 
 The APK was obtained from a public mirror, verified statically and never run.
