@@ -3,20 +3,9 @@
 Fetches measured pollen concentrations from MeteoSwiss pollen stations
 via the data.geo.admin.ch STAC API (ch.meteoschweiz.ogd-pollen).
 
-Automatic stations across Switzerland provide hourly measured concentrations for:
-  - Birch (Birke / Betula)
-  - Alder (Erle / Alnus)
-  - Hazel (Hasel / Corylus)
-  - Beech (Buche / Fagus)
-  - Common ash (Esche / Fraxinus)
-  - Oak (Eiche / Quercus)
-  - Grasses (Gräser / Poaceae)
-  - Mugwort (Beifuss / Artemisia)
-  - Ragweed (Ambrosia / Ambrosia)
-  - Elm (Ulme / Ulmus)
-  - Nettle (Nessel / Urtica)
-  - Plantain (Wegerich / Plantago)
-  - Sorrel (Sauerampfer / Rumex)
+The current hourly CSV schema supplies birch, alder, hazel, beech, ash, grasses
+and oak. Modelled mugwort/ragweed entities belong to the separate Open-Meteo
+source; this measured client must not invent unsupported hourly columns.
 
 Data source: https://data.geo.admin.ch/api/stac/v1/collections/ch.meteoschweiz.ogd-pollen
 """
@@ -51,33 +40,8 @@ POLLEN_DATA_BASE_URL = "https://data.geo.admin.ch/ch.meteoschweiz.ogd-pollen"
 MAX_MEASUREMENT_AGE = timedelta(hours=4)
 MAX_MEASUREMENT_FUTURE_SKEW = timedelta(minutes=10)
 
-# Pollen parameter codes (MeteoSwiss naming convention)
-# Format: ka{genus_abbrev}{time_resolution}{version}
-POLLEN_PARAM_MAP: dict[str, str] = {
-    # Common allergens → API column names (hourly data)
-    "birch": "kabetuh0",  # Birke / Betula
-    "alder": "kaalnuh0",  # Erle / Alnus
-    "hazel": "kacoryh0",  # Hasel / Corylus
-    "beech": "kafaguh0",  # Buche / Fagus
-    "ash": "kafraxh0",  # Esche / Fraxinus
-    "oak": "kaqueth0",  # Eiche / Quercus (if available)
-    "grass": "khpoach0",  # Gräser / Poaceae
-    "mugwort": "kaartuh0",  # Beifuss / Artemisia (if available)
-    "ragweed": "kaambh0",  # Ambrosia (if available)
-}
-
-# All pollen types we track (matching the data columns actually present)
-POLLEN_TRACKED = [
-    "birch",
-    "alder",
-    "hazel",
-    "beech",
-    "ash",
-    "grass",
-]
-
-# Mapping from our key → MeteoSwiss column name
-# These are the columns typically present in the _h_now.csv files
+# Authoritative hourly column mapping, including oak (kaquerh0).
+# See ogd-pollen_meta_parameters.csv in the same public OGD collection.
 POLLEN_CSV_COLUMNS: dict[str, str] = {
     "birch": "kabetuh0",
     "alder": "kaalnuh0",
@@ -85,7 +49,9 @@ POLLEN_CSV_COLUMNS: dict[str, str] = {
     "beech": "kafaguh0",
     "ash": "kafraxh0",
     "grass": "khpoach0",
+    "oak": "kaquerh0",
 }
+POLLEN_TRACKED = list(POLLEN_CSV_COLUMNS)
 
 
 def _count(raw: str | None) -> int | None:

@@ -1,6 +1,6 @@
 # Nächste Entwicklungsschritte: Ortsauswahl, Silver und Gold
 
-**Planversion:** 1.1 · **Stand:** 17. Oktober 2026
+**Planversion:** 1.2 · **Stand:** 17. Oktober 2026
 **Status:** Freigegebener Plan; Q1 dokumentiert, P0 mit Teilnachweis. Keine Funktions-, Installations- oder Release-Freigabe.
 
 Ziel ist eine verständliche Auswahl von Prognose- und Warnorten einschliesslich
@@ -34,10 +34,32 @@ abweichende Standardhöhen. Aktueller App-Bezugsweg, vollständiger Warnungsbezu
 und die definitive Höhenquelle bleiben offen. P0 ist deshalb nicht insgesamt
 abgenommen; ein Standortkonzept kann auf dem dokumentierten Teilnachweis aufbauen.
 
-Die V1.5-Befunde «Sicher/Unsicher», fehlendes Hasel-Symbol und optionaler UV-
-Fehlerstatus gehören in getrennte Folgearbeiten. Die aktuelle Pollenquelle
-liefert ausserdem Eiche als siebte Messart; der Fork bindet bisher sechs an. Weder diese noch die POI-Funktion
-werden in die laufende R0-Abnahme gemischt.
+Die abgegrenzten V1.5-Befunde und Eiche werden nach gesonderter Freigabe im
+nächsten Kandidaten gebündelt; siehe folgenden Abschnitt. Die POI-Funktion
+bleibt davon unabhängig. Die laufende V1.5-Beobachtung wird nicht verändert.
+
+## Freigegebener Umfang des nächsten Testkandidaten
+
+Am 17.10.2026 wurde die Bündelung von vier überschaubaren Punkten vor der
+nächsten HA-Testinstallation freigegeben: verständliche Warnungszustände in
+DE/EN/FR/IT, gültiges Hasel-Symbol, eigener UV-Ausfall-/Erholungsstatus und
+Eichenpollen aus der belegten siebten OGD-Stundenspalte. Entwicklung, gezielte
+Tests, Pflicht-CI und reguläre Merges erfolgen bereits während der V1.5-
+Beobachtung. Die Produktivinstallation folgt erst nach deren Abschluss und
+dem gesonderten Core-Update auf 2026.10.2. Ein neu vorbereiteter **Installer
+V1.8 ersetzt V1.7**; sein eigener Betriebsnachweis beginnt nach der tatsächlichen
+Installation erneut bei null. Die umfassenderen Flow-/Architektur-/POI-Arbeiten
+gehören in spätere Stände.
+
+Warnungs-/Icon-Korrekturen sind über [PR #27](https://github.com/martins-netizen/ha-meteoswiss/pull/27)
+und UV-Status/Übergangslogs über [PR #28](https://github.com/martins-netizen/ha-meteoswiss/pull/28)
+regulär integriert. Die Eichen-Ergänzung prüft Null-/Fehlwerte, alte CSVs und
+identitätserhaltenden Reload. Der kombinierte lokale Stand besteht **779 Tests**
+jeweils auf HA 2026.8.3, 2026.10.1 und 2026.10.2 mit offiziellen
+Abhängigkeitsvorgaben; kombinierte Abdeckung **99,0572 %**, alle drei betroffenen
+Laufzeitmodule 100 % Zeilen/Zweige und vier Sprachkataloge mit je 92 Schlüsseln.
+HACS-/Anwenderabnahme und öffentliche Freigabe
+bleiben eigene Nachweise; diese begrenzte Bündelung vergibt keine Qualitätsstufe.
 
 ## Reihenfolge und Entscheidungspunkte
 

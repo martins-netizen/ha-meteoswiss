@@ -687,6 +687,14 @@ MS_POLLEN_SENSOR_DESCRIPTIONS: Final[tuple[MS_PollenSensorDescription, ...]] = (
         pollen_type="ash",
         pollen_type_name="Ash",
     ),
+    MS_PollenSensorDescription(
+        key="ms_pollen_oak",
+        translation_key="ms_pollen_oak",
+        name="Oak Pollen (Measured)",
+        icon="mdi:tree-outline",
+        pollen_type="oak",
+        pollen_type_name="Oak",
+    ),
 )
 
 

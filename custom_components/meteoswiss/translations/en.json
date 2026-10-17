@@ -154,6 +154,9 @@
       },
       "ms_pollen_ash": {
         "name": "Ash Pollen (Measured)"
+      },
+      "ms_pollen_oak": {
+        "name": "Oak Pollen (Measured)"
       }
     },
     "binary_sensor": {
