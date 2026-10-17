@@ -113,6 +113,7 @@ See [setup, all parameters, removal and troubleshooting](docs/USAGE.md).
 
 ## Development and operation
 
+- [Next-release plan: location/POIs, Silver and Gold (German)](docs/NEXT_RELEASE_PLAN_DE.md)
 - [Quality review of 17 October 2026](docs/REVIEW_2026-10-17.md)
 - [Quality roadmap and measured gaps](docs/QUALITY_SCALE.md)
 - [Architecture and data contracts](docs/ARCHITECTURE.md)
