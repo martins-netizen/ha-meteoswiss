@@ -515,6 +515,10 @@ async def test_real_entities_start_failure_recovery_and_unload(
         assert state("measured").state == "0"
         assert state("pollen").attributes["level_name"] == "None"
         assert state("measured").attributes["last_update"] == "15.10.2026 10:00"
+        hazel_id = registry.async_get_entity_id(
+            "sensor", DOMAIN, f"{DOMAIN}_{entry.entry_id}_ms_pollen_hazel"
+        )
+        assert hass.states.get(hazel_id).attributes["icon"] == "mdi:tree-outline"
         saved = runtime.pollen_coordinator.data
         measured_saved = runtime.meteoswiss_pollen_coordinator.data
         clear_all_caches()

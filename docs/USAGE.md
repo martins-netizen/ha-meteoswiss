@@ -219,6 +219,15 @@ and uses the current Europe/Zurich calendar day on each state write. Missing,
 boolean or non-finite means stay unknown. Availability follows the independent
 forecast coordinator; a failed forecast does not make old HGT data current.
 
+### Warning state labels
+
+The three warning entities use explicit translated states rather than the
+binary safety class's generic safe/unsafe labels: active warning, critical
+warning, or announced warning; their negative states refer only to that
+specific warning category. They do not assert general safety. DE/EN/FR/IT are
+bundled. Automation states remain `on`/`off`; `unknown` and `unavailable` retain
+their separate HA meanings. User-customized names and existing IDs are retained.
+
 ### Warning source, validation and privacy
 
 Only a successful empty warning feed means no alerts. Malformed published

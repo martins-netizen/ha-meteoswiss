@@ -651,7 +651,7 @@ MS_POLLEN_SENSOR_DESCRIPTIONS: Final[tuple[MS_PollenSensorDescription, ...]] = (
         key="ms_pollen_hazel",
         translation_key="ms_pollen_hazel",
         name="Hazel Pollen (Measured)",
-        icon="mdi:branch",
+        icon="mdi:tree-outline",
         pollen_type="hazel",
         pollen_type_name="Hazel",
     ),
