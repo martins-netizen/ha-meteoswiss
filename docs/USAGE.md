@@ -144,8 +144,12 @@ sensors become `unavailable`. They recover after a valid refresh. Missing
 forecast pollen has `level_name: No data`, while a real zero retains `None`.
 These existing English attributes are compatibility values, not UI translations.
 
-UV is optional and fetched separately. Its failure leaves UV unknown while
-valid pollen/AQ remains available. MeteoSwiss measured pollen uses the selected
+UV is optional and fetched separately. A transport/JSON/response-shape failure
+makes only UV `unavailable`; a successful response without a valid UV value
+leaves it `unknown`. A valid zero remains zero. Repeated UV failures produce one private
+warning, followed by one recovery log when the source responds correctly again.
+Valid pollen/AQ remains available. Source status is retained with the existing
+30-minute current-hour cache; no additional polling loop is introduced. MeteoSwiss measured pollen uses the selected
 pollen station and its own measurement time (`last_update`), independently of
 weather observations. The provider timestamp is UTC and marks the end of the
 measured hour. On each refresh, data older than four hours or more than ten

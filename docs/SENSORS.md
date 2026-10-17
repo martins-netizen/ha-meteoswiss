@@ -92,7 +92,8 @@ display categories, not personalised medical advice. English compatibility
 | `uv_index` | Optional current modelled UV | Existing `UV Index` label |
 
 AQ follows the same 30-minute coordinator. UV is requested separately; failure
-leaves only UV unknown while valid AQ/pollen stays usable. It is not the daily
+makes only UV unavailable while valid AQ/pollen stays usable. A successful
+response with a missing UV value remains unknown. It is not the daily
 maximum UV. An empty/failed primary feed makes that family unavailable, while
 valid individual zeros remain zero.
 
