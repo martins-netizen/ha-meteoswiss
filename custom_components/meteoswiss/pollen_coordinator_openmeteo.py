@@ -98,6 +98,7 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.latitude = latitude
         self.longitude = longitude
         self._session = session
+        self._uv_last_update_success: bool | None = None
 
         # Ensure minimum update interval
         if update_interval < MIN_UPDATE_INTERVAL:
@@ -138,11 +139,11 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         result = self._parse_response(payload)
         if not result:
             raise ValueError("No valid current pollen or air quality values")
-        result["uv_index"] = await self._async_fetch_uv()
+        result["uv_index"], result["uv_available"] = await self._async_fetch_uv()
         return result
 
-    async def _async_fetch_uv(self) -> float | None:
-        """Keep a separate UV failure local to that optional value."""
+    async def _async_fetch_uv(self) -> tuple[float | None, bool]:
+        """Separate a failed UV source from a valid response with no value."""
         params = {
             "latitude": self.latitude,
             "longitude": self.longitude,
@@ -155,15 +156,25 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             ) as response:
                 response.raise_for_status()
                 payload = await response.json()
-        except (aiohttp.ClientError, TimeoutError, ValueError) as err:
-            # Raw exception messages/URLs can contain location coordinates.
-            _LOGGER.debug("Optional UV response unavailable (%s)", type(err).__name__)
-            return None
+        except (aiohttp.ClientError, TimeoutError, ValueError):
+            # The source state is published atomically with the AQ result.
+            # Do not expose coordinate-bearing URLs or raw exception chains.
+            return None, False
         if not isinstance(payload, dict) or not isinstance(
             payload.get("current"), dict
         ):
-            return None
-        return _number(payload["current"].get("uv_index"))
+            return None, False
+        return _number(payload["current"].get("uv_index")), True
+
+    def _log_uv_availability(self, available: bool) -> None:
+        """Log each optional-source outage and recovery once, without URLs."""
+        if self._uv_last_update_success is available:
+            return
+        if not available:
+            _LOGGER.warning("Optional UV response unavailable")
+        elif self._uv_last_update_success is False:
+            _LOGGER.info("Optional UV response recovered")
+        self._uv_last_update_success = available
 
     def _parse_response(self, data: Any) -> dict[str, Any]:
         """Preserve missing fields, require at least one actual current value."""
@@ -214,11 +225,13 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         data = cache.get(cache_key)
         if data is not None:
             if _is_current_hour(data.get("last_update")) and _has_current_values(data):
+                self._log_uv_availability(data.get("uv_available", True))
                 return data
             cache.invalidate(cache_key)
         try:
             data = await self._async_fetch_data()
         except (aiohttp.ClientError, TimeoutError, ValueError):
             raise UpdateFailed("Pollen and air quality source unavailable") from None
+        self._log_uv_availability(data["uv_available"])
         cache.set(cache_key, data, ttl=1800.0)
         return data

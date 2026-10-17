@@ -516,6 +516,14 @@ class MeteoSwissAirQualitySensor(CoordinatorEntity, SensorEntity):
         self._attr_attribution = OPENMETEO_AIR_QUALITY_ATTRIBUTION
 
     @property
+    def available(self) -> bool:
+        """A separate UV failure must not change healthy AQ availability."""
+        return super().available and (
+            self.entity_description.value_key != "uv_index"
+            or (self.coordinator.data or {}).get("uv_available", True)
+        )
+
+    @property
     def native_value(self) -> float | None:
         """Read the current value on initial add as well as later updates."""
         if self.coordinator.data is None:
