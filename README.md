@@ -2,10 +2,44 @@
 
 <img src="custom_components/meteoswiss/brand/icon.png" alt="Weather icon of the maintained fork" width="96" height="96">
 
-This is the maintained fork of [LNKtwo/ha-meteoswiss](https://github.com/LNKtwo/ha-meteoswiss).
-It combines reviewed corrections for continued use while upstream PRs remain
-pending. It is not an official MeteoSwiss product. The upstream MIT licence
-and attribution are retained.
+**Swiss weather, forecasts and natural-hazard warnings in Home Assistant,
+alongside pollen and air quality.** Use them in your own dashboards and
+automations, with bundled translations and a documented path for existing users.
+
+This fork continues [LNKtwo/ha-meteoswiss](https://github.com/LNKtwo/ha-meteoswiss)
+and brings reviewed corrections together in one maintained version. The original
+project provides the foundation; its MIT licence and attribution are retained.
+This is an independent community project, not an official MeteoSwiss product.
+
+**Current status:** prepared test candidate; no fork release is published yet.
+See [release status](#release-status) before installing.
+
+## Why choose this fork?
+
+- **Less manual patching.** Reviewed fixes and German, English, French and Italian
+  UI catalogues ship together. You do not need to copy translation files after
+  each update.
+- **Warnings with a checked meaning.** The current App v3 source and verified
+  warning catalogue address the old wind-code mismatch and the demonstrated
+  omission of drought in v1. Active and upcoming warnings retain their severity,
+  validity and event text. See the [evidence and limits](docs/WARNING_CODES.md).
+- **Understand missing data.** A real zero, a missing individual value and an
+  unavailable source are distinct. A failed warning source is not an all-clear;
+  an optional pollen or air-quality outage does not block station setup.
+- **Build on your existing installation.** Existing setup and the IDs of retained
+  entities and statistics are preserved. The [migration guide](docs/WECHSEL_DE.md)
+  explains the retired seasonal heating-degree entity, warning-filter changes,
+  backup and recovery.
+- **See how changes are checked.** Public review history, automated HA tests,
+  CodeQL and HACS validation accompany changes. The [quality review](docs/REVIEW_2026-10-17.md)
+  records evidence and remaining work; the fork has its own support and private
+  security-reporting routes.
+
+On an older installation, check which fixes it already contains; not every
+listed capability is new compared with every upstream version or local patch.
+Forecasts and warning availability still depend on the external data providers.
+
+Deutsch: [Was bringt mir dieser Fork im Alltag?](docs/START_DE.md#was-bringt-mir-dieser-fork)
 
 ## Start here / Hier beginnen
 
@@ -13,6 +47,7 @@ and attribution are retained.
 |---|---|
 | First installation / Neu einrichten | [Schritt für Schritt auf Deutsch](docs/START_DE.md) |
 | Existing MeteoSwiss installation / Bestehende Installation | [Sicher wechseln oder aktualisieren](docs/WECHSEL_DE.md) |
+| Experienced HA user / HA bereits vertraut | [Data and settings](docs/USAGE.md), [warning codes](docs/WARNING_CODES.md), [architecture](docs/ARCHITECTURE.md) |
 | Settings, missing data or troubleshooting | [English usage reference](docs/USAGE.md) |
 
 ## Release status
@@ -28,7 +63,10 @@ Minimum supported/tested HA: **2026.8.3**; also tested: **2026.10.1**.
 
 - SwissMetNet observations and hourly precipitation statistics.
 - MeteoSwiss ICON Seamless forecasts via Open-Meteo.
-- Active/upcoming MeteoSwiss weather warnings with explicit feed availability.
+- Active/upcoming weather and natural-hazard warnings through the MeteoSwiss
+  postcode feed, with explicit feed availability. This includes flood (BAFU)
+  and avalanche (SLF) warnings when supplied for the selected postcode; it is
+  not a separate river-gauge or full avalanche-bulletin integration.
 - Measured pollen, pollen forecasts and air quality.
 - Complete German, English, French and Italian UI catalogues.
 

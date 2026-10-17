@@ -2,9 +2,40 @@
 
 Diese Anleitung richtet sich an Anwender ohne Programmierkenntnisse.
 Du brauchst weder ein MeteoSchweiz-Konto noch einen API-Schlüssel oder Terminalbefehle.
+HACS muss bereits eingerichtet sein; der Weg dorthin ist unten verlinkt.
 
 **MeteoSwiss ist bereits installiert?** Dann verwende stattdessen die
 [Anleitung für den Wechsel](WECHSEL_DE.md). Die vorhandene Integration bleibt dabei erhalten.
+
+## Was bringt mir dieser Fork?
+
+Du möchtest Schweizer Wetterdaten direkt in deinem gewohnten Home-Assistant-
+Dashboard sehen? Die Integration verbindet Messwerte, Prognosen, Warnungen,
+Pollen und Luftqualität. Ein «Fork» ist eine weitergeführte Variante des
+[ursprünglichen Projekts](https://github.com/LNKtwo/ha-meteoswiss).
+Hier werden geprüfte Korrekturen und die vier Sprachen gemeinsam mitgeliefert.
+
+| Dein Nutzen | Was du damit bekommst |
+|---|---|
+| Wetter am gewählten Ort verfolgen | Messwerte einer Schweizer Wetterstation, stündliche Niederschlagsstatistik und eine Modellprognose; die Station misst nicht direkt an deinem Haus |
+| Naturgefahren im Blick behalten | Aktive und angekündigte Warnungen für deine Postleitzahl, mit Gefahrenstufe und Ereignistext; dazu können auch Hochwasserwarnungen des BAFU und Lawinenwarnungen des SLF gehören, wenn sie im Feed geliefert werden |
+| Pollen und Luftqualität einbeziehen | Gemessene Pollen der gewählten Pollenstation sowie modellierte Pollen- und Luftqualitätswerte |
+| Weniger von Hand nachpflegen | Deutsche, englische, französische und italienische Oberflächentexte kommen mit der Software; eine zusätzliche Wetterkarte ist nicht erforderlich |
+| Fehlende Daten erkennen | Ein echter Nullwert, ein fehlender Einzelwert und eine ausgefallene Quelle werden unterschieden; eine ausgefallene Warnungsquelle gilt nicht als Entwarnung |
+
+**Warum diese Variante wählen?** Sie bündelt nachvollziehbar geprüfte
+Korrekturen, unter anderem bei Warnungszuordnung, Datenalter und
+Niederschlagsstatistik. Änderungen, Tests und bekannte Grenzen sind öffentlich
+dokumentiert; für Fragen gibt es einen eigenen
+[Issue-Tracker](https://github.com/martins-netizen/ha-meteoswiss/issues).
+Einzelne Funktionen können in anderen Versionen bereits vorhanden sein.
+
+**Du kennst Home Assistant bereits gut?** Direkt zu
+[Datenquellen und Einstellungen](USAGE.md), [Sensoren](SENSORS.md),
+[Warnungscodes](WARNING_CODES.md) oder [Architektur und Datenverträgen](ARCHITECTURE.md).
+
+Die Integration ist ein unabhängiges Community-Projekt. Der unten verlinkte
+Veröffentlichungsstatus gilt auch für die hier beschriebenen Funktionen.
 
 ## 1. Voraussetzungen prüfen
 

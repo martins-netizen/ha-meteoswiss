@@ -9,6 +9,33 @@ Prüfe zuerst den [Veröffentlichungsstatus](../README.md#release-status).
 Ohne ausdrücklich freigegebene Version ist diese Anleitung noch keine
 Installationsfreigabe. Ein Branch oder ein offener Pull Request ist keine Release-Version.
 
+## Wann lohnt sich der Wechsel?
+
+Der Fork ist für dich interessant, wenn du geprüfte Korrekturen und Übersetzungen
+aus einer gepflegten Softwarequelle beziehen möchtest, statt einzelne Dateien
+lokal nachzuführen. Die [kurze Nutzenübersicht](START_DE.md#was-bringt-mir-dieser-fork)
+erklärt die Funktionen ohne technische Vorkenntnisse.
+
+Für erfahrene HA-Nutzer sind besonders diese Unterschiede prüfbar:
+
+- Die [Warnungsquelle und Nummernzuordnung](WARNING_CODES.md) sind abgeglichen:
+  Wind ist 0, Strassenglätte 4; v3 liefert auch die für die Beispiel-Postleitzahl
+  in v1 fehlende Trockenheitswarnung. Auch Lawinen (8) und Hochwasser (11) werden
+  verarbeitet, wenn sie für die gewählte Postleitzahl geliefert werden.
+- Fehler, Datenalter und gültige Nullwerte werden getrennt behandelt.
+  [Tests und Qualitätsreview](REVIEW_2026-10-17.md) zeigen die geprüften Fälle
+  und benennen noch offene Arbeiten.
+- Bestehende Einrichtung sowie Kennungen weitergeführter Entitäten und
+  Statistiken werden erhalten. Die folgenden Schritte erklären die bewussten
+  Ausnahmen und die nötige Anpassung eigener Warnungsfilter.
+- DE/EN/FR/IT werden zusammen mit der Integration ausgeliefert; eigene
+  Übersetzungspatches sind dafür nicht mehr nötig.
+
+Vergleiche diese Punkte mit deinem tatsächlich installierten Stand. Ein Wechsel
+ist kein Selbstzweck; bereits vorhandene Korrekturen sind kein zusätzlicher Gewinn.
+Die Prognose bleibt dieselbe ausgewiesene Modellquelle, keine zugesicherte
+Verbesserung ihrer Genauigkeit.
+
 ## 1. Deinen Ausgangspunkt feststellen
 
 | Bereits vorhandene Installation | Vorgehen |
@@ -41,8 +68,11 @@ sollen nach dem Wechsel gleich bleiben. Zwei Grenzen sind vorab wichtig:
   Verweise darauf müssen angepasst werden; der tägliche HGT-12/20-Sensor bleibt
   eine Prognose. Ein neuer gemessener Saisonzähler wird nicht angelegt.
 - Bodentemperatur-Sensoren und eigenständige Radar-/SLF-/BAFU-Module sind im
-  aktuellen Fork nicht als aktive Funktionen enthalten. Plane ihre Nutzung
-  nicht auf Grundlage älterer Upstream-Ankündigungen.
+  aktuellen Fork nicht als aktive Funktionen enthalten. Das betrifft separate
+  Messwerte oder Bulletinmodule, nicht die über MeteoSchweiz gelieferten
+  Lawinen- und Hochwasserwarnungen. Diese können bereits in den gemeinsamen
+  Warnsensoren erscheinen. Plane zusätzliche Module nicht auf Grundlage
+  älterer Upstream-Ankündigungen.
 
 ## 3. Besonders wichtig: Wetterwarnungen in Automationen
 
