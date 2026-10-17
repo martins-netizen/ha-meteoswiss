@@ -7,6 +7,12 @@ installability/default listing is a separate assessment. The manifest deliberate
 contains no `quality_scale` claim. Live acceptance and a tested fork release
 remain separate gates after code review and CI.
 
+The [next-release plan (German)](NEXT_RELEASE_PLAN_DE.md) coordinates the remaining
+Bronze/Silver work, a separately validated POI/location feature and the Gold
+backlog. It is planning, not a completed tier assessment. The HA project treats
+[custom integrations separately](https://contributors.home-assistant.io/core/quality-scale/tiers/#custom);
+following its rules does not award this HACS fork an official Silver/Gold tier.
+
 ## First-stage Bronze assessment
 
 | Rule | Evidence / applicability |
@@ -14,9 +20,9 @@ remain separate gates after code review and CI.
 | `action-setup` | Exempt: no integration-specific actions are registered. |
 | `appropriate-polling` | Coordinators own bounded provider intervals; minimum observation interval 600 seconds. |
 | `brands` | Local `custom_components/meteoswiss/brand/icon.png` (256 px) and `icon@2x.png` (512 px), with reproducible original artwork. Domain retained; no HA/provider logo or official-product claim. See [publication requirements](PUBLISHING.md). |
-| `common-modules` | Shared constants, time contract and entity descriptions are centralized. |
+| `common-modules` | Shared constants, time contract and entity descriptions are centralized. Pending full review of coordinator placement and a common entity base against the current rule; central constants alone do not prove completion. |
 | `config-flow-test-coverage` | 100% lines and branches in `config_flow.py`, including options, errors/recovery and legacy/current duplicates; CI enforces it. |
-| `config-flow` | Native user/options flow; no YAML setup. |
+| `config-flow` | Native user/options flow; no YAML setup. Review per-field purpose/help, selector choice and data/options placement before marking the full rule complete. |
 | `dependency-transparency` | README/usage describe public third-party services, networking, locations and the account-free setup. |
 | `docs-actions`, `docs-triggers`, `docs-conditions` | Usage describes standard HA entity automation/forecast functions and the absence of custom actions/device automation extensions. |
 | `docs-high-level-description` | README lists data families, scope and fork provenance. |
