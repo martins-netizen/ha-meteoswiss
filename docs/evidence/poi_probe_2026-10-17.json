@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "report_date": "2026-10-17",
+  "scope": "Read-only feasibility probe; no HA configuration or integration runtime changes",
+  "sources": {
+    "location_search": "https://docs.geo.admin.ch/access-data/search.html",
+    "forecast": "https://open-meteo.com/en/docs/meteoswiss-api",
+    "terms": "https://www.geo.admin.ch/en/general-terms-of-use-fsdi"
+  },
+  "attribution": "Location data: swisstopo; weather data: MeteoSwiss via Open-Meteo",
+  "search_probes": [
+    {
+      "probe": "poi-search-albertheim",
+      "fetched_at": "2026-10-17T15:18:31.121806+00:00",
+      "url": "https://api3.geo.admin.ch/rest/services/ech/SearchServer?searchText=Albert+Heim&type=locations&origins=gazetteer&sr=4326&limit=5",
+      "http_status": 200,
+      "results_count": 2,
+      "capture_sha256": "57ebdea711f71f73a0fdb848480ac7fda5ff6ae53006ca91fbe4f121b7e7428b"
+    },
+    {
+      "probe": "poi-search-gotthard",
+      "fetched_at": "2026-10-17T15:18:31.076350+00:00",
+      "url": "https://api3.geo.admin.ch/rest/services/ech/SearchServer?searchText=Gotthardpass&type=locations&origins=gazetteer&sr=4326&limit=5",
+      "http_status": 200,
+      "results_count": 2,
+      "capture_sha256": "d6d77473eee892508c95b614ba1a5cb5f385ddc97b1a494b6da1ae98ba27200b"
+    },
+    {
+      "probe": "poi-search-kloten",
+      "fetched_at": "2026-10-17T15:18:31.129665+00:00",
+      "url": "https://api3.geo.admin.ch/rest/services/ech/SearchServer?searchText=8302&type=locations&origins=zipcode&sr=4326&limit=5",
+      "http_status": 200,
+      "results_count": 1,
+      "capture_sha256": "48a2517aa25b14e2a2776a6ef38dad8fa82a28e597a83efdd9110f6d6535ccf7"
+    },
+    {
+      "probe": "poi-search-saentis-expanded",
+      "fetched_at": "2026-10-17T15:18:54.283463+00:00",
+      "url": "https://api3.geo.admin.ch/rest/services/ech/SearchServer?searchText=S%C3%A4ntis&type=locations&origins=gazetteer&sr=4326&limit=50",
+      "http_status": 200,
+      "results_count": 34,
+      "capture_sha256": "00adf969ed3614e54f08f99e7d4bbe2ae0737d0fe00e86630bff060f32c68505"
+    },
+    {
+      "probe": "poi-search-saentis",
+      "fetched_at": "2026-10-17T15:18:31.150544+00:00",
+      "url": "https://api3.geo.admin.ch/rest/services/ech/SearchServer?searchText=S%C3%A4ntis&type=locations&origins=gazetteer&sr=4326&limit=5",
+      "http_status": 200,
+      "results_count": 5,
+      "capture_sha256": "99edc6f6f8f95ca45197e9a82e674f5054223d75e822a0ccfc4746ccda26e963"
+    }
+  ],
+  "forecast_probes": [
+    {
+      "probe": "poi-forecast-albertheim",
+      "fetched_at": "2026-10-17T15:19:25.271274+00:00",
+      "request_url": "https://api.open-meteo.com/v1/forecast?latitude=46.60893249511719&longitude=8.463568687438965&hourly=temperature_2m%2Cprecipitation%2Cwind_speed_10m%2Cweather_code&forecast_hours=3&models=meteoswiss_icon_seamless&timezone=Europe%2FZurich&timeformat=unixtime",
+      "http_status": 200,
+      "requested_location": {
+        "label": "Gebaeude Albert-Heim-Hütte SAC (UR) - Realp",
+        "lat": 46.60893249511719,
+        "lon": 8.463568687438965
+      },
+      "model_parameter": "meteoswiss_icon_seamless",
+      "returned_grid": {
+        "latitude": 46.61976,
+        "longitude": 8.471191,
+        "elevation": 2518.0
+      },
+      "hourly_utc": [
+        "2026-10-17T15:00:00+00:00",
+        "2026-10-17T16:00:00+00:00",
+        "2026-10-17T17:00:00+00:00"
+      ],
+      "finite_values": {
+        "temperature_2m": 3,
+        "precipitation": 3,
+        "wind_speed_10m": 3,
+        "weather_code": 3
+      },
+      "capture_sha256": "b24791eab747df62a68c4e18fea6ce50caeed6d2b065ec5bf7e2638717efeb9c"
+    },
+    {
+      "probe": "poi-forecast-gotthard",
+      "fetched_at": "2026-10-17T15:19:25.209534+00:00",
+      "request_url": "https://api.open-meteo.com/v1/forecast?latitude=46.55931091308594&longitude=8.561156272888184&hourly=temperature_2m%2Cprecipitation%2Cwind_speed_10m%2Cweather_code&forecast_hours=3&models=meteoswiss_icon_seamless&timezone=Europe%2FZurich&timeformat=unixtime",
+      "http_status": 200,
+      "requested_location": {
+        "label": "Strassenpass Gotthardpass (TI) - Airolo",
+        "lat": 46.55931091308594,
+        "lon": 8.561156272888184
+      },
+      "model_parameter": "meteoswiss_icon_seamless",
+      "returned_grid": {
+        "latitude": 46.55091,
+        "longitude": 8.560425,
+        "elevation": 2108.0
+      },
+      "hourly_utc": [
+        "2026-10-17T15:00:00+00:00",
+        "2026-10-17T16:00:00+00:00",
+        "2026-10-17T17:00:00+00:00"
+      ],
+      "finite_values": {
+        "temperature_2m": 3,
+        "precipitation": 3,
+        "wind_speed_10m": 3,
+        "weather_code": 3
+      },
+      "capture_sha256": "5e0c0e62cc1e520d61a1dc46fcab4c17cadc0a936bde137ba38b66f65141d677"
+    },
+    {
+      "probe": "poi-forecast-kloten",
+      "fetched_at": "2026-10-17T15:19:25.375494+00:00",
+      "request_url": "https://api.open-meteo.com/v1/forecast?latitude=47.45875549316406&longitude=8.582091331481934&hourly=temperature_2m%2Cprecipitation%2Cwind_speed_10m%2Cweather_code&forecast_hours=3&models=meteoswiss_icon_seamless&timezone=Europe%2FZurich&timeformat=unixtime",
+      "http_status": 200,
+      "requested_location": {
+        "label": "8302 - Kloten",
+        "lat": 47.45875549316406,
+        "lon": 8.582091331481934
+      },
+      "model_parameter": "meteoswiss_icon_seamless",
+      "returned_grid": {
+        "latitude": 47.461304,
+        "longitude": 8.580017,
+        "elevation": 442.0
+      },
+      "hourly_utc": [
+        "2026-10-17T15:00:00+00:00",
+        "2026-10-17T16:00:00+00:00",
+        "2026-10-17T17:00:00+00:00"
+      ],
+      "finite_values": {
+        "temperature_2m": 3,
+        "precipitation": 3,
+        "wind_speed_10m": 3,
+        "weather_code": 3
+      },
+      "capture_sha256": "0d912ea50ce6a2f0d8e2b844f86cf71c9f796b1497fe7ad7a9eb309dadeea795"
+    },
+    {
+      "probe": "poi-forecast-saentis-altitude",
+      "fetched_at": "2026-10-17T15:20:46.720817+00:00",
+      "request_url": "https://api.open-meteo.com/v1/forecast?latitude=47.24942398071289&longitude=9.343240737915039&hourly=temperature_2m%2Cprecipitation%2Cwind_speed_10m%2Cweather_code&forecast_hours=3&models=meteoswiss_icon_seamless&timezone=Europe%2FZurich&timeformat=unixtime&elevation=2502",
+      "http_status": 200,
+      "requested_location": {
+        "label": "Alpiner Gipfel Säntis (AI) - Schwende-Rüte",
+        "lat": 47.24942398071289,
+        "lon": 9.343240737915039,
+        "elevation": 2502
+      },
+      "model_parameter": "meteoswiss_icon_seamless",
+      "returned_grid": {
+        "latitude": 47.2481,
+        "longitude": 9.337097,
+        "elevation": 2502.0
+      },
+      "hourly_utc": [
+        "2026-10-17T15:00:00+00:00",
+        "2026-10-17T16:00:00+00:00",
+        "2026-10-17T17:00:00+00:00"
+      ],
+      "finite_values": {
+        "temperature_2m": 3,
+        "precipitation": 3,
+        "wind_speed_10m": 3,
+        "weather_code": 3
+      },
+      "capture_sha256": "0240a37f1447e6ae3a2c691bb9edade7d66f3d7781be7d8cb62bf2e713a4e4ed"
+    },
+    {
+      "probe": "poi-forecast-saentis",
+      "fetched_at": "2026-10-17T15:19:25.537331+00:00",
+      "request_url": "https://api.open-meteo.com/v1/forecast?latitude=47.24942398071289&longitude=9.343240737915039&hourly=temperature_2m%2Cprecipitation%2Cwind_speed_10m%2Cweather_code&forecast_hours=3&models=meteoswiss_icon_seamless&timezone=Europe%2FZurich&timeformat=unixtime",
+      "http_status": 200,
+      "requested_location": {
+        "label": "Alpiner Gipfel Säntis (AI) - Schwende-Rüte",
+        "lat": 47.24942398071289,
+        "lon": 9.343240737915039
+      },
+      "model_parameter": "meteoswiss_icon_seamless",
+      "returned_grid": {
+        "latitude": 47.2481,
+        "longitude": 9.337097,
+        "elevation": 2399.0
+      },
+      "hourly_utc": [
+        "2026-10-17T15:00:00+00:00",
+        "2026-10-17T16:00:00+00:00",
+        "2026-10-17T17:00:00+00:00"
+      ],
+      "finite_values": {
+        "temperature_2m": 3,
+        "precipitation": 3,
+        "wind_speed_10m": 3,
+        "weather_code": 3
+      },
+      "capture_sha256": "ed5f2f3eaf493ea584cf1c1cfa632e9152bc88a68fc17c7f286979c1b269c30a"
+    }
+  ]
+}

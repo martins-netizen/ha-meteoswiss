@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "report_date": "2026-10-17",
+  "scope": "Read-only public measured-pollen source audit; no HA changes",
+  "station_csv": {
+    "url": "https://data.geo.admin.ch/ch.meteoschweiz.ogd-pollen/pzh/ogd-pollen_pzh_h_now.csv",
+    "fetched_at": "2026-10-17T15:25:25.706471+00:00",
+    "status": 200,
+    "columns": [
+      "station_abbr",
+      "reference_timestamp",
+      "kabetuh0",
+      "khpoach0",
+      "kaalnuh0",
+      "kacoryh0",
+      "kafaguh0",
+      "kafraxh0",
+      "kaquerh0"
+    ],
+    "last_timestamp": "17.10.2026 14:00",
+    "row_count": 15
+  },
+  "parameter_source": {
+    "url": "https://data.geo.admin.ch/ch.meteoschweiz.ogd-pollen/ogd-pollen_meta_parameters.csv",
+    "sha256": "6b1f01eeadce18e417d0d66c45bf38fc6d95fb7e5ba924ba8d4a18de7d02e0ac",
+    "hourly_parameters": [
+      {
+        "parameter_shortname": "kaalnuh0",
+        "parameter_description_de": "Erle; mittlere stündliche Pollenkonzentration",
+        "parameter_unit": "No/m³"
+      },
+      {
+        "parameter_shortname": "kabetuh0",
+        "parameter_description_de": "Birke; mittlere stündliche Pollenkonzentration",
+        "parameter_unit": "No/m³"
+      },
+      {
+        "parameter_shortname": "kacoryh0",
+        "parameter_description_de": "Hasel; mittlere stündliche Pollenkonzentration",
+        "parameter_unit": "No/m³"
+      },
+      {
+        "parameter_shortname": "kafaguh0",
+        "parameter_description_de": "Buche; mittlere stündliche Pollenkonzentration",
+        "parameter_unit": "No/m³"
+      },
+      {
+        "parameter_shortname": "kafraxh0",
+        "parameter_description_de": "Gemeine Esche; mittlere stündliche Pollenkonzentration",
+        "parameter_unit": "No/m³"
+      },
+      {
+        "parameter_shortname": "kaquerh0",
+        "parameter_description_de": "Eiche; mittlere stündliche Pollenkonzentration",
+        "parameter_unit": "No/m³"
+      },
+      {
+        "parameter_shortname": "khpoach0",
+        "parameter_description_de": "Gräser; mittlere stündliche Pollenkonzentration",
+        "parameter_unit": "No/m³"
+      }
+    ],
+    "ambrosia_or_mugwort_parameters_present": false
+  },
+  "inventory_source": {
+    "url": "https://data.geo.admin.ch/ch.meteoschweiz.ogd-pollen/ogd-pollen_meta_datainventory.csv",
+    "sha256": "bd6add3e73bdd524d1ed5e96cbc7e5c222adddba497514c76bb59dee3eaf674d",
+    "pzh_hourly": [
+      {
+        "station_abbr": "PZH",
+        "parameter_shortname": "kaalnuh0",
+        "meas_cat_nr": "1",
+        "data_since": "01.01.2023 00:00",
+        "data_till": "",
+        "owner": "MeteoSchweiz"
+      },
+      {
+        "station_abbr": "PZH",
+        "parameter_shortname": "kabetuh0",
+        "meas_cat_nr": "1",
+        "data_since": "01.01.2023 00:00",
+        "data_till": "",
+        "owner": "MeteoSchweiz"
+      },
+      {
+        "station_abbr": "PZH",
+        "parameter_shortname": "kacoryh0",
+        "meas_cat_nr": "1",
+        "data_since": "01.01.2023 00:00",
+        "data_till": "",
+        "owner": "MeteoSchweiz"
+      },
+      {
+        "station_abbr": "PZH",
+        "parameter_shortname": "kafaguh0",
+        "meas_cat_nr": "1",
+        "data_since": "01.01.2023 00:00",
+        "data_till": "",
+        "owner": "MeteoSchweiz"
+      },
+      {
+        "station_abbr": "PZH",
+        "parameter_shortname": "kafraxh0",
+        "meas_cat_nr": "1",
+        "data_since": "01.01.2023 00:00",
+        "data_till": "",
+        "owner": "MeteoSchweiz"
+      },
+      {
+        "station_abbr": "PZH",
+        "parameter_shortname": "kaquerh0",
+        "meas_cat_nr": "1",
+        "data_since": "01.01.2023 00:00",
+        "data_till": "",
+        "owner": "MeteoSchweiz"
+      },
+      {
+        "station_abbr": "PZH",
+        "parameter_shortname": "khpoach0",
+        "meas_cat_nr": "1",
+        "data_since": "01.01.2023 00:00",
+        "data_till": "",
+        "owner": "MeteoSchweiz"
+      }
+    ]
+  },
+  "integration_baseline": "6d743546c8d0187a8bc91f870e8c50b3e7294147",
+  "findings": [
+    "Seven measured hourly species in source; six currently exposed by integration",
+    "Oak code is kaquerh0, not unused kaqueth0 mapping",
+    "Ambrosia and mugwort forecast entities must not be relabelled as measured values",
+    "Hazel mdi:branch is absent in upstream icon catalogue; tree-outline exists"
+  ]
+}

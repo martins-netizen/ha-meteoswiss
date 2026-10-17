@@ -1,7 +1,7 @@
 # Nächste Entwicklungsschritte: Ortsauswahl, Silver und Gold
 
-**Planversion:** 1.0 · **Stand:** 17. Oktober 2026  
-**Status:** Planung; keine Funktions-, Installations- oder Release-Freigabe.
+**Planversion:** 1.1 · **Stand:** 17. Oktober 2026
+**Status:** Freigegebener Plan; Q1 dokumentiert, P0 mit Teilnachweis. Keine Funktions-, Installations- oder Release-Freigabe.
 
 Ziel ist eine verständliche Auswahl von Prognose- und Warnorten einschliesslich
 POIs sowie ein nachvollziehbarer Weg zu den Silver- und später Gold-Anforderungen.
@@ -16,6 +16,28 @@ ist ein eigener Nachweis. Erst nach vollständigem Einzelregel-Abgleich kann
 eine dokumentierte Selbsteinschätzung «erfüllt die anwendbaren Silver-Kriterien»
 erfolgen. Ausnahmen brauchen jeweils eine Begründung; ein `quality_scale`
 Silver-/Gold-Eintrag oder entsprechendes Badge wird durch diesen Plan nicht eingeführt.
+
+## Erster Umsetzungsschritt nach Freigabe
+
+Plan V1.0 wurde am 17.10.2026 über [PR #25](https://github.com/martins-netizen/ha-meteoswiss/pull/25)
+regulär nach `development` integriert (`6d74354`); alle PR- und Post-Merge-
+Prüfungen waren erfolgreich. Der [vollständige Q1-Abgleich](QUALITY_AUDIT_2026-10-17.md)
+liegt für alle 20 Bronze- und zehn Silver-Regeln vor. Konkrete Lücken sind
+Feldhilfen/Intervallkonzept, gemeinsames Modul-Layout, optionales UV-Ausfallverhalten,
+externer Brand-Nachweis und vier Module unter der geforderten Einzelabdeckung.
+Die vorhandenen 762 Tests und 99,0517 % Gesamtcoverage ersetzen diese Lücken nicht.
+
+Der [begrenzte P0-Versuch](POI_FEASIBILITY.md) belegt die öffentliche
+swisstopo-Ortssuche und die bestehende ICON-Prognose für je einen Gipfel, Pass,
+eine Hütte und Kloten als PLZ-Kontrolle. Er zeigt auch mehrdeutige Namen und
+abweichende Standardhöhen. Aktueller App-Bezugsweg, vollständiger Warnungsbezug
+und die definitive Höhenquelle bleiben offen. P0 ist deshalb nicht insgesamt
+abgenommen; ein Standortkonzept kann auf dem dokumentierten Teilnachweis aufbauen.
+
+Die V1.5-Befunde «Sicher/Unsicher», fehlendes Hasel-Symbol und optionaler UV-
+Fehlerstatus gehören in getrennte Folgearbeiten. Die aktuelle Pollenquelle
+liefert ausserdem Eiche als siebte Messart; der Fork bindet bisher sechs an. Weder diese noch die POI-Funktion
+werden in die laufende R0-Abnahme gemischt.
 
 ## Reihenfolge und Entscheidungspunkte
 
