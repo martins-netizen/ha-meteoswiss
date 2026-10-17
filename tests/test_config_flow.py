@@ -149,6 +149,41 @@ async def test_catalogue_failure_is_retryable(hass, enable_custom_integrations):
     await hass.async_block_till_done()
 
 
+@pytest.mark.parametrize(
+    "source,inputs",
+    [(DATA_SOURCE_METEOSWISS, MS_INPUT), (DATA_SOURCE_OPENMETEO, OM_INPUT)],
+)
+@pytest.mark.parametrize(
+    "postcode", ["", "   ", "830", "830200", "8x02", "１２３４", "0000", "8302&x=1"]
+)
+async def test_invalid_warning_postcode_is_correctable_before_observation_check(
+    hass, enable_custom_integrations, source, inputs, postcode
+):
+    """A working weather provider must not accept a mistyped warning postcode."""
+    with (
+        patch.object(MeteoSwissConfigFlow, "_load_stations", return_value=STATIONS),
+        patch.object(
+            MeteoSwissConfigFlow, "_validate_source", return_value=True
+        ) as validate_source,
+    ):
+        result = await start_flow(hass, source)
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"], {**inputs, CONF_POSTAL_CODE: postcode}
+        )
+        assert result["type"] == "form"
+        assert result["errors"] == {CONF_POSTAL_CODE: "invalid_postal_code"}
+        validate_source.assert_not_called()
+        assert not hass.config_entries.async_entries(DOMAIN)
+
+        result = await hass.config_entries.flow.async_configure(
+            result["flow_id"], {**inputs, CONF_POSTAL_CODE: " 8302 "}
+        )
+        assert result["type"] == "create_entry"
+        assert result["data"][CONF_POSTAL_CODE] == "8302"
+        validate_source.assert_called_once()
+    await hass.async_block_till_done()
+
+
 async def test_unknown_station_then_valid_station(hass, enable_custom_integrations):
     flow = MeteoSwissConfigFlow()
     flow.hass = hass

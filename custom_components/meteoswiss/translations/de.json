@@ -30,7 +30,8 @@
     "error": {
       "cannot_connect": "Konnte nicht zur Wetter-API verbinden",
       "station_not_found": "Station nicht gefunden",
-      "invalid_location": "Ungültige Koordinaten"
+      "invalid_location": "Ungültige Koordinaten",
+      "invalid_postal_code": "Bitte eine vierstellige Postleitzahl eingeben, zum Beispiel 8302, ohne den App-Zusatz 00."
     },
     "abort": {
       "already_configured": "Diese Datenquelle und dieser Standort sind bereits eingerichtet."

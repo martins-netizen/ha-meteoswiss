@@ -30,7 +30,8 @@
     "error": {
       "cannot_connect": "Impossible de se connecter à l'API météo",
       "station_not_found": "Station introuvable",
-      "invalid_location": "Coordonnées invalides"
+      "invalid_location": "Coordonnées invalides",
+      "invalid_postal_code": "Saisissez un code postal à quatre chiffres, par exemple 8302, sans le suffixe 00 de l’application."
     },
     "abort": {
       "already_configured": "Cette source de données et cet emplacement sont déjà configurés."

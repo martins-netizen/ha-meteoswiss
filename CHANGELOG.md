@@ -39,6 +39,8 @@
 - Enforce full config-flow line/branch coverage; report all module coverage in
   both supported HA environments. Document remaining Silver and release gates.
 - Clarify setup/settings text in all four bundled languages.
+- Reject malformed warning postcodes in both setup paths, keep the form
+  correctable and explain the required four-digit value in all four languages.
 - Reject pollen/AQ feeds without valid current concentrations, preserve valid
   zeros/partial values, and keep optional UV failures local to that value.
 - Bind forecast pollen sensors to coordinator availability/listener lifecycle;

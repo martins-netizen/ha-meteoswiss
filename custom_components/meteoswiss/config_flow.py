@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import math
+import re
 from typing import Any
 
 import voluptuous as vol
@@ -33,6 +34,8 @@ from .const import (
 from .coordinator import MeteoSwissDataUpdateCoordinator
 from .openmeteo_coordinator import OpenMeteoDataUpdateCoordinator
 from .stations_map import WeatherStation, get_stations_map, parse_station_catalogue
+
+WARNING_POSTCODE = re.compile(r"[1-9][0-9]{3}")
 
 
 def _has_matching_meteoswiss_entry(
@@ -176,19 +179,22 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             station_id = user_input[CONF_STATION_ID].strip().lower()
             postcode = user_input[CONF_POSTAL_CODE].strip()
-            if _has_matching_meteoswiss_entry(
-                self._async_current_entries(), station_id, postcode
-            ):
-                return self.async_abort(reason="already_configured")
-            await self.async_set_unique_id(
-                f"{DATA_SOURCE_METEOSWISS}:{station_id}:{postcode}"
-            )
-            self._abort_if_unique_id_configured()
+            if not WARNING_POSTCODE.fullmatch(postcode):
+                errors[CONF_POSTAL_CODE] = "invalid_postal_code"
+            else:
+                if _has_matching_meteoswiss_entry(
+                    self._async_current_entries(), station_id, postcode
+                ):
+                    return self.async_abort(reason="already_configured")
+                await self.async_set_unique_id(
+                    f"{DATA_SOURCE_METEOSWISS}:{station_id}:{postcode}"
+                )
+                self._abort_if_unique_id_configured()
         if not self._stations:
             self._stations = await self._load_stations()
         if not self._stations:
             errors["base"] = "cannot_connect"
-        elif user_input is not None:
+        elif user_input is not None and not errors:
             station = next(
                 (item for item in self._stations if item["id"] == station_id), None
             )
@@ -234,7 +240,9 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input is not None:
             latitude, longitude = user_input[CONF_LATITUDE], user_input[CONF_LONGITUDE]
             postcode = user_input[CONF_POSTAL_CODE].strip()
-            if not (
+            if not WARNING_POSTCODE.fullmatch(postcode):
+                errors[CONF_POSTAL_CODE] = "invalid_postal_code"
+            elif not (
                 math.isfinite(latitude)
                 and math.isfinite(longitude)
                 and -90 <= latitude <= 90
