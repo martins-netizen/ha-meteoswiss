@@ -21,7 +21,7 @@ def _alert(
     """Create a compact weather alert for timing tests."""
     return WeatherAlert(
         alert_id=alert_id,
-        warn_type=4,
+        warn_type=0,
         warn_type_name="Wind",
         warn_level=2,
         warn_level_name="Level 2",

@@ -16,17 +16,24 @@ from .weather_data import weather_number
 
 _LOGGER = logging.getLogger(__name__)
 
-# MeteoSwiss App API
-METEOSWISS_APP_API_URL = "https://app-prod-ws.meteoswiss-app.ch/v1/plzDetail"
+# MeteoSwiss App API. v1 omits drought warnings present in v3.
+METEOSWISS_APP_API_URL = "https://app-prod-ws.meteoswiss-app.ch/v3/plzDetail"
 
-# Legacy label mapping, pending separate App API numeric-code verification.
+# Verified against the signed MeteoSwiss Android app 3.6.0 catalogue and its
+# direct warnType-to-array-index code path. See docs/WARNING_CODES.md.
+WARN_TYPE_WIND = 0
 WARN_TYPE_THUNDERSTORM = 1
 WARN_TYPE_RAIN = 2
 WARN_TYPE_SNOW = 3
-WARN_TYPE_WIND = 4
-WARN_TYPE_GROUND_FROST = 5
+WARN_TYPE_SLIPPERY_ROADS = 4
+WARN_TYPE_FROST = 5
+WARN_TYPE_THAW = 6
+WARN_TYPE_HEAT = 7
+WARN_TYPE_AVALANCHES = 8
+WARN_TYPE_EARTHQUAKES = 9
 WARN_TYPE_FOREST_FIRE = 10
 WARN_TYPE_FLOOD = 11
+WARN_TYPE_DROUGHT = 12
 
 # Warning levels
 WARN_LEVEL_1 = 1  # No or minor danger
@@ -280,9 +287,15 @@ class MeteoSwissAlertsAPI:
             WARN_TYPE_RAIN: "Rain",
             WARN_TYPE_SNOW: "Snow",
             WARN_TYPE_WIND: "Wind",
-            WARN_TYPE_GROUND_FROST: "Ground Frost",
+            WARN_TYPE_SLIPPERY_ROADS: "Slippery Roads",
+            WARN_TYPE_FROST: "Frost",
+            WARN_TYPE_THAW: "Thaw",
+            WARN_TYPE_HEAT: "Heat",
+            WARN_TYPE_AVALANCHES: "Avalanches",
+            WARN_TYPE_EARTHQUAKES: "Earthquakes",
             WARN_TYPE_FOREST_FIRE: "Forest Fire",
             WARN_TYPE_FLOOD: "Flood",
+            WARN_TYPE_DROUGHT: "Drought",
         }
         return warn_type_names.get(warn_type, f"Unknown ({warn_type})")
 

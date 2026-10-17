@@ -290,18 +290,9 @@ def test_bad_observation_time_is_never_replaced_with_now(hass):
 async def test_warning_labels_ship_all_supported_languages(hass):
     labels = await async_load_warning_labels(hass)
     assert set(labels) == {"de", "en", "fr", "it"}
-    assert labels["de"]["types"]["5"] == "Bodenfrost"
+    assert labels["de"]["types"]["5"] == "Frost"
     for language in labels.values():
-        assert set(language["types"]) == {
-            "1",
-            "2",
-            "3",
-            "4",
-            "5",
-            "10",
-            "11",
-            "unknown",
-        }
+        assert set(language["types"]) == {str(code) for code in range(13)} | {"unknown"}
         assert set(language["levels"]) == {"1", "2", "3", "4", "5", "unknown"}
         assert language["status"]["unavailable"]
 
@@ -483,7 +474,7 @@ async def _exercise_entry_lifecycle(hass, source, *, with_recorder):
             entry.runtime_data.alerts_coordinator.warning_labels[
                 "de"
             ]["types"]["5"]
-            == "Bodenfrost"
+            == "Frost"
         )
         previous_runtime = entry.runtime_data
         assert previous_runtime.coordinator._listeners

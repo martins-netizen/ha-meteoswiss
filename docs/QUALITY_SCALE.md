@@ -54,10 +54,9 @@ CI now measures **all** integration modules, prints per-module coverage and
 requires full config-flow, both pollen-client, ICON forecast-client, alternative
 Open-Meteo current-client, weather-entity, shared weather-data, hourly
 precipitation, HGT utility, cache, diagnostics, station-catalogue, warning-parser,
-warning-entity, numeric-sensor, pollen-sensor, config-entry setup and retry line/branch
-coverage. The station coordinator has
-separate minimums of 95% for lines and branches. The combined integration floor
-is 98.5% (raised from 98%, previously 95%, 89%, 86%, 80%, 71%, 67% and initially 60%). This
+warning-entity, numeric-sensor, pollen-sensor, config-entry setup, retry and station
+coordinator line/branch coverage. The combined integration floor is 99.0%
+(raised from 98.5%, previously 98%, 95%, 89%, 86%, 80%, 71%, 67% and initially 60%). This
 floor prevents regressions at this stage; it is not a substitute for Silver.
 Unused camera/SLF/hydrology placeholders remain visible in the denominator.
 They must be explicitly removed in a reviewed scope or covered; no exclusions
@@ -121,15 +120,18 @@ Existing measurement selection, missing/zero values and timestamps are retained.
 The complete station coordinator has full line/branch coverage on both supported
 HA versions, with the same full-module CI gate and a 99.0% overall floor.
 
-The full warning-name/number catalogue is a separate verification gate, including
-the legacy `4 = Wind` conflict. No new numeric meanings are approved by these
-tests. The official portal's named hazard families alone cannot prove the old
-App API numeric identifiers. Source/privacy review of station observations is now covered by failure/recovery
-and malformed-source regressions. Inactive placeholders and the remaining
-per-module gaps remain open.
+The warning catalogue is now verified against the signed Android app 3.6.0,
+including the direct raw-code indexing path. Captured v3/v5 drought data also
+explains a missing v1 warning. See [source evidence and migration](WARNING_CODES.md).
+Tests cover the actual v3 capture, all thirteen labels, prepared Thaw handling,
+unknown future codes, event details and absence of a silent v1 fallback.
+Existing HA consumers still require review of the legacy `4 = Wind` conflict
+before deployment. Source/privacy review of station observations is covered by
+failure/recovery and malformed-source regressions. Inactive placeholders and
+the remaining per-module gaps remain open.
 
 Continue with source/logging rules across every active family. Public support,
-numeric warning-code verification, live acceptance and release/HACS
+warning-consumer migration, live acceptance and release/HACS
 validation remain separate gates. Raise coverage as these changes land.
 Gold/Platinum work follows this measured baseline, rather than adding labels.
 

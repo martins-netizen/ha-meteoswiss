@@ -37,7 +37,7 @@ This document describes all data sources used by the MeteoSwiss integration.
 |---|---|
 | **Provider** | MeteoSwiss |
 | **API** | MeteoSwiss App Web Service |
-| **URL** | `https://app-prod-ws.meteoswiss-app.ch/v1/plzDetail?plz={plz}00` |
+| **URL** | `https://app-prod-ws.meteoswiss-app.ch/v3/plzDetail?plz={plz}00` |
 | **Data** | Weather warnings per postal code |
 | **Format** | JSON |
 | **Update interval** | 10 minutes |
@@ -45,36 +45,17 @@ This document describes all data sources used by the MeteoSwiss integration.
 | **Auth** | None required |
 | **Attribution** | © MeteoSwiss |
 
-### Warning types: legacy implementation labels, not an API specification
+### Warning types and v3 source
 
-The following table describes the existing implementation. It is **not** a
-verified complete provider-code specification. Investigation on 16 October 2026
-found a conflict with the independent MeteoSwissApi reference client, which
-uses `0` for wind and `4` for slippery roads. The current `4 = Wind` label below
-must not be used as evidence for new safety-related automation filters.
-Numeric corrections and additional labels require a separately reviewed change;
-this validation/availability change preserves the raw provider `warn_type`.
-
-| Code | Type |
-|---|---|
-| 1 | Thunderstorm |
-| 2 | Rain |
-| 3 | Snow |
-| 4 | Wind |
-| 5 | Ground Frost |
-| 10 | Forest Fire |
-| 11 | Flood |
-
-The official [natural-hazards portal](https://www.naturgefahren.ch/) lists twelve
-current hazard families, including slippery roads, heat, avalanches, earthquakes
-and drought. Its current frontend uses semantic identifiers such as `wind` and
-`slippery-roads`, not a published complete App API numeric table. Code `6` is
-labelled mass movements in the independent reference client, but is not one of
-the twelve current portal families; it remains unconfirmed here. Do not infer
-that this integration fetches every portal layer merely from a label list.
-
-Reference for the discrepancy (independent client, not an official specification):
-[MeteoSwissApi WarnType at 33ade33](https://github.com/thomasgalliker/MeteoSwissApi/blob/33ade33ec2de8b51a9867e6412d31288b06c0a67/MeteoSwissApi/Models/WarnType.cs).
+[WARNING_CODES.md](WARNING_CODES.md) documents the thirteen numeric families,
+verified against the signed Android app 3.6.0 on 17 October 2026, including
+`0 = Wind`, `4 = Slippery Roads`, `5 = Frost`, `6 = Thaw` and `12 = Drought`.
+The captured v3 response for Kloten includes a drought warning absent from v1;
+there is no silent fallback to the incomplete older feed. Live issuance of
+Thaw is not claimed. All four translations ship together. Raw provider codes,
+levels, event descriptions and validity remain intact. Existing dashboard/awning
+filters need a live review before installation. This observed app contract is
+not a formal provider guarantee of API stability or complete historical output.
 
 ### Warning Levels
 

@@ -2,6 +2,12 @@
 
 ## Unreleased — quality baseline, publication gaps and pollen availability
 
+- Move the warning client to App v3, which includes the captured Kloten drought
+  warning missing from v1; never silently fall back to the incomplete old feed.
+- Verify all thirteen warning families against signed Android app 3.6.0: use
+  0 for Wind, 4 for Slippery Roads, 5 for Frost and prepare 6 for Thaw. Ship
+  DE/EN/FR/IT labels together and preserve event text, levels, bounds and IDs.
+  Document the required dashboard/awning filter review before installation.
 - Remove station identifiers, raw CSV fields and source URLs from observation
   logs, including debug-level HTTP exception chains. Let the coordinator report
   unavailable/recovery transitions once; keep expected decoding failures quiet.

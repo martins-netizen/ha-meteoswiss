@@ -170,13 +170,19 @@
   "selector": {
     "warning_type": {
       "options": {
+        "0": "Wind",
         "1": "Gewitter",
         "2": "Regen",
         "3": "Schnee",
-        "4": "Wind",
-        "5": "Bodenfrost",
+        "4": "Strassenglätte",
+        "5": "Frost",
+        "6": "Tauwetter",
+        "7": "Hitze",
+        "8": "Lawinen",
+        "9": "Erdbeben",
         "10": "Waldbrand",
         "11": "Hochwasser",
+        "12": "Trockenheit",
         "unknown": "Unbekannte Warnungsart"
       }
     },

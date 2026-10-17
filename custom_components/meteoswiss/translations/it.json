@@ -170,13 +170,19 @@
   "selector": {
     "warning_type": {
       "options": {
+        "0": "Vento",
         "1": "Temporali",
         "2": "Pioggia",
         "3": "Neve",
-        "4": "Vento",
-        "5": "Gelate al suolo",
+        "4": "Strade sdrucciolevoli",
+        "5": "Gelo",
+        "6": "Disgelo",
+        "7": "Canicola",
+        "8": "Valanghe",
+        "9": "Terremoti",
         "10": "Incendio di boschi",
         "11": "Piena",
+        "12": "Siccità",
         "unknown": "Tipo di pericolo sconosciuto"
       }
     },

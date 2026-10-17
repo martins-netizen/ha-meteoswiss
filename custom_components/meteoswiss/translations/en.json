@@ -170,13 +170,19 @@
   "selector": {
     "warning_type": {
       "options": {
+        "0": "Wind",
         "1": "Thunderstorm",
         "2": "Rain",
         "3": "Snow",
-        "4": "Wind",
-        "5": "Ground frost",
+        "4": "Slippery Roads",
+        "5": "Frost",
+        "6": "Thaw",
+        "7": "Heat",
+        "8": "Avalanches",
+        "9": "Earthquakes",
         "10": "Forest fire",
         "11": "Flood",
+        "12": "Drought",
         "unknown": "Unknown warning type"
       }
     },
