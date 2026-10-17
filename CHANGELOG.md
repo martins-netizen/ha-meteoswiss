@@ -2,6 +2,11 @@
 
 ## Unreleased — quality baseline, publication gaps and pollen availability
 
+- Add beginner installation and migration guides in German; distinguish HACS
+  software replacement from preserving the existing Home Assistant entry.
+- Correct legacy sensor/source/roadmap documentation: verified warning codes,
+  HGT 12/20, retired season/soil entities, actual source locations and honest
+  coverage/release limits. No runtime files change in this documentation work.
 - Prepare local 256/512 px brand icons, structured fork issue forms and an
   explicit HACS/release checklist without changing runtime code or deploying HA.
 - Validate exact PR/push commits with the official digest-pinned HACS tool,

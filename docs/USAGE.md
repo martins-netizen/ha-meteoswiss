@@ -1,5 +1,26 @@
 # Setup, settings and data availability
 
+For a first installation without programming knowledge, use
+[the German step-by-step guide](START_DE.md). Existing users follow the
+[separate migration guide](WECHSEL_DE.md), including the warning filters and
+the retired legacy season-HGT entity. This page is the detailed reference.
+
+## Quick troubleshooting
+
+| What you see | What to check first |
+|---|---|
+| One value is `unknown` | Does that station/provider supply it? Check measurement time; do not replace a missing value with zero. |
+| A family is `unavailable` | Check the relevant source/Internet connection and a later refresh; weather, warnings and pollen fail independently. |
+| Weather observations work but warnings do not | Check the warning postcode, four digits without the internal `00` suffix, and warning-source status. |
+| Forecast or AQ describes a different location | For station entries check HA's configured home location; postcode and station do not select the forecast point. |
+| Measured pollen is from another station | Choose the pollen station independently in Configure; it is not selected from the weather station. |
+| A warning card uses an old label or misses Wind/Drought | Review the actual dashboard/automation dictionaries and filters using the migration guide. |
+| The integration is missing after a new HACS download | Restart HA, then reload the browser. Existing users must not create a second entry. |
+
+Do not delete/re-add the integration to troubleshoot. Report installed version,
+source repository, affected entity, exact time/timezone and relevant redacted logs.
+Use private vulnerability reporting for security details, not a public issue.
+
 ## Before installing
 
 This fork targets HA 2026.8.3 or newer. It reads public HTTPS APIs without an
@@ -215,7 +236,8 @@ retries. Expected warning and pollen transport errors do not expose raw HTTP
 exception chains in HA debug logs. Setup/platform messages omit station names,
 and warning request/parser logs omit postcodes, URLs and raw payload errors.
 HA owns the borrowed HTTP session and logs availability loss/recovery once.
-The station observation client's broader legacy logging still needs review.
+The station observation client also suppresses raw source/CSV details and HTTP
+exception chains; failure/recovery and malformed-source paths have regressions.
 
 Warnings use the App **v3** postcode endpoint. The signed Android app 3.6.0
 establishes the [thirteen-family catalogue](WARNING_CODES.md), including Thaw

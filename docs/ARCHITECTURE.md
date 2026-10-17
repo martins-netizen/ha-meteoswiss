@@ -4,7 +4,9 @@
 
 Maintain the existing integration for reliable local use while upstream PRs
 remain pending. Preserve `meteoswiss`, config entries, unique IDs, entity IDs,
-and Recorder statistic IDs. Upstream source, licence and attribution remain
+and Recorder statistic IDs for retained entities. The legacy forecast-only
+season-HGT entity is explicitly retired rather than presented as a measured
+accumulated total; see the migration guide. Upstream source, licence and attribution remain
 recognisable. There is no new integration domain and no automatic migration of
 users' dashboards. `main` follows upstream; `development` integrates reviewed
 local changes. A release is an explicitly tested snapshot of `development`.
@@ -299,8 +301,10 @@ forecast client, alternative Open-Meteo current client, hourly precipitation imp
 line/branch coverage, enforced in CI alongside config flow. The weather entity
 and shared weather-data contract also require full line/branch coverage. Cache,
 diagnostics and the shared station catalogue now have the same CI requirement. The station client
-must retain at least 95% line and branch coverage, and the whole-integration
-floor is 95%; Silver remains pending.
+must retain 100% line and branch coverage, and the whole-integration
+floor is 99.0%; Silver remains pending. The current gate in
+`scripts/check_quality_coverage.py` is authoritative for the complete enforced
+module list; the global percentage does not certify every inactive module.
 CI runs minimum and current
 HA test environments plus Hassfest and CodeQL. Passing CI is not a live-house
 acceptance test. The `quality_scale: platinum` claim inherited from upstream is

@@ -1,114 +1,156 @@
-# Sensor Reference
+# Sensor reference
 
-Complete documentation of all entities provided by the MeteoSwiss integration.
+This describes the current maintained code, not every feature in older upstream
+releases. Keys are internal description keys, not fixed entity IDs. HA derives
+entity IDs on first addition; retained entities keep their existing identity.
+For setup use [START_DE.md](START_DE.md); existing users use [WECHSEL_DE.md](WECHSEL_DE.md).
 
----
+## Weather entity
 
-## Weather Entity
+Current temperature, humidity, pressure and wind follow the selected observation
+source: measured SwissMetNet station or explicitly selected Open-Meteo modelled
+current weather. The weather symbol can use a valid location forecast when no
+direct station condition exists.
 
-| Property | Value |
+Hourly/daily forecasts use **MeteoSwiss ICON Seamless via Open-Meteo**, refreshed
+hourly, projected to up to 24 hours/five Swiss calendar days. For station entries
+the forecast point is HA's home location; for Open-Meteo entries it is the explicit
+location. The warning postcode does not move the forecast. Native units are °C,
+hPa, km/h and mm; HA converts weather attributes to the user's selected units.
+Forecast failure returns an empty forecast while valid observations remain usable.
+
+## Observation sensors
+
+Station data is normally refreshed every ten minutes or at the configured longer
+interval. Values depend on what the selected station actually measures.
+
+| Key | Meaning | Native unit | Station parameter |
+|---|---|---|---|
+| `temperature` | Air temperature | °C | `tre200s0` |
+| `humidity` | Relative humidity | % | `ure200s0` |
+| `wind_speed` | Ten-minute mean wind | km/h | `fu3010z0` |
+| `wind_direction` | Wind direction | ° | `dkl010z0` |
+| `wind_gust` | Maximum one-second gust | km/h | `fu3010z1` |
+| `pressure` | QFF sea-level pressure | hPa | `pp0qffs0` |
+| `precipitation` | Ten-minute precipitation amount | mm | `rre150z0` |
+| `precipitation_current_hour` | Published intervals in the current UTC hour | mm | Derived from valid rain intervals |
+| `dew_point` | Measured dew point, with Magnus fallback | °C | `tde200s0` or calculation |
+| `sunshine_duration` | Ten-minute sunshine total | min | `sre000z0` |
+| `global_radiation` | Ten-minute mean global radiation | W/m² | `gre000z0` |
+| `snow_depth` | Snow depth, if measured | cm | `htoauts0` |
+| `foehn_index` | Foehn index, if measured | Code | `wcc006s0` |
+
+Numeric observation descriptions have state class `measurement`. Attributes
+include `measurement_time`, `source_status` and `pending_rows`. Missing fields
+stay unknown; a stale/failed whole source is unavailable. The running-hour sum
+can be unknown before its first interval and does not certify a complete hour.
+Its observation timestamp is not the aggregate's end time. See [data gaps](USAGE.md#partial-publication-and-graph-gaps).
+
+For Open-Meteo current weather, rain covers `measurement_interval_seconds`
+(normally 900 seconds), not an hourly total or rate. Station-only parameters
+stay unknown when absent; the station running-hour and archive are not supplied.
+Soil-temperature sensor descriptions are not part of the current platform.
+
+### Completed hourly precipitation statistics
+
+With Recorder loaded, the station importer writes external statistics under
+`meteoswiss:<station>_precipitation_hourly`, for example
+`meteoswiss:klo_precipitation_hourly`. These completed-hour totals are a separate
+series, not another live sensor or the running-hour sensor's history.
+The importer shifts interval ends to UTC interval starts, applies corrections
+without duplicate hours and does not invent zeros for gaps. The archive looks
+back 13 calendar months at initial import and normally weekly; the current-hourly
+file is checked hourly. Existing mean/min/max metadata is retained; this is not
+a cumulative `total_increasing` counter.
+
+## Pollen, air quality and UV
+
+### Modelled pollen
+
+| Description key | Pollen | Display thresholds, grains/m³ |
+|---|---|---|
+| `birch_pollen` | Birch | 10 / 50 / 200 |
+| `alder_pollen` | Alder | 10 / 50 / 200 |
+| `grass_pollen` | Grass | 5 / 20 / 50 |
+| `mugwort_pollen` | Mugwort | 10 / 50 / 200 |
+| `ragweed_pollen` | Ragweed | 5 / 20 / 50 |
+
+Keys differ from some translation keys, such as `pollen_ambrosia`. These are
+Open-Meteo AQ model values, not local measurements. The client selects the
+actual current hour and refreshes every 30 minutes. Thresholds are the existing
+display categories, not personalised medical advice. English compatibility
+`level_name` values distinguish a valid zero (`None`) from missing data (`No data`).
+
+### Air quality and optional UV
+
+| Key | Meaning | Native unit |
+|---|---|---|
+| `pm25` | PM2.5 | µg/m³ |
+| `pm10` | PM10 | µg/m³ |
+| `nitrogen_dioxide` | NO₂ | µg/m³ |
+| `ozone` | O₃ | µg/m³ |
+| `uv_index` | Optional current modelled UV | Existing `UV Index` label |
+
+AQ follows the same 30-minute coordinator. UV is requested separately; failure
+leaves only UV unknown while valid AQ/pollen stays usable. It is not the daily
+maximum UV. An empty/failed primary feed makes that family unavailable, while
+valid individual zeros remain zero.
+
+### Measured MeteoSwiss pollen
+
+The separately selected pollen station refreshes hourly. Six keys are supplied:
+`ms_pollen_birch`, `ms_pollen_alder`, `ms_pollen_hazel`, `ms_pollen_beech`,
+`ms_pollen_ash`, `ms_pollen_grass`. Their columns are `kabetuh0`, `kaalnuh0`,
+`kacoryh0`, `kafaguh0`, `kafraxh0`, `khpoach0`.
+
+Values are measured concentrations, with the compatibility `unit` attribute
+`No/m³`. Attributes include `station`, `source`, `history_24h`, `last_update`.
+History contains up to 24 source rows, not a guarantee of 24 consecutive hours.
+These descriptions do not declare a new long-term-statistics state class or
+silently migrate units. Missing individual counts stay unknown; a source older
+than four hours is rejected on refresh.
+
+## Daily heating degree days
+
+`heating_degree_days` is a **forecast-based HGT 12/20 estimate for today**.
+At a forecast daily mean of at most 12 °C, the result is **20 minus that mean**;
+above 12 °C it is zero. A mean of 10 °C gives 10 °C·d, not 2 °C·d. Missing or
+invalid temperatures stay unknown. Attributes identify the forecast/calculation;
+native unit is °C·d and state class is `measurement`.
+
+There is no measured seasonal accumulation entity. The obsolete forecast-only
+`season_hgt` registry entity is removed if present. This does not instruct users
+to purge historical data; consumers of that old entity need migration review.
+Season helpers in `calc.py` are not a persisted HA seasonal counter.
+
+## Warning sensors
+
+| Description key | On means |
 |---|---|
-| Platform | `weather` |
-| Forecast | Hourly (24h) + Daily (5 days) |
-| Source | Open-Meteo |
-| Update Interval | 1 hour |
-| Units | °C, hPa, km/h, mm |
+| `any_alert` | At least one active, non-outlook warning |
+| `critical_alert` | An active warning at level 3 or higher |
+| `upcoming_alert` | A published, non-outlook warning with a future start |
 
-Provides current conditions (temperature, humidity, pressure, wind, precipitation) and forecasts via Open-Meteo's API. Conditions are mapped from WMO weather codes to Home Assistant condition strings.
+All three expose active `alerts`, separate `upcoming_alerts`, counts,
+`next_alert_start`, `last_successful_update`, `data_status`, and the four-language
+`warning_labels` catalogue. A failed source is not off or an all-clear. Original
+numeric types/levels and provider text remain intact.
 
----
+Use the [verified catalogue](WARNING_CODES.md#numeric-warning-families):
+**0 is Wind; 4 is Slippery Roads.** Severity is a separate number from 1 to 5.
+The critical sensor's threshold is not a universal threshold for an awning.
+Own automations need availability, severity, timing and relevant-family rules.
+Warning sensors refresh every ten minutes; validity transitions are evaluated
+on state writes, without a separate second-by-second timer.
 
-## Sensor Entities
+## Shared diagnostics and inactive modules
 
-### Current Weather (MeteoSwiss SwissMetNet)
+`meteoswiss_stations_map` is the shared catalogue helper's unique ID, not a fixed
+entity ID: station count, GeoJSON and catalogue status. It is not another weather
+station and can stay disabled. `meteoswiss_cache_stats` is the shared cache
+helper's unique ID. Existing entity names can differ. Integration diagnostics
+download a redacted technical summary.
 
-Data from `data.geo.admin.ch` STAC API, 10-minute granularity.
-
-| Sensor Key | Name | Unit | Device Class | State Class | Parameter |
-|---|---|:---:|---|---|---|
-| `temperature` | Temperature | °C | Temperature | Measurement | `tre200s0` |
-| `humidity` | Humidity | % | Humidity | Measurement | `ure200s0` |
-| `wind_speed` | Wind Speed | km/h | Wind Speed | Measurement | `fu3010z0` |
-| `wind_direction` | Wind Direction | ° | — | Measurement | `dkl010z0` |
-| `wind_gust` | Wind Gust | km/h | Wind Speed | Measurement | `fu3010z1` |
-| `pressure` | Pressure | hPa | Pressure | Measurement | `pp0qffs0` |
-| `precipitation` | Precipitation | mm | Precipitation | Measurement | `rre150z0` |
-| `dew_point` | Dew Point | °C | Temperature | Measurement | `tde200s0` (measured, with Magnus fallback) |
-| `sunshine_duration` | Sunshine Duration | min | Duration | Measurement | `sre000z0` |
-| `global_radiation` | Global Radiation | W/m² | Irradiance | Measurement | `gre000z0` |
-| `snow_depth` | Snow Depth | cm | Distance | Measurement | `htoauts0` |
-| `foehn_index` | Foehn Index | Code | — | Measurement | `wcc006s0` |
-| `soil_temperature_5cm` | Soil Temperature 5 cm | °C | Temperature | Measurement | `tso005s0` |
-| `soil_temperature_10cm` | Soil Temperature 10 cm | °C | Temperature | Measurement | `tso010s0` |
-| `soil_temperature_20cm` | Soil Temperature 20 cm | °C | Temperature | Measurement | `tso020s0` |
-
-### Air Quality (Open-Meteo Air Quality API)
-
-| Sensor Key | Name | Unit | Device Class | Update |
-|---|---|:---:|---|:---:|
-| `pm25` | PM2.5 | µg/m³ | PM2.5 | 30 min |
-| `pm10` | PM10 | µg/m³ | PM10 | 30 min |
-| `nitrogen_dioxide` | Nitrogen Dioxide | µg/m³ | NO₂ | 30 min |
-| `ozone` | Ozone | µg/m³ | O₃ | 30 min |
-
-### Pollen — Forecast (Open-Meteo Air Quality API)
-
-Modelled pollen concentrations (grains/m³).
-
-| Sensor Key | Name | Thresholds (Low/Mod/High) |
-|---|---|---|
-| `pollen_birch` | Birch Pollen | 10 / 50 / 200 |
-| `pollen_alder` | Alder Pollen | 10 / 50 / 200 |
-| `pollen_grass` | Grass Pollen | 5 / 20 / 50 |
-| `pollen_mugwort` | Mugwort Pollen | 10 / 50 / 200 |
-| `pollen_ambrosia` | Ragweed Pollen | 5 / 20 / 50 |
-
-### Pollen — Measured (MeteoSwiss ogd-pollen)
-
-Hourly measured pollen concentrations (No/m³) from Swiss pollen stations.
-
-| Sensor Key | Name | Parameter |
-|---|---|---|
-| `ms_pollen_birch` | Birch Pollen (Measured) | `kabetuh0` |
-| `ms_pollen_alder` | Alder Pollen (Measured) | `kaalnuh0` |
-| `ms_pollen_hazel` | Hazel Pollen (Measured) | `kacoryh0` |
-| `ms_pollen_beech` | Beech Pollen (Measured) | `kafaguh0` |
-| `ms_pollen_ash` | Ash Pollen (Measured) | `kafraxh0` |
-| `ms_pollen_grass` | Grass Pollen (Measured) | `khpoach0` |
-
-Attributes include: current value, 24h history, station ID, source attribution.
-
-### Heating Degree Days (SIA 381/3)
-
-| Sensor Key | Name | Unit | State Class | Description |
-|---|---|:---:|---|---|
-| `heating_degree_days` | Heating Degree Days | °C·d | Measurement | Daily HGt = max(0, 12 − daily_mean_temp) |
-| `season_heating_degree_days` | Season Heating Degree Days | °C·d | Total Increasing | Accumulated HGt since Oct 1 |
-
-**Standard:** SIA 381/3 — Swiss heating degree days.
-**Threshold:** 12 °C daily mean temperature.
-**Season:** October 1 – April 30.
-
-### Diagnostic Sensors
-
-| Sensor Key | Name | Entity Category | Description |
-|---|---|---|---|
-| `stations_map` | Weather Stations | Diagnostic | Count + GeoJSON of all SwissMetNet stations |
-| `cache_stats` | Cache Statistics | Diagnostic | Hit rate, entries, evictions per cache |
-
----
-
-## Binary Sensor Entities
-
-### Weather Alerts (MeteoSwiss App API)
-
-| Sensor Key | Name | Device Class | Trigger |
-|---|---|---|---|
-| `any_alert` | Weather Alert | Safety | Any active MeteoSwiss warning |
-| `critical_alert` | Critical Weather Alert | Safety | Active warning at level 3+ (significant danger) |
-
-**Attributes:** `active_alerts_count`, `alerts` (list of alert dicts with type, level, description, valid period).
-
-**Warning types:** Thunderstorm (1), Rain (2), Snow (3), Wind (4), Forest Fire (10), Flood (11).
-
-**Warning levels:** 1 = No/minor danger, 2 = Moderate, 3 = Significant, 4 = High, 5 = Very high.
+Camera/radar, standalone SLF and standalone BAFU modules are inactive placeholders;
+they do not create additional entities. Hazard families in the postcode warning
+feed are a separate capability.

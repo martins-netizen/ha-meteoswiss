@@ -30,7 +30,16 @@ not a claim that it is installed or released.
   Run the official **HACS validation** with no ignored checks; missing Issues,
   topics or other repository requirements must be fixed, not suppressed.
 - Compare manifest and module versions and the complete DE/EN/FR/IT catalogues.
-  Retain the integration domain, config entries, entity IDs and statistic IDs.
+  Retain the integration domain, config entries, and IDs of retained entities
+  and statistics. State the deliberately retired legacy season-HGT exception
+  in the migration/release notes; do not promise that every old entity survives.
+- Rehearse a first installation and a same-domain HACS source switch in a
+  separate HA test installation. Follow [START_DE.md](START_DE.md) and
+  [WECHSEL_DE.md](WECHSEL_DE.md), checking actual HACS UI wording, a single
+  preserved HA entry, registry/statistic identity and the paired rollback.
+  Source review and reading the HACS manual are not this end-to-end rehearsal.
+  Have a new user follow the steps and record confusing points before claiming
+  that nontechnical usability has been demonstrated.
 - Before updating an existing installation, migrate the actual warning
   consumers as described in [WARNING_CODES.md](WARNING_CODES.md). Wind is 0,
   thunderstorm 1, rain 2 and slippery roads 4. Category 5 is Frost; preserve
@@ -61,6 +70,9 @@ the version number alone or reinstall an identical runtime needlessly.
 3. Confirm that `manifest.json`, `version.py`, the changelog and release tag
    describe the same candidate. Consolidate the unreleased notes only when
    that release is actually approved; keep upstream historical attribution.
+   Replace the README's prepared/no-release notice with the actual approved
+   version, prerelease limitations and release link. Keep the two user guides
+   aligned with the rehearsed installation/migration route.
 4. Create a GitHub **prerelease** from the exact approved commit and tag
    `8.2.0b1`. A tag by itself is insufficient for the release-based HACS route.
    Review the notes before publishing. Do not enable automatic merging or
@@ -85,7 +97,8 @@ the version number alone or reinstall an identical runtime needlessly.
 - Measured/forecast pollen, air quality and isolated optional UV availability.
 - Required minimum HA 2026.8.3; CI also covers HA 2026.10.1.
 - Migration warning: review numeric warning filters and dashboard labels before
-  updating; existing entity/config/statistic identity is retained.
+  updating; existing config entries and retained entity/statistic IDs remain.
+  The obsolete forecast-only season-HGT entity is deliberately removed.
 - Not an official MeteoSwiss product. Data and alerts can be delayed or incomplete;
   this integration does not replace the providers' official warning channels.
 

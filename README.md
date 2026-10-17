@@ -7,8 +7,22 @@ It combines reviewed corrections for continued use while upstream PRs remain
 pending. It is not an official MeteoSwiss product. The upstream MIT licence
 and attribution are retained.
 
-**Prepared version: 8.2.0b1. No new release or HA deployment is performed by this PR.**
-Minimum tested HA: **2026.8.3**; current test target: **2026.10.1**.
+## Start here / Hier beginnen
+
+| Your situation / Deine Situation | Guide / Anleitung |
+|---|---|
+| First installation / Neu einrichten | [Schritt für Schritt auf Deutsch](docs/START_DE.md) |
+| Existing MeteoSwiss installation / Bestehende Installation | [Sicher wechseln oder aktualisieren](docs/WECHSEL_DE.md) |
+| Settings, missing data or troubleshooting | [English usage reference](docs/USAGE.md) |
+
+## Release status
+
+**8.2.0b1 is a prepared test candidate; no fork release is published yet.**
+Wait for an explicitly approved release on the
+[Releases page](https://github.com/martins-netizen/ha-meteoswiss/releases).
+Do not substitute a development-branch download for an approved release.
+
+Minimum supported/tested HA: **2026.8.3**; also tested: **2026.10.1**.
 
 ## Data and compatibility
 
@@ -18,8 +32,10 @@ Minimum tested HA: **2026.8.3**; current test target: **2026.10.1**.
 - Measured pollen, pollen forecasts and air quality.
 - Complete German, English, French and Italian UI catalogues.
 
-The integration domain remains `meteoswiss`. Existing entity, config entry and
-statistic IDs are preserved. Warning automations should use numeric `warn_type`
+The integration domain remains `meteoswiss`. Existing config entries and the
+IDs of retained entities/statistics are preserved. The obsolete forecast-only
+season-HGT entity is intentionally retired; review that exception in the
+[migration guide](docs/WECHSEL_DE.md). Warning automations should use numeric `warn_type`
 and `warn_level`, and must treat an unavailable source separately from no alert.
 
 Warnings use the App v3 source and its [verified thirteen-family catalogue](docs/WARNING_CODES.md).
@@ -32,11 +48,24 @@ Dashboard and automation migration is a separate deployment step.
 
 An existing installation must first be checked for its source and installed
 commit/version. Do not remove or recreate the integration/config entry.
-After an approved tested prerelease is published, use the HACS custom repository
-`https://github.com/martins-netizen/ha-meteoswiss`, category **Integration**, and
-select that tested release. `main` is an upstream mirror and does not contain
-all local corrections. Until a release is approved, retain the known working
-installation rather than installing an unreviewed development snapshot.
+Once a tested release is approved:
+
+1. Back up Home Assistant and keep the recovery key. Existing users first follow
+   the [migration and warning-consumer checks](docs/WECHSEL_DE.md).
+2. In **HACS → menu → Custom repositories**, add
+   `https://github.com/martins-netizen/ha-meteoswiss` as **Integration**.
+3. Download the explicitly approved version and restart Home Assistant.
+   Do not keep two HACS repositories managing the same `meteoswiss` directory.
+4. **New users only:** add **MeteoSwiss** under **Settings → Devices & services**.
+   Choose **MeteoSwiss STAC API (Swiss Stations)** for measured station weather;
+   enter the weather station and the four-digit warning postcode.
+5. Check the HA home location for forecasts/AQ and independently select the
+   measured pollen station in the integration's **Configure** options.
+
+Existing users keep their existing HA entry; they do not add it a second time.
+`development` is the maintained default branch and `main` is an upstream mirror.
+Neither branch name is a release approval. API keys or terminal commands are
+not needed for the normal released installation.
 
 The optional [shared warning template](examples/button-card-warnings.yaml) uses
 labels supplied by the integration. It can replace duplicated dashboard warning
@@ -46,6 +75,7 @@ See [setup, all parameters, removal and troubleshooting](docs/USAGE.md).
 
 ## Development and operation
 
+- [Quality review of 17 October 2026](docs/REVIEW_2026-10-17.md)
 - [Quality roadmap and measured gaps](docs/QUALITY_SCALE.md)
 - [Architecture and data contracts](docs/ARCHITECTURE.md)
 - [Maintenance, acceptance and releases](docs/MAINTENANCE.md)
@@ -61,9 +91,10 @@ python scripts/check_quality_coverage.py
 ```
 
 `development` is the protected integration branch; `main` tracks upstream.
-Fork-specific support must be enabled before public release. Use this fork's
-[issue tracker](https://github.com/martins-netizen/ha-meteoswiss/issues) once
-enabled; if it is disabled, the publication gate remains open. Bug reports should
+Use this fork's [issue tracker](https://github.com/martins-netizen/ha-meteoswiss/issues)
+for ordinary problems and
+[private vulnerability reporting](https://github.com/martins-netizen/ha-meteoswiss/security/advisories)
+for confidential security reports. Bug reports should
 include the installed fork version/commit, HA version, relevant states and
 redacted logs. Do not upload full private backups or credentials.
 Existing development PRs remain the review record.
