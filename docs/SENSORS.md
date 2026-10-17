@@ -99,10 +99,17 @@ valid individual zeros remain zero.
 
 ### Measured MeteoSwiss pollen
 
-The separately selected pollen station refreshes hourly. Six keys are supplied:
+The separately selected pollen station refreshes hourly. Seven keys are supplied:
 `ms_pollen_birch`, `ms_pollen_alder`, `ms_pollen_hazel`, `ms_pollen_beech`,
-`ms_pollen_ash`, `ms_pollen_grass`. Their columns are `kabetuh0`, `kaalnuh0`,
-`kacoryh0`, `kafaguh0`, `kafraxh0`, `khpoach0`.
+`ms_pollen_ash`, `ms_pollen_grass`, `ms_pollen_oak`. Their columns are `kabetuh0`, `kaalnuh0`,
+`kacoryh0`, `kafaguh0`, `kafraxh0`, `khpoach0`, `kaquerh0`.
+
+The public PZH hourly file and OGD parameter inventory were checked on
+17 October 2026: oak is a supported measured series. Ambrosia and mugwort are
+not present in that hourly schema; their existing Open-Meteo entities remain
+modelled. Older/partial CSVs without oak retain valid existing values and leave
+only the missing oak value unknown. Existing six unique IDs stay unchanged;
+oak adds one measured entity per integration entry, with DE/EN/FR/IT names.
 
 Values are measured concentrations, with the compatibility `unit` attribute
 `No/m³`. Attributes include `station`, `source`, `history_24h`, `last_update`.
