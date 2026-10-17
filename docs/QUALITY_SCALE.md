@@ -13,7 +13,7 @@ remain separate gates after code review and CI.
 |---|---|
 | `action-setup` | Exempt: no integration-specific actions are registered. |
 | `appropriate-polling` | Coordinators own bounded provider intervals; minimum observation interval 600 seconds. |
-| `brands` | Existing `meteoswiss` assets in [HA brands](https://github.com/home-assistant/brands/tree/master/custom_integrations/meteoswiss); domain retained. |
+| `brands` | Local `custom_components/meteoswiss/brand/icon.png` (256 px) and `icon@2x.png` (512 px), with reproducible original artwork. Domain retained; no HA/provider logo or official-product claim. See [publication requirements](PUBLISHING.md). |
 | `common-modules` | Shared constants, time contract and entity descriptions are centralized. |
 | `config-flow-test-coverage` | 100% lines and branches in `config_flow.py`, including options, errors/recovery and legacy/current duplicates; CI enforces it. |
 | `config-flow` | Native user/options flow; no YAML setup. |

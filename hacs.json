@@ -1,6 +1,4 @@
 {
-  "name": "MeteoSwiss",
-  "render_readme": true,
-  "homeassistant": "2026.8.3",
-  "iot_class": "cloud_polling"
+  "name": "MeteoSwiss (maintained fork)",
+  "homeassistant": "2026.8.3"
 }

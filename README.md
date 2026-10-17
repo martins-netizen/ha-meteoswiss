@@ -1,5 +1,7 @@
 # MeteoSwiss for Home Assistant — maintained fork
 
+<img src="custom_components/meteoswiss/brand/icon.png" alt="Weather icon of the maintained fork" width="96" height="96">
+
 This is the maintained fork of [LNKtwo/ha-meteoswiss](https://github.com/LNKtwo/ha-meteoswiss).
 It combines reviewed corrections for continued use while upstream PRs remain
 pending. It is not an official MeteoSwiss product. The upstream MIT licence
@@ -47,6 +49,7 @@ See [setup, all parameters, removal and troubleshooting](docs/USAGE.md).
 - [Quality roadmap and measured gaps](docs/QUALITY_SCALE.md)
 - [Architecture and data contracts](docs/ARCHITECTURE.md)
 - [Maintenance, acceptance and releases](docs/MAINTENANCE.md)
+- [HACS publication checklist and release-note outline](docs/PUBLISHING.md)
 - [Branch policy](DEVELOPMENT.md)
 - [Changes](CHANGELOG.md)
 
@@ -58,6 +61,10 @@ python scripts/check_quality_coverage.py
 ```
 
 `development` is the protected integration branch; `main` tracks upstream.
-Fork-specific support must be enabled before public release; repository Issues
-are currently disabled. Existing development PRs remain the review record.
+Fork-specific support must be enabled before public release. Use this fork's
+[issue tracker](https://github.com/martins-netizen/ha-meteoswiss/issues) once
+enabled; if it is disabled, the publication gate remains open. Bug reports should
+include the installed fork version/commit, HA version, relevant states and
+redacted logs. Do not upload full private backups or credentials.
+Existing development PRs remain the review record.
 Provider outages must remain distinguishable from a valid empty/no-danger value.

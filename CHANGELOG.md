@@ -2,6 +2,12 @@
 
 ## Unreleased — quality baseline, publication gaps and pollen availability
 
+- Prepare local 256/512 px brand icons, structured fork issue forms and an
+  explicit HACS/release checklist without changing runtime code or deploying HA.
+- Validate exact PR/push commits with the official digest-pinned HACS tool,
+  read-only permissions and no ignored checks or automatic comments.
+- Keep only current supported HACS manifest keys and distinguish the maintained
+  fork's HACS display name. Branch-download hiding remains a release-promotion step.
 - Move the warning client to App v3, which includes the captured Kloten drought
   warning missing from v1; never silently fall back to the incomplete old feed.
 - Verify all thirteen warning families against signed Android app 3.6.0: use
