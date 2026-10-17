@@ -30,7 +30,8 @@
     "error": {
       "cannot_connect": "Could not connect to weather API",
       "station_not_found": "Station not found",
-      "invalid_location": "Invalid coordinates"
+      "invalid_location": "Invalid coordinates",
+      "invalid_postal_code": "Enter a four-digit postal code, for example 8302, without the app suffix 00."
     },
     "abort": {
       "already_configured": "This data source and location are already configured."
