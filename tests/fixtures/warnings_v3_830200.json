@@ -1,0 +1,65 @@
+{
+  "provenance": {
+    "url": "https://app-prod-ws.meteoswiss-app.ch/v3/plzDetail?plz=830200",
+    "retrieved_at_utc": "2026-10-17T06:20:09.019734+00:00",
+    "http_date": "Sat, 17 Oct 2026 06:20:08 GMT",
+    "bytes": 18568,
+    "sha256": "ae7fb419817d3a92b8f395d4cda397f38b65c6af238a272e1955ea157795405e",
+    "status": 200
+  },
+  "scope": "Unmodified public warning fields; unrelated forecast/current-weather fields omitted. Hash describes the complete captured response.",
+  "response": {
+    "warnings": [
+      {
+        "htmlText": "<b>- Auswirkungen: </b>Lokal bis regional sind Einschränkungen der Wassernutzung wahrscheinlich. Nutzungsverbote sind möglich. Austrocknen einzelner Abschnitte von kleinen Fliessgewässern und von kleinen Quellen sind wahrscheinlich, sowie von mittleren Fliessgewässern sind möglich.<br><b>- Verhaltensempfehlungen: </b>Sich an die Anweisungen der lokalen Behörden halten. Sparsam mit dem Wasser umgehen. Sich an die Anweisungen bezüglich Waldbrandgefahr halten.",
+        "links": [
+          {
+            "text": "Verhaltensempfehlungen",
+            "url": "https://www.naturgefahren.ch/gefahrenstufen/trockenheit/verhalten.html"
+          },
+          {
+            "text": "© Bundesamt für Umwelt BAFU",
+            "url": "https://www.bafu.admin.ch/bafu/de/home/themen/wasser/extremereignisse/trockenheit.html"
+          }
+        ],
+        "ordering": "a2n1782338400000",
+        "outlook": false,
+        "regionId": 42,
+        "text": "- Auswirkungen: Lokal bis regional sind Einschränkungen der Wassernutzung wahrscheinlich. Nutzungsverbote sind möglich. Austrocknen einzelner Abschnitte von kleinen Fliessgewässern und von kleinen Quellen sind wahrscheinlich, sowie von mittleren Fliessgewässern sind möglich.\n- Verhaltensempfehlungen: Sich an die Anweisungen der lokalen Behörden halten. Sparsam mit dem Wasser umgehen. Sich an die Anweisungen bezüglich Waldbrandgefahr halten.",
+        "validFrom": 1782338400000,
+        "warnLevel": 4,
+        "warnType": 12
+      },
+      {
+        "htmlText": "Informationen zu den Massnahmen in den Kantonen finden Sie auf der BAFU Webseite.",
+        "links": [
+          {
+            "text": "Verhaltensempfehlungen",
+            "url": "https://www.naturgefahren.ch/home/umgang-mit-naturgefahren/waldbrand.html?utm_source=app&utm_medium=referral&utm_campaign=warning#vor-waldbrand"
+          },
+          {
+            "text": "© Bundesamt für Umwelt BAFU",
+            "url": "https://www.waldbrandgefahr.ch/"
+          }
+        ],
+        "ordering": "a4m1791800094000",
+        "outlook": false,
+        "regionId": 2600,
+        "text": "Informationen zu den Massnahmen in den Kantonen finden Sie auf der BAFU Webseite.",
+        "validFrom": 1791800094000,
+        "warnLevel": 2,
+        "warnType": 10
+      }
+    ],
+    "warningsOverview": [
+      {
+        "warnType": 12,
+        "warnLevel": 4
+      },
+      {
+        "warnType": 10,
+        "warnLevel": 2
+      }
+    ]
+  }
+}

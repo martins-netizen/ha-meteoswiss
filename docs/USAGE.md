@@ -198,7 +198,7 @@ and uses the current Europe/Zurich calendar day on each state write. Missing,
 boolean or non-finite means stay unknown. Availability follows the independent
 forecast coordinator; a failed forecast does not make old HGT data current.
 
-### Warning validation, privacy and remaining numeric-code verification
+### Warning source, validation and privacy
 
 Only a successful empty warning feed means no alerts. Malformed published
 warnings fail the entire refresh, retaining last-good coordinator data while
@@ -217,11 +217,19 @@ and warning request/parser logs omit postcodes, URLs and raw payload errors.
 HA owns the borrowed HTTP session and logs availability loss/recovery once.
 The station observation client's broader legacy logging still needs review.
 
-The proposed warning-name mapping is **not** approved as a complete API code
-specification. See [the source investigation](WARNING_CODES.md),
-particularly the `0`/`4` wind-versus-slippery-roads discrepancy. Verify numeric
-meanings and existing dashboard/awning filters before a deployment or release;
-do not change a safety filter solely because a translated label changed.
+Warnings use the App **v3** postcode endpoint. The signed Android app 3.6.0
+establishes the [thirteen-family catalogue](WARNING_CODES.md), including Thaw
+(prepared when the provider sends code 6) and Drought (code 12, observed in v3).
+Wind/storm, rain/heavy rain, snow/snowfall and thunderstorms are covered;
+severity and detailed event wording remain in the level and provider description.
+Type 5 is the general Frost category; a ground-frost event keeps its detailed
+description. There is no silent v1 fallback on failure.
+
+Before installing this correction, inspect existing dashboard/awning filters:
+**0 means Wind and 4 means Slippery Roads**. A wind/thunderstorm/rain filter
+uses `[0, 1, 2]`, including corresponding upcoming/lead-time checks. Review
+hardcoded type-5 labels too. Integration updates do not rewrite those consumers;
+follow the migration checks in the source investigation.
 
 ## Diagnostics and the station catalogue
 

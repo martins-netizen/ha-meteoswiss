@@ -19,7 +19,8 @@ from custom_components.meteoswiss.localization import _load_warning_labels
         (2, "Rain", "Regen"),
         (3, "Snow", "Schnee"),
         (4, "Slippery Roads", "Strassenglätte"),
-        (5, "Ground Frost", "Bodenfrost"),
+        (5, "Frost", "Frost"),
+        (6, "Thaw", "Tauwetter"),
         (7, "Heat", "Hitze"),
         (8, "Avalanches", "Lawinen"),
         (9, "Earthquakes", "Erdbeben"),
@@ -28,8 +29,8 @@ from custom_components.meteoswiss.localization import _load_warning_labels
         (12, "Drought", "Trockenheit"),
     ],
 )
-def test_proposed_warning_codes_and_all_languages_are_consistent(code, name, de):
-    """Check candidate consistency, not external semantic proof of the numbers."""
+def test_app_warning_codes_and_all_languages_are_consistent(code, name, de):
+    """Regress the app catalogue documented with source evidence separately."""
     alert = MeteoSwissAlertsAPI()._parse_alerts(
         {"warnings": {"warnType": code, "warnLevel": 2}}, "8302"
     )[0]
@@ -68,8 +69,8 @@ def test_parse_ground_frost_warning(ground_frost_warning, as_list) -> None:
     assert len(alerts) == 1
     alert = alerts[0]
     assert alert.warn_type == 5
-    assert alert.warn_type_name == "Ground Frost"
-    assert alert.title == "Ground Frost - Level 2 - Moderate danger"
+    assert alert.warn_type_name == "Frost"
+    assert alert.title == "Frost - Level 2 - Moderate danger"
     assert alert.warn_level == 2
     assert alert.is_critical() is False
     assert alert.description == ground_frost_warning["text"]
@@ -103,8 +104,9 @@ def test_ground_frost_name_reaches_alert_attributes(
     attrs = _alert_state_attributes(alerts)
 
     assert len(attrs[attribute]) == 1
-    assert attrs[attribute][0]["warn_type_name"] == "Ground Frost"
-    assert attrs[attribute][0]["title"] == "Ground Frost - Level 2 - Moderate danger"
+    assert attrs[attribute][0]["warn_type_name"] == "Frost"
+    assert attrs[attribute][0]["title"] == "Frost - Level 2 - Moderate danger"
+    assert attrs[attribute][0]["description"] == ground_frost_warning["text"]
     assert attrs[attribute][0]["warn_level"] == 2
     assert attrs[attribute][0]["valid_from"] == "2026-10-12T00:00:00+00:00"
     assert attrs[attribute][0]["valid_to"] == "2026-10-12T06:00:00+00:00"
@@ -113,7 +115,7 @@ def test_ground_frost_name_reaches_alert_attributes(
     assert alerts[0].to_sensor_state() == sensor_state
 
 
-@pytest.mark.parametrize("code", [6, 99])
+@pytest.mark.parametrize("code", [13, 99])
 def test_parse_unrecognized_warning_type(ground_frost_warning, code) -> None:
     """Keep a genuinely unknown warning visible with its numeric type."""
     warning = {**ground_frost_warning, "warnType": code}

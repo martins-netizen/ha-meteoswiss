@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import asyncio
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock
 
+import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.meteoswiss import (
@@ -45,9 +47,7 @@ def test_listener_keeps_hourly_statistics_coordinator_polling() -> None:
     """The statistics-only coordinator must poll without entity listeners."""
     remove_listener = Mock()
     entry = SimpleNamespace(async_on_unload=Mock())
-    coordinator = SimpleNamespace(
-        async_add_listener=Mock(return_value=remove_listener)
-    )
+    coordinator = SimpleNamespace(async_add_listener=Mock(return_value=remove_listener))
 
     _keep_coordinator_polling(entry, coordinator)
 
@@ -59,9 +59,7 @@ def test_listener_keeps_hourly_statistics_coordinator_polling() -> None:
 
 def test_meteoswiss_forecast_uses_home_assistant_location() -> None:
     """Station observations must not force forecasts to station coordinates."""
-    hass = SimpleNamespace(
-        config=SimpleNamespace(latitude=47.451, longitude=8.562)
-    )
+    hass = SimpleNamespace(config=SimpleNamespace(latitude=47.451, longitude=8.562))
     entry = MockConfigEntry(
         domain=DOMAIN,
         data={
@@ -70,16 +68,15 @@ def test_meteoswiss_forecast_uses_home_assistant_location() -> None:
         },
     )
 
-    assert _get_forecast_coordinates(
-        hass, entry, DATA_SOURCE_METEOSWISS
-    ) == (47.451, 8.562)
+    assert _get_forecast_coordinates(hass, entry, DATA_SOURCE_METEOSWISS) == (
+        47.451,
+        8.562,
+    )
 
 
 def test_openmeteo_forecast_keeps_configured_location() -> None:
     """Explicit Open-Meteo entries must keep configured coordinates."""
-    hass = SimpleNamespace(
-        config=SimpleNamespace(latitude=47.451, longitude=8.562)
-    )
+    hass = SimpleNamespace(config=SimpleNamespace(latitude=47.451, longitude=8.562))
     entry = MockConfigEntry(
         domain=DOMAIN,
         data={
@@ -88,6 +85,51 @@ def test_openmeteo_forecast_keeps_configured_location() -> None:
         },
     )
 
-    assert _get_forecast_coordinates(
-        hass, entry, DATA_SOURCE_OPENMETEO
-    ) == (46.204, 6.143)
+    assert _get_forecast_coordinates(hass, entry, DATA_SOURCE_OPENMETEO) == (
+        46.204,
+        6.143,
+    )
+
+
+@pytest.mark.parametrize(
+    ("latitude", "longitude", "expected"),
+    [
+        (None, None, (47.451, 8.562)),
+        (0, None, (0, 8.562)),
+        (None, 0, (47.451, 0)),
+        (0, 0, (0, 0)),
+    ],
+)
+def test_legacy_openmeteo_coordinates_fall_back_independently(
+    latitude, longitude, expected
+):
+    hass = SimpleNamespace(config=SimpleNamespace(latitude=47.451, longitude=8.562))
+    entry = MockConfigEntry(
+        domain=DOMAIN, data={CONF_LATITUDE: latitude, CONF_LONGITUDE: longitude}
+    )
+    assert _get_forecast_coordinates(hass, entry, DATA_SOURCE_OPENMETEO) == expected
+
+
+async def test_cancel_optional_startup_cancels_all_inflight_sources():
+    """Unload/shutdown cancellation must not leave child refreshes running."""
+    started = asyncio.Event()
+    never_finishes = asyncio.Event()
+    running = []
+    cancelled = []
+
+    async def refresh(number):
+        running.append(number)
+        if len(running) == 3:
+            started.set()
+        try:
+            await never_finishes.wait()
+        finally:
+            cancelled.append(number)
+
+    sources = [SimpleNamespace(async_refresh=lambda n=n: refresh(n)) for n in range(3)]
+    task = asyncio.create_task(_async_refresh_optional_coordinators(*sources))
+    await started.wait()
+    task.cancel()
+    with pytest.raises(asyncio.CancelledError):
+        await task
+    assert sorted(cancelled) == [0, 1, 2]

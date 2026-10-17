@@ -20,6 +20,12 @@ The integration domain remains `meteoswiss`. Existing entity, config entry and
 statistic IDs are preserved. Warning automations should use numeric `warn_type`
 and `warn_level`, and must treat an unavailable source separately from no alert.
 
+Warnings use the App v3 source and its [verified thirteen-family catalogue](docs/WARNING_CODES.md).
+Before updating an existing installation, review warning filters: **0 is Wind,
+4 is Slippery Roads**; wind/thunderstorm/rain uses `[0, 1, 2]`. Detailed messages
+distinguish storm/heavy-rain/snowfall events. Thaw (6) is recognized if supplied.
+Dashboard and automation migration is a separate deployment step.
+
 ## Installation and updates
 
 An existing installation must first be checked for its source and installed

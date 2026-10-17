@@ -2,6 +2,23 @@
 
 ## Unreleased — quality baseline, publication gaps and pollen availability
 
+- Move the warning client to App v3, which includes the captured Kloten drought
+  warning missing from v1; never silently fall back to the incomplete old feed.
+- Verify all thirteen warning families against signed Android app 3.6.0: use
+  0 for Wind, 4 for Slippery Roads, 5 for Frost and prepare 6 for Thaw. Ship
+  DE/EN/FR/IT labels together and preserve event text, levels, bounds and IDs.
+  Document the required dashboard/awning filter review before installation.
+- Remove station identifiers, raw CSV fields and source URLs from observation
+  logs, including debug-level HTTP exception chains. Let the coordinator report
+  unavailable/recovery transitions once; keep expected decoding failures quiet.
+- Validate station asset/row shapes and retain unexpected programming errors.
+  Enforce full station-coordinator coverage and a 99.0% integration floor.
+
+- Respect Retry-After HTTP dates as well as seconds during bounded retries;
+  ignore malformed delay values and fail immediately on invalid URLs/TLS errors.
+- Cover complete setup/reload/unload with and without Recorder, both current
+  weather providers, zero/legacy coordinates and optional-refresh cancellation.
+  Enforce full setup/retry coverage and raise the combined floor to 98.5%.
 - Keep typed config-entry runtime state and entity-owned forecast listeners.
 - Validate both setup providers, handle retryable form errors, and prevent
   duplicate legacy and current location entries.

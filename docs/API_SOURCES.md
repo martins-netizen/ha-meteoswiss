@@ -37,7 +37,7 @@ This document describes all data sources used by the MeteoSwiss integration.
 |---|---|
 | **Provider** | MeteoSwiss |
 | **API** | MeteoSwiss App Web Service |
-| **URL** | `https://app-prod-ws.meteoswiss-app.ch/v1/plzDetail?plz={plz}00` |
+| **URL** | `https://app-prod-ws.meteoswiss-app.ch/v3/plzDetail?plz={plz}00` |
 | **Data** | Weather warnings per postal code |
 | **Format** | JSON |
 | **Update interval** | 10 minutes |
@@ -45,16 +45,17 @@ This document describes all data sources used by the MeteoSwiss integration.
 | **Auth** | None required |
 | **Attribution** | © MeteoSwiss |
 
-### Warning types — unapproved catalogue proposal
+### Warning types and v3 source
 
-The proposed labels are documented in [WARNING_CODES.md](WARNING_CODES.md),
-with a separate evidence level for each numeric identifier. The draft uses
-`0 = Wind` and `4 = Slippery Roads`, matching an independent API client, and
-adds the missing named hazard families with all four translations. This is
-**not** a verified complete official App API specification. Provider confirmation
-is required before merging or deploying this catalogue; code `6` remains
-unknown. Raw provider numbers are preserved. Existing HA dashboard/awning
-filters need a separate live review before installation.
+[WARNING_CODES.md](WARNING_CODES.md) documents the thirteen numeric families,
+verified against the signed Android app 3.6.0 on 17 October 2026, including
+`0 = Wind`, `4 = Slippery Roads`, `5 = Frost`, `6 = Thaw` and `12 = Drought`.
+The captured v3 response for Kloten includes a drought warning absent from v1;
+there is no silent fallback to the incomplete older feed. Live issuance of
+Thaw is not claimed. All four translations ship together. Raw provider codes,
+levels, event descriptions and validity remain intact. Existing dashboard/awning
+filters need a live review before installation. This observed app contract is
+not a formal provider guarantee of API stability or complete historical output.
 
 ### Warning Levels
 
