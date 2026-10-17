@@ -1,0 +1,54 @@
+name: Bug report
+description: Report a reproducible problem with this maintained fork.
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This tracker supports martins-netizen/ha-meteoswiss. Check the usage and
+        warning-migration documentation first. Do not upload a full HA backup,
+        secrets.yaml, tokens, private addresses, coordinates or station/account
+        details you do not want to make public. Redact relevant log excerpts.
+  - type: input
+    id: integration_version
+    attributes:
+      label: Integration version and source
+      description: Include the fork release or exact installed commit and installation method.
+      placeholder: "8.2.0b1, martins-netizen/ha-meteoswiss, HACS"
+    validations:
+      required: true
+  - type: input
+    id: ha_version
+    attributes:
+      label: Home Assistant Core version
+      placeholder: "2026.10.1"
+    validations:
+      required: true
+  - type: dropdown
+    id: data_family
+    attributes:
+      label: Affected area
+      options:
+        - Setup or options
+        - Station observations
+        - Weather or ICON forecast
+        - Active or upcoming warnings
+        - Precipitation or statistics
+        - Measured pollen
+        - Forecast pollen, air quality or UV
+        - Diagnostics or other
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction and expected result
+      description: State the steps, actual result and expected result. For data gaps include times and timezone.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Relevant states and redacted logs
+      description: Include source_status/data_status and measurement times where available. For warnings include numeric warn_type/warn_level; describe any dashboard-specific translation separately.
+      render: text

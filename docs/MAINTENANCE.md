@@ -17,7 +17,8 @@
    Run a live read-only check of observations, forecasts, active/upcoming alerts,
    pollen and precipitation statistics. Test an unavailable warning feed with
    mocks; do not simulate danger by actuating devices. Verify that existing IDs
-   and history persist and that both dashboards render Bodenfrost correctly.
+   and history persist and that active/upcoming warning consumers use the
+   verified catalogue and preserve the provider's concrete event text.
 5. Update manifest.json, version.py and CHANGELOG.md together. `8.2.0b1` is the
    prepared prerelease version; this branch does not publish or deploy it.
    Tag the approved tested commit on `development`, not the upstream mirror
@@ -34,3 +35,8 @@
 CI and release records are the reproducible evidence for a version. Record
 manual acceptance with the actual installed commit/version and HA version.
 Do not record tokens, account data or full private diagnostic payloads.
+
+Follow [the publication checklist](PUBLISHING.md) for repository metadata,
+the official HACS validation, local brand assets, release selection and the
+first prerelease. A passing HACS check does not complete live acceptance or
+award a Home Assistant Quality Scale tier.

@@ -13,14 +13,14 @@ remain separate gates after code review and CI.
 |---|---|
 | `action-setup` | Exempt: no integration-specific actions are registered. |
 | `appropriate-polling` | Coordinators own bounded provider intervals; minimum observation interval 600 seconds. |
-| `brands` | Existing `meteoswiss` assets in [HA brands](https://github.com/home-assistant/brands/tree/master/custom_integrations/meteoswiss); domain retained. |
+| `brands` | Local `custom_components/meteoswiss/brand/icon.png` (256 px) and `icon@2x.png` (512 px), with reproducible original artwork. Domain retained; no HA/provider logo or official-product claim. See [publication requirements](PUBLISHING.md). |
 | `common-modules` | Shared constants, time contract and entity descriptions are centralized. |
 | `config-flow-test-coverage` | 100% lines and branches in `config_flow.py`, including options, errors/recovery and legacy/current duplicates; CI enforces it. |
 | `config-flow` | Native user/options flow; no YAML setup. |
 | `dependency-transparency` | README/usage describe public third-party services, networking, locations and the account-free setup. |
 | `docs-actions`, `docs-triggers`, `docs-conditions` | Usage describes standard HA entity automation/forecast functions and the absence of custom actions/device automation extensions. |
 | `docs-high-level-description` | README lists data families, scope and fork provenance. |
-| `docs-installation-instructions` | README + usage document prerequisites, approved installation route and setup. Actual first HACS release remains pending. |
+| `docs-installation-instructions` | README routes new/existing users to separate German step-by-step guides; usage is the technical reference. Actual first HACS release and a real HACS source-switch rehearsal remain pending. |
 | `docs-removal-instructions` | Usage documents entry/component removal and effects on consumers/history. |
 | `entity-event-setup` | CoordinatorEntity manages observations and forecast pollen; weather forecast subscription belongs to entity add/remove lifecycle. Tests verify pollen listeners are removed on unload. |
 | `entity-unique-id` | Existing entry-based and shared diagnostic IDs retained; reload test checks registry mapping stability. |
@@ -42,7 +42,7 @@ snapshot as having acquired these changes.
 | `config-entry-unloading` | Native unload/reload; tests verify HA session ownership, replaced runtime state, stable entity IDs and removed observation/forecast listeners. Real-Recorder entry lifecycles cover both providers and remove the listener-backed hourly/archive importers on reload/unload; cancelling optional startup cancels every inflight child refresh. |
 | `docs-configuration-parameters`, `docs-installation-parameters` | Usage includes provider selection, intervals, coordinates, warning postcode and measured pollen station. |
 | `entity-unavailable` | Observations/warnings and both pollen/AQ clients have failure/recovery tests, including registered pollen/AQ entity states. All-empty current pollen/AQ payloads fail; partial responses retain unknown fields. Measured pollen rejects age over four hours or future skew over ten minutes on refresh. Both weather forecast services return empty lists on forecast failure and recover, while valid observations remain available. Alternative Open-Meteo current conditions have registered weather/temperature entity outage and recovery tests; invalid individual measurements stay unknown and an all-empty source fails. Registered weather attributes use native HA properties and unit conversion; forecast subscribers receive fresh/empty/recovered payloads, including through HA WebSocket. Remaining optional per-entity paths still require review; full rule remains pending. |
-| `integration-owner` | `@martins-netizen` in manifest. Repository Issues are currently disabled: enable a usable fork-specific support route before public release. |
+| `integration-owner` | `@martins-netizen` in manifest. Repository Issues and private vulnerability reporting are verified enabled on 17 October 2026. Bundled issue forms provide a fork-specific support route. |
 | `log-when-unavailable` | Pollen/AQ, measured pollen and the ICON forecast client use coordinator transition logs. Forecast failures suppress raw coordinate URLs/HTTP exception chains even in debug logs; repeated failure and recovery are tested. The alternative Open-Meteo current client also suppresses coordinate URLs/raw error chains and tests repeated failure and recovery. The station observation client now uses the same once-per-transition logging; selected station IDs, CSV values, asset URLs and expected HTTP error chains stay absent even in debug logs. Pending for the full integration until the remaining active-family audit is complete. |
 | `parallel-updates` | Explicit platform limits: sensor 1 for diagnostic polling, coordinator-driven weather/binary sensor 0; no device actions. |
 | `reauthentication-flow` | Exempt: the public APIs require no credentials. |

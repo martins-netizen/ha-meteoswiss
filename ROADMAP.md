@@ -1,73 +1,54 @@
-# 🗺️ Roadmap
+# Maintained-fork roadmap
 
-## Done
+This describes current fork work. Historical upstream release claims remain in
+the changelog as history; they are not current certifications. Check the
+[release status](README.md#release-status) before installing.
 
-### v6.0.0 — Stable Foundation (2026-07-31)
-- ✅ Shared aiohttp session (fixed session leak)
-- ✅ Circuit breaker pattern
-- ✅ Smart TTL caching
-- ✅ Exponential backoff retry
-- ✅ Proper device info & entity categories
-- ✅ Centralized WMO weather code mapping
-- ✅ Forecast coordinator (Open-Meteo)
-- ✅ Weather alerts (MeteoSwiss App API)
-- ✅ Pollen forecast (Open-Meteo Air Quality)
+## Implemented and tested in the maintained candidate
 
-### v6.1.0 — Resilience (2026-07-31)
-- ✅ 30-second API timeout on all requests
-- ✅ Circuit breaker (5 failures → 5 min pause)
+- HA-owned HTTP sessions, bounded transient retries, cancellation and independent
+  required/optional source startup.
+- Station observations with measurement times, trailing-partial-row handling
+  and explicit failure/recovery.
+- Location-based ICON Seamless forecasts, native weather units and continuing
+  HA forecast subscriptions.
+- Completed hourly precipitation statistics and a 13-month archive import,
+  retaining statistic identity and corrections.
+- App v3 warnings, verified thirteen-family mapping, active/upcoming separation
+  and German/English/French/Italian labels.
+- Measured pollen, modelled pollen/AQ and separately optional current UV.
+- Forecast-based daily HGT 12/20; no fictitious measured seasonal total.
+- Shared station metadata, redacted diagnostics and checked cache expiry.
+- PR review, minimum/current HA tests, CodeQL and Hassfest. The packaging PR
+  adds local icons, HACS validation and plain-language user guides.
 
-### v7.0.0 — Major Features (2026-07-31)
-- ✅ Snow depth sensor (`htoauts0`)
-- ✅ Foehn index sensor (`wcc006s0`)
-- ✅ Soil temperature sensors (5/10/20 cm)
-- ✅ Measured dew point (`tde200s0`) with Magnus fallback
-- ✅ Air quality sensors (PM2.5, PM10, NO₂, O₃)
-- ✅ MeteoSwiss measured pollen (16 stations, 6 types)
-- ✅ Heating degree days (SIA 381/3)
-- ✅ Forecast extensions (snowfall, freezing level)
-- ✅ SLF/BAFU/Camera API research documented (placeholders)
+Code and CI success do not mark a candidate as installed or accepted on a real
+HA system. Source providers and optional individual values can be unavailable.
 
-### v7.0.1 — Hotfix (2026-07-31)
-- ✅ Removed diagnostics.py (used non-existent HA API)
+## Before the first fork prerelease
 
-### v8.0.0 — Production Release (2026-07-31)
-- ✅ Professional README with full documentation
-- ✅ Complete translations (de/en/fr/it) — all entities covered
-- ✅ docs/SENSORS.md — sensor reference
-- ✅ docs/API_SOURCES.md — API documentation
-- ✅ Code cleanup — zero unused imports, zero undefined types
-- ✅ quality_scale: platinum in manifest
-- ✅ iot_class in hacs.json
+1. Finish review/merge of publication and usability changes.
+2. Verify actual warning-consuming dashboards/automations alongside the source
+   update, preserving intended behaviour and a paired rollback.
+3. Complete live acceptance and ordinary-operation observation of the deployed
+   candidate. Confirm retained entities, statistics and display settings.
+4. Verify support/security settings and require the HACS check after its workflow
+   exists on the maintained branch.
+5. Publish an approved prerelease with matching versions, immutable release
+   settings and release-only HACS selection; see [PUBLISHING.md](docs/PUBLISHING.md).
 
----
+There is no current HA Silver, Gold or Platinum claim. Coverage gates and
+remaining per-module limits are in [QUALITY_SCALE.md](docs/QUALITY_SCALE.md).
 
-## Future Ideas
+## Separate future scopes
 
-### Under Consideration
-
-| Idea | Source | Value | Effort |
-|---|---|---|---|
-| **MeteoSwiss localised forecast** | `ch.meteoschweiz.ogd-local-forecasting` | Replace Open-Meteo with MeteoSwiss app forecast (ICON-CH blend) | M |
-| **Precipitation radar camera** | MeteoSwiss CombiPrecip | Visual radar map entity | M |
-| **SLF avalanche bulletin** | SLF / whiterisk.ch | Danger levels per Alpine region | M |
-| **BAFU flood warnings** | hydrodaten.admin.ch | River level warnings | M |
-| **Swiss natural hazards portal** | natural-hazards.ch | Unified hazard feed (floods, quakes, fires) | L |
-| **Custom Lovelace card** | — | Unified Swiss weather dashboard card | L |
-| **Granular sensor toggles** | — | Enable/disable individual sensors in options | M |
-| **MeteoSwiss ICON-CH1 model** | CSCS object storage | 1km resolution forecast model | XL |
-| **Historical weather data** | Open-Meteo Archive | Climate tracking, anomaly detection | L |
-| **Evapotranspiration** | MeteoSwiss / Open-Meteo | FAO ET₀ for irrigation control | S |
-| **UV index forecast** | Open-Meteo | Hourly UV forecast (skin cancer prevention) | S |
-| **Nowcast (precipitation 30-min)** | Open-Meteo | Precipitation nowcast | S |
-
-### Not Planned
-
-| Idea | Reason |
+| Scope | Decision still needed |
 |---|---|
-| ML-powered weather insights | Too complex, minimal user value |
-| Real-time radar animation | Requires GRIB2 processing, too heavy |
+| Inactive camera/SLF/hydrology research | Remove/move out of the runtime package or implement real contracts/tests; no exclusions merely to inflate coverage. |
+| API size and asset-URL boundaries | Provider-aware size/scheme/host/redirect checks, after verifying actual delivery paths. Catalogue validation is not a universal network limit. |
+| External contributor CodeQL | Review the same-repository PR guard before accepting external forks; skipped analysis is not completed analysis. |
+| Shared parsing boundaries | Consider extracting the reused timestamp parser from the station coordinator; avoid reorganisation without a purpose. |
+| Further HA Quality Scale rules | Complete rule-specific and every-module evidence before asserting a tier. |
+| New sources/entities | Scope and test separately; no new device actions/sources in a documentation or release change. |
 
----
-
-*This roadmap reflects the current state of available public APIs. New features depend on data providers publishing documented APIs.*
+Radar in a separate integration is not a feature delivered by this repository.

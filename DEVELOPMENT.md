@@ -21,5 +21,7 @@ Branch policy:
 See `docs/ARCHITECTURE.md` and `docs/MAINTENANCE.md` for data contracts,
 localisation, compatibility checks and release acceptance.
 
-If upstream accepts a change, the integration branch should be rebuilt or
-rebased on the updated upstream history rather than carrying duplicate patches.
+If upstream accepts a change, compare the accepted implementation and reconcile
+it through a reviewed PR into `development`. Remove superseded local patches
+in that PR without discarding fork-specific corrections. Do not rewrite or
+force-push the protected integration branch to refresh its upstream history.

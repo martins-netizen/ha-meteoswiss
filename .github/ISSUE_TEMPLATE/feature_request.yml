@@ -1,0 +1,18 @@
+name: Feature request
+description: Suggest a scoped improvement for the maintained fork.
+title: "[Feature]: "
+body:
+  - type: textarea
+    id: use_case
+    attributes:
+      label: Use case
+      description: Explain the concrete need and what you currently do instead.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behaviour
+      description: Include public provider documentation if relevant. Keep private installation data out of the report.
+    validations:
+      required: true
