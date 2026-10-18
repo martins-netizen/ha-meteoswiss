@@ -57,11 +57,14 @@ fabricated to fill observation gaps.
 Station CSVs use the provider's Windows-1252 encoding and must identify the
 selected station on every row. Non-finite individual measurements stay missing;
 an all-invalid measured row fails the update. Sparse snow/foehn fallback keeps
-its existing limited scope and skips invalid older values. The running-hour
-rain total deduplicates by interval timestamp (latest valid value wins), ignores
-non-finite/negative amounts and is missing if no valid current-hour interval
-exists. A measured zero remains zero; equal amounts in distinct intervals still
-add up. Its station observation timestamp is not an aggregate completeness claim.
+its existing limited scope and skips invalid older values. The retained rain
+sensor exposes one latest measured ten-minute amount, its end time and a
+600-second interval. Open-Meteo instead retains its provider-defined model
+interval and has a separate translation key; the unique key remains stable.
+There is no locally derived current-hour sum: an incomplete set of published
+intervals must not masquerade as a complete hourly amount. A setup/reload
+migration removes only the exact retired unique ID for the current entry,
+without touching other entries, helpers or purging Recorder statistics.
 
 The separate hourly precipitation importer validates station, finite
 non-negative totals and completed whole-hour UTC interval ends before shifting
@@ -203,7 +206,7 @@ Current precipitation is the amount over the provider's backward-looking
 `current.interval` in seconds, not an hourly total or rate. The precipitation
 sensor exposes it as `measurement_interval_seconds`; an absent interval stays
 unknown rather than assuming one hour. The separate station hourly statistics
-and running-hour sensor are not supplied by this alternative source.
+are not supplied by this alternative source.
 
 The legacy optional hourly preview is isolated from current observations:
 invalid containers/timestamps discard the preview only, partial numbers stay

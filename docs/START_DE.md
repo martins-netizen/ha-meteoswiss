@@ -37,6 +37,17 @@ Einzelne Funktionen können in anderen Versionen bereits vorhanden sein.
 Die Integration ist ein unabhängiges Community-Projekt. Der unten verlinkte
 Veröffentlichungsstatus gilt auch für die hier beschriebenen Funktionen.
 
+### Was bedeutet «Niederschlag (10 Minuten)»?
+
+Das ist die zuletzt verfügbare **gemessene Menge eines Zehnminutenintervalls**.
+Der Messzeitpunkt nennt dessen Ende. «12:20» bedeutet beispielsweise die zehn
+Minuten bis 12:20; der Wert ist keine Live-Menge bis jetzt. Die verwendeten
+Stationsdateien erscheinen alle 20 Minuten. Für vergangene Stunden gibt es
+eine separate amtliche Niederschlagsstatistik. Einen zusätzlichen selbst
+berechneten Wert «laufende Stunde» bietet der Fork nicht mehr an.
+Beim alternativen Open-Meteo-Wetter ist die Menge modelliert; sie heisst
+«Niederschlag (Modellintervall)» und enthält die Intervalllänge als Attribut.
+
 ## 1. Voraussetzungen prüfen
 
 - Home Assistant **2026.8.3 oder neuer**, mit funktionierendem Internetzugang.
