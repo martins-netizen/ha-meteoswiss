@@ -131,36 +131,6 @@ def test_provider_timestamps_are_utc(value, expected):
     assert (parsed.isoformat() if parsed else None) == expected
 
 
-def test_current_hour_counts_distinct_intervals_once_and_skips_bad_numbers():
-    rows = [
-        row(
-            **{
-                "reference_timestamp": "16.10.2026 " + stamp,
-                m.PARAM_PRECIPITATION: amount,
-            }
-        )
-        for stamp, amount in [
-            ("07:00", "9"),
-            ("07:10", "0.1"),
-            ("07:20", "0.1"),
-            ("07:20", "0.2"),
-            ("07:30", "nan"),
-            ("07:40", "inf"),
-            ("07:50", "-1"),
-            ("08:00", "8"),
-        ]
-    ]
-    assert (
-        m._current_hour_precipitation(rows, datetime(2026, 10, 16, 7, 50, tzinfo=UTC))
-        == 0.3
-    )
-
-
-def test_running_hour_without_a_valid_interval_is_missing_not_dry():
-    assert m._current_hour_precipitation([row(**{m.PARAM_PRECIPITATION: ""})]) is None
-    assert m._current_hour_precipitation([row(**{m.PARAM_PRECIPITATION: "0"})]) == 0
-
-
 async def test_sparse_fallback_skips_invalid_values_and_preserves_older_zero(hass):
     source = station(hass)
     rows = [
@@ -216,7 +186,8 @@ async def test_provider_encoding_and_bad_rain_interval_are_local(hass, aioclient
     data = await station(hass)._async_download_and_parse_csv(CSV_URL)
     assert data["temperature"] == 12
     assert data["precipitation"] is None
-    assert data["precipitation_current_hour"] is None
+    assert "precipitation_current_hour" not in data
+    assert data["precipitation_interval_seconds"] == 600
 
 
 @pytest.mark.parametrize("kind", ["now", "recent", "missing", "broken"])

@@ -21,8 +21,10 @@ Forecast failure returns an empty forecast while valid observations remain usabl
 
 ## Observation sensors
 
-Station data is normally refreshed every ten minutes or at the configured longer
-interval. Values depend on what the selected station actually measures.
+The integration polls at the configured interval (default/minimum ten minutes).
+MeteoSwiss publishes the per-station ten-minute files every **20 minutes**;
+polling more often does not make new measurements appear sooner. Values depend
+on what the selected station actually measures.
 
 | Key | Meaning | Native unit | Station parameter |
 |---|---|---|---|
@@ -32,8 +34,7 @@ interval. Values depend on what the selected station actually measures.
 | `wind_direction` | Wind direction | ° | `dkl010z0` |
 | `wind_gust` | Maximum one-second gust | km/h | `fu3010z1` |
 | `pressure` | QFF sea-level pressure | hPa | `pp0qffs0` |
-| `precipitation` | Ten-minute precipitation amount | mm | `rre150z0` |
-| `precipitation_current_hour` | Published intervals in the current UTC hour | mm | Derived from valid rain intervals |
+| `precipitation` | Latest available measured ten-minute amount | mm | `rre150z0` |
 | `dew_point` | Measured dew point, with Magnus fallback | °C | `tde200s0` or calculation |
 | `sunshine_duration` | Ten-minute sunshine total | min | `sre000z0` |
 | `global_radiation` | Ten-minute mean global radiation | W/m² | `gre000z0` |
@@ -42,13 +43,19 @@ interval. Values depend on what the selected station actually measures.
 
 Numeric observation descriptions have state class `measurement`. Attributes
 include `measurement_time`, `source_status` and `pending_rows`. Missing fields
-stay unknown; a stale/failed whole source is unavailable. The running-hour sum
-can be unknown before its first interval and does not certify a complete hour.
-Its observation timestamp is not the aggregate's end time. See [data gaps](USAGE.md#partial-publication-and-graph-gaps).
+stay unknown; a stale/failed whole source is unavailable. The station rain name
+is **Precipitation (10 minutes)**, with `measurement_interval_seconds=600` and
+`measurement_time` marking the interval's end. For example, end time 12:20
+means the ten minutes ending at 12:20, even when downloaded at 12:35. It is
+neither the rainfall since 12:00 nor a total for the previous whole hour.
 
-For Open-Meteo current weather, rain covers `measurement_interval_seconds`
-(normally 900 seconds), not an hourly total or rate. Station-only parameters
-stay unknown when absent; the station running-hour and archive are not supplied.
+For Open-Meteo current weather the name is **Precipitation (modelled interval)**.
+Its amount covers `measurement_interval_seconds` (normally 900 seconds), not
+an hourly total or a precipitation rate. An absent provider duration remains
+unknown. It is not labelled as a measured ten-minute value. Names are bundled
+in DE/EN/FR/IT; the `precipitation` unique key and existing entity IDs are stable.
+Station-only parameters stay unknown when absent; archived hourly statistics
+are not supplied for the alternative source.
 Soil-temperature sensor descriptions are not part of the current platform.
 
 ### Completed hourly precipitation statistics
@@ -56,12 +63,25 @@ Soil-temperature sensor descriptions are not part of the current platform.
 With Recorder loaded, the station importer writes external statistics under
 `meteoswiss:<station>_precipitation_hourly`, for example
 `meteoswiss:klo_precipitation_hourly`. These completed-hour totals are a separate
-series, not another live sensor or the running-hour sensor's history.
+series, not the ten-minute sensor's history.
 The importer shifts interval ends to UTC interval starts, applies corrections
 without duplicate hours and does not invent zeros for gaps. The archive looks
 back 13 calendar months at initial import and normally weekly; the current-hourly
 file is checked hourly. Existing mean/min/max metadata is retained; this is not
 a cumulative `total_increasing` counter.
+
+### Removed derived running-hour sensor
+
+`precipitation_current_hour` is retired before the first maintained beta release.
+It was a local sum of already published intervals since the current hour began,
+not an official completed-hour value or a rolling last-60-minutes amount. Data
+publication delays caused repeated unknown states and missing intermediate
+intervals could leave an unmarked partial sum. It is no longer calculated or
+created. On setup/reload, only the retired entity belonging to that entry is
+removed from the entity registry; no Recorder purge is performed. Existing
+raw measurements, other entries, independently created Utility Meter helpers
+and official archive statistics are not deleted. Review old dashboard and
+automation references before updating; see [migration](WECHSEL_DE.md).
 
 ## Pollen, air quality and UV
 

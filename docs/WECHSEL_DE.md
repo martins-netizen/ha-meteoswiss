@@ -60,6 +60,32 @@ Softwareversion für den Rückweg. Bei einer externen Datenbank muss auch deren
 Sicherung dazugehören. Ein ungetestetes Backup ist kein nachgewiesener Restore.
 
 Notiere die wichtigsten bisherigen Entitäten und vorhandenen Statistikdiagramme.
+### Änderung bei den Niederschlagswerten
+
+Der Messsensor heisst künftig **«Niederschlag (10 Minuten)»**. Er zeigt die
+zuletzt verfügbare gemessene Zehnminutenmenge; sein Messzeitpunkt ist das Ende
+dieses Intervalls. Er ist keine Menge seit Beginn der aktuellen Stunde.
+Beispiel: Messzeit 12:20 bedeutet die zehn Minuten bis 12:20, auch wenn HA den
+Wert erst später abholt. Die verwendeten Stationsdateien werden alle 20 Minuten
+veröffentlicht. Häufigeres Abfragen erzeugt deshalb keine neueren Messwerte.
+Bei Open-Meteo heisst der entsprechende Wert **«Niederschlag (Modellintervall)»**;
+dessen tatsächliche Intervalllänge steht im Attribut `measurement_interval_seconds`.
+
+Der zusätzlich berechnete Sensor **«Niederschlag laufende Stunde»** entfällt.
+Er war kein amtlicher Stundenwert: Vor dem ersten veröffentlichten Intervall
+der neuen Stunde blieb er unbekannt, bei Lücken konnte eine unvollständige
+Teilsumme entstehen. Prüfe **vor dem Update** Karten, Templates und Automationen,
+die ihn verwenden. Entferne dort diesen Wert oder verwende bei einem echten
+Bedarf die amtliche Statistik abgeschlossener Stunden. Beim nächsten Start oder
+Neuladen wird die zu dieser Integration gehörende alte Stundenentität entfernt.
+Es wird dabei keine Historien- oder Statistikbereinigung ausgeführt.
+
+**Das Niederschlagsarchiv bleibt erhalten.** Seine amtlichen Stundenmengen
+haben die Kennung `meteoswiss:<station>_precipitation_hourly`; für Kloten ist das
+`meteoswiss:klo_precipitation_hourly`. Eine Stundenreferenz 12:00 steht für die
+abgeschlossene Stunde bis 12:00. Eigenständig angelegte Verbrauchszähler-Helfer
+werden vom Fork nicht gelöscht; vor einer eigenen Löschung deren Verwendung prüfen.
+
 Die Kennungen regulär weitergeführter Entitäten und der Niederschlagsstatistik
 sollen nach dem Wechsel gleich bleiben. Zwei Grenzen sind vorab wichtig:
 

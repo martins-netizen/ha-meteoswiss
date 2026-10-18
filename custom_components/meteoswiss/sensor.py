@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from typing import Final
 
 from homeassistant.components.sensor import (
@@ -45,10 +45,13 @@ from .calc import (
 )
 from .const import (
     ATTRIBUTION,
+    CONF_DATA_SOURCE,
     CONF_POLLEN_STATION,
     CONF_STATION_NAME,
+    DATA_SOURCE_OPENMETEO,
     DEFAULT_POLLEN_STATION,
     DOMAIN,
+    LEGACY_PRECIPITATION_CURRENT_HOUR,
     OPENMETEO_AIR_QUALITY_ATTRIBUTION,
     OPENMETEO_AIR_QUALITY_DEVICE_NAME,
     OPENMETEO_AIR_QUALITY_MANUFACTURER,
@@ -63,7 +66,6 @@ from .const import (
     SENSOR_PM10,
     SENSOR_PM25,
     SENSOR_PRECIPITATION,
-    SENSOR_PRECIPITATION_CURRENT_HOUR,
     SENSOR_PRESSURE,
     SENSOR_SNOW_DEPTH,
     SENSOR_SUNSHINE,
@@ -141,14 +143,6 @@ SENSOR_DESCRIPTIONS: Final[tuple[MeteoSwissSensorEntityDescription, ...]] = (
         value_key=SENSOR_PRECIPITATION,
     ),
     MeteoSwissSensorEntityDescription(
-        key=SENSOR_PRECIPITATION_CURRENT_HOUR,
-        translation_key="precipitation_current_hour",
-        device_class=SensorDeviceClass.PRECIPITATION,
-        state_class=SensorStateClass.MEASUREMENT,
-        native_unit_of_measurement=UnitOfPrecipitationDepth.MILLIMETERS,
-        value_key=SENSOR_PRECIPITATION_CURRENT_HOUR,
-    ),
-    MeteoSwissSensorEntityDescription(
         key=SENSOR_WIND_GUST,
         translation_key="wind_gust",
         device_class=SensorDeviceClass.WIND_SPEED,
@@ -210,6 +204,7 @@ async def async_setup_entry(
     """Set up sensor platform."""
     _LOGGER.debug("Setting up MeteoSwiss sensor platform")
 
+    _remove_legacy_current_hour_precipitation_entity(hass, entry)
     coordinator = entry.runtime_data.coordinator
     station_name = entry.data.get(CONF_STATION_NAME, "Unknown")
 
@@ -308,7 +303,14 @@ class MeteoSwissSensor(
     ) -> None:
         """Initialize sensor."""
         super().__init__(coordinator)
-        self.entity_description = description
+        # Keep the existing description/unique key and user entity ID. Only the
+        # display label differs: Open-Meteo supplies a modelled provider interval.
+        self.entity_description = (
+            replace(description, translation_key="precipitation_modelled")
+            if description.key == SENSOR_PRECIPITATION
+            and entry.data.get(CONF_DATA_SOURCE) == DATA_SOURCE_OPENMETEO
+            else description
+        )
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_{description.key}"
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, entry.entry_id)},
@@ -556,6 +558,18 @@ def _daily_mean_for_date(
         if daily_mean is not None:
             return daily_mean
     return None
+
+
+def _remove_legacy_current_hour_precipitation_entity(
+    hass: HomeAssistant,
+    entry: MeteoSwissConfigEntry,
+) -> None:
+    """Retire only this entry's unsupported derived sum; never purge statistics."""
+    registry = er.async_get(hass)
+    unique_id = f"{DOMAIN}_{entry.entry_id}_{LEGACY_PRECIPITATION_CURRENT_HOUR}"
+    if entity_id := registry.async_get_entity_id("sensor", DOMAIN, unique_id):
+        registry.async_remove(entity_id)
+        _LOGGER.info("Removed retired derived current-hour precipitation entity")
 
 
 def _remove_legacy_season_hgt_entity(

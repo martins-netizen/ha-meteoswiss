@@ -94,7 +94,7 @@ For this source, precipitation in mm covers the provider's backward-looking
 interval. Check the precipitation sensor's `measurement_interval_seconds`
 attribute (normally 900 for 15 minutes); it is **not** an hourly total or mm/h.
 If the provider omits that duration, it remains unknown. The station-specific
-running-hour and archived hourly totals are not calculated for this source.
+archived hourly totals are not calculated for this source.
 
 ### Weather forecast availability
 
@@ -186,14 +186,13 @@ Observation sensors expose these machine-readable attributes:
 | `pending_rows` | Number of skipped trailing rows; no claim about why they are incomplete |
 
 `current` describes row selection, not a guarantee that every parameter exists.
-The running-hour precipitation sensor aggregates published intervals separately;
-its `measurement_time` describes the station observation, not the aggregate end.
-If no valid rain interval has been published in the current UTC hour, this
-total stays unknown, including before the first interval arrives after the hour
-changes. A valid zero is displayed as zero. Invalid/negative rain amounts are
-skipped and a repeated interval timestamp is counted once; equal amounts at
-different timestamps remain separate intervals. This sum does not assert that
-every interval in the hour was received.
+Station rain is named **Precipitation (10 minutes)** and exposes
+`measurement_interval_seconds=600`. It is the amount measured in the interval
+ending at `measurement_time`, not a live estimate up to the present instant.
+The used per-station files are published every 20 minutes, so a successful
+refresh may legitimately find no new observation. See [the provider contract](API_SOURCES.md#swissmetnet-and-hourly-rain).
+For hour totals use the separate official completed-hour statistics. The local
+running-hour sensor is retired; no missing interval is converted to a dry hour.
 The one-hour observation age limit remains in force. All-empty, invalid-time,
 future-time and stale sources fail updates and make coordinator entities
 unavailable. A valid zero remains zero. No synthetic historical measurements

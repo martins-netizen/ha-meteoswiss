@@ -66,10 +66,7 @@
         "name": "Windrichtung"
       },
       "precipitation": {
-        "name": "Niederschlag"
-      },
-      "precipitation_current_hour": {
-        "name": "Niederschlag laufende Stunde"
+        "name": "Niederschlag (10 Minuten)"
       },
       "pressure": {
         "name": "Luftdruck"
@@ -157,6 +154,9 @@
       },
       "ms_pollen_oak": {
         "name": "Eichenpollen (gemessen)"
+      },
+      "precipitation_modelled": {
+        "name": "Niederschlag (Modellintervall)"
       }
     },
     "binary_sensor": {

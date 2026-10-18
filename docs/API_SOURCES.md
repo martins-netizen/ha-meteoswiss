@@ -31,6 +31,13 @@ The client requests collection `ch.meteoschweiz.ogd-smn`, selects the station's
 `ogd-smn_<station>_t_now.csv` asset (or its supported recent fallback) and
 validates the selected station, real measurement time and usable values.
 It skips trailing partial publication rows without making an old value current.
+These per-station ten-minute files are published every **20 minutes**, according
+to the [specific SwissMetNet documentation](https://opendatadocs.meteoswiss.ch/a-data-groundbased/a1-automatic-weather-stations).
+The separate all-stations file is published around every ten minutes; this
+integration does not currently use that alternative. Polling/cache intervals
+must not be confused with either publication frequency or measurement duration.
+The retained rain sensor is the latest available `rre150z0` ten-minute amount,
+labelled explicitly, with a 600-second interval and the measurement end time.
 CSV uses semicolons, a dot decimal divider and Windows-1252; the catalogue also
 accepts an explicit UTF-8 BOM. The number of stations is read from the current
 catalogue, not hardcoded as a promise of network coverage.
@@ -39,7 +46,8 @@ The independent hourly importer uses `rre150h0` in `_h_now`, `_h_recent` and
 matching historical assets. It retains 13 calendar months on archive import.
 Completed-hour UTC interval ends become interval starts for Recorder; missing
 hours are not invented, and later valid provider corrections update the same
-statistic ID. The live running-hour sum is a separate partial accumulation.
+statistic ID. The former locally derived running-hour sum is retired; use
+these official completed-hour aggregates for historical hourly amounts.
 
 For provider time/encoding/missing-value rules, see
 [MeteoSwiss download documentation](https://opendatadocs.meteoswiss.ch/general/download).

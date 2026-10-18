@@ -17,12 +17,10 @@ from custom_components.meteoswiss.const import (
     OPENMETEO_AIR_QUALITY_DEVICE_NAME,
     POLLEN_STATIONS,
     SENSOR_PRECIPITATION,
-    SENSOR_PRECIPITATION_CURRENT_HOUR,
     SENSOR_TEMPERATURE,
 )
 from custom_components.meteoswiss.coordinator import (
     MeteoSwissDataUpdateCoordinator,
-    _current_hour_precipitation,
 )
 from custom_components.meteoswiss.forecast_coordinator import (
     MeteoSwissForecastCoordinator,
@@ -55,40 +53,6 @@ def test_precipitation_sensor_description() -> None:
         description.native_unit_of_measurement
         == UnitOfPrecipitationDepth.MILLIMETERS
     )
-
-
-def test_current_hour_precipitation_counts_every_published_interval() -> None:
-    """All intervals published together must contribute to the current hour."""
-    rows = [
-        {"reference_timestamp": "31.08.2026 00:00", "rre150z0": "9.9"},
-        {"reference_timestamp": "31.08.2026 00:10", "rre150z0": "2.3"},
-        {"reference_timestamp": "31.08.2026 00:20", "rre150z0": "0.7"},
-        {"reference_timestamp": "31.08.2026 00:30", "rre150z0": "0.6"},
-        {"reference_timestamp": "31.08.2026 00:40", "rre150z0": "0.1"},
-        {"reference_timestamp": "31.08.2026 01:00", "rre150z0": "8.8"},
-    ]
-
-    total = _current_hour_precipitation(
-        rows,
-        now=datetime(2026, 8, 31, 0, 45, tzinfo=timezone.utc),
-    )
-
-    assert total == 3.7
-
-
-def test_current_hour_precipitation_counts_repeated_values() -> None:
-    """Identical consecutive intervals are separate precipitation totals."""
-    rows = [
-        {"reference_timestamp": "31.08.2026 00:10", "rre150z0": "0.1"},
-        {"reference_timestamp": "31.08.2026 00:20", "rre150z0": "0.1"},
-    ]
-
-    total = _current_hour_precipitation(
-        rows,
-        now=datetime(2026, 8, 31, 0, 25, tzinfo=timezone.utc),
-    )
-
-    assert total == 0.2
 
 
 def test_official_hourly_precipitation_uses_interval_start() -> None:
@@ -156,18 +120,6 @@ def test_hourly_archive_selects_only_overlapping_decade_assets() -> None:
     assert _asset_urls_for_period(assets, "klo", "recent", 2028) == [
         "recent.csv"
     ]
-
-
-def test_current_hour_precipitation_sensor_description() -> None:
-    """The running-hour total must be a separate precipitation measurement."""
-    description = _sensor_description(SENSOR_PRECIPITATION_CURRENT_HOUR)
-
-    assert description.device_class is SensorDeviceClass.PRECIPITATION
-    assert description.state_class is SensorStateClass.MEASUREMENT
-    assert (
-        description.native_unit_of_measurement
-        == UnitOfPrecipitationDepth.MILLIMETERS
-    )
 
 
 async def test_sensor_initializes_from_existing_coordinator_data(hass) -> None:

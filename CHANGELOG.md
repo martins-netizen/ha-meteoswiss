@@ -2,6 +2,17 @@
 
 ## Unreleased — quality baseline, publication gaps and pollen availability
 
+- **Breaking change before the first maintained beta:** retire the locally
+  derived `precipitation_current_hour` sensor and its calculation. Only that
+  entry's retired entity is removed on setup/reload; Recorder is not purged.
+  Review dashboard/automation references before updating. Official hourly
+  precipitation statistics and independently created helpers remain intact.
+- Name measured station rain **Precipitation (10 minutes)** and alternative
+  Open-Meteo rain **Precipitation (modelled interval)** in DE/EN/FR/IT. Keep
+  existing precipitation unique/entity IDs and user display settings. Expose
+  the measured 600-second interval and explain measurement-end timestamps,
+  the station files' 20-minute publication cycle and official hourly totals.
+
 - Add beginner installation and migration guides in German; distinguish HACS
   software replacement from preserving the existing Home Assistant entry.
 - Correct legacy sensor/source/roadmap documentation: verified warning codes,

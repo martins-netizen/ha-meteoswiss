@@ -123,13 +123,11 @@ async def test_invalid_metadata_is_private_and_not_error_logged(
     )
 
 
-async def test_bad_rain_interval_does_not_leak_payload(caplog):
+async def test_bad_rain_interval_does_not_leak_payload(hass, caplog):
     secret = "PRIVATE_RAIN_PAYLOAD"
     with caplog.at_level(logging.DEBUG, logger="custom_components.meteoswiss"):
-        assert (
-            m._current_hour_precipitation([row(**{m.PARAM_PRECIPITATION: secret})])
-            is None
-        )
+        data = station(hass)._parse_csv_row(row(**{m.PARAM_PRECIPITATION: secret}))
+    assert data["precipitation"] is None
     assert secret not in caplog.text
 
 

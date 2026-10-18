@@ -24,7 +24,6 @@ from .const import (
     SENSOR_GLOBAL_RADIATION,
     SENSOR_HUMIDITY,
     SENSOR_PRECIPITATION,
-    SENSOR_PRECIPITATION_CURRENT_HOUR,
     SENSOR_PRESSURE,
     SENSOR_SNOW_DEPTH,
     SENSOR_SUNSHINE,
@@ -75,34 +74,6 @@ def _parse_reference_timestamp(value: str | None) -> datetime | None:
     if parsed.tzinfo is None:
         return parsed.replace(tzinfo=UTC)
     return parsed.astimezone(UTC)
-
-
-def _current_hour_precipitation(
-    rows: list[dict[str, str]],
-    now: datetime | None = None,
-) -> float | None:
-    """Sum published 10-minute precipitation intervals in the current UTC hour."""
-    current = (now or datetime.now(UTC)).astimezone(UTC)
-    hour_start = current.replace(minute=0, second=0, microsecond=0)
-    amounts: dict[datetime, float] = {}
-
-    for row in rows:
-        reference = _parse_reference_timestamp(row.get("reference_timestamp", ""))
-        if reference is None or not hour_start < reference <= current:
-            continue
-
-        value = (row.get(PARAM_PRECIPITATION) or "").strip()
-        if not value:
-            continue
-
-        try:
-            amount = float(value)
-            if math.isfinite(amount) and amount >= 0:
-                amounts[reference] = amount
-        except (TypeError, ValueError):
-            _LOGGER.debug("Could not parse precipitation interval")
-
-    return round(sum(amounts.values()), 3) if amounts else None
 
 
 class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -215,8 +186,8 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
             _LOGGER.debug("CSV content length: %d chars", len(content))
 
-            # Parse every published row. MeteoSwiss can add multiple new
-            # 10-minute intervals between two integration refreshes.
+            # Select the latest complete observation from all published rows;
+            # sparse optional values can still use the bounded recent history.
             all_rows = list(csv.DictReader(io.StringIO(content), delimiter=";"))
 
             if not all_rows:
@@ -303,9 +274,6 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 "partial_update" if observation_index else "current"
             )
             result["pending_rows"] = observation_index
-            result[SENSOR_PRECIPITATION_CURRENT_HOUR] = _current_hour_precipitation(
-                all_rows
-            )
             _LOGGER.debug("Decoded %d station CSV rows", len(all_rows))
             return result
 
@@ -370,7 +338,7 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             SENSOR_WIND_SPEED: None,
             SENSOR_WIND_DIRECTION: None,
             SENSOR_PRECIPITATION: None,
-            SENSOR_PRECIPITATION_CURRENT_HOUR: None,
+            "precipitation_interval_seconds": 600,
             SENSOR_PRESSURE: None,
             SENSOR_WIND_GUST: None,
             SENSOR_DEW_POINT: None,

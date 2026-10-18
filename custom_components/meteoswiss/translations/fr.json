@@ -66,10 +66,7 @@
         "name": "Direction du vent"
       },
       "precipitation": {
-        "name": "Précipitations"
-      },
-      "precipitation_current_hour": {
-        "name": "Précipitations de l'heure en cours"
+        "name": "Précipitations (10 minutes)"
       },
       "pressure": {
         "name": "Pression"
@@ -157,6 +154,9 @@
       },
       "ms_pollen_oak": {
         "name": "Pollen de chêne (mesuré)"
+      },
+      "precipitation_modelled": {
+        "name": "Précipitations (intervalle modélisé)"
       }
     },
     "binary_sensor": {

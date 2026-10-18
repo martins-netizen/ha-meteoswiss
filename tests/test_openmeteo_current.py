@@ -392,7 +392,7 @@ async def test_registered_entities_fail_and_recover_without_duplicate_logs(
             row.entity_id for row in entities if row.translation_key == "temperature"
         )
         rain_id = next(
-            row.entity_id for row in entities if row.translation_key == "precipitation"
+            row.entity_id for row in entities if row.translation_key == "precipitation_modelled"
         )
         assert hass.states.get(rain_id).state == "0.2"
         assert (
