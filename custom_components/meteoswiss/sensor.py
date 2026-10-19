@@ -735,7 +735,6 @@ class MeteoSwissMeasuredPollenSensor(CoordinatorEntity, SensorEntity):
         )
         self._attr_has_entity_name = True
         self._attr_attribution = "Source: MeteoSwiss ogd-pollen"
-        self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._pollen_type = description.pollen_type
         self._pollen_type_name = description.pollen_type_name
 

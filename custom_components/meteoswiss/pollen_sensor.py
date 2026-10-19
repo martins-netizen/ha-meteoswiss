@@ -11,7 +11,7 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import DeviceInfo, EntityCategory
+from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
     DataUpdateCoordinator,
@@ -170,7 +170,6 @@ class MeteoSwissPollenSensor(CoordinatorEntity, SensorEntity):
         )
         self._attr_has_entity_name = True
         self._attr_attribution = OPENMETEO_AIR_QUALITY_ATTRIBUTION
-        self._attr_entity_category = EntityCategory.DIAGNOSTIC
         self._pollen_type = description.pollen_type
         self._pollen_type_name = description.pollen_type_name
 
