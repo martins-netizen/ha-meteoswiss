@@ -12,6 +12,7 @@ import aiohttp
 import pytest
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
@@ -620,3 +621,113 @@ def test_aq_and_measured_entities_read_existing_data_on_initial_add(hass):
     measured.data = None
     assert measured_entity.native_value is None
     assert "history_24h" not in measured_entity.extra_state_attributes
+
+
+@pytest.mark.parametrize("legacy_registry", [False, True], ids=["new", "existing"])
+async def test_pollen_device_grouping_preserves_existing_entities_on_reload(
+    hass, aioclient_mock, enable_custom_integrations, legacy_registry
+):
+    """Both pollen sources belong to Sensors, including upgraded registrations."""
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={
+            "station_id": "KLO",
+            "station_name": "Kloten",
+            "postal_code": "8302",
+            "data_source": "meteoswiss",
+        },
+    )
+    entry.add_to_hass(hass)
+    registry = er.async_get(hass)
+    unique_ids = [
+        f"{DOMAIN}_{entry.entry_id}_pollen_{description.pollen_type}"
+        for description in POLLEN_SENSOR_DESCRIPTIONS
+    ] + [
+        f"{DOMAIN}_{entry.entry_id}_ms_pollen_{description.pollen_type}"
+        for description in MS_POLLEN_SENSOR_DESCRIPTIONS
+    ]
+
+    def personal_settings(entity):
+        return (
+            entity.entity_id,
+            entity.unique_id,
+            entity.name,
+            entity.icon,
+            entity.aliases,
+            entity.disabled_by,
+            entity.hidden_by,
+            entity.options,
+        )
+
+    original = {}
+    if legacy_registry:
+        for index, uid in enumerate(unique_ids):
+            entity = registry.async_get_or_create(
+                "sensor",
+                DOMAIN,
+                uid,
+                config_entry=entry,
+                suggested_object_id=f"personal_pollen_{index}",
+                entity_category=EntityCategory.DIAGNOSTIC,
+                disabled_by=er.RegistryEntryDisabler.USER if index == 0 else None,
+                hidden_by=er.RegistryEntryHider.USER if index == 1 else None,
+            )
+            entity = registry.async_update_entity(
+                entity.entity_id,
+                name=f"My pollen {index}",
+                icon="mdi:flower",
+                aliases={f"Pollen {index}"},
+            )
+            entity = registry.async_update_entity_options(
+                entity.entity_id, "sensor", {"display_precision": 1}
+            )
+            original[uid] = personal_settings(entity)
+
+    aioclient_mock.get(
+        OPENMETEO_AQ_BASE_URL, json=aq_payload(birch_pollen=[0], pm10=[4])
+    )
+    aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {"uv_index": 0}})
+    aioclient_mock.get(CSV_URL, text=CSV_ZERO)
+    with ExitStack() as stack:
+        stack.enter_context(
+            patch(
+                "custom_components.meteoswiss.stations_map.MeteoSwissStationsMap.load_stations",
+                return_value={},
+            )
+        )
+        for target, data in {
+            "coordinator.MeteoSwissDataUpdateCoordinator": {
+                "temperature": 12,
+                "last_update": "2026-10-15T10:00:00+00:00",
+            },
+            "forecast_coordinator.MeteoSwissForecastCoordinator": [],
+            "binary_sensor.MeteoSwissAlertsCoordinator": [],
+        }.items():
+            stack.enter_context(
+                patch(
+                    f"custom_components.meteoswiss.{target}._async_update_data",
+                    return_value=data,
+                )
+            )
+
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+        for reloaded in (False, True):
+            if reloaded:
+                assert await hass.config_entries.async_reload(entry.entry_id)
+                await hass.async_block_till_done()
+            for uid in unique_ids:
+                entity_id = registry.async_get_entity_id("sensor", DOMAIN, uid)
+                entity = registry.async_get(entity_id)
+                assert entity is not None
+                assert entity.entity_category is None
+                if uid in original:
+                    assert personal_settings(entity) == original[uid]
+                else:
+                    original[uid] = personal_settings(entity)
+            for uid in (f"{DOMAIN}_stations_map", f"{DOMAIN}_cache_stats"):
+                entity_id = registry.async_get_entity_id("sensor", DOMAIN, uid)
+                assert (
+                    registry.async_get(entity_id).entity_category
+                    is EntityCategory.DIAGNOSTIC
+                )

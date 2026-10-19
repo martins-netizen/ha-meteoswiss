@@ -85,6 +85,14 @@ automation references before updating; see [migration](WECHSEL_DE.md).
 
 ## Pollen, air quality and UV
 
+Modelled and measured pollen are user-facing environmental sensors. Both appear
+under **Sensors** on their respective Home Assistant device pages, alongside the
+other environmental values. After updating the integration, setup/reload also
+corrects previously registered pollen entities from **Diagnostic** to **Sensors**;
+their entity/unique IDs, history and personal settings are retained. Technical
+cache and station-catalogue helpers remain under **Diagnostic**. This grouping
+does not change whether a value is modelled or measured.
+
 ### Modelled pollen
 
 | Description key | Pollen | Display thresholds, grains/m³ |

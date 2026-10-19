@@ -2,6 +2,11 @@
 
 ## Unreleased — quality baseline, publication gaps and pollen availability
 
+- Show modelled Open-Meteo and measured MeteoSwiss pollen under **Sensors** on
+  device pages instead of **Diagnostic**. Existing entities update their category
+  on setup/reload without changing their IDs, values or personal settings;
+  technical cache and station-catalogue helpers remain diagnostic entities.
+
 - **Breaking change before the first maintained beta:** retire the locally
   derived `precipitation_current_hour` sensor and its calculation. Only that
   entry's retired entity is removed on setup/reload; Recorder is not purged.
