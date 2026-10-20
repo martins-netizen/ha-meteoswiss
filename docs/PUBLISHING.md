@@ -36,11 +36,22 @@ under Sensors. Registry checks confirm all twelve pollen categories, retained
 identities, settings, consumers and hourly rain statistics. These are scoped
 acceptance findings, not a guarantee of future provider availability.
 
-The current publication PR changes documentation only. Verify every file below
+Publication changes cover documentation and the guarded publication tool, not
+integration runtime or workflow changes. Verify every file below
 `custom_components/meteoswiss/` against the accepted commit before merging or
 tagging. Use the resulting merged publication commit for the tag; do not tag
 an unmerged PR or reinstall byte-identical runtime files.
-[Prepared release notes](RELEASE_8.2.0b1.md) record the scope and remaining limits.
+[Release notes](RELEASE_8.2.0b1.md) record the scope and remaining limits.
+
+The repository includes `scripts/veroeffentliche_meteoswiss_beta_v1.0.sh` for
+the final publication when a connector cannot create releases. Pass `--publish`
+and the exact approved merged publication commit. The tool rechecks that head,
+all 33 accepted component blobs, unchanged workflows, versions and successful
+post-merge checks; it creates only a GitHub prerelease, never changes HA, and
+verifies an existing identical release without overwriting or retagging it.
+Keep the resulting JSON/log receipt; a network failure after the write is an
+uncertain outcome, not proof that publication failed. Re-running the same tool
+first checks whether the expected release already exists.
 
 - All CI compatibility jobs, Hassfest and CodeQL must pass for the candidate.
   Run the official **HACS validation** with no ignored checks; missing Issues,
@@ -148,3 +159,4 @@ Publication requirements rechecked 20 October 2026:
 - [HACS integration requirements](https://www.hacs.xyz/docs/publish/integration/)
 - [Official HACS validator](https://www.hacs.xyz/docs/publish/action/)
 - [HA custom integration images](https://contributors.home-assistant.io/core/integrations/brands/)
+

@@ -11,9 +11,9 @@ and brings reviewed corrections together in one maintained version. The original
 project provides the foundation; its MIT licence and attribution are retained.
 This is an independent community project, not an official MeteoSwiss product.
 
-**Current status:** live-accepted candidate for the first maintained-fork beta,
-`8.2.0b1`; no fork release is published yet.
-See [release status](#release-status) before installing.
+**First maintained-fork beta: `8.2.0b1`.** The deployed runtime has completed
+its live acceptance. See [release availability and beta limits](#release-status)
+before installing.
 
 ## Why choose this fork?
 
@@ -53,11 +53,11 @@ Deutsch: [Was bringt mir dieser Fork im Alltag?](docs/START_DE.md#was-bringt-mir
 
 ## Release status
 
-**8.2.0b1 has completed its deployed 24-hour acceptance; the first fork
-prerelease is prepared but is not published yet.**
-Wait for an explicitly approved release on the
-[Releases page](https://github.com/martins-netizen/ha-meteoswiss/releases).
-Do not substitute a development-branch download for an approved release.
+**8.2.0b1 is the first maintained-fork beta, with completed deployed
+24-hour acceptance.** It is intended for explicit prerelease testing.
+Download it only when the [published GitHub prerelease](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.2.0b1)
+is available. If that page is not available, publication has not completed;
+do not substitute a tag or development-branch download.
 
 Minimum supported/tested HA: **2026.8.3**; CI also covers **2026.10.1**.
 The candidate additionally passed local tests and deployed acceptance on
@@ -145,3 +145,4 @@ include the installed fork version/commit, HA version, relevant states and
 redacted logs. Do not upload full private backups or credentials.
 Existing development PRs remain the review record.
 Provider outages must remain distinguishable from a valid empty/no-danger value.
+

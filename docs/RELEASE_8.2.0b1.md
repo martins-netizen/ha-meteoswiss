@@ -1,7 +1,7 @@
 # 8.2.0b1 — first maintained-fork prerelease
 
-**Prepared release notes; this file does not publish a release.**
-Use only an explicitly published prerelease on the
+**Release-note source for the first maintained-fork beta.**
+Availability is determined by an explicitly published prerelease on the
 [fork Releases page](https://github.com/martins-netizen/ha-meteoswiss/releases).
 
 This community fork builds on LNKtwo/ha-meteoswiss, retaining the MIT licence
@@ -46,7 +46,7 @@ The accepted runtime is
 `0086b956d44b7144b242c5d5c1881d0b0650e524`.
 Both manifest and module version are `8.2.0b1`. Minimum HA is **2026.8.3**;
 CI additionally covers **2026.10.1**, and local tests plus deployed acceptance
-cover **2026.10.2**. The current local suite passed **786 tests** on each of
+cover **2026.10.2**. The accepted runtime's local suite passed **786 tests** on each of
 HA 2026.8.3/2026.10.2, with **99.051% combined line/branch coverage**.
 The accepted commit's [six post-merge checks](https://github.com/martins-netizen/ha-meteoswiss/commit/0086b956d44b7144b242c5d5c1881d0b0650e524/checks)
 include HACS validation, Hassfest and CodeQL.
@@ -85,3 +85,4 @@ for ordinary problems and
 [private vulnerability reporting](https://github.com/martins-netizen/ha-meteoswiss/security/advisories)
 for confidential reports. Include versions, affected values and redacted logs;
 do not upload backups or credentials.
+

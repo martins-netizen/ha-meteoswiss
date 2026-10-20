@@ -1,6 +1,12 @@
 # Changelog
 
-## Candidate acceptance — 20 October 2026
+## [8.2.0b1] — first maintained-fork prerelease
+
+This is a beta for explicit testing. Install only a published GitHub prerelease;
+a branch or tag alone is not a completed release. See the
+[release notes and known limits](docs/RELEASE_8.2.0b1.md).
+
+### Acceptance — 20 October 2026
 
 - The deployed `8.2.0b1` runtime at `0086b956d44b7144b242c5d5c1881d0b0650e524`
   completed its own 24-hour observation period on HA 2026.10.2. Code hashes,
@@ -11,14 +17,16 @@
   and recovered on the next scheduled refresh. Other checked data stayed
   available. Forecast pollen is visually confirmed under Sensors; all twelve
   pollen categories were verified in the registry.
-- This is acceptance evidence, not a release announcement. The first fork
-  prerelease is still prepared, and end-to-end HACS installation/source-switch
-  rehearsals remain outstanding. See [prepared beta notes](docs/RELEASE_8.2.0b1.md).
-- Correct the release checklist's older candidate reference and distinguish
-  deployed runtime acceptance from HACS distribution and official quality tiers.
-  No integration code or metadata changes in this publication-preparation PR.
 
-## Unreleased — quality baseline, publication gaps and pollen availability
+- Clean first HACS installation and HACS source-switch rehearsals remain
+  unverified end to end; no default-store listing or official HA quality
+  tier is claimed. The accepted deployment used a reviewed installer.
+- Add a guarded Mac publication helper. It checks the exact protected
+  branch commit, unchanged accepted runtime/workflows, versions, CI and
+  existing tags/releases before creating only the requested prerelease.
+  Repeating it verifies an existing matching release without overwriting it.
+
+### Changes
 
 - Show modelled Open-Meteo and measured MeteoSwiss pollen under **Sensors** on
   device pages instead of **Diagnostic**. Existing entities update their category
@@ -84,11 +92,7 @@
 - Test real HA entity failure/recovery, bounded transport retries, cancellation
   and safe logging; enforce full line/branch coverage for both pollen clients.
 
-All notable changes to this project will be documented in this file.
-
----
-
-## [8.2.0b1] — prepared, not released
+### Earlier candidate corrections
 
 - Preserve unavailable warning feeds as failures; never turn HTTP errors,
   timeouts or malformed warning lists into an all-clear.
@@ -102,6 +106,7 @@ All notable changes to this project will be documented in this file.
 - Document architecture, source contracts, minimum/current HA tests, release
   procedure and live acceptance. Remove the unverified Platinum claim.
 
+---
 
 ## [8.0.0] — 2026-07-31
 
@@ -225,3 +230,4 @@ All previous versions (v5.0.5 – v5.2.2) have been removed. v6.0.0 is a fresh b
 ### Added
 - Fresh README with full feature documentation
 - Proper device info, entity categories, and attribution
+
