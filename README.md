@@ -61,10 +61,11 @@ do not substitute a tag or development-branch download.
 
 Minimum supported/tested HA: **2026.8.3**; CI also covers **2026.10.1**.
 The candidate additionally passed local tests and deployed acceptance on
-**2026.10.2**. See the [prepared beta notes and known limits](docs/RELEASE_8.2.0b1.md).
+**2026.10.2**. See the [beta notes and known limits](docs/RELEASE_8.2.0b1.md).
 A clean first HACS installation and an end-to-end HACS source switch have not
-yet been rehearsed; a default-store listing and an official HA quality tier
-are not claimed.
+yet been rehearsed; the [practical HACS acceptance plan](docs/HACS_ABNAHME_DE.md)
+keeps those checks separate from the completed runtime acceptance. A default-store
+listing and an official HA quality tier are not claimed.
 
 ## Data and compatibility
 
@@ -99,7 +100,10 @@ Once a tested release is approved:
    the [migration and warning-consumer checks](docs/WECHSEL_DE.md).
 2. In **HACS → menu → Custom repositories**, add
    `https://github.com/martins-netizen/ha-meteoswiss` as **Integration**.
-3. Download the explicitly approved version and restart Home Assistant.
+3. Open Download/Redownload, expand **Need a different version?**, and explicitly
+   select **8.2.0b1** in **Release**. Check the announced version before confirming
+   the download, then restart Home Assistant. Older HACS versions may additionally
+   require enabling beta visibility. Do not substitute a branch or commit.
    Do not keep two HACS repositories managing the same `meteoswiss` directory.
 4. **New users only:** add **MeteoSwiss** under **Settings → Devices & services**.
    Choose **MeteoSwiss STAC API (Swiss Stations)** for measured station weather;

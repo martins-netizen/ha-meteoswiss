@@ -1,9 +1,16 @@
-# First fork release: preparation and acceptance
+# First fork release: publication and remaining HACS acceptance
 
-This is a release checklist, not a release announcement. Version `8.2.0b1`
-is prepared; no tag, GitHub release, HACS promotion or HA deployment is created
-by these files. The first release remains a **prerelease** until live acceptance
-is recorded. HACS listing and the HA Quality Scale are separate assessments.
+The first [GitHub prerelease 8.2.0b1](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.2.0b1)
+was published on **20 October 2026 at 15:56:24 UTC (17:56:24 Europe/Zurich)**.
+The published tag resolves to `abbb6b7701134ac2573f35b425ab3f0697a80540`;
+release ID `418588999`, `prerelease=true`, `draft=false`, `immutable=true`.
+The publication receipt and an independent release/tag read confirmed this.
+Its 33 component, translation and brand files match the live-accepted runtime.
+
+The runtime acceptance is complete. A clean HACS installation and HACS source
+switch remain unverified end to end; use the [practical acceptance plan](HACS_ABNAHME_DE.md).
+HACS listing and the HA Quality Scale remain separate assessments. This document
+does not publish, retag or install anything.
 
 ## Repository settings to complete before publication
 
@@ -89,33 +96,36 @@ If a publication commit adds only those assets, compare all previously accepted
 runtime files byte for byte and run its PR checks; do not infer acceptance from
 the version number alone or reinstall an identical runtime needlessly.
 
-## Release promotion
+## Release selection and subsequent promotion
 
-1. Complete the repository settings above and confirm the intended default
-   branch. Keep the existing protected-PR workflow; no admin bypass or force push.
-2. With the first approved GitHub prerelease ready, set
-   `"hide_default_branch": true` in `hacs.json` through a reviewed promotion PR.
-   This prevents branch downloads from being offered in HACS. Do not set it
-   early while there is no selectable release.
-3. Confirm that `manifest.json`, `version.py`, the changelog and release tag
-   describe the same candidate. Consolidate the unreleased notes only when
-   that release is actually approved; keep upstream historical attribution.
-   Replace the README's prepared/no-release notice with the actual approved
-   version, prerelease limitations and release link. Keep the two user guides
-   aligned with the rehearsed installation/migration route.
-4. Create a GitHub **prerelease** from the exact approved commit and tag
-   `8.2.0b1`. A tag by itself is insufficient for the release-based HACS route.
-   Review the notes before publishing. Do not enable automatic merging or
-   automatic HA installation.
-5. Add the custom repository in HACS as **Integration**, enable prerelease/beta
-   versions where required and explicitly select the tested prerelease. Verify
-   the displayed repository/version and installed runtime file hashes.
-   Do not remove/recreate the existing integration or its history.
-6. Check the published release with HACS again. Store the public CI/release
-   evidence, then consider a separate default-store submission after the fork
-   has a usable support route and a confirmed release.
+1. Preserve the protected maintained default branch `development`; `main`
+   remains the upstream mirror. The immutable `8.2.0b1` tag must not move.
+2. First inspect the installed HACS version, current software owner and available
+   release without downloading, removing software or changing the HA config entry.
+   Refresh repository metadata if needed. In current HACS, open Download/Redownload,
+   expand **Need a different version?**, and select **8.2.0b1** under **Release**.
+   Older HACS versions may additionally require beta visibility. Check the
+   announced download version; do not accept a branch or commit fallback.
+3. Complete the separate first-install/source-switch rehearsal described in
+   [HACS_ABNAHME_DE.md](HACS_ABNAHME_DE.md). A temporary instance is sufficient;
+   do not require a second permanent HA installation or use the production system
+   as an empty first-install test. Keep the runtime's completed 24-hour acceptance.
+4. Include `"hide_default_branch": true` in the next reviewed release's
+   `hacs.json`. HACS can read that manifest from the selected ref, so changing
+   only `development` does not change the immutable `8.2.0b1` manifest or prove
+   branch downloads are hidden when that beta is selected. Keep this limitation
+   visible; do not retag an existing release or create a runtime update merely
+   to avoid explicitly selecting this beta.
+5. Before a later default-store submission, add the appropriate `country`
+   metadata to its released manifest, recheck the then-current inclusion rules,
+   and retain successful HACS/Hassfest checks and a usable support route.
+   Neither this prerelease nor its rehearsal is a default-store approval.
 
-## Prepared release-note outline
+The exact beta-selection dialog is checked against HACS's current documentation
+and source on 20 October 2026. The operator's installed HACS version and UI still
+need a real check; source inspection is not an end-to-end installation test.
+
+## Published beta scope
 
 `8.2.0b1 — first maintained-fork prerelease`:
 
@@ -135,9 +145,10 @@ the version number alone or reinstall an identical runtime needlessly.
 - Not an official MeteoSwiss product. Data and alerts can be delayed or incomplete;
   this integration does not replace the providers' official warning channels.
 
-Replace this outline with the final approved changes and actual acceptance
-evidence when publishing. Do not promise standalone SLF, BAFU or radar modules:
-the corresponding placeholders are not active integrations in this fork.
+The [published beta notes](RELEASE_8.2.0b1.md) and immutable GitHub release record
+contain the approved changes and acceptance evidence. This recap does not alter
+that release. Standalone SLF, BAFU or radar modules are not promised: the
+corresponding placeholders are not active integrations in this fork.
 
 ## Local icon and validator maintenance
 
