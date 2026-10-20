@@ -1,6 +1,6 @@
 # POI-Machbarkeit: erster Quellenversuch
 
-**Dokumentversion:** 1.0 · **Stand:** 17. Oktober 2026
+**Dokumentversion:** 1.1 · **Versuch:** 17. Oktober 2026 · **Planungsnachtrag:** 20. Oktober 2026
 **Ergebnis:** Namenssuche und koordinatenbasierte Prognose positiv erprobt;
 aktueller App-Katalog und POI-Warnabdeckung noch nicht vollständig belegt.
 Keine POI-Funktion ist dadurch bereits implementiert oder freigegeben.
@@ -10,6 +10,17 @@ vor. Der Versuch zeigt einen Weg über die dokumentierte öffentliche
 swisstopo-Suche und die bereits verwendete Open-Meteo-/MeteoSwiss-ICON-Quelle.
 Ein Zugriff auf geschützte App-Dienste ist dafür nicht erforderlich. Die
 Naturgefahrenwarnungen müssen weiterhin einen gesondert bestätigten Bezug haben.
+
+## Aktualisierung vom 20. Oktober 2026
+
+Der nachfolgende Versuch bleibt als historischer Nachweis erhalten. Für die
+weitere Auswahl wird jetzt der **offizielle OGD-Lokalprognose-Punktekatalog**
+priorisiert; siehe [Lokalprognoseplan](LOCAL_FORECAST_PLAN_DE.md).
+Ein funktionierender App-POI-Abruf ist dafür keine Voraussetzung mehr.
+Die bestehende App-Warnschnittstelle v3 und der separat bestätigte Warn-PLZ-Bezug
+bleiben bestehen. Die Auswahl eines Prognosepunkts bestätigt keine punktgenaue
+Naturgefahrenabdeckung. Eine Übernahme der OGD-Lokalprognosen braucht einen
+eigenen Daten-, Ressourcen- und Quellenentscheid.
 
 ## 1. App-Katalog als statischer Nachweis
 

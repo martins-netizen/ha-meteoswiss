@@ -1,12 +1,12 @@
 # Nächste Entwicklungsschritte: Ortsauswahl, Silver und Gold
 
-**Planversion:** 1.2 · **Stand:** 17. Oktober 2026
-**Status:** Freigegebener Plan; Q1 dokumentiert, P0 mit Teilnachweis. Keine Funktions-, Installations- oder Release-Freigabe.
+**Planversion:** 1.3 · **Stand:** 20. Oktober 2026
+**Status:** Laufender Plan; Q1 dokumentiert, P0 mit Teilnachweis. Offizielle Lokalprognosepunkte priorisiert; keine neue Funktions-, Installations- oder Release-Freigabe.
 
 Ziel ist eine verständliche Auswahl von Prognose- und Warnorten einschliesslich
 POIs sowie ein nachvollziehbarer Weg zu den Silver- und später Gold-Anforderungen.
-Ausgangspunkt ist `development` auf `137e41d`; dessen Laufzeitdateien entsprechen
-dem geprüften Kandidaten `9c50b6b`. Die vorhandenen Nachweise bleiben in
+Historischer Ausgangspunkt am 17.10.2026 war `development` auf `137e41d`;
+dessen Laufzeitdateien entsprachen dem damaligen Kandidaten `9c50b6b`. Die vorhandenen Nachweise bleiben in
 [QUALITY_SCALE.md](QUALITY_SCALE.md) und im [Qualitätsreview](REVIEW_2026-10-17.md).
 
 Die [HA-Qualitätsstufen](https://contributors.home-assistant.io/core/quality-scale/tiers/)
@@ -16,6 +16,33 @@ ist ein eigener Nachweis. Erst nach vollständigem Einzelregel-Abgleich kann
 eine dokumentierte Selbsteinschätzung «erfüllt die anwendbaren Silver-Kriterien»
 erfolgen. Ausnahmen brauchen jeweils eine Begründung; ein `quality_scale`
 Silver-/Gold-Eintrag oder entsprechendes Badge wird durch diesen Plan nicht eingeführt.
+
+## Entscheidung vom 20. Oktober 2026
+
+Die bestehende **MeteoSchweiz-App-Warnschnittstelle v3 bleibt bis auf Weiteres
+bestehen**. Eine Ablösung durch MeteoGate/MeteoAlarm gehört nicht zum aktuellen
+Auftrag. Prognoseort, Messstation und der weiterhin separat bestätigte
+Warn-PLZ-Bezug bleiben fachlich getrennt.
+
+Für die Orts-/POI-Arbeit wird jetzt vorrangig der **offizielle OGD-Katalog der
+MeteoSchweiz-Lokalprognosepunkte** untersucht. Dafür ist kein erfolgreicher
+Abruf eines App-POI-Katalogs erforderlich. Zuerst wird der Katalog als Grundlage
+einer eindeutigen Auswahl geprüft; die Übernahme der dazugehörigen aufbereiteten
+Lokalprognosen ist ein eigener Quellenentscheid. Die bestehende ICON-Seamless-
+Prognose wird nicht automatisch ersetzt.
+
+Der [konkrete Lokalprognoseplan](LOCAL_FORECAST_PLAN_DE.md) enthält Nachweise,
+Grenzen, Datenvertrag, vier Vergleichsorte und Entscheidungspunkte. Ein direkter
+OGD-Datenabruf mit Ressourcenmessung steht noch aus. Ein Suchtreffer oder eine
+Prognose für einen POI belegt weiterhin keine Warnabdeckung für diesen Punkt;
+der bestätigte Warnort kann separat bestehen bleiben.
+
+Die folgenden Abschnitte zum Testkandidaten halten den Planungsstand vom
+17.10.2026 fest. Den inzwischen veröffentlichten Betastand und den am
+20.10.2026 bestätigten HACS-Quellenwechsel dokumentiert die
+[HACS-Abnahme](HACS_ABNAHME_DE.md). Die praktische Erstinstallation auf einem
+leeren System bleibt offen; eine zweite dauerhafte HA-Umgebung beim Anwender
+wird nicht vorausgesetzt. Diese Quellenplanung erfordert keine HA-Installation.
 
 ## Erster Umsetzungsschritt nach Freigabe
 
@@ -68,7 +95,7 @@ bleiben eigene Nachweise; diese begrenzte Bündelung vergibt keine Qualitätsstu
 | R0 · Laufende Freigabe | Den bereits geprüften Kandidaten, zusammengehörige Warnungsanpassungen, Rückweg und tatsächlichen Betrieb abnehmen; Erstinstallation/HACS-Wechsel praktisch prüfen | Exakter Quellstand und HA-Version, grüne Prüfungen, Betriebsbeobachtung und HACS-Nachweise dokumentiert sind | Vor einer öffentlichen Versionsfreigabe; POIs erweitern diesen Kandidaten nicht |
 | Q1 · Bronze-/Silver-Abgleich | Jede anwendbare Regel mit Code, Test und gegebenenfalls Praxisnachweis bewerten | Eine vollständige Lückenliste ohne pauschale «done»-Markierungen vorliegt | Kann jetzt rein lesend beginnen |
 | S1 · Silver schliessen | Quellenverhalten, Lebenszyklus, verbleibende Modulabdeckung und verständliche Parameter abschliessen | Alle anwendbaren Bronze-/Silver-Regeln belegt, begründete Ausnahmen dokumentiert sind | Q1; Umsetzung als kleine PRs nach R0 |
-| P0 · POI-Machbarkeit | Katalog, Kennungen, Punktprognose und Warnungszuordnung an drei Beispielen nachweisen | Ein Gipfel, ein Pass und eine Hütte reproduzierbar geprüft sind; unterstützte Daten und Grenzen feststehen | Kann unabhängig von R0 untersucht werden; keine Produktivänderung |
+| P0 · POI-Machbarkeit | Offiziellen OGD-Punktekatalog prüfen; aufbereitete Lokalprognosen separat bewerten | Ein Gipfel, ein Pass, eine Hütte und eine PLZ-Kontrolle geprüft sind; Warn-PLZ separat bestätigt bleibt | [L0 bis L2](LOCAL_FORECAST_PLAN_DE.md); unabhängig von R0 untersuchbar, keine Produktivänderung |
 | P1 · Standort- und Bedienkonzept | Gemeinsame Suche, klarer Verwendungszweck und kompatible Standortdaten festlegen | Dialogentwurf, Datenvertrag und Migrationsfälle geprüft sind | P0; Gold-Nachkonfiguration mitplanen |
 | P2 · POI-Funktion | Den bestätigten Umfang mit DE/EN/FR/IT, Tests und Hilfe umsetzen | Neue und bestehende Einträge sowie alle betroffenen Datenfamilien abgenommen sind | R0, S1 und P1; eigener Funktionsrelease |
 | G1 · Gold vervollständigen | Nachkonfiguration, Darstellungsdetails, Diagnosen, handlungsbezogene Repairs und Dokumentation ausbauen | Auch die gesamte Gold-Matrix samt Bronze/Silver belegt ist | S1; auf denselben Standortvertrag wie P1/P2 aufbauen |
@@ -158,7 +185,7 @@ Nutzungsgrundlage übernehmen; kein APK oder dekompilierter Fremdcode im Fork.
 Koordinatensystem, Höhe, Herkunft und unterstützte Daten getrennt modellieren.
 POI-Kennungen sind keine PLZ; kein pauschales Anhängen von `00`.
 Prognose- und Warnungsclients lösen diese Standorte über eigene Adapter auf.
-Ein Modellwechsel zu App-Punktprognosen ist ein expliziter Quellenentscheid;
+Ein Modellwechsel zu aufbereiteten Lokalprognosen (OGD oder App) ist ein expliziter Quellenentscheid;
 die bestehende ICON-Seamless-Quelle nicht still ersetzen.
 
 **Bestandsschutz:** Bei MeteoSwiss-Stations-Einträgen kommt der Prognoseort heute
@@ -221,7 +248,9 @@ Durchlauf vorzubereiten; automatisierte HA-/Recorder-/Flow-Tests liefern schon
 jetzt reproduzierbare Nachweise. Ein vollständiger HACS-Oberflächendurchlauf
 steht noch aus. Reale Geräte während der Prüfung nicht ansteuern.
 
-**Unmittelbar nächste Planungsarbeit:** Q1 in eine vollständige belegte Matrix
-überführen und P0 als begrenzten Quellenversuch spezifizieren. Fachliche Entscheidungen
-zu POI-Warnabdeckung, Katalogpflege und Stationswechsel vor der Implementierung
-abschliessen. Gold bleibt das Folge-Ziel nach nachgewiesenem Silver.
+**Unmittelbar nächste Planungsarbeit:** Den aktuellen Q1/S1-Nachweisstand abgleichen
+und L0 des [Lokalprognoseplans](LOCAL_FORECAST_PLAN_DE.md) durchführen: offiziellen
+Punktekatalog an vier Orten validieren, dann Downloadumfang und Parameterabdeckung
+der aufbereiteten Prognosen bewerten. Der App-Warnbezug bleibt separat bestehen.
+Katalogpflege und Stationswechsel vor der Implementierung abschliessen; Gold
+bleibt das Folge-Ziel nach nachgewiesenem Silver.
