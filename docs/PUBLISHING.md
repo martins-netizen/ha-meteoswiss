@@ -7,8 +7,10 @@ release ID `418588999`, `prerelease=true`, `draft=false`, `immutable=true`.
 The publication receipt and an independent release/tag read confirmed this.
 Its 33 component, translation and brand files match the live-accepted runtime.
 
-The runtime acceptance is complete. A clean HACS installation and HACS source
-switch remain unverified end to end; use the [practical acceptance plan](HACS_ABNAHME_DE.md).
+The runtime acceptance is complete. On 20 October 2026 the operator additionally
+confirmed the HACS 2.0.5 source switch to this fork, downloaded version 8.2.0b1,
+HA restart and a positive initial visual check. A clean first HACS installation
+remains open; see the scoped [HACS acceptance record](HACS_ABNAHME_DE.md).
 HACS listing and the HA Quality Scale remain separate assessments. This document
 does not publish, retag or install anything.
 
@@ -67,16 +69,16 @@ first checks whether the expected release already exists.
   Retain the integration domain, config entries, and IDs of retained entities
   and statistics. State the deliberately retired legacy season-HGT exception
   in the migration/release notes; do not promise that every old entity survives.
-- A clean first HACS installation and a same-domain HACS source switch remain
-  unverified end to end. The operator has no separate permanent HA test system;
-  the existing deployment was updated with a reviewed installer, not via HACS.
-  A clearly labelled first prerelease can be offered for explicit testing with
-  this limitation disclosed. Do not claim that either HACS path, a default-store
-  listing or nontechnical usability has already been validated.
-  Follow [START_DE.md](START_DE.md) and [WECHSEL_DE.md](WECHSEL_DE.md) for a later
-  controlled HACS rehearsal, checking actual UI wording, a single retained HA
-  entry, registry/statistic identity and the paired rollback. A disposable test
-  instance is sufficient; a second permanent installation is not required.
+- The deployed runtime was originally installed with a reviewed installer.
+  The operator has since confirmed the HACS 2.0.5 source switch, exact repository
+  and downloaded 8.2.0b1 version, restart and initial visual success. This is
+  operator-reported evidence; no new independent post-switch registry/statistic
+  or file-hash comparison, executed rollback, or clean first install is claimed.
+  The existing 24-hour runtime acceptance remains valid for the same code.
+  Follow [START_DE.md](START_DE.md) for the still-open first-install rehearsal;
+  [WECHSEL_DE.md](WECHSEL_DE.md) remains the source-switch guide for other users.
+  A disposable instance is sufficient; a second permanent HA installation is not
+  required. A default-store listing or nontechnical usability approval is not claimed.
 - Before updating an existing installation, migrate the actual warning
   consumers as described in [WARNING_CODES.md](WARNING_CODES.md). Wind is 0,
   thunderstorm 1, rain 2 and slippery roads 4. Category 5 is Frost; preserve
@@ -121,9 +123,11 @@ the version number alone or reinstall an identical runtime needlessly.
    and retain successful HACS/Hassfest checks and a usable support route.
    Neither this prerelease nor its rehearsal is a default-store approval.
 
-The exact beta-selection dialog is checked against HACS's current documentation
-and source on 20 October 2026. The operator's installed HACS version and UI still
-need a real check; source inspection is not an end-to-end installation test.
+The beta-selection route was checked against the source of HACS 2.0.5 and its
+pinned frontend 20250128065759 on 20 October 2026. The operator subsequently
+confirmed that version selection, download, source switch and restart succeeded.
+Source inspection alone is not a practical test; the clean first-install path
+still needs its own run.
 
 ## Published beta scope
 

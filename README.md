@@ -62,10 +62,11 @@ do not substitute a tag or development-branch download.
 Minimum supported/tested HA: **2026.8.3**; CI also covers **2026.10.1**.
 The candidate additionally passed local tests and deployed acceptance on
 **2026.10.2**. See the [beta notes and known limits](docs/RELEASE_8.2.0b1.md).
-A clean first HACS installation and an end-to-end HACS source switch have not
-yet been rehearsed; the [practical HACS acceptance plan](docs/HACS_ABNAHME_DE.md)
-keeps those checks separate from the completed runtime acceptance. A default-store
-listing and an official HA quality tier are not claimed.
+The operator confirmed the HACS 2.0.5 source switch, downloaded version
+`8.2.0b1`, restart and a positive initial visual check on 20 October 2026.
+A clean first HACS installation remains open. The [HACS acceptance record](docs/HACS_ABNAHME_DE.md)
+distinguishes this operator-confirmed result from independent technical evidence.
+A default-store listing and an official HA quality tier are not claimed.
 
 ## Data and compatibility
 

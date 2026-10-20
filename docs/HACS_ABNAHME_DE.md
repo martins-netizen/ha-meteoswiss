@@ -1,11 +1,12 @@
 # HACS-Abnahme der ersten Beta
 
-**Stand: 20. Oktober 2026 · Plan V1.0**
+**Stand: 20. Oktober 2026 · Plan und Nachweis V1.1**
 
 Die Beta **8.2.0b1** ist veröffentlicht. Ihr Integrationscode entspricht dem
-bereits auf HA 2026.10.2 abgenommenen Stand. Offen ist der konkrete Weg über
-HACS: zuerst die Versionsauswahl, danach Erstinstallation und Quellenwechsel.
-Dafür muss der bestehende HA-Betriebstest nicht nochmals beginnen.
+bereits auf HA 2026.10.2 abgenommenen Stand. Der Betreiber hat inzwischen den
+Quellenwechsel über HACS 2.0.5 mit Download von 8.2.0b1, Neustart und positiver
+erster Sichtprüfung bestätigt. Eine leere Erstinstallation bleibt separat offen.
+Der bestehende HA-Betriebstest muss für denselben Code nicht nochmals beginnen.
 
 ## 1. Zuerst nur nachsehen
 
@@ -83,22 +84,39 @@ Bei Problemen Software **und zugehörige Warnungsfilter** gemeinsam zurücksetze
 |---|---|
 | Öffentlicher GitHub-Prerelease und aufgelöster Tag | Bestätigt: 8.2.0b1 → abbb6b7701134ac2573f35b425ab3f0697a80540 |
 | Laufzeitcode auf HA 2026.10.2, 24 Stunden und Sichtprüfung | Abgeschlossen; Veröffentlichung enthält dieselben 33 Komponenten-/Sprach-/Brand-Dateien |
-| HACS-Version und vorhandene Softwarequelle des konkreten Systems | Für diese HACS-Abnahme noch zu erfassen |
-| 8.2.0b1 im tatsächlichen HACS-Dialog ausdrücklich auswählbar | Noch praktisch zu bestätigen |
+| HACS-Version und ursprüngliche Softwarequelle | Betreiber bestätigt HACS 2.0.5 und LNKtwo/ha-meteoswiss |
+| 8.2.0b1 im tatsächlichen HACS-Dialog auswählbar und heruntergeladen | Vom Betreiber am 20.10.2026 bestätigt |
+| Aktive HACS-Softwarequelle und Neustart | Betreiberbestätigung 20.10.2026 19:57 MESZ: martins-netizen/ha-meteoswiss, 8.2.0b1 heruntergeladen, HA neu gestartet |
+| Erste Sichtprüfung nach dem Quellenwechsel | Betreiber meldet am 20.10.2026 19:56 MESZ ein positives Ergebnis |
 | Leere HACS-Erstinstallation | Offen |
-| HACS-Quellenwechsel mit Identitäts-/Statistikerhalt | Offen |
+| Neuer unabhängiger Vergleich von Live-Dateien, IDs und Statistiken nach dem HACS-Wechsel | Nicht erhoben; frühere technische Laufzeitabnahme bleibt als solche erhalten |
 | Branch im Versionsangebot zuverlässig ausgeblendet | Für 8.2.0b1 nicht zugesichert; deren hacs.json enthält hide_default_branch nicht |
 | HACS-Standardkatalog oder offizielle HA-Qualitätsstufe | Nicht beantragt beziehungsweise nicht bestätigt |
 
-Die Prüfung der offiziellen HACS-Dokumentation und des aktuellen Quellcodes
-klärt den vorgesehenen Bedienweg. Sie ersetzt keinen dieser offenen Praxistests.
+**Abschluss des praktischen Quellenwechsels:** Die textliche Betreiberbestätigung
+belegt HACS-Quelle, heruntergeladene Version und den erfolgten Neustart; die
+vorangehende Rückmeldung bestätigt die erste Sichtprüfung. Die eingereichten
+Bilddateien waren in dieser Sitzung technisch nicht lesbar und werden deshalb
+nicht als unabhängig geprüfte Bildnachweise ausgegeben. Es wurden daraus keine
+neuen Dateiprüfsummen, Registry-Zählungen oder Statistik-Identitätsvergleiche
+abgeleitet. Ein tatsächlicher Rollback wurde ebenfalls nicht ausgeführt.
+
+Die HACS-2.0.5-Quellenprüfung klärt zusätzlich den Bedienweg: Bei einem noch
+nicht heruntergeladenen Eintrag öffnet die Schaltfläche unten rechts auf dessen
+Detailseite den Download-Dialog. Das Hinzufügen eines Custom Repository ist
+noch kein Download. Diese Schritte sind vom vorhandenen HACS-Softwareeintrag
+und von der eingerichteten HA-Integration unter Geräte & Dienste zu unterscheiden.
+
 Der veröffentlichte Beta-Tag bleibt unverändert; eine künftige Branch-Ausblendung
-muss mit der passenden veröffentlichten Manifest-Version geprüft werden.
+muss mit der passenden veröffentlichten Manifest-Version geprüft werden. Die
+weiterhin offene leere HACS-Erstinstallation wird in einer temporären Instanz
+getestet; sie erfordert keine Wiederholung des abgeschlossenen Quellenwechsels
+oder einen Neustart des bereits abgeschlossenen 24-Stunden-Betriebstests.
 
 ## Referenzen
 
 - [HACS: eigenes Repository hinzufügen](https://www.hacs.xyz/docs/faq/custom_repositories/)
 - [HACS: Metadaten aktualisieren und bestimmte Version herunterladen](https://www.hacs.xyz/docs/use/repositories/dashboard/)
 - [HACS: Manifest und hide_default_branch](https://www.hacs.xyz/docs/publish/start/)
-- [HACS: versionsabhängiges Lesen des Manifests](https://github.com/hacs/integration/blob/main/custom_components/hacs/repositories/base.py)
-- [HACS: Release-Liste im Download-Dialog](https://github.com/hacs/frontend/blob/main/src/components/dialogs/hacs-download-dialog.ts)
+- [HACS: versionsabhängiges Lesen des Manifests](https://github.com/hacs/integration/blob/2.0.5/custom_components/hacs/repositories/base.py)
+- [HACS: Release-Liste im Download-Dialog](https://github.com/hacs/frontend/blob/20250128065759/src/components/dialogs/hacs-download-dialog.ts)
