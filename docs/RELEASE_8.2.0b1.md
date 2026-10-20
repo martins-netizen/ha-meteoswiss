@@ -64,11 +64,25 @@ Before tagging, compare every component file byte for byte and complete the
 publication PR's checks. Tag the approved merged publication commit, not an
 unmerged PR or an unrelated branch.
 
+## Acceptance update — 20 October 2026
+
+After publication, the operator confirmed the HACS 2.0.5 source switch to
+`martins-netizen/ha-meteoswiss`, downloaded version `8.2.0b1`, restart and a
+positive initial visual check. The [current HACS record](HACS_ABNAHME_DE.md)
+distinguishes that operator-reported evidence from an independent technical
+post-switch comparison. A clean first installation remains open. This update
+applies to the development documentation; it does not modify the immutable
+published beta, its tag or its release-time evidence.
+
+See the [stable-release checklist (German)](FREIGABESTAND_DE.md) for the
+remaining work and the features intentionally deferred beyond this release.
+
 ## Known limits of the first beta
 
-- The actual deployment used a reviewed installer. A clean first HACS install
-  and a HACS source-switch rehearsal have **not** been completed end to end.
-  This beta does not claim those routes have already been verified.
+- The runtime was initially deployed with a reviewed installer. The operator
+  subsequently confirmed the HACS source switch and initial visual success.
+  A clean first HACS install and an executed recovery rehearsal remain open;
+  no new independent post-switch file/registry/statistic comparison is claimed.
 - HACS custom-repository availability, default-store inclusion and the HA
   Integration Quality Scale are separate. No default-store listing or official
   Silver/Gold/Platinum tier is claimed.

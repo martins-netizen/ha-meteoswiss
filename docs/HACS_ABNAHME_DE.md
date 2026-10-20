@@ -1,12 +1,15 @@
 # HACS-Abnahme der ersten Beta
 
-**Stand: 20. Oktober 2026 · Plan und Nachweis V1.1**
+**Stand: 20. Oktober 2026 · Plan und Nachweis V1.2**
 
 Die Beta **8.2.0b1** ist veröffentlicht. Ihr Integrationscode entspricht dem
 bereits auf HA 2026.10.2 abgenommenen Stand. Der Betreiber hat inzwischen den
 Quellenwechsel über HACS 2.0.5 mit Download von 8.2.0b1, Neustart und positiver
 erster Sichtprüfung bestätigt. Eine leere Erstinstallation bleibt separat offen.
 Der bestehende HA-Betriebstest muss für denselben Code nicht nochmals beginnen.
+Der [aktuelle Freigabestand](FREIGABESTAND_DE.md) bündelt die nächsten Schritte
+zur ersten stabilen Version; neue Orts-/POI-Funktionen gehören nicht zu deren
+Abnahmekriterien.
 
 ## 1. Zuerst nur nachsehen
 

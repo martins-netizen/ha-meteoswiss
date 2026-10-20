@@ -67,6 +67,8 @@ The operator confirmed the HACS 2.0.5 source switch, downloaded version
 A clean first HACS installation remains open. The [HACS acceptance record](docs/HACS_ABNAHME_DE.md)
 distinguishes this operator-confirmed result from independent technical evidence.
 A default-store listing and an official HA quality tier are not claimed.
+The [current acceptance and stable-release checklist (German)](docs/FREIGABESTAND_DE.md)
+separates completed beta work from the remaining release gates and later features.
 
 ## Data and compatibility
 
