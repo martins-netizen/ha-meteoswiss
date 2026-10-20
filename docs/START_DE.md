@@ -70,12 +70,19 @@ sie noch nicht zur freigegebenen Version für den Alltag.
    (englisch: **Custom repositories**).
 3. Trage `https://github.com/martins-netizen/ha-meteoswiss` ein, wähle
    **Integration** und klicke **Hinzufügen / Add**.
-4. Öffne den neuen Eintrag **MeteoSwiss (maintained fork)** und wähle
-   **Herunterladen / Download**. Wähle ausdrücklich die freigegebene Version.
-   Falls eine freigegebene Vorabversion ausgeblendet ist, aktiviere ihre Anzeige
-   in HACS. Wird die Version weiterhin nicht angeboten, halte hier an.
-   Wähle nicht ersatzweise einen Entwicklungsbranch.
+4. Öffne den neuen Eintrag **MeteoSwiss (maintained fork)** und den Dialog
+   **Herunterladen / Download**. Klappe **Andere Version benötigt? /
+   Need a different version?** auf und wähle im Feld **Release** ausdrücklich
+   **8.2.0b1**. Prüfe vor dem endgültigen Herunterladen, dass genau diese
+   Version angekündigt wird. Bei älteren HACS-Versionen kann zusätzlich eine
+   Option für die Anzeige von Beta-Versionen nötig sein. Fehlt die Zielversion,
+   halte an; wähle nicht ersatzweise einen Commit oder Entwicklungsbranch.
 5. Starte Home Assistant neu und warte, bis die Oberfläche wieder erreichbar ist.
+
+Die HACS-Metadaten lassen sich über **Dreipunktmenü → Informationen aktualisieren /
+Update information** neu laden. Das lädt noch keine Integrationsdateien herunter.
+Die genaue praktische HACS-Abnahme ist [hier dokumentiert](HACS_ABNAHME_DE.md);
+sie ist für diese Beta noch nicht vollständig durchgeführt.
 
 Das Herunterladen stellt die Software bereit. Erst im nächsten Schritt legst
 du fest, für welchen Ort sie Daten liefern soll.

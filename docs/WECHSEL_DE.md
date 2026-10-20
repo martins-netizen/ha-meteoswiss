@@ -144,14 +144,21 @@ Für einen Wechsel von `LNKtwo/ha-meteoswiss`:
    Löschen der eingerichteten Integration unter **Geräte & Dienste**.
 2. Füge in **HACS → Dreipunktmenü → Benutzerdefinierte Repositories**
    `https://github.com/martins-netizen/ha-meteoswiss` als **Integration** hinzu.
-3. Öffne **MeteoSwiss (maintained fork)** und lade die ausdrücklich freigegebene
-   Version herunter. Bei Vorabversionen muss deren Anzeige gegebenenfalls
-   erst aktiviert werden. Wenn die Zielversion fehlt oder HACS die Umstellung
-   ablehnt, halte an; weder die HA-Einrichtung löschen noch versteckte
+3. Öffne **MeteoSwiss (maintained fork)** und den Dialog **Herunterladen /
+   Download** beziehungsweise **Erneut herunterladen / Redownload**. Unter
+   **Andere Version benötigt? / Need a different version? → Release** wählst du
+   ausdrücklich **8.2.0b1**. Prüfe die angekündigte Version, bevor du den Download
+   bestätigst. Bei älteren HACS-Versionen kann zusätzlich eine Option für
+   Beta-Versionen nötig sein. Fehlt die Zielversion oder lehnt HACS die
+   Umstellung ab, halte an; weder die HA-Einrichtung löschen noch versteckte
    Konfigurationsdateien bearbeiten.
 4. Prüfe die gleichzeitig vorbereiteten Warnungsanpassungen und starte
    Home Assistant anschliessend **einmal neu**. Zwischen Entfernen und Ersetzen
    der Software ist kein zusätzlicher Neustart vorgesehen.
+
+Eine vorgeschaltete [HACS-Abnahme](HACS_ABNAHME_DE.md) unterscheidet die reine
+Versionsauswahl von der tatsächlichen Softwareumstellung. Entferne den alten
+Softwareeintrag erst, wenn Backup, Rückweg und die Zielversion bestätigt sind.
 
 Beide Repositories verwalten denselben Integrationsordner `meteoswiss`.
 Sie sollen nicht gleichzeitig als aktive Softwarequellen geführt werden.
