@@ -1,5 +1,23 @@
 # Changelog
 
+## Candidate acceptance — 20 October 2026
+
+- The deployed `8.2.0b1` runtime at `0086b956d44b7144b242c5d5c1881d0b0650e524`
+  completed its own 24-hour observation period on HA 2026.10.2. Code hashes,
+  retained entity/statistic identities, personal settings and consumers matched
+  the expected installation. Hourly rain statistics progressed without missing
+  expected complete hours.
+- The isolated optional UV request failure was correctly shown as unavailable
+  and recovered on the next scheduled refresh. Other checked data stayed
+  available. Forecast pollen is visually confirmed under Sensors; all twelve
+  pollen categories were verified in the registry.
+- This is acceptance evidence, not a release announcement. The first fork
+  prerelease is still prepared, and end-to-end HACS installation/source-switch
+  rehearsals remain outstanding. See [prepared beta notes](docs/RELEASE_8.2.0b1.md).
+- Correct the release checklist's older candidate reference and distinguish
+  deployed runtime acceptance from HACS distribution and official quality tiers.
+  No integration code or metadata changes in this publication-preparation PR.
+
 ## Unreleased — quality baseline, publication gaps and pollen availability
 
 - Show modelled Open-Meteo and measured MeteoSwiss pollen under **Sensors** on

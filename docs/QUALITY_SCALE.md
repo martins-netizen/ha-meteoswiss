@@ -1,5 +1,26 @@
 # Quality roadmap and evidence
 
+## Latest acceptance update — 20 October 2026
+
+The live candidate is `8.2.0b1` at
+`0086b956d44b7144b242c5d5c1881d0b0650e524`. Local verification recorded 786
+passing tests on both HA 2026.8.3 and 2026.10.2, with 99.051% combined
+line/branch coverage. The exact accepted commit also passed its six post-merge
+checks (including HA 2026.10.1, HACS validation, Hassfest and CodeQL).
+
+Its deployed 24-hour observation completed on 20 October 2026. Registry
+identity, personal settings, warning consumers and hourly rain statistics
+matched expectations. One isolated optional UV failure recovered on the next
+scheduled refresh; the failure remained local to UV. Forecast pollen's Sensors
+grouping is visually confirmed, and all twelve pollen categories were checked
+in the registry. Earlier dated entries below describe their earlier baselines.
+
+These findings do not close unrelated Bronze/Silver gaps or award an official
+HA quality tier. A first HACS installation and source-switch rehearsal remain
+unverified end to end. The [prepared beta notes](RELEASE_8.2.0b1.md) state those
+limits; no new runtime or HA deployment is required for documentation-only
+publication changes whose component files match the accepted commit.
+
 This is a self-assessment against the current
 [Home Assistant Integration Quality Scale](https://developers.home-assistant.io/docs/core/integration-quality-scale/rules/).
 It is not an official HA rating, HACS certification or release approval. HACS

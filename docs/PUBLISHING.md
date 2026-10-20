@@ -22,9 +22,25 @@ settings must be verified from GitHub; documentation does not change them.
 ## Candidate and deployment evidence
 
 Record the **exact merged candidate commit**, supported HA version, CI links
-and date. The currently prepared warning migration is based on PR #19,
-`a566eb3305b968fbc4bfb73ff0ca43a55145a809`; that identifies a code candidate,
-not a claim that it is installed or released.
+and date. The live-accepted runtime is PR #31's merged commit
+`0086b956d44b7144b242c5d5c1881d0b0650e524`, version `8.2.0b1`.
+It was installed on HA 2026.10.2 on 19 October 2026 and completed its exact
+24-hour observation period on 20 October 2026. The original protected
+candidate commit passed all six post-merge checks. Manifest and module versions
+both read `8.2.0b1`; DE/EN/FR/IT ship together.
+
+The review found one isolated optional UV failure. It was reported as
+unavailable and recovered on the next scheduled refresh; other checked data
+remained available. The device-page visual check confirms forecast pollen
+under Sensors. Registry checks confirm all twelve pollen categories, retained
+identities, settings, consumers and hourly rain statistics. These are scoped
+acceptance findings, not a guarantee of future provider availability.
+
+The current publication PR changes documentation only. Verify every file below
+`custom_components/meteoswiss/` against the accepted commit before merging or
+tagging. Use the resulting merged publication commit for the tag; do not tag
+an unmerged PR or reinstall byte-identical runtime files.
+[Prepared release notes](RELEASE_8.2.0b1.md) record the scope and remaining limits.
 
 - All CI compatibility jobs, Hassfest and CodeQL must pass for the candidate.
   Run the official **HACS validation** with no ignored checks; missing Issues,
@@ -33,13 +49,16 @@ not a claim that it is installed or released.
   Retain the integration domain, config entries, and IDs of retained entities
   and statistics. State the deliberately retired legacy season-HGT exception
   in the migration/release notes; do not promise that every old entity survives.
-- Rehearse a first installation and a same-domain HACS source switch in a
-  separate HA test installation. Follow [START_DE.md](START_DE.md) and
-  [WECHSEL_DE.md](WECHSEL_DE.md), checking actual HACS UI wording, a single
-  preserved HA entry, registry/statistic identity and the paired rollback.
-  Source review and reading the HACS manual are not this end-to-end rehearsal.
-  Have a new user follow the steps and record confusing points before claiming
-  that nontechnical usability has been demonstrated.
+- A clean first HACS installation and a same-domain HACS source switch remain
+  unverified end to end. The operator has no separate permanent HA test system;
+  the existing deployment was updated with a reviewed installer, not via HACS.
+  A clearly labelled first prerelease can be offered for explicit testing with
+  this limitation disclosed. Do not claim that either HACS path, a default-store
+  listing or nontechnical usability has already been validated.
+  Follow [START_DE.md](START_DE.md) and [WECHSEL_DE.md](WECHSEL_DE.md) for a later
+  controlled HACS rehearsal, checking actual UI wording, a single retained HA
+  entry, registry/statistic identity and the paired rollback. A disposable test
+  instance is sufficient; a second permanent installation is not required.
 - Before updating an existing installation, migrate the actual warning
   consumers as described in [WARNING_CODES.md](WARNING_CODES.md). Wind is 0,
   thunderstorm 1, rain 2 and slippery roads 4. Category 5 is Frost; preserve
@@ -95,10 +114,13 @@ the version number alone or reinstall an identical runtime needlessly.
 - App v3 warning source, verified thirteen-family catalogue and complete
   German/English/French/Italian labels, including prepared Thaw handling.
 - Measured/forecast pollen, air quality and isolated optional UV availability.
-- Required minimum HA 2026.8.3; CI also covers HA 2026.10.1.
+- Required minimum HA 2026.8.3; CI also covers HA 2026.10.1. Local tests and
+  deployed 24-hour acceptance additionally cover HA 2026.10.2.
 - Migration warning: review numeric warning filters and dashboard labels before
   updating; existing config entries and retained entity/statistic IDs remain.
-  The obsolete forecast-only season-HGT entity is deliberately removed.
+  The obsolete forecast-only season-HGT and derived current-hour rain entities
+  are deliberately removed. The measured 10-minute rain entity and official
+  hourly rain statistics remain; independent user helpers are not deleted.
 - Not an official MeteoSwiss product. Data and alerts can be delayed or incomplete;
   this integration does not replace the providers' official warning channels.
 
@@ -120,7 +142,7 @@ periodically alongside other tooling; changing a source action SHA alone would
 not pin its mutable container tag. The validator reads the exact public PR/push
 commit with a read-only token, has no ignored checks and posts no comments.
 
-References checked 17 October 2026:
+Publication requirements rechecked 20 October 2026:
 
 - [HACS general requirements and releases](https://www.hacs.xyz/docs/publish/start/)
 - [HACS integration requirements](https://www.hacs.xyz/docs/publish/integration/)
