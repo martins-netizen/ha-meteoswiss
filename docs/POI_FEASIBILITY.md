@@ -1,6 +1,6 @@
 # POI feasibility: first bounded source probe
 
-**Document version:** 1.2 · **Probe:** 17 October 2026 · **English update:** 21 October 2026
+**Document version:** 1.3 · **Probe:** 17 October 2026 · **Updated:** 21 October 2026
 **Result:** Public name search and coordinate-based forecasts were exercised.
 Current App-catalogue access and complete POI-warning coverage were not proved.
 No POI feature was implemented or approved by this probe.
@@ -14,6 +14,17 @@ That route does not depend on successful App-POI access. Keep App v3 warnings
 and a separately confirmed warning postcode. A forecast point alone proves no
 point-specific warning coverage; adopting processed OGD forecasts needs its
 own data/resource/source decision.
+
+**New catalogue evidence, 21 October:** a direct bounded OGD download and
+STAC checksum comparison now establish **5820 rows / 5816 unique type/ID pairs**,
+including **631 POIs**. Kloten postal centre, Säntis POI, Gotthardpass and
+Albert-Heim-Hütte SAC are present with provider-declared WGS84/LV95 coordinates
+and heights. Four duplicated station keys have fully identical rows; 86 bare
+IDs occur in multiple types. See the
+[current catalogue audit](LOCAL_FORECAST_PLAN.md#catalogue-snapshot-verified-on-21-october-2026)
+and [compact evidence](evidence/local_forecast_catalogue_2026-10-21.json).
+This improves catalogue/altitude provenance; it does not turn the historical
+App probe, forecast-source evaluation or warning-coverage questions into passes.
 
 The [development plan](NEXT_RELEASE_PLAN.md) uses three mountain examples plus
 a postcode control. This probe used documented public swisstopo search and the

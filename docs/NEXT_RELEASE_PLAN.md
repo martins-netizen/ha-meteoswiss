@@ -1,7 +1,7 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.4 · **Updated:** 21 October 2026
-**Status:** Approved planning; Q1 is documented and P0 has partial evidence.
+**Plan version:** 1.5 · **Updated:** 21 October 2026
+**Status:** Approved planning; Q1 is documented and the current OGD point catalogue is audited. Full P0 remains open.
 This document does not approve a new feature, installation or release.
 
 ## Current position
@@ -22,6 +22,11 @@ separate decisions; do not silently replace the existing ICON Seamless source.
 The [bounded local-forecast plan](LOCAL_FORECAST_PLAN.md) defines the
 catalogue, resource and compatibility evidence needed before implementation.
 A working App-POI catalogue endpoint is not a prerequisite for that OGD route.
+The 21 October download verifies **5816 unique type/ID pairs**, including
+**631 POIs** and all four comparison places. Four duplicate station pairs are
+fully identical; 86 bare IDs span multiple types. The plan records hashes,
+coordinates, catalogue heights and a proposed result display. Forecast payloads,
+resource cost, actual selection UX and complete P0 acceptance remain open.
 Selecting a forecast POI does not establish point-specific warning coverage;
 a separately confirmed warning postcode can remain supported.
 

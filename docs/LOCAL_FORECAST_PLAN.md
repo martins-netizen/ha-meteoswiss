@@ -1,7 +1,7 @@
 # Local forecast points: separate catalogue and forecast decisions
 
-**Plan version:** 1.1 · **Updated:** 21 October 2026
-**Status:** Documented source review and bounded work plan.
+**Plan version:** 1.2 · **Updated:** 21 October 2026
+**Status:** Current catalogue independently downloaded and audited; implementation remains planned.
 No runtime change, new source adapter or HA installation.
 
 ## Decision and purpose
@@ -41,13 +41,73 @@ Official metadata:
 [point catalogue](https://data.geo.admin.ch/ch.meteoschweiz.ogd-local-forecasting/ogd-local-forecasting_meta_point.csv)
 and [parameter catalogue](https://data.geo.admin.ch/ch.meteoschweiz.ogd-local-forecasting/ogd-local-forecasting_meta_parameters.csv).
 
-**Evidence limit:** documentation, STAC collection metadata and the provider's
-format-check script were read. The available web reader could not read CSV
-payloads because of their content type; an additional STAC item request was
-not accessible through that reader. Neither proves a provider outage.
-No independent current point count, forecast values, downloaded-file size/hash,
-runtime or memory measurement was obtained. Reading the vendor script is not
-running and passing its live test.
+That initial review did not obtain CSV payloads through the web reader. The
+bounded direct download below now supplies independent catalogue evidence;
+the earlier access limitation did not establish a provider outage.
+
+## Catalogue snapshot verified on 21 October 2026
+
+At **05:48:52 UTC**, a verified HTTPS GET returned the official point CSV:
+**828864 bytes**, Latin1/semicolon, below the enforced 2 MiB download limit.
+Its SHA-256 is
+`bdf63842f244d4e5f232bc116f2dd71080fef34152a770258ffb90f03ed9dfeb`.
+The independently downloaded STAC collection reports the same SHA-256
+multihash and a catalogue modification time of **03:55:15 UTC** that day.
+Checksum agreement identifies this snapshot; it is not a digital signature.
+
+| Catalogue category | Rows | Unique type/ID pairs |
+|---|---:|---:|
+| 1 — station | 1118 | 1114 |
+| 2 — postal code centre | 4071 | 4071 |
+| 3 — Point of Interest | 631 | 631 |
+| **Total** | **5820** | **5816** |
+
+These are forecast-catalogue records, not a count of active observation
+stations or proof of full App coverage. All rows have the fourteen expected
+columns, documented types, nonempty required fields and finite coordinates/
+heights. WGS84 latitude/longitude bounds pass. No height is missing in this
+snapshot. Both WGS84 and LV95 are explicitly named in the columns; height is
+declared as metres above sea level. An independent CRS transformation or
+survey-height validation was not performed.
+
+Four station keys occur twice: **(1,123) Seengen**, **(1,167) Gadmen**,
+**(1,358) Kiental** and **(1,729) Zweisimmen**. Each pair is identical across
+all fourteen columns. Collapse identical rows; reject conflicting identity
+records rather than silently taking the first. **86 bare IDs occur in multiple
+types**, independently confirming why identity must include type and ID.
+
+### Proposed selection display, grounded in actual records
+
+| Name | Category | Type / ID | Height | WGS84 latitude / longitude |
+|---|---|---|---:|---|
+| 8302 Kloten | Postal code centre | `2 / 830200` | 436 m | 47.451253 / 8.579761 |
+| Säntis | Point of Interest | `3 / 711` | 2502 m | 47.249425 / 9.343242 |
+| Gotthardpass | Point of Interest | `3 / 594` | 2107 m | 46.559306 / 8.561156 |
+| Albert-Heim-Hütte SAC | Point of Interest | `3 / 454` | 2542 m | 46.608917 / 8.463553 |
+
+All four intended examples exist; no neighbouring point was substituted.
+The catalogue also contains **Säntis station (1,35), 2501 m** and
+**Zürich/Kloten station (1,59), 426 m**. They are distinct from the POI and
+postal-code examples. Do not confuse Kloten's catalogue centre with the
+previous swisstopo search result, observation station or HA home coordinates.
+
+The generic POI category supplies no per-record summit/pass/hut subtype.
+Names suggest those familiar examples, but must not be promoted to verified
+subtypes without another documented source. Altitude remains catalogue data,
+not the forecast model's grid height or an automatic Open-Meteo elevation choice.
+
+The parameter CSV was also downloaded: **8559 bytes**, **32 unique parameter
+names**, and its SHA-256 matches STAC metadata. This does not establish actual
+forecast field coverage or timestamp/aggregation semantics.
+
+[Compact audit evidence](evidence/local_forecast_catalogue_2026-10-21.json)
+records source URLs, UTC times, hashes, schema checks, duplicate findings and
+the selected public rows. The audit used Python's standard-library CSV parser
+with explicit Latin1 and semicolon settings, exact column/row-width checks,
+finite numeric checks, grouping by the unchanged string type/ID pair and
+full-row equality for duplicates. No integration parser or selection flow is
+implemented. Forecast values, update cost, memory, CPU, accuracy and warning
+coverage remain untested. The proposed display still needs usability review.
 
 ## L0: verify the catalogue at four public examples
 
@@ -56,7 +116,7 @@ comparison. Do not infer OGD IDs from App IDs. First establish whether each
 example exists in the current official catalogue. A missing example is a result;
 do not silently substitute a neighbouring point.
 
-After a bounded download, record UTC retrieval time, source URL, byte count,
+The first bounded download is recorded above. On future rechecks, record UTC retrieval time, source URL, byte count,
 SHA-256, expected columns, valid counts by type, duplicate identity pairs and
 the four selected records. Retain catalogue/provider modification times only
 when actually supplied. Establish coordinates/CRS, altitude reference and units
@@ -69,7 +129,7 @@ Missing altitude remains unknown. A grid-model height must not masquerade as
 summit height. Check Unicode/accents, empty results, duplicates, unknown types
 and removed points.
 
-**L0 complete when:** the four records or their absence are documented,
+**L0 catalogue audit is complete; L0 as a whole remains open.** Complete when the four records or their absence are documented,
 identity/coordinate contracts are settled and the result-selection prototype is
 understandable. A working App catalogue endpoint is not another prerequisite.
 

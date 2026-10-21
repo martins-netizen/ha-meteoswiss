@@ -1,0 +1,223 @@
+{
+  "evidence_version": "1.0",
+  "scope": "Public metadata snapshot audit; no HA installation or forecast-source change",
+  "catalogue": {
+    "url": "https://data.geo.admin.ch/ch.meteoschweiz.ogd-local-forecasting/ogd-local-forecasting_meta_point.csv",
+    "status": 200,
+    "content_type": "text/csv",
+    "bytes": 828864,
+    "sha256": "bdf63842f244d4e5f232bc116f2dd71080fef34152a770258ffb90f03ed9dfeb",
+    "retrieved_at": "2026-10-21T05:48:52.683140+00:00",
+    "encoding": "latin-1",
+    "delimiter": ";",
+    "enforced_download_limit_bytes": 2097152,
+    "provider_updated_at": "2026-10-21T03:55:15.951729Z",
+    "stac_checksum": "1220bdf63842f244d4e5f232bc116f2dd71080fef34152a770258ffb90f03ed9dfeb",
+    "downloaded_sha256_matches_stac_checksum": true
+  },
+  "collection": {
+    "url": "https://data.geo.admin.ch/api/stac/v1/collections/ch.meteoschweiz.ogd-local-forecasting",
+    "retrieved_at": "2026-10-21T05:51:22.735502+00:00",
+    "bytes": 3105,
+    "sha256": "eb5924a372f78abcfa3d58e8ea1f030ce20d4f1b19ac68729450c35471244d75"
+  },
+  "parameter_catalogue": {
+    "url": "https://data.geo.admin.ch/ch.meteoschweiz.ogd-local-forecasting/ogd-local-forecasting_meta_parameters.csv",
+    "retrieved_at": "2026-10-21T05:51:17.147162+00:00",
+    "bytes": 8559,
+    "sha256": "3d2d50f8e79b4a06281f3f855cadc62566629bdb341cf9ba841a68e36079371b",
+    "provider_updated_at": "2026-04-23T04:29:06.581742Z",
+    "downloaded_sha256_matches_stac_checksum": true,
+    "unique_parameter_names": 32
+  },
+  "validation": {
+    "expected_columns": [
+      "point_id",
+      "point_type_id",
+      "station_abbr",
+      "postal_code",
+      "point_name",
+      "point_type_de",
+      "point_type_fr",
+      "point_type_it",
+      "point_type_en",
+      "point_height_masl",
+      "point_coordinates_lv95_east",
+      "point_coordinates_lv95_north",
+      "point_coordinates_wgs84_lat",
+      "point_coordinates_wgs84_lon"
+    ],
+    "all_rows_have_expected_field_count": true,
+    "all_required_fields_present": true,
+    "station_abbr_only_for_type_1_and_postal_code_only_for_type_2": true,
+    "only_documented_types_1_2_3": true,
+    "all_coordinates_and_heights_finite": true,
+    "all_latitudes_and_longitudes_in_geographic_range": true,
+    "no_independent_crs_transformation_check": true,
+    "missing_height_rows": 0,
+    "rows": 5820,
+    "unique_composite_identities": 5816,
+    "rows_by_type": {
+      "1": 1118,
+      "2": 4071,
+      "3": 631
+    },
+    "unique_composite_identities_by_type": {
+      "1": 1114,
+      "2": 4071,
+      "3": 631
+    },
+    "duplicate_identity_keys": [
+      {
+        "point_type_id": "1",
+        "point_id": "123",
+        "name": "Seengen",
+        "rows": 2,
+        "all_columns_identical": true
+      },
+      {
+        "point_type_id": "1",
+        "point_id": "167",
+        "name": "Gadmen",
+        "rows": 2,
+        "all_columns_identical": true
+      },
+      {
+        "point_type_id": "1",
+        "point_id": "358",
+        "name": "Kiental",
+        "rows": 2,
+        "all_columns_identical": true
+      },
+      {
+        "point_type_id": "1",
+        "point_id": "729",
+        "name": "Zweisimmen",
+        "rows": 2,
+        "all_columns_identical": true
+      }
+    ],
+    "conflicting_duplicate_identity_keys": 0,
+    "bare_ids_shared_across_types": 86
+  },
+  "selected_public_examples": [
+    {
+      "point_type_id": "2",
+      "point_id": "830200",
+      "name": "Kloten",
+      "type_description_en": "Postal code center",
+      "station_abbr": null,
+      "postal_code": "8302",
+      "height_masl": 436.0,
+      "coordinates_wgs84": {
+        "latitude": 47.451253,
+        "longitude": 8.579761
+      },
+      "coordinates_lv95": {
+        "east": 2686058.0,
+        "north": 1256233.0
+      }
+    },
+    {
+      "point_type_id": "3",
+      "point_id": "711",
+      "name": "Säntis",
+      "type_description_en": "Point of Interest",
+      "station_abbr": null,
+      "postal_code": null,
+      "height_masl": 2502.0,
+      "coordinates_wgs84": {
+        "latitude": 47.249425,
+        "longitude": 9.343242
+      },
+      "coordinates_lv95": {
+        "east": 2744171.0,
+        "north": 1234917.0
+      }
+    },
+    {
+      "point_type_id": "3",
+      "point_id": "594",
+      "name": "Gotthardpass",
+      "type_description_en": "Point of Interest",
+      "station_abbr": null,
+      "postal_code": null,
+      "height_masl": 2107.0,
+      "coordinates_wgs84": {
+        "latitude": 46.559306,
+        "longitude": 8.561156
+      },
+      "coordinates_lv95": {
+        "east": 2686073.0,
+        "north": 1157063.0
+      }
+    },
+    {
+      "point_type_id": "3",
+      "point_id": "454",
+      "name": "Albert-Heim-Hütte SAC",
+      "type_description_en": "Point of Interest",
+      "station_abbr": null,
+      "postal_code": null,
+      "height_masl": 2542.0,
+      "coordinates_wgs84": {
+        "latitude": 46.608917,
+        "longitude": 8.463553
+      },
+      "coordinates_lv95": {
+        "east": 2678518.0,
+        "north": 1162475.0
+      }
+    }
+  ],
+  "same_name_station_controls": [
+    {
+      "point_type_id": "1",
+      "point_id": "35",
+      "name": "Säntis",
+      "type_description_en": "Station",
+      "station_abbr": "SAE",
+      "postal_code": null,
+      "height_masl": 2501.0,
+      "coordinates_wgs84": {
+        "latitude": 47.249447,
+        "longitude": 9.343469
+      },
+      "coordinates_lv95": {
+        "east": 2744188.0,
+        "north": 1234920.0
+      }
+    },
+    {
+      "point_type_id": "1",
+      "point_id": "59",
+      "name": "Zürich / Kloten",
+      "type_description_en": "Station",
+      "station_abbr": "KLO",
+      "postal_code": null,
+      "height_masl": 426.0,
+      "coordinates_wgs84": {
+        "latitude": 47.479611,
+        "longitude": 8.535961
+      },
+      "coordinates_lv95": {
+        "east": 2682711.0,
+        "north": 1259339.0
+      }
+    }
+  ],
+  "implementation_decisions": [
+    "Persist provider, point_type_id and opaque point_id together; a bare number is not identity.",
+    "Collapse only fully identical duplicate records; reject conflicting records rather than selecting silently.",
+    "Use provider-declared WGS84/LV95 coordinate columns and catalogue height_masl provenance.",
+    "The generic Point of Interest category does not provide a per-record summit/pass/hut subtype.",
+    "Missing heights in future snapshots must remain unknown; zero is not a default.",
+    "Keep forecast location, observation station, warning postcode and pollen station independent."
+  ],
+  "remaining_limits": [
+    "Snapshot counts do not establish active measurement stations or complete App catalogue coverage.",
+    "No forecast payload, resource-cost measurement, accuracy comparison or hazard-coverage verification.",
+    "No catalogue parser/search UI/config migration has been added to the integration.",
+    "No HA clean-install, recovery rehearsal, runtime change, release or quality-tier acceptance."
+  ]
+}
