@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased] — documentation
+
+- Maintain GitHub project documentation in English, including setup, migration,
+  acceptance, quality reviews and development plans. Keep multilingual HA UI
+  catalogues and quoted source evidence unchanged. Old guide paths redirect
+  to their canonical English replacements.
+- Reconcile completed beta publication and the operator-confirmed HACS source
+  switch with the still-open clean first-install/recovery work. Track stable
+  release gates separately from later POI/OGD and Silver/Gold development.
+- Clarify that official rainfall source timestamps mark interval ends while
+  HA statistic records use interval starts in UTC.
+
 ## [8.2.0b1] — first maintained-fork prerelease
 
 This is a beta for explicit testing. Install only a published GitHub prerelease;
@@ -18,9 +30,11 @@ a branch or tag alone is not a completed release. See the
   available. Forecast pollen is visually confirmed under Sensors; all twelve
   pollen categories were verified in the registry.
 
-- Clean first HACS installation and HACS source-switch rehearsals remain
-  unverified end to end; no default-store listing or official HA quality
-  tier is claimed. The accepted deployment used a reviewed installer.
+- At publication, clean first HACS installation and a source-switch rehearsal
+  were not complete. The operator subsequently confirmed the HACS 2.0.5 switch,
+  download, restart and initial visual success on 20 October. A clean first
+  install remains open; see [current evidence](docs/HACS_ACCEPTANCE.md).
+  No default-store listing or official HA tier is claimed.
 - Add a guarded Mac publication helper. It checks the exact protected
   branch commit, unchanged accepted runtime/workflows, versions, CI and
   existing tags/releases before creating only the requested prerelease.
@@ -44,7 +58,8 @@ a branch or tag alone is not a completed release. See the
   the measured 600-second interval and explain measurement-end timestamps,
   the station files' 20-minute publication cycle and official hourly totals.
 
-- Add beginner installation and migration guides in German; distinguish HACS
+- The original beta added beginner installation/migration guides in German;
+  the current development documentation is English. Distinguish HACS
   software replacement from preserving the existing Home Assistant entry.
 - Correct legacy sensor/source/roadmap documentation: verified warning codes,
   HGT 12/20, retired season/soil entities, actual source locations and honest

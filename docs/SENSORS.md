@@ -3,7 +3,7 @@
 This describes the current maintained code, not every feature in older upstream
 releases. Keys are internal description keys, not fixed entity IDs. HA derives
 entity IDs on first addition; retained entities keep their existing identity.
-For setup use [START_DE.md](START_DE.md); existing users use [WECHSEL_DE.md](WECHSEL_DE.md).
+For setup use [GETTING_STARTED.md](GETTING_STARTED.md); existing users use [MIGRATION.md](MIGRATION.md).
 
 ## Weather entity
 
@@ -81,7 +81,7 @@ created. On setup/reload, only the retired entity belonging to that entry is
 removed from the entity registry; no Recorder purge is performed. Existing
 raw measurements, other entries, independently created Utility Meter helpers
 and official archive statistics are not deleted. Review old dashboard and
-automation references before updating; see [migration](WECHSEL_DE.md).
+automation references before updating; see [migration](MIGRATION.md).
 
 ## Pollen, air quality and UV
 
