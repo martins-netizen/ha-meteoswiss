@@ -39,13 +39,13 @@ class FakeGitHub:
         self.candidate = copy.deepcopy(self.accepted)
         self.manifest = {'domain': 'meteoswiss', 'version': publisher.TAG}
         self.version = '__version__ = "8.2.0b1"\n'
-        self.notes = '# 8.2.0b1 — first maintained-fork prerelease\n\nRelease notes.\n\nThis community fork builds on LNKtwo.\n[Migration](WECHSEL_DE.md)\n'
+        self.notes = '# 8.2.0b1 — first maintained-fork prerelease\n\nRelease notes.\n\nThis community fork builds on LNKtwo.\n[Migration](MIGRATION.md)\n'
 
     def tree(self, files):
         return {'truncated': False, 'tree': [dict(path=k, mode=v[0], sha=v[1], type='blob') for k, v in files.items()]}
 
     def body(self):
-        return 'This community fork builds on LNKtwo.\n[Migration](https://github.com/' + publisher.REPOSITORY + '/blob/' + COMMIT + '/docs/WECHSEL_DE.md)\n'
+        return 'This community fork builds on LNKtwo.\n[Migration](https://github.com/' + publisher.REPOSITORY + '/blob/' + COMMIT + '/docs/MIGRATION.md)\n'
 
     def __call__(self, path, *, method='GET', body=None, missing_ok=False):
         self.calls.append((method, path, body))

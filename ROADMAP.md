@@ -25,17 +25,18 @@ the changelog as history; they are not current certifications. Check the
 Code and CI success do not mark a candidate as installed or accepted on a real
 HA system. Source providers and optional individual values can be unavailable.
 
-## Before the first fork prerelease
+## Release progress
 
-1. Finish review/merge of publication and usability changes.
-2. Verify actual warning-consuming dashboards/automations alongside the source
-   update, preserving intended behaviour and a paired rollback.
-3. Complete live acceptance and ordinary-operation observation of the deployed
-   candidate. Confirm retained entities, statistics and display settings.
-4. Verify support/security settings and require the HACS check after its workflow
-   exists on the maintained branch.
-5. Publish an approved prerelease with matching versions, immutable release
-   settings and release-only HACS selection; see [PUBLISHING.md](docs/PUBLISHING.md).
+The first immutable beta 8.2.0b1 was published on 20 October 2026 after
+completed HA 2026.10.2 runtime acceptance. The operator also confirmed the
+HACS 2.0.5 source switch, download, restart and initial visual success.
+Those are completed steps, not work to repeat.
+
+Before a first stable version, complete the clean first-install and isolated
+recovery rehearsal, assess remaining findings and check the exact stable
+package/version. See [release readiness](docs/RELEASE_READINESS.md) and
+[publication](docs/PUBLISHING.md). A second permanent operator HA instance is
+not required; do not erase production configuration to test first installation.
 
 There is no current HA Silver, Gold or Platinum claim. Coverage gates and
 remaining per-module limits are in [QUALITY_SCALE.md](docs/QUALITY_SCALE.md).

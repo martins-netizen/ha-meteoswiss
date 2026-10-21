@@ -21,13 +21,13 @@ installed version rather than assuming every capability is unique to this fork.
 - Measured pollen (including oak), forecast pollen, air quality and isolated
   optional UV availability. Pollen belongs under Sensors on device pages.
 - Clear 10-minute precipitation naming and measurement-end timestamps.
-- German first-install and migration guides, diagnostics and private
+- First-install and migration guides, diagnostics and private
   vulnerability reporting.
 
 ## Before updating an existing installation
 
 Keep the existing Home Assistant integration entry. Back up first and follow
-[the migration guide](WECHSEL_DE.md), including its warning-consumer checks.
+[the migration guide](MIGRATION.md), including its warning-consumer checks.
 
 - Wind is type **0**; type **4** is Slippery Roads. Review active, upcoming and
   lead-time filters. Frost is family 5; retain the provider's concrete text.
@@ -68,13 +68,13 @@ unmerged PR or an unrelated branch.
 
 After publication, the operator confirmed the HACS 2.0.5 source switch to
 `martins-netizen/ha-meteoswiss`, downloaded version `8.2.0b1`, restart and a
-positive initial visual check. The [current HACS record](HACS_ABNAHME_DE.md)
+positive initial visual check. The [current HACS record](HACS_ACCEPTANCE.md)
 distinguishes that operator-reported evidence from an independent technical
 post-switch comparison. A clean first installation remains open. This update
 applies to the development documentation; it does not modify the immutable
 published beta, its tag or its release-time evidence.
 
-See the [stable-release checklist (German)](FREIGABESTAND_DE.md) for the
+See the [stable-release checklist](RELEASE_READINESS.md) for the
 remaining work and the features intentionally deferred beyond this release.
 
 ## Known limits of the first beta

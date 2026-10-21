@@ -28,7 +28,7 @@ before installing.
   unavailable source are distinct. A failed warning source is not an all-clear;
   an optional pollen or air-quality outage does not block station setup.
 - **Build on your existing installation.** Existing setup and the IDs of retained
-  entities and statistics are preserved. The [migration guide](docs/WECHSEL_DE.md)
+  entities and statistics are preserved. The [migration guide](docs/MIGRATION.md)
   explains the retired seasonal heating-degree entity, warning-filter changes,
   backup and recovery.
 - **See how changes are checked.** Public review history, automated HA tests,
@@ -40,15 +40,15 @@ On an older installation, check which fixes it already contains; not every
 listed capability is new compared with every upstream version or local patch.
 Forecasts and warning availability still depend on the external data providers.
 
-Deutsch: [Was bringt mir dieser Fork im Alltag?](docs/START_DE.md#was-bringt-mir-dieser-fork)
+Read the [plain-language overview](docs/GETTING_STARTED.md#what-this-fork-provides).
 
-## Start here / Hier beginnen
+## Start here
 
-| Your situation / Deine Situation | Guide / Anleitung |
+| Your situation | Guide |
 |---|---|
-| First installation / Neu einrichten | [Schritt für Schritt auf Deutsch](docs/START_DE.md) |
-| Existing MeteoSwiss installation / Bestehende Installation | [Sicher wechseln oder aktualisieren](docs/WECHSEL_DE.md) |
-| Experienced HA user / HA bereits vertraut | [Data and settings](docs/USAGE.md), [warning codes](docs/WARNING_CODES.md), [architecture](docs/ARCHITECTURE.md) |
+| First installation | [Step-by-step setup](docs/GETTING_STARTED.md) |
+| Existing MeteoSwiss installation | [Switch or update safely](docs/MIGRATION.md) |
+| Experienced HA user | [Data and settings](docs/USAGE.md), [warning codes](docs/WARNING_CODES.md), [architecture](docs/ARCHITECTURE.md) |
 | Settings, missing data or troubleshooting | [English usage reference](docs/USAGE.md) |
 
 ## Release status
@@ -64,10 +64,10 @@ The candidate additionally passed local tests and deployed acceptance on
 **2026.10.2**. See the [beta notes and known limits](docs/RELEASE_8.2.0b1.md).
 The operator confirmed the HACS 2.0.5 source switch, downloaded version
 `8.2.0b1`, restart and a positive initial visual check on 20 October 2026.
-A clean first HACS installation remains open. The [HACS acceptance record](docs/HACS_ABNAHME_DE.md)
+A clean first HACS installation remains open. The [HACS acceptance record](docs/HACS_ACCEPTANCE.md)
 distinguishes this operator-confirmed result from independent technical evidence.
 A default-store listing and an official HA quality tier are not claimed.
-The [current acceptance and stable-release checklist (German)](docs/FREIGABESTAND_DE.md)
+The [current acceptance and stable-release checklist](docs/RELEASE_READINESS.md)
 separates completed beta work from the remaining release gates and later features.
 
 ## Data and compatibility
@@ -84,7 +84,7 @@ separates completed beta work from the remaining release gates and later feature
 The integration domain remains `meteoswiss`. Existing config entries and the
 IDs of retained entities/statistics are preserved. The obsolete forecast-only
 season-HGT entity is intentionally retired; review that exception in the
-[migration guide](docs/WECHSEL_DE.md). Warning automations should use numeric `warn_type`
+[migration guide](docs/MIGRATION.md). Warning automations should use numeric `warn_type`
 and `warn_level`, and must treat an unavailable source separately from no alert.
 
 Warnings use the App v3 source and its [verified thirteen-family catalogue](docs/WARNING_CODES.md).
@@ -100,7 +100,7 @@ commit/version. Do not remove or recreate the integration/config entry.
 Once a tested release is approved:
 
 1. Back up Home Assistant and keep the recovery key. Existing users first follow
-   the [migration and warning-consumer checks](docs/WECHSEL_DE.md).
+   the [migration and warning-consumer checks](docs/MIGRATION.md).
 2. In **HACS → menu → Custom repositories**, add
    `https://github.com/martins-netizen/ha-meteoswiss` as **Integration**.
 3. Open Download/Redownload, expand **Need a different version?**, and explicitly
@@ -127,7 +127,7 @@ See [setup, all parameters, removal and troubleshooting](docs/USAGE.md).
 
 ## Development and operation
 
-- [Next-release plan: location/POIs, Silver and Gold (German)](docs/NEXT_RELEASE_PLAN_DE.md)
+- [Next-release plan: location/POIs, Silver and Gold](docs/NEXT_RELEASE_PLAN.md)
 - [Quality review of 17 October 2026](docs/REVIEW_2026-10-17.md)
 - [Quality roadmap and measured gaps](docs/QUALITY_SCALE.md)
 - [Architecture and data contracts](docs/ARCHITECTURE.md)

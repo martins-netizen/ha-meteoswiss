@@ -1,186 +1,178 @@
-# Bronze-/Silver-Abgleich vom 17. Oktober 2026
+# Bronze/Silver audit of 17 October 2026
 
-**Dokumentversion:** 1.0 · **Status:** Q1 abgeschlossen; Umsetzungslücken offen.
-**Geprüfter Stand:** `6d743546c8d0187a8bc91f870e8c50b3e7294147` auf `development`.
-Die Laufzeitdateien, Sprachdateien und Tests entsprechen unverändert `9c50b6b`.
+**Document version:** 1.1 · **English edition:** 21 October 2026
+**Original status:** Q1 assessment complete; implementation gaps remained.
+**Reviewed commit:** `6d743546c8d0187a8bc91f870e8c50b3e7294147` on development.
+Runtime, translations and tests matched `9c50b6b`.
 
-Der Fork hat eine weitgehend belegte technische Grundlage. Eine vollständige
-Silver-Selbsteinschätzung ist noch nicht gerechtfertigt. Besonders Dialoghilfen,
-die konfigurierbare Abrufperiode, das gemeinsame Entity-/Coordinator-Layout,
-optionale UV-Ausfälle und vier Module unter der Mindestabdeckung bleiben offen.
-Das ist eine Prüfung des Entwicklungsstands und keine Aussage über eine neu
-installierte HA-Version. Die laufende Betriebs-/HACS-Abnahme bleibt eigenständig.
+This is a historical rule-by-rule assessment, not the current deployment status.
+Later warning/icon, UV and oak corrections have landed, runtime acceptance and
+beta publication are complete, and the operator confirmed the HACS source switch.
+A clean first install remains open. Consult [release readiness](RELEASE_READINESS.md)
+and the updated [quality matrix](QUALITY_SCALE.md) before treating a historical
+finding below as still unresolved.
 
-Die [offizielle Übersicht](https://contributors.home-assistant.io/core/quality-scale/rules/)
-enthält 20 Bronze- und zehn Silver-Regeln. **Belegt** meint den in dieser Prüfung
-beobachteten Code-, Test- oder Dokumentationsnachweis. **Teilweise/offen** nennt
-einen konkreten fehlenden Nachweis. **Ausnahme** wird nur mit der in der Regel
-vorgesehenen fachlichen Begründung verwendet. Der Vergleich mit Core-Regeln
-verleiht einer Custom-/HACS-Integration keinen offiziellen Qualitätsgrad.
-Bei Dokumentationsregeln dienen die Fork-eigenen Anleitungen als Massstab;
-eine Aufnahme in die offizielle Core-Dokumentation wird damit nicht behauptet.
+At the original baseline, field help, configurable polling, common module layout,
+optional UV behaviour and four under-covered modules prevented a complete
+Silver self-assessment. This assessed development, not a newly installed HA version.
 
-## Bronze: alle 20 Regeln
+The [official rules](https://contributors.home-assistant.io/core/quality-scale/rules/)
+contain twenty Bronze and ten Silver rules. **Evidenced** refers to observed
+code/test/documentation evidence. **Partial/open** identifies a missing item.
+**Exempt** uses a rule-specific applicability justification. Applying Core rules
+does not award a custom/HACS integration an official tier. Fork documentation
+is assessed without claiming inclusion in the official Core documentation.
 
-| Regel | Bewertung | Konkreter Nachweis und Restarbeit |
+## Bronze: all twenty rules
+
+| Rule | Assessment at the original baseline | Evidence and remaining work |
 |---|---|---|
-| [action-setup](https://contributors.home-assistant.io/core/quality-scale/action-setup/) | Ausnahme | Keine eigenen Integrationsaktionen; keine Registrierung von Services in `__init__.py` oder den aktiven Plattformen. `weather.get_forecasts` ist eine HA-Plattformaktion. |
-| [appropriate-polling](https://contributors.home-assistant.io/core/quality-scale/appropriate-polling/) | Teilweise/offen | Provider-Abrufe laufen über begrenzte Coordinator-Intervalle, Beobachtungen mindestens 600 Sekunden. `config_flow.py` fragt jedoch `update_interval` ab. Die aktuelle Regel verlangt eine Entwicklerentscheidung statt eines Flow-Feldes. Bestehende Werte vor einer Änderung auf Kompatibilität prüfen. |
-| [brands](https://contributors.home-assistant.io/core/quality-scale/brands/) | Teilweise/offen | Lokale HACS-Icons in `brand/` vorhanden und geprüft. Der für die Core-Regel genannte Pfad `home-assistant/brands/core_integrations/meteoswiss` lieferte am Prüftag HTTP 404. Lokale Assets erfüllen diesen externen Core-Nachweis nicht; kein ungeprüfter Brand-PR und kein offizielles Badge. |
-| [common-modules](https://contributors.home-assistant.io/core/quality-scale/common-modules/) | Teilweise/offen | `const.py`, `runtime_data.py` und `weather_data.py` teilen Verträge. Es gibt noch keine gemeinsame `entity.py`; Coordinator-Klassen stehen auch in Plattform-/Quellenmodulen. Wiederholte Basisfunktionen und erwartetes Modul-Layout gezielt bereinigen, ohne die Quellentrennung neu zu bauen. |
-| [config-flow](https://contributors.home-assistant.io/core/quality-scale/config-flow/) | Teilweise/offen | Native Einrichtung/Optionen, Validierung und Duplikatschutz vorhanden. Alle vier Sprachdateien haben für die sichtbaren Felder noch keine `data_description`. Selectorwahl sowie `data`/`options` zusammen mit dem Intervallfeld abschliessend prüfen. |
-| [config-flow-test-coverage](https://contributors.home-assistant.io/core/quality-scale/config-flow-test-coverage/) | Belegt | `tests/test_config_flow.py`: beide Quellen, Fehler/Korrektur, Katalog-Retry, Gesamttimeout/Cancellation, alte und neue Duplikate, Optionen mit erhaltener Identität. `config_flow.py` hat 100 % Zeilen-/Zweigabdeckung und eine CI-Pflichtprüfung. |
-| [dependency-transparency](https://contributors.home-assistant.io/core/quality-scale/dependency-transparency/) | Ausnahme | `manifest.json` hat `requirements: []`: keine zusätzlichen Python-Laufzeitabhängigkeiten der Integration. Von HA bereitgestellte Bibliotheken bleiben HA-Abhängigkeiten. Dokumentierte Internet-/Providerabhängigkeiten sind ein anderer Sachverhalt. |
-| [docs-actions](https://contributors.home-assistant.io/core/quality-scale/docs-actions/) | Ausnahme | Keine eigenen Aktionen. `USAGE.md` erklärt diese Abgrenzung und die normale HA-Forecast-Aktion. |
-| [docs-conditions](https://contributors.home-assistant.io/core/quality-scale/docs-conditions/) | Ausnahme | Keine eigenen Integrations-/Gerätebedingungen. `USAGE.md` verweist auf die normalen HA-Zustandsbedingungen. |
-| [docs-high-level-description](https://contributors.home-assistant.io/core/quality-scale/docs-high-level-description/) | Belegt | README erklärt Nutzen, Datenfamilien, Herkunft und Grenzen; separates Angebot für Einsteiger und erfahrene HA-Nutzer. |
-| [docs-installation-instructions](https://contributors.home-assistant.io/core/quality-scale/docs-installation-instructions/) | Belegt; Praxis separat offen | README, `START_DE.md`, `WECHSEL_DE.md` und `USAGE.md` dokumentieren Neuinstallation bzw. Quellenwechsel. Der echte HACS-/Anwenderversuch ist noch keine abgeschlossene Release-Abnahme. |
-| [docs-removal-instructions](https://contributors.home-assistant.io/core/quality-scale/docs-removal-instructions/) | Belegt | `USAGE.md`, Abschnitt zur Entfernung: Eintrag, Entitäten, HACS-Komponente, abhängige Dashboards/Automationen; historische Statistiken werden nicht zur Löschung aufgefordert. |
-| [docs-triggers](https://contributors.home-assistant.io/core/quality-scale/docs-triggers/) | Ausnahme | Keine eigenen Integrations-/Gerätetrigger. Normale Zustands-/Zahlentrigger sind in `USAGE.md` erklärt. |
-| [entity-event-setup](https://contributors.home-assistant.io/core/quality-scale/entity-event-setup/) | Belegt | `CoordinatorEntity` verwaltet seine Listener. Der zusätzliche Forecast-Listener in `weather.py` wird beim Hinzufügen abonniert und mit `async_on_remove` abgebaut. Lifecycle-/WebSocket-Tests prüfen laufende Aktualisierung und Abbau. |
-| [entity-unique-id](https://contributors.home-assistant.io/core/quality-scale/entity-unique-id/) | Belegt | Alle aktiven Entity-Familien haben Entry-basierte bzw. bewusst geteilte Diagnose-IDs. `test_complete_entry_setup_reload_and_unload` und registrierte Warnungs-/Messwerttests prüfen erhaltene Zuordnungen. |
-| [has-entity-name](https://contributors.home-assistant.io/core/quality-scale/has-entity-name/) | Belegt | Alle neun aktiven Entity-Klassen in `sensor.py`, `weather.py`, `binary_sensor.py`, `pollen_sensor.py` setzen `_attr_has_entity_name = True`. |
-| [runtime-data](https://contributors.home-assistant.io/core/quality-scale/runtime-data/) | Belegt | Typisierter `MeteoSwissConfigEntry` und `MeteoSwissRuntimeData` in `runtime_data.py`; nur gemeinsam benötigte Diagnose-Eigentümerschaft bleibt domainweit. |
-| [test-before-configure](https://contributors.home-assistant.io/core/quality-scale/test-before-configure/) | Belegt | Beide Quellen prüfen vor dem Speichern den echten Beobachtungs-Coordinator mit 30 Sekunden Gesamttimeout. Fehler bleiben korrigierbar; Tests prüfen Fehler, Erfolg, Timeout und Abbruch. |
-| [test-before-setup](https://contributors.home-assistant.io/core/quality-scale/test-before-setup/) | Belegt | `async_config_entry_first_refresh()` vor dem Plattformaufbau ermöglicht HA-Retry. Optionale Datenfamilien blockieren valide Beobachtungen nicht. `test_initial_failure_does_not_close_ha_session_or_leave_entry_data` prüft den Fehlerpfad. |
-| [unique-config-entry](https://contributors.home-assistant.io/core/quality-scale/unique-config-entry/) | Belegt | Quellen-/Stations-/Koordinaten-/Warn-PLZ-Abgleich plus HA-Unique-ID; Alt-Einträge ohne Unique-ID werden ebenfalls erkannt. Duplikattests laufen vor unnötigen Netzabrufen. |
+| [action-setup](https://contributors.home-assistant.io/core/quality-scale/action-setup/) | Exempt | No integration-specific actions/services in __init__.py or active platforms. weather.get_forecasts is a HA platform action. |
+| [appropriate-polling](https://contributors.home-assistant.io/core/quality-scale/appropriate-polling/) | Partial/open | Bounded coordinator polling; observations at least 600 seconds. Config flow exposes update_interval, while the rule expects a developer-chosen interval. Decide compatibility of legacy values before changing it. |
+| [brands](https://contributors.home-assistant.io/core/quality-scale/brands/) | Partial/open | Local HACS icons exist and were checked. The specified home-assistant/brands/core_integrations/meteoswiss path returned 404 on the review date. Local assets are not that external Core evidence; no unreviewed brand PR or official badge. |
+| [common-modules](https://contributors.home-assistant.io/core/quality-scale/common-modules/) | Partial/open | const.py, runtime_data.py and weather_data.py share contracts. No common entity.py yet; coordinators also live in platform/source modules. Review repeated basics/layout without rebuilding source boundaries. |
+| [config-flow](https://contributors.home-assistant.io/core/quality-scale/config-flow/) | Partial/open | Native setup/options, validation and duplicate protection exist. Visible fields lacked data_description in all four languages. Review selectors, data/options and interval together. |
+| [config-flow-test-coverage](https://contributors.home-assistant.io/core/quality-scale/config-flow-test-coverage/) | Evidenced | tests/test_config_flow.py covers both sources, correctable errors, catalogue retry, total timeout/cancellation, old/new duplicates and identity-preserving options. Config flow has 100% lines/branches, enforced in CI. |
+| [dependency-transparency](https://contributors.home-assistant.io/core/quality-scale/dependency-transparency/) | Exempt | Manifest requirements are empty: no extra Python runtime dependencies. HA-provided libraries belong to HA. Internet/provider dependencies are documented separately and are not this rule. |
+| [docs-actions](https://contributors.home-assistant.io/core/quality-scale/docs-actions/) | Exempt | No custom actions; USAGE.md explains the standard HA forecast action. |
+| [docs-conditions](https://contributors.home-assistant.io/core/quality-scale/docs-conditions/) | Exempt | No integration/device-specific conditions; USAGE.md references normal HA state conditions. |
+| [docs-high-level-description](https://contributors.home-assistant.io/core/quality-scale/docs-high-level-description/) | Evidenced | README explains benefits, data families, provenance and limits, with entry points for newcomers and experienced users. |
+| [docs-installation-instructions](https://contributors.home-assistant.io/core/quality-scale/docs-installation-instructions/) | Evidenced; practice separate | README, getting-started, migration and USAGE.md describe setup/source switch. At that date practical HACS/user acceptance was not complete. |
+| [docs-removal-instructions](https://contributors.home-assistant.io/core/quality-scale/docs-removal-instructions/) | Evidenced | USAGE.md covers entry/entities/HACS software and dependent dashboards/automations without instructing history deletion. |
+| [docs-triggers](https://contributors.home-assistant.io/core/quality-scale/docs-triggers/) | Exempt | No custom integration/device triggers. USAGE.md explains normal state/numeric triggers. |
+| [entity-event-setup](https://contributors.home-assistant.io/core/quality-scale/entity-event-setup/) | Evidenced | CoordinatorEntity owns listeners. The extra weather forecast listener is subscribed on addition and removed with async_on_remove; lifecycle/WebSocket tests verify refresh and cleanup. |
+| [entity-unique-id](https://contributors.home-assistant.io/core/quality-scale/entity-unique-id/) | Evidenced | Active families use entry-based or intentionally shared diagnostic IDs. Complete setup/reload/unload and registered warning/measurement tests verify stable mapping. |
+| [has-entity-name](https://contributors.home-assistant.io/core/quality-scale/has-entity-name/) | Evidenced | All nine active entity classes across sensor/weather/binary-sensor/pollen platforms set _attr_has_entity_name = True. |
+| [runtime-data](https://contributors.home-assistant.io/core/quality-scale/runtime-data/) | Evidenced | Typed MeteoSwissConfigEntry/MeteoSwissRuntimeData; only shared diagnostic ownership remains domain-global. |
+| [test-before-configure](https://contributors.home-assistant.io/core/quality-scale/test-before-configure/) | Evidenced | Both providers check the real observation coordinator before save, within a 30-second total timeout. Tests cover success, correctable errors, timeout and cancellation. |
+| [test-before-setup](https://contributors.home-assistant.io/core/quality-scale/test-before-setup/) | Evidenced | First coordinator refresh precedes platform setup and supports HA retry. Optional sources do not block valid observations. The initial-failure test verifies session/runtime ownership. |
+| [unique-config-entry](https://contributors.home-assistant.io/core/quality-scale/unique-config-entry/) | Evidenced | Provider/station/coordinate/warning-postcode guards plus HA unique-ID checks, including old entries without unique IDs. Duplicate tests avoid unnecessary requests. |
 
-## Silver: alle zehn Regeln
+## Silver: all ten rules
 
-| Regel | Bewertung | Konkreter Nachweis und Restarbeit |
+| Rule | Assessment at the original baseline | Evidence and remaining work |
 |---|---|---|
-| [action-exceptions](https://contributors.home-assistant.io/core/quality-scale/action-exceptions/) | Ausnahme | Keine eigenen Integrationsaktionen; bei späterer Einführung neu bewerten. |
-| [config-entry-unloading](https://contributors.home-assistant.io/core/quality-scale/config-entry-unloading/) | Belegt | `__init__.py` nutzt HA-Plattformabbau, verwaltete Hintergrundtasks/Listener und die HA-eigene Session. `tests/test_reliability.py` prüft beide Quellen mit echtem Recorder, Reload, stabile IDs und vollständig entfernte Polling-Listener. `tests/test_startup.py` prüft Cancellation aller optionalen Kinderabrufe. |
-| [docs-configuration-parameters](https://contributors.home-assistant.io/core/quality-scale/docs-configuration-parameters/) | Belegt | `USAGE.md` dokumentiert Intervall und separat gewählte Pollenmessstation samt Wirkung und Configure-Einstieg. Neue Dialoghilfen bleiben unabhängig davon eine Bronze-Lücke. |
-| [docs-installation-parameters](https://contributors.home-assistant.io/core/quality-scale/docs-installation-parameters/) | Belegt | `USAGE.md` erklärt Quelle, Messstation, Warn-PLZ, Koordinaten, Intervall, Grenzen und das aktuelle Prognoseziel. Die PLZ ist bei Stations-Einträgen ausdrücklich nicht automatisch der Prognoseort. |
-| [entity-unavailable](https://contributors.home-assistant.io/core/quality-scale/entity-unavailable/) | Teilweise/offen | Ausfall/Erholung der Hauptquellen ist über registrierte Entities belegt. Optionales UV liefert bei HTTP-/Timeout-/JSON-Fehlern ebenso `None` wie bei fehlendem Wert; die Entity erbt weiter den erfolgreichen AQ-Coordinator. UV-Ausfall daher künftig getrennt von einem unbekannten Einzelwert behandeln. Auch die Diagnose-Semantik eines gecachten Stationskatalogs explizit festhalten. |
-| [integration-owner](https://contributors.home-assistant.io/core/quality-scale/integration-owner/) | Belegt | `@martins-netizen` ist Codeowner im Manifest und aktiv im Fork. Öffentliche Issues, Issue-Formulare und vertraulicher Meldeweg wurden am 17.10.2026 bestätigt. |
-| [log-when-unavailable](https://contributors.home-assistant.io/core/quality-scale/log-when-unavailable/) | Teilweise/offen | Coordinator-Übergangslogs und private Fehlerketten sind für Beobachtungen, Warnungen, Prognose, Pollen/AQ und Messpollen getestet. Der separate UV-Abruf protokolliert Fehler nur auf Debug-Stufe und hat keinen eigenen Ausfall-/Erholungsübergang. Gemeinsam mit UV-Verfügbarkeit schliessen, ohne Koordinaten oder rohe URLs zu protokollieren. |
-| [parallel-updates](https://contributors.home-assistant.io/core/quality-scale/parallel-updates/) | Belegt | `sensor.py`: 1 für pollende Diagnosen; `weather.py`, `binary_sensor.py`, `pollen_sensor.py`: 0 bei zentralen Coordinator-Abrufen. 0 bedeutet kein Entity-Semaphorlimit, nicht null Netzabrufe. Keine eigenen Geräteaktionen. |
-| [reauthentication-flow](https://contributors.home-assistant.io/core/quality-scale/reauthentication-flow/) | Ausnahme | Die verwendeten öffentlichen Quellen benötigen keine Konten oder Anmeldedaten. |
-| [test-coverage](https://contributors.home-assistant.io/core/quality-scale/test-coverage/) | Offen | Der gemessene Gesamtwert ist 99,0517 %, aber die Regel fordert mehr als 95 % je Modul. `camera.py`, `hydro.py`, `slf.py`, `version.py` stehen auf 0 %. Keine Ausnahme oder Ausblendung allein wegen des Gesamtwertes. |
+| [action-exceptions](https://contributors.home-assistant.io/core/quality-scale/action-exceptions/) | Exempt | No custom integration actions; reassess if introduced. |
+| [config-entry-unloading](https://contributors.home-assistant.io/core/quality-scale/config-entry-unloading/) | Evidenced | HA platform teardown, managed tasks/listeners and HA-owned session. Real-Recorder reliability tests cover both providers, reload, stable IDs and all polling listeners removed. Startup tests cancel optional child refreshes. |
+| [docs-configuration-parameters](https://contributors.home-assistant.io/core/quality-scale/docs-configuration-parameters/) | Evidenced | USAGE.md explains interval and independent measured-pollen station, effects and Configure entry point. Missing field help was a separate Bronze gap. |
+| [docs-installation-parameters](https://contributors.home-assistant.io/core/quality-scale/docs-installation-parameters/) | Evidenced | Source, observation station, warning postcode, coordinates, interval, limits and forecast location are documented. A station entry's postcode does not automatically select its forecast point. |
+| [entity-unavailable](https://contributors.home-assistant.io/core/quality-scale/entity-unavailable/) | Partial/open | Registered entities cover main-source failure/recovery. Optional UV formerly returned None for both outage and missing data while inheriting successful AQ availability. Separate UV state and catalogue-cache diagnostic semantics were required. UV has since been corrected; see current matrix. |
+| [integration-owner](https://contributors.home-assistant.io/core/quality-scale/integration-owner/) | Evidenced | @martins-netizen is manifest codeowner and active maintainer. Public Issues/forms and private reporting were verified on 17 October. |
+| [log-when-unavailable](https://contributors.home-assistant.io/core/quality-scale/log-when-unavailable/) | Partial/open | Private transition logs exist for observations, warnings, forecasts and pollen/AQ. The separate UV request originally had only debug errors, no transition state/log. Later UV correction must be assessed against its own evidence. |
+| [parallel-updates](https://contributors.home-assistant.io/core/quality-scale/parallel-updates/) | Evidenced | sensor.py uses 1 for polling diagnostics; coordinator-driven weather/binary/pollen platforms use 0. Zero means no entity semaphore limit, not zero network calls. No custom device actions. |
+| [reauthentication-flow](https://contributors.home-assistant.io/core/quality-scale/reauthentication-flow/) | Exempt | Current public providers need no account/credentials. |
+| [test-coverage](https://contributors.home-assistant.io/core/quality-scale/test-coverage/) | Open | Aggregate 99.0517% does not satisfy >95% per module. camera.py, hydro.py, slf.py and version.py were at 0%; no exemption/exclusion is justified solely by the aggregate. |
 
-## Prüfbasis und ihre Grenzen
+## Original evidence and limits
 
-Die sieben PR-Prüfungen von [PR #25](https://github.com/martins-netizen/ha-meteoswiss/pull/25)
-waren erfolgreich. Nach dem regulären Squash-Merge auf `6d74354` sind auch
+All seven [PR #25](https://github.com/martins-netizen/ha-meteoswiss/pull/25)
+checks passed. After regular squash merge to 6d74354,
 [CI](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/39043774226),
 [CodeQL](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/39043774225)
-und [HACS](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/39043774217)
-erfolgreich. Die Tests laufen auf HA 2026.8.3 und 2026.10.1.
+and [HACS](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/39043774217)
+passed. CI used HA 2026.8.3 and 2026.10.1.
 
-Der zusätzliche bereits vorhandene Lauf auf HA 2026.10.2 mit offiziellen
-Abhängigkeitsvorgaben bestand **762 Tests**. Dessen JSON-Coverage wurde erneut
-ausgewertet: 2379/2408 Statements und 650/650 Zweige, kombiniert 99,0516678 %.
-Nur `const.py` (98,5075 %) sowie die vier oben genannten Module liegen unter
-100 %. Diese Prüfung hat für Dokumentationsänderungen keinen neuen identischen
-Gesamttestlauf gestartet. Codegleichheit und vorhandene Läufe sind ausdrücklich
-die Grundlage, keine neue Live-Abnahme.
+An additional existing HA 2026.10.2 run, with official dependency constraints,
+passed 762 tests. Re-read coverage contained 2379/2408 statements and 650/650
+branches, combined 99.0516678%. Only const.py (98.5075%) and the four listed
+modules were below 100%. No identical full suite was rerun merely for these
+documentation edits; code equality and recorded runs were the stated evidence,
+not new live acceptance.
 
-Wichtige konkrete Regressionen liegen in
-[`test_config_flow.py`](../tests/test_config_flow.py),
-[`test_reliability.py`](../tests/test_reliability.py),
-[`test_entity_warning_contracts.py`](../tests/test_entity_warning_contracts.py),
-[`test_weather_entity.py`](../tests/test_weather_entity.py),
-[`test_pollen_sources.py`](../tests/test_pollen_sources.py),
-[`test_precipitation_sources.py`](../tests/test_precipitation_sources.py) und
-[`test_station_logging.py`](../tests/test_station_logging.py).
-Sie prüfen unter anderem Erholung, Registry-/Statistikidentität, Recorder-Upserts,
-HA-Session-Eigentum, Listenerabbau und private Fehlerausgaben.
+Relevant regressions include
+[config flow](../tests/test_config_flow.py),
+[reliability](../tests/test_reliability.py),
+[warning contracts](../tests/test_entity_warning_contracts.py),
+[weather](../tests/test_weather_entity.py),
+[pollen](../tests/test_pollen_sources.py),
+[precipitation](../tests/test_precipitation_sources.py) and
+[station logging](../tests/test_station_logging.py).
+They exercise recovery, registry/statistic identity, Recorder upserts,
+session ownership, listener cleanup and private error output.
 
-### Zuordnung des UV-Befunds zur installierten Version
+### Mapping the UV finding to the installed version
 
-Auch die UV-Lücke besteht bereits in **V1.5 / `567a5e4`**. Ein direkter
-Git-Vergleich von `pollen_coordinator_openmeteo.py` und `sensor.py` mit `6d74354`
-zeigt keine Unterschiede. Sie wird jetzt erkannt, wurde aber nicht durch einen
-neueren Kandidaten eingeführt. Gemeint ist der hypothetische Fehler-/Statuspfad:
-Ein aktuell vorhandener UV-Wert ist dadurch nicht als falsch bewertet.
-Bei einem separaten UV-Abruffehler erscheint bislang `unknown` statt einer
-eigenständig belegten Nichtverfügbarkeit, während gesunde AQ-Daten bleiben.
+The same UV gap already existed in **V1.5 / 567a5e4**. Comparing
+pollen_coordinator_openmeteo.py and sensor.py with 6d74354 showed identical files.
+It was newly recognised, not introduced by a later candidate. This was the
+failure/status path; a currently displayed UV value was not thereby invalid.
+The old behaviour exposed unknown rather than independently evidenced
+unavailability on a UV-only request failure while retaining healthy AQ.
+Subsequent corrections are recorded separately.
 
-## Gezielte nächste Umsetzung nach R0
+## Original targeted implementation work after R0
 
-1. **Dialog und Abrufperiode:** `data_description` für jeden tatsächlich
-   sichtbaren Parameter in DE/EN/FR/IT ergänzen. Quellenwahl, Messstation,
-   Warn-PLZ und Prognosekoordinaten direkt erklären. Das Intervall aus der
-   normalen Einrichtung/Optionen nehmen; Umgang mit vorhandenen abweichenden
-   Werten samt Migration vorher festlegen. Keine still geänderte Abruflast.
-2. **UV-Quellenzustand:** Erfolgreichen Abruf ohne Einzelwert, Transport-/Payload-
-   ausfall und Erholung unterscheiden. Nur UV als ausgefallen markieren;
-   gesunde AQ-/Pollenwerte behalten. Einmalige private Übergangslogs sowie
-   registrierte Entity-Tests für diese drei Fälle ergänzen.
-3. **Module und Abdeckung:** Referenzen der inaktiven Radar-/Hydro-/SLF-Dateien
-   prüfen und ihren ausgelieferten Umfang bewusst entscheiden. Allgemeine
-   historische Kommentare über fehlende öffentliche APIs nicht ungeprüft als
-   aktuelle Aussage übernehmen. Bestehende Hochwasser-/Lawinenwarnungen im
-   gemeinsamen Warnungsclient bleiben davon unabhängig. Versionskonsistenz
-   beibehalten; keine bedeutungslosen Importtests nur für eine Zahl.
-4. **Gemeinsame Entity-/Coordinator-Struktur:** Die Wiederholung von Geräteinfo,
-   Attribution und Basiseigenschaften untersuchen; einen kleinen passenden
-   gemeinsamen Baustein einführen. Quellenadapter nicht pauschal vereinigen.
-5. **Externer Brand-Nachweis:** Custom-/HACS-Darstellung und Core-Regel bewusst
-   getrennt dokumentieren; dafür keine offizielle Stufe vortäuschen.
+1. Add translated data_description help for actual fields in DE/EN/FR/IT.
+   Explain source, measurement station, warning postcode and forecast coordinates.
+   Remove ordinary user polling-interval configuration only after deciding how
+   existing custom values migrate; do not silently change provider load.
+2. Distinguish a successful UV response without a value from transport/payload
+   failure and recovery. Isolate UV while retaining healthy AQ/pollen; add private
+   once-per-transition logs and registered entity tests. This item later landed.
+3. Review references before deciding the scope of inactive radar/hydro/SLF files.
+   Historical comments about unavailable APIs are not current evidence.
+   Shared-feed flood/avalanche warnings are independent. Retain version consistency;
+   avoid meaningless imports solely to improve percentages.
+4. Review repeated device info/attribution/base properties and introduce a
+   suitable small common entity/coordinator building block without merging sources.
+5. Separate local HACS branding from external Core-brand evidence; do not imply
+   an official tier.
 
-Jeder Laufzeit-PR erhält gezielte Tests und die bestehenden Pflichtprüfungen.
-Zunächst wird die laufende Freigabe R0 abgeschlossen. Reihenfolge und
-Bestandsschutz stehen im [freigegebenen Plan](NEXT_RELEASE_PLAN_DE.md).
+Runtime PRs need targeted regressions and required CI. Work order and compatibility
+are tracked in the [development plan](NEXT_RELEASE_PLAN.md).
 
-## Ergänzender UX-Befund aus der Sichtprüfung
+## Historical warning-state UX finding
 
-Das Bildschirmfoto vom 17.10.2026 zeigt auf der Warnungs-Geräteseite
-«Sicher/Unsicher». Ursache ist `BinarySensorDeviceClass.SAFETY` bei allen drei
-Warnsensoren. Ein inaktiver Warnsensor belegt keine allgemeine Sicherheit.
-Das ist ein Darstellungsbefund; die boolesche Warnungslogik wird dadurch nicht
-als falsch bewertet.
+The 17 October screenshot showed the German UI labels “Sicher/Unsicher”
+(safe/unsafe), caused by SAFETY device class on all three warning sensors.
+An inactive warning sensor does not establish general safety. This was a
+presentation finding, not proof that boolean warning logic was wrong.
 
-| Sensor | Anzeige bei `off` | Anzeige bei `on` |
+| Sensor | Intended off label | Intended on label |
 |---|---|---|
-| Wetterwarnung | Keine aktive Warnung | Warnung aktiv |
-| Kritische Wetterwarnung | Keine kritische Warnung | Kritische Warnung aktiv |
-| Angekündigte Wetterwarnung | Keine angekündigte Warnung | Warnung angekündigt |
+| Weather warning | No active warning | Warning active |
+| Critical warning | No critical warning | Critical warning active |
+| Upcoming warning | No upcoming warning | Warning announced |
 
-Dies sind Zieltexte für einen getrennten Übersetzungs-/UX-PR nach R0.
-Die vorhandenen `translation_key`s erlauben integrationsbezogene Zustandsnamen;
-der aktuelle HA-Frontend-Code priorisiert sie vor der Geräteklasse. Umsetzung
-und Verhalten auf beiden unterstützten HA-Versionen noch gezielt prüfen.
-`on`/`off`, Schwellen, IDs und Automationen bleiben erhalten. `unknown` und
-`unavailable` werden nicht in «keine Warnung» umgedeutet. Alle vier Sprachen
-mitliefern; die tatsächliche Standard-Geräteseite zusätzlich visuell abnehmen.
+The original proposal was a separate translated UX change using existing
+translation keys, which HA's frontend prioritises over device class.
+Retain on/off, thresholds, IDs and automations; never turn unknown/unavailable
+into “no warning”. Supply all four UI languages and visually check the device
+page. Later implementation/acceptance records supersede the original pending state.
 
-Quellen: [HA-Binärsensorzustände](https://www.home-assistant.io/integrations/binary_sensor/),
-[Frontend-Zustandsanzeige](https://github.com/home-assistant/frontend/blob/dev/src/common/entity/compute_state_display.ts).
-Gold-Regeln zu Übersetzungen/Geräteklassen werden danach gesondert bewertet.
+Sources: [HA binary sensors](https://www.home-assistant.io/integrations/binary_sensor/)
+and [frontend state display](https://github.com/home-assistant/frontend/blob/dev/src/common/entity/compute_state_display.ts).
+Gold translation/device-class rules remain separately assessed.
 
-### Pollen-Sichtbefund und aktueller Quellenvergleich
+### Historical pollen findings and source comparison
 
-Auch das zweite Bildschirmfoto gehört laut Benutzer zum installierten **V1.5**.
-`binary_sensor.py`, `sensor.py` und `pollen_meteoswiss.py` sind zwischen V1.5
-(`567a5e4`) und der Prüfbasis `6d74354` bytegleich. Die Befunde werden deshalb
-nicht als Beobachtungen eines bereits installierten V1.7 ausgegeben.
+The second screenshot also concerned installed V1.5. binary_sensor.py,
+sensor.py and pollen_meteoswiss.py matched between 567a5e4 and 6d74354.
+These were not observations of an already installed V1.7.
 
-- **Hasel-Icon:** `sensor.py` setzt `mdi:branch`. Im offiziellen
-  [MaterialDesign-Katalog](https://github.com/Templarian/MaterialDesign/tree/master/svg)
-  fehlt `branch.svg` (404); `tree-outline.svg` ist vorhanden. Ein gültiges
-  Baum-/Blattsymbol wählen und im getrennten UX-PR mitsamt realer Anzeige prüfen.
-- **Tatsächlicher Messumfang:** Der aktuelle Zürcher Datensatz PZH und das
-  offizielle Parameterverzeichnis liefern sieben stündliche Pollenarten:
-  Erle, Birke, Hasel, Buche, Esche, **Eiche**, Gräser. Der Fork liest nur sechs.
-  Eiche ist damit eine belegte Erweiterung für einen eigenen Daten-/Entity-PR.
-  Der vorhandene, ungenutzte `POLLEN_PARAM_MAP` führt zudem `kaqueth0`; der
-  tatsächlich dokumentierte und gelieferte Eichenparameter heisst `kaquerh0`.
-- **Ambrosia und Beifuss:** Weder das aktuelle PZH-Stunden-CSV noch das gelesene
-  OGD-Parameterverzeichnis enthält diese beiden Arten. Vorhandene
-  Open-Meteo-Entities sind modellierte Werte, keine MeteoSchweiz-Stationsmessung.
-  Der MeteoSchweiz-Klimareport 2024 beschreibt separate manuelle Ambrosiamessungen
-  und die damalige fehlende automatische Bestimmung beider Arten; daraus wird
-  kein unbestätigter heutiger Echtzeit-Messdienst abgeleitet.
-- **Nachfolgender Gold-Review:** Die Gruppierung der fachlichen Messwerte als
-  Diagnose und die bisherige Einheit nur als Attribut sind bewusst erhaltene
-  Altverträge. Deren bessere Darstellung separat prüfen; keine unbemerkte
-  Unit-/Statistik-/Registry-Migration als Teil eines Icon-Fixes.
+- **Hazel icon:** sensor.py used mdi:branch. The official
+  [MaterialDesign catalogue](https://github.com/Templarian/MaterialDesign/tree/master/svg)
+  had no branch.svg (404), while tree-outline.svg existed. A valid icon and
+  actual display needed separate checking; this correction later landed.
+- **Measured coverage:** the Zürich PZH hourly dataset and official metadata
+  contained seven species: alder, birch, hazel, beech, ash, oak and grass.
+  The original fork read six, making oak an evidenced extension. Its unused
+  POLLEN_PARAM_MAP also used kaqueth0, while the documented oak column is
+  kaquerh0. The oak addition later landed.
+- **Ragweed and mugwort:** neither the read PZH hourly CSV nor parameter metadata
+  contained these species. Existing Open-Meteo entities are modelled, not station
+  observations. The 2024 climate report described separate manual ragweed
+  observations and then-missing automatic identification of both species;
+  this is not proof of a current real-time measurement service.
+- **Later classification review:** diagnostic grouping and units supplied only
+  as attributes were intentionally retained legacy contracts in that audit.
+  Assess better presentation separately; do not hide unit/statistic/registry
+  migration inside an icon fix. Later normal-sensor grouping and acceptance
+  are recorded in current documents.
 
-Nachweis: [kompakte Quellenprüfung](evidence/pollen_source_2026-10-17.json),
-[aktuelles PZH-CSV](https://data.geo.admin.ch/ch.meteoschweiz.ogd-pollen/pzh/ogd-pollen_pzh_h_now.csv),
-[Parameterverzeichnis](https://data.geo.admin.ch/ch.meteoschweiz.ogd-pollen/ogd-pollen_meta_parameters.csv),
-[Dateninventar](https://data.geo.admin.ch/ch.meteoschweiz.ogd-pollen/ogd-pollen_meta_datainventory.csv),
-[Klimareport 2024](https://www.meteoschweiz.admin.ch/dam/jcr%3Afd79265c-bd1c-4229-ae8d-ea69184d94b8/Klimareport-2024-de.pdf).
+Evidence:
+[compact source probe](evidence/pollen_source_2026-10-17.json),
+[PZH CSV](https://data.geo.admin.ch/ch.meteoschweiz.ogd-pollen/pzh/ogd-pollen_pzh_h_now.csv),
+[parameters](https://data.geo.admin.ch/ch.meteoschweiz.ogd-pollen/ogd-pollen_meta_parameters.csv),
+[inventory](https://data.geo.admin.ch/ch.meteoschweiz.ogd-pollen/ogd-pollen_meta_datainventory.csv),
+[2024 climate report](https://www.meteoschweiz.admin.ch/dam/jcr%3Afd79265c-bd1c-4229-ae8d-ea69184d94b8/Klimareport-2024-de.pdf).
