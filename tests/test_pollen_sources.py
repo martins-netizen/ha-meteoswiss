@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 from contextlib import ExitStack
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
 import aiohttp
@@ -20,7 +22,11 @@ from custom_components.meteoswiss.cache import (
     clear_all_caches,
     get_current_weather_cache,
 )
-from custom_components.meteoswiss.const import DOMAIN, MIN_UPDATE_INTERVAL
+from custom_components.meteoswiss.const import (
+    DOMAIN,
+    MIN_UPDATE_INTERVAL,
+    POLLEN_STATIONS,
+)
 from custom_components.meteoswiss.pollen_coordinator_openmeteo import (
     OPENMETEO_AQ_BASE_URL,
     OPENMETEO_FORECAST_URL,
@@ -46,6 +52,37 @@ CSV_HEADER = "station_abbr;reference_timestamp;kabetuh0;kaalnuh0;kacoryh0;kafagu
 CSV_ZERO = CSV_HEADER + "PLZ;15.10.2026 10:00;0;0;0;0;0;0\n"
 CSV_URL = f"{POLLEN_DATA_BASE_URL}/plz/ogd-pollen_plz_h_now.csv"
 CURRENT_TIME = int(datetime(2026, 10, 15, 10, tzinfo=UTC).timestamp())
+
+
+def _station_evidence():
+    """A dated, external provider snapshot; these tests make no live requests."""
+    return json.loads(
+        (Path(__file__).parent / "fixtures/pollen_stations_2026-10-21.json").read_text()
+    )
+
+
+def test_pollen_choices_match_verified_provider_metadata_and_hourly_assets():
+    evidence = _station_evidence()
+    assert set(POLLEN_STATIONS) == set(evidence["hourly_now_stations"])
+    assert POLLEN_STATIONS == {
+        code: f"{name} ({code})" for code, name in evidence["stations"].items()
+    }
+    assert set(POLLEN_STATIONS).isdisjoint(evidence["items_without_assets"])
+
+
+@pytest.mark.parametrize("station,expected_current", [("PZH", True), ("PLZ", False)])
+def test_real_current_zurich_and_stale_luzern_samples(
+    hass, freezer, station, expected_current
+):
+    evidence = _station_evidence()
+    freezer.move_to(evidence["retrieved_at_utc"])
+    coordinator = MeteoSwissPollenCoordinator(hass, station_id=station)
+    data = coordinator._parse_csv(evidence["sample_hourly_csv"][station]["csv"])
+    assert bool(data) is expected_current
+    if expected_current:
+        assert data["station_id"] == station
+        assert data["birch"]["current"] == 0
+        assert data["oak"]["current"] == 0
 
 
 @pytest.fixture(autouse=True)

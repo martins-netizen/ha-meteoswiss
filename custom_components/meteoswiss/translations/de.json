@@ -3,10 +3,14 @@
     "step": {
       "user": {
         "title": "MeteoSwiss Einrichtung",
-        "description": "Wähle die Datenquelle für aktuelle Messwerte. Die Standortlogik für Wetter- und Pollenprognosen richtet sich nach der gewählten Datenquelle.",
+        "description": "Wähle eine Wetterdatenquelle und eine Station für gemessene Pollen. Den Wetterstandort wählst du im nächsten Schritt.",
         "data": {
           "data_source": "Datenquelle",
-          "update_interval": "Update-Intervall (Sekunden)"
+          "update_interval": "Update-Intervall (Sekunden)",
+          "pollen_station": "Station für Pollenmessungen"
+        },
+        "data_description": {
+          "pollen_station": "Wähle die Pollenmessstation unabhängig von Wetterstation und Warnungs-Postleitzahl. Die Auswahl ändert den Standort der modellierten Pollenprognose nicht. Du kannst sie später unter Konfigurieren ändern."
         }
       },
       "meteoswiss": {
@@ -31,7 +35,8 @@
       "cannot_connect": "Konnte nicht zur Wetter-API verbinden",
       "station_not_found": "Station nicht gefunden",
       "invalid_location": "Ungültige Koordinaten",
-      "invalid_postal_code": "Bitte eine vierstellige Postleitzahl eingeben, zum Beispiel 8302, ohne den App-Zusatz 00."
+      "invalid_postal_code": "Gib eine vierstellige Schweizer Postleitzahl ein, z. B. 8302.",
+      "invalid_pollen_station": "Wähle eine Pollenmessstation aus der Liste."
     },
     "abort": {
       "already_configured": "Diese Datenquelle und dieser Standort sind bereits eingerichtet."
@@ -45,7 +50,10 @@
         "data": {
           "update_interval": "Update-Intervall (Sekunden, min. 600)",
           "data_source": "Datenquelle",
-          "pollen_station": "MeteoSwiss Pollenstation"
+          "pollen_station": "Station für Pollenmessungen"
+        },
+        "data_description": {
+          "pollen_station": "Wähle die Pollenmessstation unabhängig von Wetterstation und Warnungs-Postleitzahl. Die Auswahl ändert den Standort der modellierten Pollenprognose nicht. Du kannst sie später unter Konfigurieren ändern."
         }
       }
     }

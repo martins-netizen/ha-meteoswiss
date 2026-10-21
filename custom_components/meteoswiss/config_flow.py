@@ -107,6 +107,7 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
 
     def __init__(self) -> None:
         self._update_interval = DEFAULT_UPDATE_INTERVAL_SEC
+        self._pollen_station = DEFAULT_POLLEN_STATION
         self._stations: list[dict[str, Any]] = []
 
     async def _load_stations(self) -> list[dict[str, Any]]:
@@ -144,14 +145,23 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
-        """Choose a provider and a minimum-ten-minute polling interval."""
+        """Choose weather source, independent pollen station and polling interval."""
+        errors = {}
         if user_input is not None:
-            self._update_interval = user_input.get(
-                CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL_SEC
-            )
-            if user_input[CONF_DATA_SOURCE] == DATA_SOURCE_OPENMETEO:
-                return await self.async_step_openmeteo()
-            return await self.async_step_meteoswiss()
+            pollen_station = user_input.get(CONF_POLLEN_STATION)
+            if (
+                not isinstance(pollen_station, str)
+                or pollen_station not in POLLEN_STATIONS
+            ):
+                errors[CONF_POLLEN_STATION] = "invalid_pollen_station"
+            else:
+                self._pollen_station = pollen_station
+                self._update_interval = user_input.get(
+                    CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL_SEC
+                )
+                if user_input[CONF_DATA_SOURCE] == DATA_SOURCE_OPENMETEO:
+                    return await self.async_step_openmeteo()
+                return await self.async_step_meteoswiss()
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema(
@@ -164,11 +174,13 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
                             DATA_SOURCE_METEOSWISS: "MeteoSwiss STAC API (Swiss Stations)",
                         }
                     ),
+                    vol.Required(CONF_POLLEN_STATION): vol.In(POLLEN_STATIONS),
                     vol.Optional(
                         CONF_UPDATE_INTERVAL, default=DEFAULT_UPDATE_INTERVAL_SEC
                     ): vol.All(vol.Coerce(int), vol.Range(min=MIN_UPDATE_INTERVAL)),
                 }
             ),
+            errors=errors,
         )
 
     async def async_step_meteoswiss(
@@ -214,6 +226,7 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
                         CONF_LONGITUDE: station["lon"],
                         CONF_UPDATE_INTERVAL: self._update_interval,
                     },
+                    options={CONF_POLLEN_STATION: self._pollen_station},
                 )
         return self.async_show_form(
             step_id="meteoswiss",
@@ -269,6 +282,7 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
                             CONF_STATION_NAME: "Open-Meteo",
                             CONF_UPDATE_INTERVAL: self._update_interval,
                         },
+                        options={CONF_POLLEN_STATION: self._pollen_station},
                     )
                 errors["base"] = "cannot_connect"
         return self.async_show_form(

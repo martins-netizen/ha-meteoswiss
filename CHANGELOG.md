@@ -1,13 +1,29 @@
 # Changelog
 
-## [Unreleased] — documentation
+## [Unreleased]
+
+### Changed
+
+- Require an explicit measured-pollen station during initial setup for both
+  weather sources. Save it in the same options used by Configure, retain it
+  across weather-source retries, and explain the independent measurement and
+  forecast locations in DE/EN/FR/IT. Existing entries retain their settings;
+  the legacy Luzern fallback is unchanged. This change is not in 8.2.0b1.
+- Verify the measured-pollen choices against official station metadata and
+  hourly STAC assets. Remove unsupported BLR, retain the 15 verified stations
+  even during temporary data gaps, and document the real Zürich/current and
+  Luzern/stale samples with offline regressions.
+- Keep postcode guidance focused on the four-digit Swiss postal code in all
+  four UI languages; remove the unnecessary internal App-code explanation.
+
+### Documentation
 
 - Maintain GitHub project documentation in English, including setup, migration,
   acceptance, quality reviews and development plans. Keep multilingual HA UI
   catalogues and quoted source evidence unchanged. Old guide paths redirect
   to their canonical English replacements.
 - Reconcile completed beta publication and the operator-confirmed HACS source
-  switch with the still-open clean first-install/recovery work. Track stable
+  switch, clean first installation and recovery rehearsal. Track stable
   release gates separately from later POI/OGD and Silver/Gold development.
 - Clarify that official rainfall source timestamps mark interval ends while
   HA statistic records use interval starts in UTC.
@@ -33,7 +49,8 @@ a branch or tag alone is not a completed release. See the
 - At publication, clean first HACS installation and a source-switch rehearsal
   were not complete. The operator subsequently confirmed the HACS 2.0.5 switch,
   download, restart and initial visual success on 20 October. A clean first
-  install remains open; see [current evidence](docs/HACS_ACCEPTANCE.md).
+  installation and isolated restore were subsequently confirmed on 21 October;
+  see [current evidence and remaining setup finding](docs/HACS_ACCEPTANCE.md).
   No default-store listing or official HA tier is claimed.
 - Add a guarded Mac publication helper. It checks the exact protected
   branch commit, unchanged accepted runtime/workflows, versions, CI and

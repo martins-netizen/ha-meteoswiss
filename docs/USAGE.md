@@ -11,7 +11,7 @@ the retired legacy season-HGT entity. This page is the detailed reference.
 |---|---|
 | One value is `unknown` | Does that station/provider supply it? Check measurement time; do not replace a missing value with zero. |
 | A family is `unavailable` | Check the relevant source/Internet connection and a later refresh; weather, warnings and pollen fail independently. |
-| Weather observations work but warnings do not | Check the warning postcode, four digits without the internal `00` suffix, and warning-source status. |
+| Weather observations work but warnings do not | Check the four-digit Swiss warning postcode and warning-source status. |
 | Forecast or AQ describes a different location | For station entries check HA's configured home location; postcode and station do not select the forecast point. |
 | Measured pollen is from another station | Choose the pollen station independently in Configure; it is not selected from the weather station. |
 | A warning card uses an old label or misses Wind/Drought | Review the actual dashboard/automation dictionaries and filters using the migration guide. |
@@ -38,6 +38,9 @@ must retain their config entry, domain, entity unique IDs and statistic IDs.
 2. Choose **MeteoSwiss STAC API** for measured Swiss station weather, or
    **Open-Meteo API** for weather at explicit coordinates. Select an update
    interval of at least 600 seconds (default 600).
+   The unreleased setup improvement also requires an explicit **Station for
+   measured pollen** from the supported list, independently of the weather
+   location. In the published **8.2.0b1**, choose this later in **Configure**.
 3. For MeteoSwiss, select a weather station and enter the postcode for warnings.
    The postcode does not automatically select or filter the station.
    For Open-Meteo, enter latitude, longitude and the warning postcode.
@@ -58,13 +61,18 @@ checked. Separate warning postcodes intentionally allow separate entries.
 | Postal code | MeteoSwiss weather-warning area, independent of observation station | Required by the setup form |
 | Latitude / longitude | Open-Meteo weather and forecast location | 47.05 / 8.31; finite values in −90…90 / −180…180 |
 | Update interval | Observation polling interval in seconds | 600; minimum 600 |
-| Pollen station | Measured MeteoSwiss pollen station, independently of weather station | PLZ; choose from the supported list |
+| Pollen station | Measured MeteoSwiss pollen station, independently of weather station and forecast location | Explicit choice during new setup (unreleased); 8.2.0b1 and existing entries without a saved choice fall back to Luzern (PLZ). |
 
 Change the update interval and measured pollen station using the entry's
 **Configure** button. Saving options reloads the entry without recreating it.
 Changing source/location is not offered by this options form. For MeteoSwiss
 entries, weather and pollen forecasts use the HA installation location; station
 coordinates describe observations. For Open-Meteo they use the explicit location.
+
+See the [verified measured-pollen catalogue and availability evidence](POLLEN_STATIONS.md).
+The 15 supported stations have official metadata and hourly assets. A reachable
+but stale measurement file remains unavailable; a temporary data gap does not
+remove a real station or automatically substitute another one.
 
 ## Reading values and using automations
 

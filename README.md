@@ -64,7 +64,9 @@ The candidate additionally passed local tests and deployed acceptance on
 **2026.10.2**. See the [beta notes and known limits](docs/RELEASE_8.2.0b1.md).
 The operator confirmed the HACS 2.0.5 source switch, downloaded version
 `8.2.0b1`, restart and a positive initial visual check on 20 October 2026.
-A clean first HACS installation remains open. The [HACS acceptance record](docs/HACS_ACCEPTANCE.md)
+A clean first HACS installation and isolated restore were operator-confirmed
+on 21 October. The initial pollen picker still needs its focused HA check.
+The [HACS acceptance record](docs/HACS_ACCEPTANCE.md)
 distinguishes this operator-confirmed result from independent technical evidence.
 A default-store listing and an official HA quality tier are not claimed.
 The [current acceptance and stable-release checklist](docs/RELEASE_READINESS.md)
@@ -113,6 +115,8 @@ Once a tested release is approved:
    enter the weather station and the four-digit warning postcode.
 5. Check the HA home location for forecasts/AQ and independently select the
    measured pollen station in the integration's **Configure** options.
+   An unreleased setup improvement makes this station an explicit choice in
+   the initial dialog; it is not yet part of the published **8.2.0b1** beta.
 
 Existing users keep their existing HA entry; they do not add it a second time.
 `development` is the maintained default branch and `main` is an upstream mirror.

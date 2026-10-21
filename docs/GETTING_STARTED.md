@@ -72,12 +72,12 @@ A prerelease is a test version, not an automatically approved everyday release.
 
 **Three-dot menu → Update information** refreshes repository metadata without
 downloading components. The [HACS acceptance record](HACS_ACCEPTANCE.md)
-distinguishes the completed operator-confirmed source switch from the still-open
-clean first-install test.
+records the completed operator-confirmed source switch, clean first installation
+and recovery rehearsal, with their evidence limits.
 
 Downloading supplies software. The next step configures its data locations.
 
-## 3. Select a weather station and warning location
+## 3. Select pollen, weather and warning locations
 
 Open **Settings → Devices & services → Add integration → MeteoSwiss**.
 
@@ -85,8 +85,17 @@ For measured Swiss weather, choose **MeteoSwiss STAC API (Swiss Stations)**.
 You do not need to work with its underlying API. Keep the initial update
 interval at **600 seconds**.
 
+**Unreleased setup improvement:** also explicitly choose a **Station for
+measured pollen** in this first dialog. Choose the measuring station relevant
+to you; it is independent of the weather station and warning postcode. It does
+not change the modelled pollen forecast location. No pollen station is
+preselected for a new entry. You can change it later in **Configure**.
+
+**When testing the published 8.2.0b1 beta:** its setup does not yet ask for a
+pollen station. Choose it afterwards in **Configure**, as described below.
+
 Choose a weather station and enter the warning location's **four-digit
-postcode**, for example **8302**. Do not enter the six-digit internal App code.
+Swiss postcode**, for example **8302**.
 The integration checks the weather source before saving; a connection error
 leaves the same form available to retry.
 
@@ -95,7 +104,7 @@ leaves the same form available to retry.
 | Weather station, for example Zürich / Kloten | Measured temperature, rain, wind and other station values. |
 | Postcode | Weather/natural-hazard warning selection. |
 | Home Assistant home location | Weather forecasts, modelled pollen and air quality. |
-| Measured-pollen station | Pollen observations; select independently in integration options. |
+| Measured-pollen station | Pollen observations; choose independently during setup (unreleased improvement), or in Configure. |
 
 The postcode does not automatically select the weather station. Check the HA
 home location under **Settings → System → General** and change it only if it is
@@ -108,9 +117,20 @@ four-digit postcode.
 
 ## 4. Check pollen station and initial values
 
-Open the existing MeteoSwiss entry's **Configure** options and choose a
-measured-pollen station. It is not derived from the weather station.
-The current default is **Luzern (PLZ)**; PLZ is that station's identifier.
+Check the selected measured-pollen station under the existing MeteoSwiss
+entry's **Configure** options. You can change it without deleting the entry.
+It is not derived from the weather station and does not select the modelled
+pollen forecast location.
+
+For **8.2.0b1** or an older entry without a saved pollen choice, the fallback is
+**Luzern (PLZ)**. Select your intended station explicitly. Here PLZ is Luzern's
+station identifier, not a request to enter a postal code. Existing entries keep
+their settings when upgrading; the new initial picker does not reconfigure them.
+
+The [verified station list](POLLEN_STATIONS.md) distinguishes station identity
+from current data availability. A real station can temporarily publish no new
+measurements. In that case its measured-pollen sensors become unavailable;
+the integration does not silently show another station's values.
 
 Open the integration's devices. Expect weather, observation sensors, three
 warning sensors and pollen/air-quality entities. HA forecasts cover up to
