@@ -3,10 +3,14 @@
     "step": {
       "user": {
         "title": "Configuration de l'intégration météo",
-        "description": "Sélectionnez votre source de données météo préférée.",
+        "description": "Choisissez une source de données météo et une station de mesure du pollen. Vous choisirez le lieu des données météo à l’étape suivante.",
         "data": {
           "data_source": "Source de données",
-          "update_interval": "Intervalle de mise à jour (secondes)"
+          "update_interval": "Intervalle de mise à jour (secondes)",
+          "pollen_station": "Station de mesure du pollen"
+        },
+        "data_description": {
+          "pollen_station": "Choisissez la station de mesure du pollen indépendamment de la station météo et du code postal des alertes. Ce choix ne modifie pas le lieu des prévisions modélisées de pollen. Vous pourrez le modifier dans Configurer."
         }
       },
       "meteoswiss": {
@@ -31,7 +35,8 @@
       "cannot_connect": "Impossible de se connecter à l'API météo",
       "station_not_found": "Station introuvable",
       "invalid_location": "Coordonnées invalides",
-      "invalid_postal_code": "Saisissez un code postal à quatre chiffres, par exemple 8302, sans le suffixe 00 de l’application."
+      "invalid_postal_code": "Saisissez un code postal à quatre chiffres, par exemple 8302, sans le suffixe 00 de l’application.",
+      "invalid_pollen_station": "Choisissez une station de mesure du pollen dans la liste."
     },
     "abort": {
       "already_configured": "Cette source de données et cet emplacement sont déjà configurés."
@@ -45,7 +50,10 @@
         "data": {
           "update_interval": "Intervalle de mise à jour (secondes, min. 600)",
           "data_source": "Source de données",
-          "pollen_station": "Station de pollen MeteoSwiss"
+          "pollen_station": "Station de mesure du pollen"
+        },
+        "data_description": {
+          "pollen_station": "Choisissez la station de mesure du pollen indépendamment de la station météo et du code postal des alertes. Ce choix ne modifie pas le lieu des prévisions modélisées de pollen. Vous pourrez le modifier dans Configurer."
         }
       }
     }

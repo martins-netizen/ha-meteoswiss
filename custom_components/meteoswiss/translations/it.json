@@ -3,10 +3,14 @@
     "step": {
       "user": {
         "title": "Configurazione integrazione meteo",
-        "description": "Seleziona la fonte di dati meteo preferita.",
+        "description": "Scegli una fonte di dati meteo e una stazione di misurazione dei pollini. Sceglierai la località dei dati meteo nel passaggio successivo.",
         "data": {
           "data_source": "Fonte dati",
-          "update_interval": "Intervallo di aggiornamento (secondi)"
+          "update_interval": "Intervallo di aggiornamento (secondi)",
+          "pollen_station": "Stazione di misurazione dei pollini"
+        },
+        "data_description": {
+          "pollen_station": "Scegli la stazione di misurazione dei pollini indipendentemente dalla stazione meteo e dal codice postale degli avvisi. La scelta non modifica la località delle previsioni modellate dei pollini. Potrai cambiarla in Configura."
         }
       },
       "meteoswiss": {
@@ -31,7 +35,8 @@
       "cannot_connect": "Impossibile connettersi all'API meteo",
       "station_not_found": "Stazione non trovata",
       "invalid_location": "Coordinate non valide",
-      "invalid_postal_code": "Inserisci un codice postale di quattro cifre, per esempio 8302, senza il suffisso 00 dell’app."
+      "invalid_postal_code": "Inserisci un codice postale di quattro cifre, per esempio 8302, senza il suffisso 00 dell’app.",
+      "invalid_pollen_station": "Scegli una stazione di misurazione dei pollini dall’elenco."
     },
     "abort": {
       "already_configured": "Questa fonte di dati e questa località sono già configurate."
@@ -45,7 +50,10 @@
         "data": {
           "update_interval": "Intervallo di aggiornamento (secondi, min. 600)",
           "data_source": "Fonte dati",
-          "pollen_station": "Stazione pollen MeteoSwiss"
+          "pollen_station": "Stazione di misurazione dei pollini"
+        },
+        "data_description": {
+          "pollen_station": "Scegli la stazione di misurazione dei pollini indipendentemente dalla stazione meteo e dal codice postale degli avvisi. La scelta non modifica la località delle previsioni modellate dei pollini. Potrai cambiarla in Configura."
         }
       }
     }

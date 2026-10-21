@@ -1,6 +1,6 @@
 # Release readiness: beta and first stable version
 
-**Document version:** 1.1 · **Updated:** 21 October 2026
+**Document version:** 1.2 · **Updated:** 21 October 2026
 **Purpose:** One entry point for completed evidence, remaining release steps
 and work deliberately deferred to later versions.
 
@@ -12,12 +12,14 @@ and work deliberately deferred to later versions.
 | Runtime acceptance | HA 2026.10.2, accepted runtime `0086b956d44b7144b242c5d5c1881d0b0650e524`; its own 24-hour observation and visual acceptance are complete. The 33 published component/translation/brand files match that runtime. |
 | Candidate tests | 786 passing tests on each of HA 2026.8.3 and 2026.10.2, 99.051% combined line/branch coverage; successful candidate checks include HACS, Hassfest and CodeQL. This does not complete a Silver assessment. |
 | HACS source switch | On 20 October 2026 the operator confirmed HACS 2.0.5, `martins-netizen/ha-meteoswiss`, downloaded `8.2.0b1`, restart and a positive initial visual check. |
+| Clean first installation | Operator-confirmed on 21 October in a temporary HA 2026.10.2 / HACS 2.0.5 instance: new 8.2.0b1 STAC entry, 600 seconds, KLO, warning postcode 8302 and immediate observations. |
+| Isolated restore and pollen comparison | Operator confirmed restoration from 900 to the saved 600 seconds, then selected a measured-pollen station in Configure and reported matching production measurements. Evidence does not include independent restored-file/registry checks. |
 | Warnings, languages and migration | App v3 and its verified catalogue, bundled DE/EN/FR/IT, actual warning consumers, retained identities and rain statistics were checked during runtime acceptance. |
 | Optional UV outage | An isolated outage on 19 October recovered at the next scheduled request. Other checked data families remained available. |
 
 [HACS acceptance](HACS_ACCEPTANCE.md) records the evidence boundaries.
 The operator's latest confirmation is not a newly collected post-switch file,
-registry or statistics comparison, or an executed rollback. The source switch
+registry or statistics comparison. The source switch
 itself is nevertheless complete and should not be repeated without a concrete reason.
 
 ## Remaining work before the first stable version
@@ -27,16 +29,18 @@ or automatically approved.
 
 | Order | Work | Completion criterion |
 |---|---|---|
-| 1 | **Exercise a clean HACS first installation** | In a temporary isolated HA instance: add the custom repository, explicitly select/download the beta, restart, complete setup once, check initial data and understandable errors. Follow the getting-started guide step by step. |
-| 2 | **Exercise recovery in the isolated test** | Restore the saved software/configuration through the documented route, including paired warning-filter changes. Do not test on production devices. Simulated tool tests or a written procedure are not an executed recovery rehearsal. |
-| 3 | **Resolve findings and finalise scope** | Assess first-install, guide and quality-review findings. Fix and test release-blocking errors; publish justified remaining limitations. Completing every Silver/Gold criterion is not a prerequisite. |
+| 1 | **Check the corrected initial pollen choice in HA** | Clean beta installation is complete. For the unreleased correction, use the temporary instance to check both weather-source paths, an explicit pollen-station choice without a silent default, correct saved station and initial measurements. Confirm that Configure still changes the station. This focused check is still open. |
+| 2 | **Retain the completed recovery evidence** | The isolated operator-confirmed backup restore is complete. Do not repeat it or restore production merely for documentation; its scope is described in HACS acceptance. Actual warning-consumer migrations must still retain their matching recovery route. |
+| 3 | **Resolve remaining findings and finalise scope** | Review the initial pollen picker and guide with the exact candidate. Fix and test release-blocking errors; publish justified remaining limitations. Completing every Silver/Gold criterion is not a prerequisite. |
 | 4 | **Prepare the stable version** | Manifest/module versions agree on 8.2.0; release/migration notes are current. Include `hide_default_branch: true` in the next reviewed HACS manifest and check release selection. Do not move the immutable beta tag. |
 | 5 | **Check and approve the exact candidate** | Successful PR and supported-HA checks, reviewed diff against accepted runtime, regular merge, and a publication decision for that exact commit. |
 | 6 | **Publish stable and check HACS availability** | Create a separate stable tag/release, verify version/package contents and confirm that HACS offers the intended stable version. Only then is stable publication complete. |
 
 The operator does **not** need to supply a second permanent HA environment or
-delete the production integration. The temporary first-install test remains
-open until actually performed.
+delete the production integration. The temporary beta first-install and restore
+tests are completed within the operator-confirmed scope above. They do not
+constitute an independent beginner usability review or acceptance of the new
+pollen-picker code.
 
 A new independent **read-only** post-switch comparison of installed files,
 identities and statistics progression is useful supplementary evidence. It has
