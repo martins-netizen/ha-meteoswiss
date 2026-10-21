@@ -35,7 +35,7 @@
       "cannot_connect": "Could not connect to weather API",
       "station_not_found": "Station not found",
       "invalid_location": "Invalid coordinates",
-      "invalid_postal_code": "Enter a four-digit postal code, for example 8302, without the app suffix 00.",
+      "invalid_postal_code": "Enter a four-digit Swiss postal code, for example 8302.",
       "invalid_pollen_station": "Select a pollen measuring station from the list."
     },
     "abort": {

@@ -35,7 +35,7 @@
       "cannot_connect": "Konnte nicht zur Wetter-API verbinden",
       "station_not_found": "Station nicht gefunden",
       "invalid_location": "Ungültige Koordinaten",
-      "invalid_postal_code": "Bitte eine vierstellige Postleitzahl eingeben, zum Beispiel 8302, ohne den App-Zusatz 00.",
+      "invalid_postal_code": "Gib eine vierstellige Schweizer Postleitzahl ein, z. B. 8302.",
       "invalid_pollen_station": "Wähle eine Pollenmessstation aus der Liste."
     },
     "abort": {

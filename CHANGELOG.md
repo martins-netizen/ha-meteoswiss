@@ -13,6 +13,8 @@
   hourly STAC assets. Remove unsupported BLR, retain the 15 verified stations
   even during temporary data gaps, and document the real Zürich/current and
   Luzern/stale samples with offline regressions.
+- Keep postcode guidance focused on the four-digit Swiss postal code in all
+  four UI languages; remove the unnecessary internal App-code explanation.
 
 ### Documentation
 

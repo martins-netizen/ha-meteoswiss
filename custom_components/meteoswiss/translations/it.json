@@ -35,7 +35,7 @@
       "cannot_connect": "Impossibile connettersi all'API meteo",
       "station_not_found": "Stazione non trovata",
       "invalid_location": "Coordinate non valide",
-      "invalid_postal_code": "Inserisci un codice postale di quattro cifre, per esempio 8302, senza il suffisso 00 dell’app.",
+      "invalid_postal_code": "Inserisci un codice postale svizzero di quattro cifre, ad esempio 8302.",
       "invalid_pollen_station": "Scegli una stazione di misurazione dei pollini dall’elenco."
     },
     "abort": {

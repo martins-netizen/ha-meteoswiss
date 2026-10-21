@@ -11,7 +11,7 @@ the retired legacy season-HGT entity. This page is the detailed reference.
 |---|---|
 | One value is `unknown` | Does that station/provider supply it? Check measurement time; do not replace a missing value with zero. |
 | A family is `unavailable` | Check the relevant source/Internet connection and a later refresh; weather, warnings and pollen fail independently. |
-| Weather observations work but warnings do not | Check the warning postcode, four digits without the internal `00` suffix, and warning-source status. |
+| Weather observations work but warnings do not | Check the four-digit Swiss warning postcode and warning-source status. |
 | Forecast or AQ describes a different location | For station entries check HA's configured home location; postcode and station do not select the forecast point. |
 | Measured pollen is from another station | Choose the pollen station independently in Configure; it is not selected from the weather station. |
 | A warning card uses an old label or misses Wind/Drought | Review the actual dashboard/automation dictionaries and filters using the migration guide. |

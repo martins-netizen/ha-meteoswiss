@@ -95,7 +95,7 @@ preselected for a new entry. You can change it later in **Configure**.
 pollen station. Choose it afterwards in **Configure**, as described below.
 
 Choose a weather station and enter the warning location's **four-digit
-postcode**, for example **8302**. Do not enter the six-digit internal App code.
+Swiss postcode**, for example **8302**.
 The integration checks the weather source before saving; a connection error
 leaves the same form available to retry.
 
