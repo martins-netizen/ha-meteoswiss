@@ -15,6 +15,11 @@ This is an independent community project, not an official MeteoSwiss product.
 its live acceptance. See [release availability and beta limits](#release-status)
 before installing.
 
+**Next test candidate: `8.2.0b2`.** It adds the initial pollen-station choice,
+verified station list and clearer postcode guidance. It is available only once
+an explicit prerelease appears on the Releases page. See the
+[candidate notes and focused HA check](docs/RELEASE_8.2.0b2.md).
+
 ## Why choose this fork?
 
 - **Less manual patching.** Reviewed fixes and German, English, French and Italian
@@ -115,8 +120,10 @@ Once a tested release is approved:
    enter the weather station and the four-digit warning postcode.
 5. Check the HA home location for forecasts/AQ and independently select the
    measured pollen station in the integration's **Configure** options.
-   An unreleased setup improvement makes this station an explicit choice in
+   The 8.2.0b2 candidate makes this station an explicit choice in
    the initial dialog; it is not yet part of the published **8.2.0b1** beta.
+   When testing an explicitly published **8.2.0b2**, choose that version instead
+   of 8.2.0b1 and follow its focused test checklist.
 
 Existing users keep their existing HA entry; they do not add it a second time.
 `development` is the maintained default branch and `main` is an upstream mirror.

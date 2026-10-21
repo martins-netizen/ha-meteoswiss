@@ -85,11 +85,14 @@ For measured Swiss weather, choose **MeteoSwiss STAC API (Swiss Stations)**.
 You do not need to work with its underlying API. Keep the initial update
 interval at **600 seconds**.
 
-**Unreleased setup improvement:** also explicitly choose a **Station for
+**8.2.0b2 candidate:** also explicitly choose a **Station for
 measured pollen** in this first dialog. Choose the measuring station relevant
 to you; it is independent of the weather station and warning postcode. It does
 not change the modelled pollen forecast location. No pollen station is
 preselected for a new entry. You can change it later in **Configure**.
+
+Test 8.2.0b2 only after that prerelease is explicitly published; see its
+[focused acceptance checklist](RELEASE_8.2.0b2.md).
 
 **When testing the published 8.2.0b1 beta:** its setup does not yet ask for a
 pollen station. Choose it afterwards in **Configure**, as described below.
@@ -104,7 +107,7 @@ leaves the same form available to retry.
 | Weather station, for example Zürich / Kloten | Measured temperature, rain, wind and other station values. |
 | Postcode | Weather/natural-hazard warning selection. |
 | Home Assistant home location | Weather forecasts, modelled pollen and air quality. |
-| Measured-pollen station | Pollen observations; choose independently during setup (unreleased improvement), or in Configure. |
+| Measured-pollen station | Pollen observations; choose independently during 8.2.0b2 setup, or in Configure. |
 
 The postcode does not automatically select the weather station. Check the HA
 home location under **Settings → System → General** and change it only if it is

@@ -1,6 +1,6 @@
 # Release readiness: beta and first stable version
 
-**Document version:** 1.2 · **Updated:** 21 October 2026
+**Document version:** 1.3 · **Updated:** 21 October 2026
 **Purpose:** One entry point for completed evidence, remaining release steps
 and work deliberately deferred to later versions.
 
@@ -19,6 +19,10 @@ and work deliberately deferred to later versions.
 | Optional UV outage | An isolated outage on 19 October recovered at the next scheduled request. Other checked data families remained available. |
 
 [HACS acceptance](HACS_ACCEPTANCE.md) records the evidence boundaries.
+The corrected setup was integrated through PR #37. A version-only **8.2.0b2**
+test package, branch hiding and guarded publisher V1.1 are prepared separately;
+this document does not claim it is published or installed. Follow its
+[focused HA checklist](RELEASE_8.2.0b2.md) after explicit prerelease publication.
 The operator's latest confirmation is not a newly collected post-switch file,
 registry or statistics comparison. The source switch
 itself is nevertheless complete and should not be repeated without a concrete reason.
