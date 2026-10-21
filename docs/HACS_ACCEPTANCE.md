@@ -1,6 +1,6 @@
 # HACS acceptance of the first beta
 
-**Updated: 21 October 2026 · Plan and evidence V1.4**
+**Updated: 21 October 2026 · Plan and evidence V1.5**
 
 Beta **8.2.0b1** is public. Its component files match the runtime already
 accepted on HA 2026.10.2. The operator has confirmed the HACS 2.0.5 source switch,
@@ -12,6 +12,11 @@ accepted beta runtime does not need another full observation window.
 
 [Release readiness](RELEASE_READINESS.md) separates remaining stable-release
 work from later location/POI features.
+
+The corrected setup is integrated through PR #37. Its **8.2.0b2** packaging is
+prepared separately; publication, download and focused UI acceptance are still
+distinct steps. Use the [candidate checklist](RELEASE_8.2.0b2.md), retaining the
+completed first-beta install/restore evidence.
 
 ## 1. Inspect before changing anything
 

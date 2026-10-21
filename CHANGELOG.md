@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## [8.2.0b2] — pollen setup test candidate
+
+Prepared candidate; an explicit GitHub prerelease is required before HACS
+installation. See [candidate notes and acceptance](docs/RELEASE_8.2.0b2.md).
+
 ### Changed
 
 - Require an explicit measured-pollen station during initial setup for both
@@ -15,6 +20,9 @@
   Luzern/stale samples with offline regressions.
 - Keep postcode guidance focused on the four-digit Swiss postal code in all
   four UI languages; remove the unnecessary internal App-code explanation.
+- Hide default-branch downloads in the candidate HACS manifest, without
+  changing the immutable first beta tag. Add guarded publisher V1.1 for the
+  version-only package and the focused HA onboarding check.
 
 ### Documentation
 
