@@ -1,8 +1,8 @@
 # Setup, settings and data availability
 
 For a first installation without programming knowledge, use
-[the German step-by-step guide](START_DE.md). Existing users follow the
-[separate migration guide](WECHSEL_DE.md), including the warning filters and
+[the step-by-step guide](GETTING_STARTED.md). Existing users follow the
+[separate migration guide](MIGRATION.md), including the warning filters and
 the retired legacy season-HGT entity. This page is the detailed reference.
 
 ## Quick troubleshooting

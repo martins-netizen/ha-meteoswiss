@@ -10,9 +10,14 @@ Its 33 component, translation and brand files match the live-accepted runtime.
 The runtime acceptance is complete. On 20 October 2026 the operator additionally
 confirmed the HACS 2.0.5 source switch to this fork, downloaded version 8.2.0b1,
 HA restart and a positive initial visual check. A clean first HACS installation
-remains open; see the scoped [HACS acceptance record](HACS_ABNAHME_DE.md).
+remains open; see the scoped [HACS acceptance record](HACS_ACCEPTANCE.md).
 HACS listing and the HA Quality Scale remain separate assessments. This document
 does not publish, retag or install anything.
+
+The [current acceptance and stable-release checklist](RELEASE_READINESS.md)
+is the consolidated next-step record. Publishing this beta did not complete the
+clean first-install test or publish a stable 8.2.0 release. The completed source
+switch is not an open task to repeat.
 
 ## Repository settings to complete before publication
 
@@ -75,8 +80,8 @@ first checks whether the expected release already exists.
   operator-reported evidence; no new independent post-switch registry/statistic
   or file-hash comparison, executed rollback, or clean first install is claimed.
   The existing 24-hour runtime acceptance remains valid for the same code.
-  Follow [START_DE.md](START_DE.md) for the still-open first-install rehearsal;
-  [WECHSEL_DE.md](WECHSEL_DE.md) remains the source-switch guide for other users.
+  Follow [GETTING_STARTED.md](GETTING_STARTED.md) for the still-open first-install rehearsal;
+  [MIGRATION.md](MIGRATION.md) remains the source-switch guide for other users.
   A disposable instance is sufficient; a second permanent HA installation is not
   required. A default-store listing or nontechnical usability approval is not claimed.
 - Before updating an existing installation, migrate the actual warning
@@ -108,10 +113,14 @@ the version number alone or reinstall an identical runtime needlessly.
    expand **Need a different version?**, and select **8.2.0b1** under **Release**.
    Older HACS versions may additionally require beta visibility. Check the
    announced download version; do not accept a branch or commit fallback.
-3. Complete the separate first-install/source-switch rehearsal described in
-   [HACS_ABNAHME_DE.md](HACS_ABNAHME_DE.md). A temporary instance is sufficient;
+3. Complete the still-open clean first-install rehearsal described in
+   [HACS_ACCEPTANCE.md](HACS_ACCEPTANCE.md). The operator-confirmed source switch
+   is complete; do not repeat it. A temporary isolated instance is sufficient;
    do not require a second permanent HA installation or use the production system
-   as an empty first-install test. Keep the runtime's completed 24-hour acceptance.
+   as an empty first-install test. Rehearse the documented recovery route there
+   and keep the runtime's completed 24-hour acceptance. A new independent read-only
+   post-switch file/identity check is useful supplementary evidence, not a reason
+   to redo the source switch.
 4. Include `"hide_default_branch": true` in the next reviewed release's
    `hacs.json`. HACS can read that manifest from the selected ref, so changing
    only `development` does not change the immutable `8.2.0b1` manifest or prove

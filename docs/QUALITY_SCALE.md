@@ -15,11 +15,17 @@ scheduled refresh; the failure remained local to UV. Forecast pollen's Sensors
 grouping is visually confirmed, and all twelve pollen categories were checked
 in the registry. Earlier dated entries below describe their earlier baselines.
 
+The first GitHub beta was published on 20 October 2026. The operator then
+confirmed the HACS 2.0.5 source switch, downloaded 8.2.0b1 version, restart and
+positive initial visual check. A clean first HACS installation remains open;
+no new independent post-switch file/registry/statistic comparison or executed
+rollback is claimed. See the [HACS evidence record](HACS_ACCEPTANCE.md).
+
 These findings do not close unrelated Bronze/Silver gaps or award an official
-HA quality tier. A first HACS installation and source-switch rehearsal remain
-unverified end to end. The [prepared beta notes](RELEASE_8.2.0b1.md) state those
-limits; no new runtime or HA deployment is required for documentation-only
-publication changes whose component files match the accepted commit.
+HA quality tier. The [beta notes](RELEASE_8.2.0b1.md) state those limits; no new
+runtime or HA deployment is required for documentation-only changes whose
+component files match the accepted commit. The [current release checklist](RELEASE_READINESS.md)
+separates stable-release gates from the later Silver/Gold and location backlog.
 
 This is a self-assessment against the current
 [Home Assistant Integration Quality Scale](https://developers.home-assistant.io/docs/core/integration-quality-scale/rules/).
@@ -28,7 +34,7 @@ installability/default listing is a separate assessment. The manifest deliberate
 contains no `quality_scale` claim. Live acceptance and a tested fork release
 remain separate gates after code review and CI.
 
-The [next-release plan (German)](NEXT_RELEASE_PLAN_DE.md) coordinates the remaining
+The [next-release plan](NEXT_RELEASE_PLAN.md) coordinates the remaining
 Bronze/Silver work, a separately validated POI/location feature and the Gold
 backlog. It is planning, not a completed tier assessment. The HA project treats
 [custom integrations separately](https://contributors.home-assistant.io/core/quality-scale/tiers/#custom);
@@ -53,7 +59,7 @@ requests and the remaining warning/height requirements.
 | `dependency-transparency` | Exempt for the current integration: `manifest.json` has no extra Python `requirements`. Public provider/location dependencies are separately documented; that is not the criterion of this rule. |
 | `docs-actions`, `docs-triggers`, `docs-conditions` | Exempt: no integration-specific actions, triggers or conditions. Usage still explains standard HA entity automations and forecast functions. |
 | `docs-high-level-description` | README lists data families, scope and fork provenance. |
-| `docs-installation-instructions` | README routes new/existing users to separate German step-by-step guides; usage is the technical reference. Actual first HACS release and a real HACS source-switch rehearsal remain pending. |
+| `docs-installation-instructions` | README routes new/existing users to separate English step-by-step guides; usage is the technical reference. First beta publication and the operator-confirmed HACS 2.0.5 source switch are complete. A clean first install and an independent newcomer usability walkthrough remain open; see HACS_ACCEPTANCE.md. |
 | `docs-removal-instructions` | Usage documents entry/component removal and effects on consumers/history. |
 | `entity-event-setup` | CoordinatorEntity manages observations and forecast pollen; weather forecast subscription belongs to entity add/remove lifecycle. Tests verify pollen listeners are removed on unload. |
 | `entity-unique-id` | Existing entry-based and shared diagnostic IDs retained; reload test checks registry mapping stability. |
@@ -190,6 +196,8 @@ python scripts/check_quality_coverage.py
 python scripts/check_translations.py
 ```
 
-Repeat in an isolated environment with `requirements_test_min.txt`. HACS
-validator/default-list submission, signed-off live acceptance and the first
-fork prerelease remain release tasks, not effects of this development PR.
+Repeat in an isolated environment with `requirements_test_min.txt`. The first
+fork prerelease and its runtime acceptance are now complete; publication
+requirements and the still-open clean first install are tracked in PUBLISHING.md
+and RELEASE_READINESS.md. Default-list submission remains separate. Historical
+entries above do not reopen completed acceptance work.
