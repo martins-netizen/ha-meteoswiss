@@ -14,6 +14,7 @@ and work deliberately deferred to later versions.
 | HACS source switch | On 20 October 2026 the operator confirmed HACS 2.0.5, `martins-netizen/ha-meteoswiss`, downloaded `8.2.0b1`, restart and a positive initial visual check. |
 | Clean first installation | Operator-confirmed on 21 October in a temporary HA 2026.10.2 / HACS 2.0.5 instance: new 8.2.0b1 STAC entry, 600 seconds, KLO, warning postcode 8302 and immediate observations. |
 | Isolated restore and pollen comparison | Operator confirmed restoration from 900 to the saved 600 seconds, then selected a measured-pollen station in Configure and reported matching production measurements. Evidence does not include independent restored-file/registry checks. |
+| Pollen catalogue verification | 15 official station identifiers/names and current-hourly assets verified on 21 October. Real station identity is separate from current availability; unsupported BLR is removed in the unreleased correction. See [dated evidence](POLLEN_STATIONS.md). |
 | Warnings, languages and migration | App v3 and its verified catalogue, bundled DE/EN/FR/IT, actual warning consumers, retained identities and rain statistics were checked during runtime acceptance. |
 | Optional UV outage | An isolated outage on 19 October recovered at the next scheduled request. Other checked data families remained available. |
 

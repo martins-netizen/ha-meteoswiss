@@ -1,0 +1,152 @@
+{
+  "source": "MeteoSwiss",
+  "retrieved_at_utc": "2026-10-21T20:06:50.902686+00:00",
+  "metadata_url": "https://data.geo.admin.ch/ch.meteoschweiz.ogd-pollen/ogd-pollen_meta_stations.csv",
+  "metadata_sha256": "d367bf17c1262f5bd8c913147162b9f366d1bfcc88e0799c2c29282936bb827b",
+  "metadata_last_modified_utc": "2026-10-21T04:22:59Z",
+  "stations": {
+    "PBE": "Bern",
+    "PBS": "Basel",
+    "PBU": "Buchs, SG",
+    "PCF": "La Chaux-de-Fonds",
+    "PDS": "Davos / Wolfgang",
+    "PGE": "Genève",
+    "PLO": "Locarno / Monti",
+    "PLS": "Lausanne",
+    "PLU": "Lugano",
+    "PLZ": "Luzern",
+    "PMU": "Münsterlingen",
+    "PNE": "Neuchâtel",
+    "PPY": "Payerne",
+    "PSN": "Sion",
+    "PZH": "Zürich"
+  },
+  "stac_url": "https://data.geo.admin.ch/api/stac/v1/collections/ch.meteoschweiz.ogd-pollen/items?limit=100",
+  "stac_sha256": "4c1bf890ea8208f72b3a2596742cc11341171cf13b2e11359cac35430ce836d7",
+  "hourly_now_stations": [
+    "PBE",
+    "PBS",
+    "PBU",
+    "PCF",
+    "PDS",
+    "PGE",
+    "PLO",
+    "PLS",
+    "PLU",
+    "PLZ",
+    "PMU",
+    "PNE",
+    "PPY",
+    "PSN",
+    "PZH"
+  ],
+  "items_without_assets": [
+    "BLR",
+    "PME",
+    "PVI"
+  ],
+  "sample_hourly_csv": {
+    "PZH": {
+      "url": "https://data.geo.admin.ch/ch.meteoschweiz.ogd-pollen/pzh/ogd-pollen_pzh_h_now.csv",
+      "sha256": "f418f9e88c28c04e7a828575e1f6b36587663aea38b7269a4f6445fb2486b5b0",
+      "csv": "station_abbr;reference_timestamp;kabetuh0;khpoach0;kaalnuh0;kacoryh0;kafaguh0;kafraxh0;kaquerh0\r\nPZH;21.10.2026 00:00;0;0;0;0;0;0;0\r\nPZH;21.10.2026 01:00;0;0;0;0;0;0;0\r\nPZH;21.10.2026 02:00;0;0;0;0;0;0;0\r\nPZH;21.10.2026 03:00;0;0;0;0;0;0;0\r\nPZH;21.10.2026 04:00;0;0;0;0;0;0;0\r\nPZH;21.10.2026 05:00;0;0;0;0;0;0;0\r\nPZH;21.10.2026 06:00;0;0;0;0;0;0;0\r\nPZH;21.10.2026 07:00;0;0;0;0;0;0;0\r\nPZH;21.10.2026 08:00;0;0;0;0;0;0;0\r\nPZH;21.10.2026 09:00;0;0;0;0;0;0;0\r\nPZH;21.10.2026 10:00;0;0;0;0;0;0;0\r\nPZH;21.10.2026 11:00;0;0;0;0;0;0;0\r\nPZH;21.10.2026 12:00;0;0;0;0;0;0;0\r\nPZH;21.10.2026 13:00;0;0;0;0;0;0;0\r\nPZH;21.10.2026 14:00;0;0;0;0;0;0;0\r\nPZH;21.10.2026 15:00;0;0;0;0;0;0;0\r\nPZH;21.10.2026 16:00;0;0;0;0;0;0;0\r\nPZH;21.10.2026 17:00;0;0;0;0;0;0;0\r\nPZH;21.10.2026 18:00;0;0;0;0;0;0;0\r\nPZH;21.10.2026 19:00;0;0;0;0;0;0;0\r\n"
+    },
+    "PLZ": {
+      "url": "https://data.geo.admin.ch/ch.meteoschweiz.ogd-pollen/plz/ogd-pollen_plz_h_now.csv",
+      "sha256": "237247dcb3d11ccd3fd46aaecf9cf91405b8ee9c3ad88cb737d359ad392a7124",
+      "csv": "station_abbr;reference_timestamp;kabetuh0;khpoach0;kaalnuh0;kacoryh0;kafaguh0;kafraxh0;kaquerh0\r\nPLZ;19.10.2026 06:00;0;0;0;0;0;0;0\r\nPLZ;19.10.2026 10:00;0;0;0;0;0;0;0\r\nPLZ;19.10.2026 14:00;0;0;0;0;0;0;0\r\nPLZ;19.10.2026 15:00;0;0;0;0;0;0;0\r\nPLZ;19.10.2026 16:00;0;0;0;0;0;0;0\r\n"
+    }
+  },
+  "hourly_snapshot": [
+    {
+      "station": "PBE",
+      "http": 200,
+      "latest_timestamp_utc": "21.10.2026 19:00",
+      "accepted_at_check_time": true
+    },
+    {
+      "station": "PBS",
+      "http": 200,
+      "latest_timestamp_utc": "21.10.2026 19:00",
+      "accepted_at_check_time": true
+    },
+    {
+      "station": "PBU",
+      "http": 200,
+      "latest_timestamp_utc": "19.10.2026 12:00",
+      "accepted_at_check_time": false
+    },
+    {
+      "station": "PCF",
+      "http": 200,
+      "latest_timestamp_utc": "21.10.2026 19:00",
+      "accepted_at_check_time": true
+    },
+    {
+      "station": "PDS",
+      "http": 200,
+      "latest_timestamp_utc": "21.10.2026 19:00",
+      "accepted_at_check_time": true
+    },
+    {
+      "station": "PGE",
+      "http": 200,
+      "latest_timestamp_utc": "21.10.2026 19:00",
+      "accepted_at_check_time": true
+    },
+    {
+      "station": "PLO",
+      "http": 200,
+      "latest_timestamp_utc": "21.10.2026 19:00",
+      "accepted_at_check_time": true
+    },
+    {
+      "station": "PLS",
+      "http": 200,
+      "latest_timestamp_utc": "21.10.2026 19:00",
+      "accepted_at_check_time": true
+    },
+    {
+      "station": "PLU",
+      "http": 200,
+      "latest_timestamp_utc": "21.10.2026 19:00",
+      "accepted_at_check_time": true
+    },
+    {
+      "station": "PLZ",
+      "http": 200,
+      "latest_timestamp_utc": "19.10.2026 16:00",
+      "accepted_at_check_time": false
+    },
+    {
+      "station": "PMU",
+      "http": 200,
+      "latest_timestamp_utc": "21.10.2026 19:00",
+      "accepted_at_check_time": true
+    },
+    {
+      "station": "PNE",
+      "http": 200,
+      "latest_timestamp_utc": "11.10.2026 01:00",
+      "accepted_at_check_time": false
+    },
+    {
+      "station": "PPY",
+      "http": 200,
+      "latest_timestamp_utc": "21.10.2026 19:00",
+      "accepted_at_check_time": true
+    },
+    {
+      "station": "PSN",
+      "http": 200,
+      "latest_timestamp_utc": "21.10.2026 19:00",
+      "accepted_at_check_time": true
+    },
+    {
+      "station": "PZH",
+      "http": 200,
+      "latest_timestamp_utc": "21.10.2026 19:00",
+      "accepted_at_check_time": true
+    }
+  ]
+}

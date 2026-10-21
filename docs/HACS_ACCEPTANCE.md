@@ -85,6 +85,7 @@ software and its corresponding warning filters together.
 | Isolated backup restoration | Operator-confirmed on 21 October: after changing the interval to 900 seconds and restoring the backup, the saved 600 seconds returned. This confirms the reported configuration recovery, not a separately collected file/registry comparison. |
 | Measured-pollen comparison | After choosing a station in Configure, the operator reported the same measurements as on production. The exact station identifier was not separately supplied. |
 | Initial pollen-station choice | Missing in 8.2.0b1. An unreleased correction adds explicit selection for both weather sources; focused HA UI acceptance of that correction remains open. |
+| Pollen station identities and live files | On 21 October, 15 choices matched official metadata and hourly assets; all 15 URLs returned HTTP 200. Twelve feeds were current, three stale, including Luzern. Unsupported BLR is removed in the unreleased correction; dated evidence and offline regressions are in [POLLEN_STATIONS.md](POLLEN_STATIONS.md). |
 | New independent post-switch live file/ID/statistics comparison | Not collected; earlier technical runtime acceptance remains valid within its original scope. |
 | Default branch reliably hidden in version selection | Not guaranteed for 8.2.0b1; its hacs.json does not contain hide_default_branch. |
 | HACS default listing or official HA quality tier | Not applied for or confirmed. |

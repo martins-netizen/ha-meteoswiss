@@ -127,6 +127,11 @@ For **8.2.0b1** or an older entry without a saved pollen choice, the fallback is
 station identifier, not a request to enter a postal code. Existing entries keep
 their settings when upgrading; the new initial picker does not reconfigure them.
 
+The [verified station list](POLLEN_STATIONS.md) distinguishes station identity
+from current data availability. A real station can temporarily publish no new
+measurements. In that case its measured-pollen sensors become unavailable;
+the integration does not silently show another station's values.
+
 Open the integration's devices. Expect weather, observation sensors, three
 warning sensors and pollen/air-quality entities. HA forecasts cover up to
 24 hours and five days. Additional optional sources start in the background;

@@ -69,6 +69,11 @@ Changing source/location is not offered by this options form. For MeteoSwiss
 entries, weather and pollen forecasts use the HA installation location; station
 coordinates describe observations. For Open-Meteo they use the explicit location.
 
+See the [verified measured-pollen catalogue and availability evidence](POLLEN_STATIONS.md).
+The 15 supported stations have official metadata and hourly assets. A reachable
+but stale measurement file remains unavailable; a temporary data gap does not
+remove a real station or automatically substitute another one.
+
 ## Reading values and using automations
 
 The integration provides sensors, weather entities and weather-warning binary

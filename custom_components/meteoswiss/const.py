@@ -89,10 +89,13 @@ ATTRIBUTION: Final = "Source: MeteoSwiss"
 # Pollen station configuration
 CONF_POLLEN_STATION: Final = "pollen_station"
 DEFAULT_POLLEN_STATION: Final = "PLZ"
+# Verified against ogd-pollen_meta_stations.csv and hourly STAC assets on
+# 2026-10-21; see docs/POLLEN_STATIONS.md. Empty catalogue placeholders such
+# as BLR are not supported measurement choices.
 POLLEN_STATIONS: Final[dict[str, str]] = {
     "PBE": "Bern (PBE)",
     "PBS": "Basel (PBS)",
-    "PBU": "Buchs SG (PBU)",
+    "PBU": "Buchs, SG (PBU)",
     "PCF": "La Chaux-de-Fonds (PCF)",
     "PDS": "Davos / Wolfgang (PDS)",
     "PGE": "Genève (PGE)",
@@ -105,7 +108,6 @@ POLLEN_STATIONS: Final[dict[str, str]] = {
     "PPY": "Payerne (PPY)",
     "PSN": "Sion (PSN)",
     "PZH": "Zürich (PZH)",
-    "BLR": "Coldrerio / Mezzana (BLR)",
 }
 
 OPENMETEO_AIR_QUALITY_DEVICE_NAME: Final = "Open-Meteo Air Quality & Pollen"

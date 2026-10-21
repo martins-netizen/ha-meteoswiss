@@ -9,6 +9,10 @@
   across weather-source retries, and explain the independent measurement and
   forecast locations in DE/EN/FR/IT. Existing entries retain their settings;
   the legacy Luzern fallback is unchanged. This change is not in 8.2.0b1.
+- Verify the measured-pollen choices against official station metadata and
+  hourly STAC assets. Remove unsupported BLR, retain the 15 verified stations
+  even during temporary data gaps, and document the real Zürich/current and
+  Luzern/stale samples with offline regressions.
 
 ### Documentation
 
