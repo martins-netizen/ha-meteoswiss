@@ -23,6 +23,7 @@ from .const import (
 from .runtime_data import MeteoSwissConfigEntry
 from .stations_map import get_stations_map
 from .weather_data import forecast_datetime
+from .version import __version__
 
 TO_REDACT = {
     CONF_LATITUDE,
@@ -181,6 +182,7 @@ async def async_get_config_entry_diagnostics(
         }
 
     return {
+        "integration_version": __version__,
         "config_entry": {
             "data": async_redact_data(dict(entry.data), TO_REDACT),
             "options": async_redact_data(dict(entry.options), TO_REDACT),

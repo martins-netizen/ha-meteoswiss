@@ -12,8 +12,12 @@ Unreleased [shared HTTP hardening](HTTP_SOURCE_HARDENING.md) adds fixed
 per-source destinations and bounded wire/decompressed reads, with preserved
 archive budgets and failure semantics. The transport joins the existing strict
 100% line/branch gates. A focused next-package HA acceptance remains separate;
-this change alone does not close all Bronze/Silver rules. Inactive placeholders,
-layout/field help and the location/reconfiguration contract remain on the plan.
+this change alone does not close all Bronze/Silver rules. Placeholder cleanup,
+translated field help and shared entity metadata are now documented separately.
+The version metadata's real diagnostic consumer closes its coverage gap; every
+module exceeds 95%, enforced alongside existing stricter gates. Polling/data-
+options design, remaining coordinator placement and the location/reconfiguration
+contract remain on the plan.
 
 ## Historical acceptance update — 20 October 2026
 
@@ -68,7 +72,7 @@ requests and the remaining warning/height requirements.
 | `action-setup` | Exempt: no integration-specific actions are registered. |
 | `appropriate-polling` | Partial: coordinator intervals are bounded, but `config_flow.py` still exposes the polling interval. Current HA rules require a developer-chosen interval rather than a flow field; legacy values need a deliberate compatibility decision. |
 | `brands` | Local `custom_components/meteoswiss/brand/icon.png` (256 px) and `icon@2x.png` (512 px), with reproducible original artwork. Domain retained; no HA/provider logo or official-product claim. See [publication requirements](PUBLISHING.md). Partial for the separate Core rule: the expected `home-assistant/brands/core_integrations/meteoswiss` path returned 404 on 17 October 2026. |
-| `common-modules` | Shared constants, time contract and entity descriptions are centralized. Pending full review of coordinator placement and a common entity base against the current rule; central constants alone do not prove completion. |
+| `common-modules` | Unreleased entity.py centralizes entity/coordinator metadata and the genuinely duplicated weather/AQ device definitions across all nine families. Primary observations retain coordinator.py; typed runtime/source boundaries remain intact. Fixed identity/metadata contracts pass before and after the refactor; remaining source-specific coordinator placement still needs its own review. |
 | `config-flow-test-coverage` | 100% lines and branches in `config_flow.py`, including options, errors/recovery and legacy/current duplicates; CI enforces it. |
 | `config-flow` | Native user/options flow; no YAML setup. Unreleased development adds DE/EN/FR/IT help for all ten actual field occurrences, a native translated source selector and canonical English strings.json. HA translation-loader regressions and full flow coverage pass. Polling-field migration, data/options placement and the final selector/UX review remain open; see the dated follow-up. |
 | `dependency-transparency` | Exempt for the current integration: `manifest.json` has no extra Python `requirements`. Public provider/location dependencies are separately documented; that is not the criterion of this rule. |
@@ -100,7 +104,7 @@ snapshot as having acquired these changes.
 | `log-when-unavailable` | Pollen/AQ, measured pollen and the ICON forecast client use coordinator transition logs. Forecast failures suppress raw coordinate URLs/HTTP exception chains even in debug logs; repeated failure and recovery are tested. The alternative Open-Meteo current client also suppresses coordinate URLs/raw error chains and tests repeated failure and recovery. The station observation client now uses the same once-per-transition logging; selected station IDs, CSV values, asset URLs and expected HTTP error chains stay absent even in debug logs. The separate UV request now has a cached source flag and once-per-outage/recovery logs. Registered tests cover transport, timeout, invalid JSON/shape, cache reuse and private error chains. No complete Silver claim follows from this individual fix. |
 | `parallel-updates` | Explicit platform limits: sensor 1 for diagnostic polling, coordinator-driven weather/binary sensor 0; no device actions. |
 | `reauthentication-flow` | Exempt: the public APIs require no credentials. |
-| `test-coverage` | Pending. [Above 95% for every module](https://developers.home-assistant.io/docs/core/integration-quality-scale/rules/test-coverage/) is required; a passing flow or global average is insufficient. |
+| `test-coverage` | Evidenced for unreleased development: every module exceeds 95%; entity.py/version.py have real consumers and full coverage, const.py is 98.51%, all others 100%. CI enforces the per-module floor plus stricter existing gates; a synthetic low module cannot hide behind the aggregate. Local supported-HA runs pass 940 tests/14 subtests, 99.9677% combined. This single rule does not establish full Silver. |
 
 The starting snapshot had 68 passing tests and 54.78% combined line/branch
 coverage (58.50% lines, 40.42% branches). Config flow was 33.79% combined.
@@ -114,8 +118,8 @@ coordinator line/branch coverage. The combined integration floor is 99.0%
 floor prevents regressions at this stage; it is not a substitute for Silver.
 Unreleased development explicitly removes unused camera/SLF/hydrology
 placeholders after a reference/platform review; it does not exclude their
-uncovered lines from an otherwise retained feature. The version module remains
-subject to the per-module gap. No coverage exclusion or lowered gate is added.
+uncovered lines from an otherwise retained feature. The version module now has a meaningful diagnostic consumer and full coverage.
+All modules exceed 95%; no coverage exclusion or lowered gate is added.
 See [current follow-up evidence](QUALITY_PROGRESS_2026-10-22.md). Current exact results are in the
 PR and each CI job's summary.
 

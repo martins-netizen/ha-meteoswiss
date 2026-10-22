@@ -16,7 +16,6 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
     DataUpdateCoordinator,
     UpdateFailed,
 )
@@ -24,10 +23,10 @@ from homeassistant.util import dt as dt_util
 
 from .alerts import MeteoSwissAlertsAPI, WeatherAlert
 from .const import (
-    ATTRIBUTION,
     CONF_POSTAL_CODE,
     DOMAIN,
 )
+from .entity import MeteoSwissCoordinatorEntity
 from .runtime_data import MeteoSwissConfigEntry
 
 # Coordinators centralize refreshes; sensor diagnostics use bounded polling.
@@ -125,7 +124,7 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class MeteoSwissAlertsBinarySensor(CoordinatorEntity, BinarySensorEntity):
+class MeteoSwissAlertsBinarySensor(MeteoSwissCoordinatorEntity, BinarySensorEntity):
     """Representation of a MeteoSwiss weather alert binary sensor."""
 
     def __init__(
@@ -145,8 +144,6 @@ class MeteoSwissAlertsBinarySensor(CoordinatorEntity, BinarySensorEntity):
             manufacturer="MeteoSwiss",
             model="Alerts",
         )
-        self._attr_has_entity_name = True
-        self._attr_attribution = ATTRIBUTION
         self._postal_code = postal_code
 
     def _matches_alert_timing(self, alert: WeatherAlert) -> bool:

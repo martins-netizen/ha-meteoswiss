@@ -294,6 +294,23 @@ See `examples/button-card-warnings.yaml`. Existing local dashboard translations
 stay in place until a separately verified adoption of the common template.
 Do not rename established entities during this change.
 
+## Shared entity metadata (unreleased after 8.2.0)
+
+`entity.py` owns common naming/default attribution and the two repeated weather/
+AQ device definitions. Coordinator entities use the typed shared coordinator
+base; polling diagnostics use its plain-entity counterpart. The bases add no
+lifecycle/update/availability overrides or constructor behaviour. Sources,
+distinct device groups, IDs and source-specific attribution stay with their
+existing owners. Nine family contracts pass on both the previous tree and the
+refactor, alongside the existing registered lifecycle/Recorder tests.
+
+Diagnostics expose the declared component release as `integration_version`,
+separately from the config entry's schema version/minor version. This additive,
+non-private value does not identify a commit or prove a deployment. The version
+module is now exercised by a real consumer. Every integration module must exceed
+95% coverage; existing stricter per-module/flow and aggregate gates remain.
+See the [dated review and remaining boundaries](QUALITY_PROGRESS_2026-10-22.md).
+
 ## Setup text and source choices (unreleased after 8.2.0)
 
 Canonical English `strings.json` matches translations/en.json. All DE/EN/FR/IT

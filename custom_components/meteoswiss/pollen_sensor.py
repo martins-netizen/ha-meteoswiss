@@ -11,9 +11,7 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
     DataUpdateCoordinator,
 )
 
@@ -21,10 +19,8 @@ from .const import (
     CONF_STATION_NAME,
     DOMAIN,
     OPENMETEO_AIR_QUALITY_ATTRIBUTION,
-    OPENMETEO_AIR_QUALITY_DEVICE_NAME,
-    OPENMETEO_AIR_QUALITY_MANUFACTURER,
-    OPENMETEO_AIR_QUALITY_MODEL,
 )
+from .entity import MeteoSwissCoordinatorEntity, air_quality_device_info
 from .runtime_data import MeteoSwissConfigEntry
 
 # Coordinators centralize refreshes; sensor diagnostics use bounded polling.
@@ -146,7 +142,7 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class MeteoSwissPollenSensor(CoordinatorEntity, SensorEntity):
+class MeteoSwissPollenSensor(MeteoSwissCoordinatorEntity, SensorEntity):
     """Representation of a MeteoSwiss pollen sensor."""
 
     def __init__(
@@ -162,13 +158,7 @@ class MeteoSwissPollenSensor(CoordinatorEntity, SensorEntity):
         self._attr_unique_id = (
             f"{DOMAIN}_{entry.entry_id}_pollen_{description.pollen_type}"
         )
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, f"pollen_{entry.entry_id}")},
-            name=OPENMETEO_AIR_QUALITY_DEVICE_NAME,
-            manufacturer=OPENMETEO_AIR_QUALITY_MANUFACTURER,
-            model=OPENMETEO_AIR_QUALITY_MODEL,
-        )
-        self._attr_has_entity_name = True
+        self._attr_device_info = air_quality_device_info(entry.entry_id)
         self._attr_attribution = OPENMETEO_AIR_QUALITY_ATTRIBUTION
         self._pollen_type = description.pollen_type
         self._pollen_type_name = description.pollen_type_name

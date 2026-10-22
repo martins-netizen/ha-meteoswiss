@@ -1,6 +1,6 @@
 # Bronze/Silver follow-up — 22 October 2026
 
-**Record version:** 1.1. **Scope:** unreleased development after stable 8.2.0.
+**Record version:** 1.2. **Scope:** unreleased development after stable 8.2.0.
 The [dated original audit](QUALITY_AUDIT_2026-10-17.md) remains historical.
 This document records individual improvements, not an official HA quality tier.
 
@@ -52,18 +52,53 @@ all four languages. Both HA 2026.8.3 and 2026.10.2 suites pass **929 tests and
 The complete existing config-flow tests retain full line/branch coverage. A visual check of the new texts/selectors in the temporary HA
 belongs to the next reviewed test package; no live walkthrough is claimed.
 
+## Share entity metadata and distinguish version meanings
+
+`entity.py` now provides small shared entity/coordinator bases: common
+has_entity_name and default MeteoSwiss attribution, with source-specific
+attribution retained by each family. The coordinator base adds no constructor,
+update, availability or lifecycle hooks. HA's CoordinatorEntity remains in the
+same delegation chain. Polling diagnostics use the non-coordinator base.
+
+Only genuinely duplicated device dictionaries are centralized: weather plus
+observations share their existing weather-device factory, while AQ plus modelled
+pollen share their existing provider-device factory. Warning, measured-pollen,
+calculated and shared-diagnostic groups keep their distinct device definitions.
+No source/coordinator is merged, device is renamed, unique ID is changed or
+entity is moved to another device. All nine family identity/metadata contracts
+pass against the previous code and the refactor; existing real-Recorder,
+reload/unload, availability and weather subscription tests remain in force.
+
+The redacted diagnostic payload adds `integration_version` from the declared
+component version. Existing config_entry.version/minor_version remain the config
+format, not a release number. Loaded/unloaded-entry regressions demonstrate
+this distinction, compare the component version with manifest.json, and retain
+privacy checks. Version metadata now has a real diagnostic consumer rather than
+a test-only import. It is not a commit/hash attestation: unpublished development
+still declares 8.2.0 until a separately reviewed release package is prepared.
+The actual HA download-route/usability review remains a separate Gold check.
+
+Local HA 2026.8.3 and 2026.10.2 suites pass **940 tests and 14 subtests**,
+**99.9677%** combined coverage and all **670 branches**. All modules now exceed
+95%: const.py remains 98.51%, every other module is 100%, including entity.py
+and version.py. CI enforces **above 95% for every module**, while keeping the
+existing stricter flow/source gates and 99% aggregate floor. Isolated negative gate checks
+reject a synthetic 95%/94.9% module despite a high aggregate. No module
+or error-branch exclusions are added. This evidences the coverage rule, not the
+complete Bronze/Silver assessment.
+
 ## Remaining prerequisites and boundaries
 
-- `version.py` remains release-tool metadata with a per-module coverage gap.
-  Manifest/version consistency is checked by tooling; that does not make its
-  runtime line coverage complete. Keep the rule open until a meaningful
-  version/diagnostic contract or a separately reviewed consolidation exists.
+- The version-module coverage gap is closed through its diagnostic consumer.
+  Keep manifest/module consistency and all-module coverage checks; a percentage
+  does not establish a complete integration-quality tier.
 - Field help and translated source selection are now implemented. The full
   config-flow rule remains open for polling-field migration, data/options
   placement and final selector/UX review; these text changes do not close it.
 - Polling-interval removal needs a deliberate legacy-value migration decision;
   never silently replace an existing 900/1200-second choice with 600 seconds.
-- A shared entity base/module-layout review, Core-brand evidence and the
+- Shared entity metadata is now implemented and reviewed within this scope.
+  Remaining source-specific coordinator placement, Core-brand evidence and the
   complete catalogue diagnostic availability contract remain separate findings.
 - The official [coverage rule](https://developers.home-assistant.io/docs/core/integration-quality-scale/rules/test-coverage/)
   applies per module, not only to the aggregate. The

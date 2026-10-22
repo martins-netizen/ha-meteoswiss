@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.8 · **Updated:** 22 October 2026
+**Plan version:** 1.9 · **Updated:** 22 October 2026
 **Status:** Approved planning; Q1 is documented and P0 has partial evidence.
 This document does not approve a new feature, installation or release.
 
@@ -117,13 +117,17 @@ In the original 762-test baseline, combined coverage was 99.0517%, but
 camera.py, hydro.py, slf.py and version.py were at 0%; const.py was 98.51%.
 The [22 October follow-up](QUALITY_PROGRESS_2026-10-22.md) removes unused
 camera/hydro/SLF placeholders after checking references and active platforms.
-The version module and remaining Bronze prerequisites still require evidence;
-keep version/manifest/tool consistency and add no meaningless imports, tests or
-exclusions solely for a percentage. Shared-feed avalanche/flood warnings remain
+The later metadata follow-up gives version.py a real diagnostic consumer,
+adds shared entity metadata, and evidences above-95% coverage for every module.
+Keep version/manifest/tool consistency and add no meaningless imports, tests or
+exclusions solely for a percentage. Remaining Bronze prerequisites still need
+rule-specific evidence. Shared-feed avalanche/flood warnings remain
 supported independently of the removed standalone-product placeholders.
 
 No wholesale architectural rewrite is planned. Retain source separation and
-HA-owned sessions. Review repeated entity basics and the
+HA-owned sessions. The shared entity metadata follow-up preserves nine existing
+device/identity contracts; remaining coordinator placement is a separate review.
+Use the
 [expected module layout](https://contributors.home-assistant.io/core/quality-scale/common-modules/)
 rather than equating central constants with full compliance.
 

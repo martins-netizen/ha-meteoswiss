@@ -282,3 +282,24 @@ async def test_nested_location_fields_names_keys_error_urls_and_cache_values_are
     assert result["coordinators"]["coordinator"]["data_source"] == "unknown"
     assert result["cache"]["current_weather"]["entries"] == 1
     assert result["station_catalogue"]["data_status"] == "unavailable"
+
+
+@pytest.mark.parametrize("loaded", [False, True])
+async def test_release_version_is_distinct_from_config_format(hass, loaded):
+    import json
+    from pathlib import Path
+
+    entry = MockConfigEntry(domain=DOMAIN, version=7, minor_version=3)
+    if loaded:
+        entry.runtime_data = MeteoSwissRuntimeData(
+            coordinator=None, data_source=DATA_SOURCE_METEOSWISS, session=None
+        )
+    result = await async_get_config_entry_diagnostics(hass, entry)
+    manifest = json.loads(
+        (
+            Path(__file__).parents[1] / "custom_components/meteoswiss/manifest.json"
+        ).read_text()
+    )
+    assert result["integration_version"] == manifest["version"]
+    assert result["config_entry"]["version"] == 7
+    assert result["config_entry"]["minor_version"] == 3
