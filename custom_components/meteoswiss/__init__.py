@@ -28,10 +28,10 @@ from .coordinator import (
     MeteoSwissAlertsCoordinator,
     MeteoSwissDataUpdateCoordinator,
     MeteoSwissPollenCoordinator,
+    OpenMeteoDataUpdateCoordinator,
 )
 from .forecast_coordinator import MeteoSwissForecastCoordinator
 from .localization import async_load_warning_labels
-from .openmeteo_coordinator import OpenMeteoDataUpdateCoordinator
 from .precipitation import (
     ARCHIVE_LOOKBACK_MONTHS,
     ARCHIVE_UPDATE_INTERVAL,

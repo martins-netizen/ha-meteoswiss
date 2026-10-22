@@ -35,6 +35,7 @@ from .const import (
     STAC_COLLECTION,
 )
 from .http import MAX_CSV_BYTES, OGD_HOST, async_get_bytes, async_get_json
+from .openmeteo import OpenMeteoCurrentClient, OpenMeteoCurrentError
 from .pollen_meteoswiss import (
     InvalidMeasuredPollenData,
     MeasuredPollenUnavailable,
@@ -616,3 +617,79 @@ class MeteoSwissPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             raise UpdateFailed("Measured pollen source unavailable") from None
         except InvalidMeasuredPollenData:
             raise UpdateFailed("No valid measured pollen values") from None
+
+
+class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
+    """Schedule modelled current observations and preserve HA acceptance state."""
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        latitude: float,
+        longitude: float,
+        update_interval: int,
+        session: aiohttp.ClientSession | None = None,
+    ) -> None:
+        """Initialize."""
+        self.latitude = latitude
+        self.longitude = longitude
+        self._session = session
+        self.client = OpenMeteoCurrentClient(latitude, longitude, session)
+        self.weather_code = None
+
+        # Circuit breaker state
+        self._consecutive_failures = 0
+        self._circuit_open_until: datetime | None = None
+
+        # Ensure minimum update interval
+        if update_interval < MIN_UPDATE_INTERVAL:
+            _LOGGER.warning(
+                "Update interval %s is below minimum %s, using minimum",
+                update_interval,
+                MIN_UPDATE_INTERVAL,
+            )
+            update_interval = MIN_UPDATE_INTERVAL
+
+        super().__init__(
+            hass,
+            _LOGGER,
+            name=f"{DOMAIN}_openmeteo",
+            update_interval=timedelta(seconds=update_interval),
+        )
+
+    async def _async_update_data(self) -> dict[str, Any]:
+        """Commit only valid, current data; HA logs failure/recovery transitions."""
+        if self._circuit_open_until and datetime.now(UTC) < self._circuit_open_until:
+            raise UpdateFailed("Circuit breaker open — API temporarily unavailable")
+        try:
+            cache = get_current_weather_cache()
+            cache_key = f"openmeteo:v2:{self.latitude},{self.longitude}"
+            cached = cache.get(cache_key)
+            data = cached if cached is not None else await self.client.async_get_data()
+            if not isinstance(data, dict):
+                raise TypeError("Invalid current weather data")
+            validate_observation_time(data)
+            self._consecutive_failures = 0
+            self._circuit_open_until = None
+            self.weather_code = data.get("weather_code")
+            # Reusing a cache hit must not extend its original TTL.
+            if cached is None:
+                cache.set(cache_key, data)
+            return data
+        except (
+            OpenMeteoCurrentError,
+            aiohttp.ClientError,
+            TimeoutError,
+            ValueError,
+            TypeError,
+            UnicodeError,
+            RuntimeError,
+        ):
+            self._consecutive_failures += 1
+            if self._consecutive_failures >= 5:
+                self._circuit_open_until = datetime.now(UTC) + timedelta(minutes=5)
+            # Raw HTTP causes may contain coordinates, even in HA's debug log.
+            raise UpdateFailed("Failed to fetch Open-Meteo current weather") from None
+
+    async def async_close(self) -> None:
+        """The borrowed session is owned and closed by Home Assistant."""

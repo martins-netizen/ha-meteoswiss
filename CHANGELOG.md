@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- Separate the alternative Open-Meteo current-weather client from HA coordination.
+  Keep cache TTL/freshness, failure pause, retries, partial/zero values, session
+  ownership and entity identities. Define the real coordinator in coordinator.py
+  and retain source parsing in openmeteo.py. Three placement gaps remain.
+
 - Remove arbitrary path arguments from the local coverage checker. Read only
   repository-root coverage.json, reject symbolic links, and preserve every
   coverage threshold. Use Bash conditional expressions consistently in all
@@ -13,7 +18,7 @@
   unchanged UTC reference-time parser from weather_data.py for observations,
   measured pollen and hourly precipitation, avoiding a circular dependency.
   The client owns no session and exposes payload-free source errors; HA maps
-  them to its existing unavailable/recovery behaviour. Four placement gaps remain.
+  them to its existing unavailable/recovery behaviour. Four placement gaps remained at that step.
 
 - Mark the optional station-catalogue diagnostic unavailable after expiry or a
   failed refresh instead of presenting retained metadata as current. Preserve

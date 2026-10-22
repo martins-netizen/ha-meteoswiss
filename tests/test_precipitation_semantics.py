@@ -66,7 +66,7 @@ async def test_retirement_and_source_labels_preserve_surviving_entities_on_reloa
         for target, data in {
             "coordinator.MeteoSwissDataUpdateCoordinator": {"temperature": 10, "precipitation": 0.3,
                 "last_update": "2026-10-18T10:20:00+00:00", "precipitation_interval_seconds": interval},
-            "openmeteo_coordinator.OpenMeteoDataUpdateCoordinator": {"temperature": 10, "precipitation": 0.3,
+            "coordinator.OpenMeteoDataUpdateCoordinator": {"temperature": 10, "precipitation": 0.3,
                 "last_update": "2026-10-18T10:20:00+00:00", "precipitation_interval_seconds": interval},
             "forecast_coordinator.MeteoSwissForecastCoordinator": [],
             "coordinator.MeteoSwissAlertsCoordinator": [],

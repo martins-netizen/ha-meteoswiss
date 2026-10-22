@@ -133,7 +133,11 @@ HGT tests cover 12/20 thresholds, season boundaries and missing/invalid entries.
 The alternative current-weather client now has full line/branch coverage: valid
 zero/negative temperatures, invalid individual numbers, optional preview isolation,
 observation freshness, bounded retries, cache TTL, circuit recovery, private logs
-and registered HA entity states are tested on both supported HA versions.
+and registered HA entity states are tested on both supported HA versions. The
+source client now lives in openmeteo.py, composed by the actual coordinator in
+coordinator.py. Request/parser logic is retained; HA still owns cache age/TTL,
+circuit recovery, current-data acceptance and session lifecycle. Three source
+coordinator-placement findings remain; this does not complete common-modules.
 
 The weather entity and shared number/time contract have full line/branch
 coverage. Native observations, HA unit conversion, service responses and actual

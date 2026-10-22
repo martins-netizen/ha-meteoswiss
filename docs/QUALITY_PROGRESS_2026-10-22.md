@@ -1,8 +1,49 @@
 # Bronze/Silver follow-up — 22 October 2026
 
-**Record version:** 1.6. **Scope:** unreleased development after stable 8.2.0.
+**Record version:** 1.7. **Scope:** unreleased development after stable 8.2.0.
 The [dated original audit](QUALITY_AUDIT_2026-10-17.md) remains historical.
 This document records individual improvements, not an official HA quality tier.
+
+## Separate the alternative current-weather client from HA coordination
+
+Move the genuine OpenMeteoDataUpdateCoordinator to coordinator.py and compose
+OpenMeteoCurrentClient from the source-only openmeteo.py module. Remove the
+mixed openmeteo_coordinator.py module and update setup/config-flow/weather/
+runtime imports and test mocks to the actual defining module. Request, WMO
+mapping and current/optional-hourly parser bodies retain identical AST. Shared
+number/time functions remain in weather_data.py.
+
+The client has no HA coordinator/cache/scheduler dependency and borrows its
+session. It maps the existing transport/decoding/data/setup failures to an
+empty-message source exception; cancellation propagates. HA retains exactly
+the existing cache key and ten-minute TTL, one-hour/ten-minute freshness bounds,
+five-failure/five-minute circuit pause, failure counter reset, weather-code
+commit and unavailable/recovered messages. Freshness applies equally to new
+and cached observations. Source exception text and formatted chains disclose
+no coordinates or response. Logger namespace follows the canonical module.
+
+Direct client tests pass no HA object and cover zero/partial values, borrowed
+session ownership, transport/malformed-data errors, cancellation and missing
+session. Existing retry/HTTP limits, DST, optional preview, stale-cache/circuit,
+config-flow, actual entity registration, reload/unload and Recorder tests remain
+required. The coverage gate follows the source rename and retains full line/
+branch coverage for both source client and coordinator; no exclusion or lower
+threshold is introduced. Four of seven genuine coordinators are now canonical;
+three source-placement findings remain. See the
+[placement review](COORDINATOR_LAYOUT_REVIEW.md) and
+[architecture](ARCHITECTURE.md#alternative-open-meteo-current-conditions).
+No HA deployment, release, source selection, config migration, entity/statistic
+identity or independent ICON forecast change is part of this extraction.
+
+Both local suites pass **977 tests and 53 subtests** on actual HA 2026.8.3 and
+2026.10.2, with **99.96803%** combined line/branch coverage and **676/676 branches**.
+The five new direct-client cases pass; source client and canonical coordinator
+both retain 100% line/branch coverage, every module exceeds 95%, and all strict
+gates pass. Source request/parser bodies and the HA cache/circuit update body
+are AST-identical after the documented client call/error-type adaptation.
+Ruff, compilation, bundled translations/version, 41 local documentation links/
+anchors and diff checks pass. CI remains on HA 2026.8.3/2026.10.1.
+
 
 ## Bound coverage input and normalize release-helper conditions
 
