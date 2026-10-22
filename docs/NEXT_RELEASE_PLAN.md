@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.5 · **Updated:** 22 October 2026
+**Plan version:** 1.6 · **Updated:** 22 October 2026
 **Status:** Approved planning; Q1 is documented and P0 has partial evidence.
 This document does not approve a new feature, installation or release.
 
@@ -190,9 +190,11 @@ validation, redirect refusal and streaming wire/decompressed size limits for all
 active sources. See [scope, real archive sizes and required focused HA acceptance](HTTP_SOURCE_HARDENING.md).
 Any future POI catalogue must adopt an equivalently bounded transport. Keep timeouts, cancellation and
 conservative caching; redact search terms from logs/diagnostics.
-Provide safe CodeQL analysis for external-fork contributions without privileged
-execution of untrusted code. Use separate scoped PRs, not an unreviewed bundle
-inside a running release candidate.
+The separate CI follow-up enables CodeQL analysis for external-fork PRs on the
+unprivileged pull_request event, with job-scoped upload permission and no
+repository secrets supplied to public forks. See the [fork review boundary and
+first-external-run evidence still required](CODEQL_FORK_REVIEW.md). Keep these
+changes separate from runtime release packaging and the later Silver/Gold work.
 
 ## Suggested PR order
 

@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Analyze external-fork pull requests with the unprivileged CodeQL PR workflow;
+  restrict upload permission to its analysis job and document actual-run checks
+  for the first external contribution. Preserve pinned actions and branch rules.
+
 - Bound every active HTTP source by its own HTTPS destination, refuse redirects,
   and enforce streaming wire/decompressed limits. Preserve official decade
   precipitation archives with a separate budget and retain source/identity/
