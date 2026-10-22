@@ -32,7 +32,6 @@ from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.update_coordinator import (
-    CoordinatorEntity,
     DataUpdateCoordinator,
 )
 from homeassistant.util import dt as dt_util
@@ -44,7 +43,6 @@ from .calc import (
     calculate_heating_degree_days,
 )
 from .const import (
-    ATTRIBUTION,
     CONF_DATA_SOURCE,
     CONF_POLLEN_STATION,
     CONF_STATION_NAME,
@@ -53,9 +51,6 @@ from .const import (
     DOMAIN,
     LEGACY_PRECIPITATION_CURRENT_HOUR,
     OPENMETEO_AIR_QUALITY_ATTRIBUTION,
-    OPENMETEO_AIR_QUALITY_DEVICE_NAME,
-    OPENMETEO_AIR_QUALITY_MANUFACTURER,
-    OPENMETEO_AIR_QUALITY_MODEL,
     POLLEN_STATIONS,
     SENSOR_DEW_POINT,
     SENSOR_FOEHN_INDEX,
@@ -76,6 +71,12 @@ from .const import (
     SENSOR_WIND_SPEED,
 )
 from .coordinator import MeteoSwissDataUpdateCoordinator
+from .entity import (
+    MeteoSwissEntity,
+    MeteoSwissCoordinatorEntity,
+    weather_device_info,
+    air_quality_device_info,
+)
 from .runtime_data import MeteoSwissConfigEntry
 from .stations_map import MeteoSwissStationsMap
 from .weather_data import FORECAST_TIME_ZONE, forecast_datetime, weather_number
@@ -290,7 +291,7 @@ async def async_setup_entry(
 
 
 class MeteoSwissSensor(
-    CoordinatorEntity[MeteoSwissDataUpdateCoordinator], SensorEntity
+    MeteoSwissCoordinatorEntity[MeteoSwissDataUpdateCoordinator], SensorEntity
 ):
     """Representation of a meteoswiss sensor."""
 
@@ -312,14 +313,7 @@ class MeteoSwissSensor(
             else description
         )
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_{description.key}"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, entry.entry_id)},
-            name=f"MeteoSwiss {station_name}",
-            manufacturer="MeteoSwiss",
-            model="SwissMetNet",
-        )
-        self._attr_has_entity_name = True
-        self._attr_attribution = ATTRIBUTION
+        self._attr_device_info = weather_device_info(entry.entry_id, station_name)
         self._attr_native_value = (
             coordinator.data.get(description.value_key) if coordinator.data else None
         )
@@ -358,7 +352,7 @@ class MeteoSwissSensor(
         return attributes
 
 
-class MeteoSwissStationsMapSensor(SensorEntity):
+class MeteoSwissStationsMapSensor(MeteoSwissEntity, SensorEntity):
     """Representation of a meteoswiss stations map sensor."""
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
@@ -373,8 +367,6 @@ class MeteoSwissStationsMapSensor(SensorEntity):
             manufacturer="MeteoSwiss",
             model="SwissMetNet",
         )
-        self._attr_has_entity_name = True
-        self._attr_attribution = ATTRIBUTION
         self._attr_name = "Weather Stations"
         self._attr_native_value = None
         self._attr_available = False
@@ -402,7 +394,7 @@ class MeteoSwissStationsMapSensor(SensorEntity):
         _LOGGER.debug("Stations map updated: %d stations", len(stations))
 
 
-class MeteoSwissCacheStatsSensor(SensorEntity):
+class MeteoSwissCacheStatsSensor(MeteoSwissEntity, SensorEntity):
     """Representation of cache statistics sensor."""
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
@@ -416,8 +408,6 @@ class MeteoSwissCacheStatsSensor(SensorEntity):
             manufacturer="MeteoSwiss",
             model="Intelligent Caching",
         )
-        self._attr_has_entity_name = True
-        self._attr_attribution = ATTRIBUTION
         self._attr_name = "Cache Statistics"
         self._attr_native_value = "Running"
 
@@ -494,7 +484,7 @@ AIR_QUALITY_SENSOR_DESCRIPTIONS: Final[
 )
 
 
-class MeteoSwissAirQualitySensor(CoordinatorEntity, SensorEntity):
+class MeteoSwissAirQualitySensor(MeteoSwissCoordinatorEntity, SensorEntity):
     """Representation of a MeteoSwiss air quality sensor."""
 
     def __init__(
@@ -508,13 +498,7 @@ class MeteoSwissAirQualitySensor(CoordinatorEntity, SensorEntity):
         super().__init__(coordinator)
         self.entity_description = description
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_{description.key}"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, f"pollen_{entry.entry_id}")},
-            name=OPENMETEO_AIR_QUALITY_DEVICE_NAME,
-            manufacturer=OPENMETEO_AIR_QUALITY_MANUFACTURER,
-            model=OPENMETEO_AIR_QUALITY_MODEL,
-        )
-        self._attr_has_entity_name = True
+        self._attr_device_info = air_quality_device_info(entry.entry_id)
         self._attr_attribution = OPENMETEO_AIR_QUALITY_ATTRIBUTION
 
     @property
@@ -585,7 +569,7 @@ def _remove_legacy_season_hgt_entity(
         _LOGGER.info("Removed legacy forecast-only season HGT entity")
 
 
-class MeteoSwissHeatingDegreeDaysSensor(CoordinatorEntity, SensorEntity):
+class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntity):
     """Calculated HGT 12/20 for today from the location-based forecast."""
 
     def __init__(
@@ -599,7 +583,6 @@ class MeteoSwissHeatingDegreeDaysSensor(CoordinatorEntity, SensorEntity):
             identifiers={(DOMAIN, f"calculated_{entry.entry_id}")},
             name="Calculated Weather Metrics",
         )
-        self._attr_has_entity_name = True
         self._attr_attribution = HGT_ATTRIBUTION
         self.entity_description = SensorEntityDescription(
             key="heating_degree_days",
@@ -712,7 +695,7 @@ MS_POLLEN_SENSOR_DESCRIPTIONS: Final[tuple[MS_PollenSensorDescription, ...]] = (
 )
 
 
-class MeteoSwissMeasuredPollenSensor(CoordinatorEntity, SensorEntity):
+class MeteoSwissMeasuredPollenSensor(MeteoSwissCoordinatorEntity, SensorEntity):
     """Representation of a MeteoSwiss measured pollen sensor."""
 
     def __init__(
@@ -733,7 +716,6 @@ class MeteoSwissMeasuredPollenSensor(CoordinatorEntity, SensorEntity):
             manufacturer="MeteoSwiss",
             model="Pollen Station",
         )
-        self._attr_has_entity_name = True
         self._attr_attribution = "Source: MeteoSwiss ogd-pollen"
         self._pollen_type = description.pollen_type
         self._pollen_type_name = description.pollen_type_name

@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- Share entity naming/attribution and repeated weather/AQ device metadata while
+  retaining all nine family identity, grouping and lifecycle contracts. Report
+  the declared integration version separately from the config-entry format in
+  redacted diagnostics. Enforce above-95% coverage for every integration module
+  while retaining the existing stricter source/flow and aggregate gates.
+
 - Explain every setup/options field in DE/EN/FR/IT, localise the native weather
   source selector, and keep canonical English strings in sync. Clarify the
   independent observation, forecast, warning and measured-pollen locations;

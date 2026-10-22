@@ -303,3 +303,11 @@ its entities. To uninstall the custom component afterwards, remove it in HACS
 and restart HA. Existing Recorder retention/purging remains governed by HA;
 uninstalling is not an instruction to delete historical statistics or backups.
 Do not use removal/re-addition as an update or troubleshooting procedure.
+
+## Diagnostic version fields (unreleased after 8.2.0)
+
+The diagnostic payload's `integration_version` is the component's declared
+release version. `config_entry.version` and `minor_version` describe the saved
+configuration format; they are not the installed release. Include the release
+version when reporting a problem, and retain the private/redacted reporting
+process. A version value alone does not prove the exact installed commit.

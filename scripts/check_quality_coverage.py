@@ -1,7 +1,7 @@
-"""Report every module and enforce the first-stage coverage contract.
+"""Enforce >95% for every module and retain stricter source/flow contracts.
 
-No integration modules or error branches are excluded. This is deliberately
-not a Silver claim: Silver requires above 95% for all integration modules.
+No new module or error-branch exclusions are introduced. A passing coverage
+rule alone does not complete the other Bronze/Silver requirements.
 """
 
 from __future__ import annotations
@@ -24,9 +24,11 @@ def validate(path: Path) -> None:
             f"| `{Path(name).name}` | {summary['covered_lines']}/{summary['num_statements']} | "
             f"{summary['covered_branches']}/{summary['num_branches']} | {summary['percent_covered']:.2f}% |"
         )
+        if summary["percent_covered"] <= 95.0:
+            raise SystemExit(f"{name} must exceed 95% per-module coverage")
     total = report["totals"]["percent_covered"]
     print(
-        f"\nCombined integration coverage: **{total:.2f}%**. Silver (>95% in all modules) remains pending."
+        f"\nCombined integration coverage: **{total:.2f}%**. All modules exceed 95%; full Silver assessment remains pending."
     )
     flow = files["custom_components/meteoswiss/config_flow.py"]
     if flow["missing_lines"] or flow["missing_branches"]:
@@ -44,6 +46,8 @@ def validate(path: Path) -> None:
         "weather_data.py",
         "cache.py",
         "diagnostics.py",
+        "entity.py",
+        "version.py",
         "stations_map.py",
         "alerts.py",
         "binary_sensor.py",
