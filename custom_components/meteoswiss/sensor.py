@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, replace
-from typing import Final
+from typing import Any, Final
 
 from homeassistant.components.sensor import (
     SensorDeviceClass,
@@ -72,10 +72,10 @@ from .const import (
 )
 from .coordinator import MeteoSwissDataUpdateCoordinator
 from .entity import (
-    MeteoSwissEntity,
     MeteoSwissCoordinatorEntity,
-    weather_device_info,
+    MeteoSwissEntity,
     air_quality_device_info,
+    weather_device_info,
 )
 from .runtime_data import MeteoSwissConfigEntry
 from .stations_map import MeteoSwissStationsMap
@@ -371,6 +371,19 @@ class MeteoSwissStationsMapSensor(MeteoSwissEntity, SensorEntity):
         self._attr_native_value = None
         self._attr_available = False
 
+    @property
+    def available(self) -> bool:
+        """Retained metadata must not imply a current reachable catalogue."""
+        return self._attr_available and self._stations_map.data_status == "current"
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Evaluate freshness on read, including expiry between polls."""
+        return {
+            **(self._attr_extra_state_attributes or {}),
+            "catalogue_status": self._stations_map.get_status(),
+        }
+
     async def async_update(self) -> None:
         """Update stations map."""
         _LOGGER.debug("Updating stations map")
@@ -379,12 +392,11 @@ class MeteoSwissStationsMapSensor(MeteoSwissEntity, SensorEntity):
             session=async_get_clientsession(self.hass)
         )
         stations = self._stations_map.get_all_stations()
-        self._attr_available = bool(stations)
+        self._attr_available = self._stations_map.data_status == "current"
 
         # Update native value with station count
-        self._attr_native_value = f"{len(stations)} stations"
+        self._attr_native_value = f"{len(stations)} stations" if stations else None
         self._attr_extra_state_attributes = {
-            "catalogue_status": self._stations_map.get_status(),
             "station_count": len(stations),
             "stations": [s.to_dict() for s in stations[:20]],  # Limit to first 20
             "geojson": self._stations_map.to_geojson(),

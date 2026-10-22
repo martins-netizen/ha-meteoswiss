@@ -10,9 +10,9 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from custom_components.meteoswiss.alerts import MeteoSwissAlertsAPI
 from custom_components.meteoswiss.binary_sensor import (
-    MeteoSwissAlertsCoordinator,
     _alert_state_attributes,
 )
+from custom_components.meteoswiss.coordinator import MeteoSwissAlertsCoordinator
 from custom_components.meteoswiss.localization import _load_warning_labels
 
 V3_URL = "https://app-prod-ws.meteoswiss-app.ch/v3/plzDetail?plz=830200"

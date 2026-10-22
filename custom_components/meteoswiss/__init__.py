@@ -24,7 +24,7 @@ from .const import (
     DEFAULT_UPDATE_INTERVAL_SEC,
     DOMAIN,
 )
-from .coordinator import MeteoSwissDataUpdateCoordinator
+from .coordinator import MeteoSwissAlertsCoordinator, MeteoSwissDataUpdateCoordinator
 from .forecast_coordinator import MeteoSwissForecastCoordinator
 from .localization import async_load_warning_labels
 from .openmeteo_coordinator import OpenMeteoDataUpdateCoordinator
@@ -173,8 +173,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
     # Create alerts API and coordinator
     alerts_api = MeteoSwissAlertsAPI(session=shared_session)
     alerts_api.postal_code = post_code
-
-    from .binary_sensor import MeteoSwissAlertsCoordinator
 
     alerts_coordinator = MeteoSwissAlertsCoordinator(
         hass,

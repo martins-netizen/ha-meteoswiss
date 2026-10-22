@@ -69,7 +69,7 @@ async def test_retirement_and_source_labels_preserve_surviving_entities_on_reloa
             "openmeteo_coordinator.OpenMeteoDataUpdateCoordinator": {"temperature": 10, "precipitation": 0.3,
                 "last_update": "2026-10-18T10:20:00+00:00", "precipitation_interval_seconds": interval},
             "forecast_coordinator.MeteoSwissForecastCoordinator": [],
-            "binary_sensor.MeteoSwissAlertsCoordinator": [],
+            "coordinator.MeteoSwissAlertsCoordinator": [],
             "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
             "pollen_meteoswiss.MeteoSwissPollenCoordinator": {},
         }.items():

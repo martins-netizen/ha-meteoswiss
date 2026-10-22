@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- Mark the optional station-catalogue diagnostic unavailable after expiry or a
+  failed refresh instead of presenting retained metadata as current. Preserve
+  last-good metadata, expose its count/status in redacted diagnostics without
+  network access, and recover on a successful refresh. Keep identity and
+  registry preferences unchanged. Move the warning coordinator out of the
+  binary-sensor platform into coordinator.py with identical class behaviour.
+  Record the remaining source-coordinator placement gaps explicitly.
+
 - Schedule new observation entries automatically at 600 seconds and remove the
   polling field from setup/Configure in all four languages. Migrate existing
   intervals from entry data into options without changing the effective value;

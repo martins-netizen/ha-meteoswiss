@@ -101,7 +101,7 @@ async def installed_weather(hass, enable_custom_integrations):
                 "last_update": NOW.isoformat(),
             },
             "forecast_coordinator.MeteoSwissForecastCoordinator": [row()],
-            "binary_sensor.MeteoSwissAlertsCoordinator": [],
+            "coordinator.MeteoSwissAlertsCoordinator": [],
             "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
             "pollen_meteoswiss.MeteoSwissPollenCoordinator": {},
         }.items():

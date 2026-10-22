@@ -293,7 +293,7 @@ async def test_registered_weather_survives_forecast_failure_and_recovers(
                 "temperature": 12,
                 "last_update": NOW.isoformat(),
             },
-            "binary_sensor.MeteoSwissAlertsCoordinator": [],
+            "coordinator.MeteoSwissAlertsCoordinator": [],
             "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
             "pollen_meteoswiss.MeteoSwissPollenCoordinator": {},
         }.items():

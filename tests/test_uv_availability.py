@@ -41,7 +41,7 @@ async def uv_entry(hass, aioclient_mock, enable_custom_integrations, freezer):
         for target, data in {
             "coordinator.MeteoSwissDataUpdateCoordinator": {"temperature": 12},
             "forecast_coordinator.MeteoSwissForecastCoordinator": [],
-            "binary_sensor.MeteoSwissAlertsCoordinator": [],
+            "coordinator.MeteoSwissAlertsCoordinator": [],
             "pollen_meteoswiss.MeteoSwissPollenCoordinator": {"birch": {"current": 0}},
         }.items():
             stack.enter_context(patch(

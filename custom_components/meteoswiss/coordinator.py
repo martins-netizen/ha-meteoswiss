@@ -12,7 +12,9 @@ from typing import Any
 import aiohttp
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.util import dt as dt_util
 
+from .alerts import MeteoSwissAlertsAPI, WeatherAlert
 from .cache import get_current_weather_cache
 from .const import (
     API_BASE,
@@ -559,3 +561,45 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     async def async_close(self) -> None:
         """Close is handled centrally by the integration setup."""
         # Home Assistant owns and closes the borrowed shared session.
+
+
+class MeteoSwissAlertsCoordinator(DataUpdateCoordinator[list[WeatherAlert]]):
+    """Class to manage fetching MeteoSwiss alerts."""
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        alerts_api: MeteoSwissAlertsAPI,
+        update_interval: int = 600,
+        warning_labels: dict | None = None,
+    ) -> None:
+        """Initialize."""
+        self._alerts_api = alerts_api
+        self.warning_labels = warning_labels or {}
+        self.last_successful_update: datetime | None = None
+
+        super().__init__(
+            hass,
+            _LOGGER,
+            name=f"{DOMAIN}_alerts",
+            update_interval=timedelta(seconds=update_interval),
+        )
+
+    async def _async_update_data(self) -> list[WeatherAlert]:
+        """Fetch alerts from MeteoSwiss App API."""
+        _LOGGER.debug("Fetching MeteoSwiss alerts")
+
+        try:
+            alerts = await self._alerts_api.get_alerts(self._alerts_api.postal_code)
+        except (aiohttp.ClientError, TimeoutError, ValueError, UnicodeError):
+            raise UpdateFailed("Weather warnings could not be updated") from None
+
+        self.last_successful_update = dt_util.utcnow()
+
+        _LOGGER.debug("Successfully fetched %d MeteoSwiss alerts", len(alerts))
+
+        return alerts
+
+    async def async_close(self) -> None:
+        """Close alerts API session."""
+        await self._alerts_api.close()

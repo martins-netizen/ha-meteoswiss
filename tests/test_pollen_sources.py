@@ -522,7 +522,7 @@ async def test_real_entities_start_failure_recovery_and_unload(
                 "last_update": "2026-10-15T10:00:00+00:00",
             },
             "forecast_coordinator.MeteoSwissForecastCoordinator": [],
-            "binary_sensor.MeteoSwissAlertsCoordinator": [],
+            "coordinator.MeteoSwissAlertsCoordinator": [],
         }.items():
             stack.enter_context(
                 patch(
@@ -738,7 +738,7 @@ async def test_pollen_device_grouping_preserves_existing_entities_on_reload(
                 "last_update": "2026-10-15T10:00:00+00:00",
             },
             "forecast_coordinator.MeteoSwissForecastCoordinator": [],
-            "binary_sensor.MeteoSwissAlertsCoordinator": [],
+            "coordinator.MeteoSwissAlertsCoordinator": [],
         }.items():
             stack.enter_context(
                 patch(
