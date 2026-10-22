@@ -43,3 +43,31 @@ Follow [the publication checklist](PUBLISHING.md) for repository metadata,
 the official HACS validation, local brand assets and explicit release selection.
 A passing HACS check does not complete live acceptance or
 award a Home Assistant Quality Scale tier.
+
+## Local tool input boundaries
+
+`python scripts/check_quality_coverage.py` takes no arguments. It reads only
+`coverage.json` beside this repository's root README, independently of the
+current working directory, and rejects a symbolic-link report. Generate that
+file with the documented pytest coverage command before each gate run; a
+different report pathname is no longer a supported argument. The per-module,
+strict source/flow, branch-coverage and aggregate requirements are unchanged.
+
+All three versioned release helpers use Bash `[[ ... ]]` conditions, including
+their help and argument guards. Their embedded Python publication code, fixed
+release targets, commit/check validation and immutable-tag protections remain
+unchanged. These are historical package-specific recipes, not publishers for
+the next development release. This maintenance correction neither creates a
+release nor changes already published scripts/tags or a Home Assistant instance.
+
+The local tool regressions run without HA or GitHub access:
+
+```sh
+python -m unittest discover -s tests -p test_development_tools.py -v
+```
+
+They cover fixed-root report selection, rejected path arguments/symlinks,
+retained coverage failures and all three shell entry points. Existing mocked
+publisher tests continue to verify publication/refusal/retry behaviour.
+Removing source patterns is not a claim that SonarQube Cloud has reanalysed
+the commit or computed a quality gate; verify its actual result separately.

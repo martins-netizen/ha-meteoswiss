@@ -3,11 +3,11 @@
 # GitHub only: no Home Assistant connection, installation, restart or device call.
 set -Eeuo pipefail
 umask 077
-if [ "${1:-}" = '--help' ] || [ "${1:-}" = '-h' ]; then
+if [[ "${1:-}" = '--help' ]] || [[ "${1:-}" = '-h' ]]; then
   printf '%s\n' 'bash veroeffentliche_meteoswiss_beta_v1.1.sh --publish APPROVED_MERGE_COMMIT' 'Checks the exact commit and publishes 8.2.0b2 as a GitHub prerelease.' 'Requires python3, gh and existing GitHub authentication. No HA changes.'
   exit 0
 fi
-if [ "$#" -ne 2 ] || [ "$1" != '--publish' ] || ! [[ "$2" =~ ^[0-9a-f]{40}$ ]]; then
+if [[ "$#" -ne 2 ]] || [[ "$1" != '--publish' ]] || ! [[ "$2" =~ ^[0-9a-f]{40}$ ]]; then
   printf '%s\n' 'Usage: bash veroeffentliche_meteoswiss_beta_v1.1.sh --publish APPROVED_MERGE_COMMIT' >&2
   exit 2
 fi

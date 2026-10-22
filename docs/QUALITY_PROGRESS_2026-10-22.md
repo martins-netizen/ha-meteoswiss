@@ -1,8 +1,35 @@
 # Bronze/Silver follow-up — 22 October 2026
 
-**Record version:** 1.5. **Scope:** unreleased development after stable 8.2.0.
+**Record version:** 1.6. **Scope:** unreleased development after stable 8.2.0.
 The [dated original audit](QUALITY_AUDIT_2026-10-17.md) remains historical.
 This document records individual improvements, not an official HA quality tier.
+
+## Bound coverage input and normalize release-helper conditions
+
+The coverage gate no longer passes an optional command-line pathname into a
+file read. It accepts no arguments, uses only the repository-root coverage.json
+and rejects an existing symbolic link. All coverage assertions remain identical.
+Replace all 13 simple Bash `[` tests in the three historical release helpers
+with `[[ ... ]]`, preserving their embedded Python payloads byte for byte.
+
+Direct tool regressions exercise working-directory independence, path/symlink
+refusal, all existing categories of coverage failure, and help/invalid/accepted
+mode argument handling before any external command. Existing mocked publisher
+regressions retain their release/refusal/retry contracts. See the
+[maintenance procedure](MAINTENANCE.md#local-tool-input-boundaries).
+The integration source, workflows, dependencies, tags and released 8.2.0 are
+unchanged. A SonarQube Cloud reanalysis/quality-gate result is separate evidence;
+no alert is dismissed or excluded by this correction.
+
+Both local environments (HA 2026.8.3 and 2026.10.2) pass **972 tests and
+53 subtests**, including all existing mocked publisher regressions. The five
+new tool tests add 39 subcases; the four coverage-input tests produce 11
+failures against the previous checker and pass after the fix. Integration
+coverage remains **99.968%**, with **676/676 branches**, all stricter gates and
+every module above 95%. AST comparison confirms unchanged coverage assertions;
+all three publisher Python payloads are byte-identical. Bash syntax, bundled
+translations/version and the new documentation link/anchor also pass. CI keeps
+its existing HA 2026.8.3/2026.10.1 matrix.
 
 ## Remove unused product placeholders
 

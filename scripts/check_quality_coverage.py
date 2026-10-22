@@ -11,8 +11,12 @@ import sys
 from pathlib import Path
 
 
-def validate(path: Path) -> None:
-    report = json.loads(path.read_text())
+def validate() -> None:
+    """Read only the standard report generated in this repository."""
+    path = Path(__file__).resolve().parents[1] / "coverage.json"
+    if path.is_symlink():
+        raise SystemExit("coverage.json must not be a symbolic link")
+    report = json.loads(path.read_text(encoding="utf-8"))
     files = report["files"]
     if not report["meta"].get("branch_coverage"):
         raise SystemExit("Branch coverage must be enabled")
@@ -64,4 +68,6 @@ def validate(path: Path) -> None:
 
 
 if __name__ == "__main__":
-    validate(Path(sys.argv[1] if len(sys.argv) > 1 else "coverage.json"))
+    if len(sys.argv) != 1:
+        raise SystemExit("Usage: python scripts/check_quality_coverage.py (no arguments)")
+    validate()
