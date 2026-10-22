@@ -5,7 +5,9 @@
    focused. If an upstream fix is accepted, rebuild/rebase the integration
    branch without duplicate patches, preserving the known deployed baseline.
 2. Changes go through a branch and PR to protected `development`. Keep required
-   check `tests` and CodeQL's `Analyze Python`; do not bypass protection.
+   checks `tests`, CodeQL's `Analyze Python` and `HACS validation`; do not bypass
+   protection. External PRs follow the [unprivileged CodeQL review procedure](CODEQL_FORK_REVIEW.md);
+   a skipped analysis is not a successful security scan.
 3. Run `python scripts/check_translations.py` and the complete tests with both
    `requirements_test_min.txt` (HA 2026.8.3) and `requirements_test.txt`
    (HA 2026.10.1). Add regression tests for real failures. Measure line/branch coverage and run
@@ -19,10 +21,11 @@
    mocks; do not simulate danger by actuating devices. Verify that existing IDs
    and history persist and that active/upcoming warning consumers use the
    verified catalogue and preserve the provider's concrete event text.
-5. Update manifest.json, version.py and CHANGELOG.md together. `8.2.0b1` is the
-   prepared prerelease version; this branch does not publish or deploy it.
-   Tag the approved tested commit on `development`, not the upstream mirror
-   `main`. The first release should be a GitHub prerelease. HACS must point at
+5. Update manifest.json, version.py and CHANGELOG.md together when preparing a
+   release. Stable `8.2.0` was published on 22 October 2026; later development
+   changes remain unreleased until separately packaged and accepted. Tag only
+   the approved tested commit on `development`, not the upstream mirror `main`;
+   preserve existing immutable stable/beta tags. HACS must point at
    `martins-netizen/ha-meteoswiss` and the selected tested release; never infer
    the installation's source or change it without checking the live state.
 6. Review HA breaking changes before upgrades. Review dependencies, GitHub
@@ -37,6 +40,6 @@ manual acceptance with the actual installed commit/version and HA version.
 Do not record tokens, account data or full private diagnostic payloads.
 
 Follow [the publication checklist](PUBLISHING.md) for repository metadata,
-the official HACS validation, local brand assets, release selection and the
-first prerelease. A passing HACS check does not complete live acceptance or
+the official HACS validation, local brand assets and explicit release selection.
+A passing HACS check does not complete live acceptance or
 award a Home Assistant Quality Scale tier.

@@ -8,9 +8,7 @@ on:
     branches:
       - development
 
-permissions:
-  contents: read
-  security-events: write
+permissions: {}
 
 concurrency:
   group: codeql-${{ github.workflow }}-${{ github.ref }}
@@ -19,7 +17,11 @@ concurrency:
 jobs:
   analyze:
     name: Analyze Python
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    # Analyze foreign-fork PRs too. Stay on the unprivileged pull_request event;
+    # never replace this with pull_request_target to obtain write permissions.
+    permissions:
+      contents: read # Check out the reviewed merge tree without write access.
+      security-events: write # Upload CodeQL results; public-fork PRs are downgraded to read-only.
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
