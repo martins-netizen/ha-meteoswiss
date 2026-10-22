@@ -53,10 +53,11 @@ the parser and warning sensors do not exclude these two families. The catalogue
 does not guarantee a warning for every hazard at every postcode or time.
 Own dashboard/automation filters can hide a family even when HA has received it.
 
-This capability is independent of the inactive `slf.py` and `hydro.py`
-placeholders. Those do not supply standalone river-gauge measurements or the
-full SLF avalanche bulletin. A shared hazard warning is not a replacement for
-those more detailed products.
+This capability is independent of standalone river-gauge measurements or the
+full SLF avalanche bulletin, neither of which this integration supplies. The
+unused `slf.py` and `hydro.py` placeholders are removed in unreleased development
+after 8.2.0; the shared warning feed is retained. A shared hazard warning is not
+a replacement for those more detailed products.
 
 ## Provenance of the numeric mapping
 

@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.6 · **Updated:** 22 October 2026
+**Plan version:** 1.7 · **Updated:** 22 October 2026
 **Status:** Approved planning; Q1 is documented and P0 has partial evidence.
 This document does not approve a new feature, installation or release.
 
@@ -115,10 +115,12 @@ as the checklist. These work packages do not claim completed compliance.
 
 In the original 762-test baseline, combined coverage was 99.0517%, but
 camera.py, hydro.py, slf.py and version.py were at 0%; const.py was 98.51%.
-Review references before deciding whether inactive product placeholders should
-be removed or genuinely implemented/tested. Keep version/manifest/tool
-consistency; do not add meaningless tests or exclusions solely for a percentage.
-Shared-feed avalanche/flood warnings are independent of separate SLF/BAFU placeholders.
+The [22 October follow-up](QUALITY_PROGRESS_2026-10-22.md) removes unused
+camera/hydro/SLF placeholders after checking references and active platforms.
+The version module and remaining Bronze prerequisites still require evidence;
+keep version/manifest/tool consistency and add no meaningless imports, tests or
+exclusions solely for a percentage. Shared-feed avalanche/flood warnings remain
+supported independently of the removed standalone-product placeholders.
 
 No wholesale architectural rewrite is planned. Retain source separation and
 HA-owned sessions. Review repeated entity basics and the

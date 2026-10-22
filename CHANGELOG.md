@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+- Remove unused camera/hydrology/SLF placeholders after checking imports and
+  active platforms. Keep all active entities, the shared flood/avalanche warning
+  feed and separately installed radar integrations unchanged.
+
 - Analyze external-fork pull requests with the unprivileged CodeQL PR workflow;
   restrict upload permission to its analysis job and document actual-run checks
   for the first external contribution. Preserve pinned actions and branch rules.
