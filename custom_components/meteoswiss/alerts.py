@@ -11,6 +11,7 @@ from typing import Any
 import aiohttp
 
 from .const import DEFAULT_API_TIMEOUT
+from .http import WARNING_HOST, async_get_json
 from .retry import async_retry_with_backoff
 from .weather_data import weather_number
 
@@ -165,10 +166,8 @@ class MeteoSwissAlertsAPI:
         """Fetch and parse alerts from API with retry logic."""
         _LOGGER.debug("Fetching weather warnings")
 
-        async with self._session.get(url, timeout=DEFAULT_API_TIMEOUT) as response:
-            response.raise_for_status()
-            data = await response.json()
-            return self._parse_alerts(data, postal_code)
+        data = await async_get_json(self._session, url, host=WARNING_HOST)
+        return self._parse_alerts(data, postal_code)
 
     def _parse_alerts(
         self, data: dict[str, Any], postal_code: str

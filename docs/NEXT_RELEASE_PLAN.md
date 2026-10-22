@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.4 · **Updated:** 22 October 2026
+**Plan version:** 1.5 · **Updated:** 22 October 2026
 **Status:** Approved planning; Q1 is documented and P0 has partial evidence.
 This document does not approve a new feature, installation or release.
 
@@ -185,8 +185,10 @@ Track all twenty-one Gold rules individually; “existing” still means “veri
 
 ## Security and maintenance
 
-Track shared HTTPS/destination/redirect validation and enforced response-size
-limits, including a future POI catalogue. Keep timeouts, cancellation and
+The first unreleased security follow-up implements shared HTTPS/destination
+validation, redirect refusal and streaming wire/decompressed size limits for all
+active sources. See [scope, real archive sizes and required focused HA acceptance](HTTP_SOURCE_HARDENING.md).
+Any future POI catalogue must adopt an equivalently bounded transport. Keep timeouts, cancellation and
 conservative caching; redact search terms from logs/diagnostics.
 Provide safe CodeQL analysis for external-fork contributions without privileged
 execution of untrusted code. Use separate scoped PRs, not an unreviewed bundle

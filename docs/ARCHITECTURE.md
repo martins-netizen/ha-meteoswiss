@@ -294,6 +294,15 @@ See `examples/button-card-warnings.yaml`. Existing local dashboard translations
 stay in place until a separately verified adoption of the common template.
 Do not rename established entities during this change.
 
+## Shared HTTP boundary (unreleased after 8.2.0)
+
+`http.py` owns destination validation and bounded reads for every active client;
+source adapters retain parsing and their existing retry decorators. It disables
+automatic redirects/decompression and separately bounds wire and inflated bytes.
+The [HTTP contract](HTTP_SOURCE_HARDENING.md) records per-class budgets,
+encoding support, real archive samples and focused HA acceptance still required.
+No source, coordinator lifecycle, entity identity or HA-owned session changes.
+
 ## Verification and remaining limits
 
 Tests cover warning failure/recovery, invalid payloads, bounded retries,

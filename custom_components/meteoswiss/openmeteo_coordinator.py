@@ -12,7 +12,6 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 
 from .cache import get_current_weather_cache
 from .const import (
-    DEFAULT_API_TIMEOUT,
     DOMAIN,
     MIN_UPDATE_INTERVAL,
     SENSOR_HUMIDITY,
@@ -23,6 +22,7 @@ from .const import (
     SENSOR_WIND_SPEED,
     WMO_WEATHER_CODES,
 )
+from .http import FORECAST_HOST, async_get_json
 from .retry import async_retry_with_backoff
 from .weather_data import (
     forecast_datetime,
@@ -146,11 +146,9 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             "timezone": "Europe/Zurich",
             "timeformat": "unixtime",
         }
-        async with self._session.get(
-            OPENMETEO_BASE_URL, params=params, timeout=DEFAULT_API_TIMEOUT
-        ) as response:
-            response.raise_for_status()
-            return await response.json()
+        return await async_get_json(
+            self._session, OPENMETEO_BASE_URL, params=params, host=FORECAST_HOST
+        )
 
     async def _async_fetch_data(self) -> dict[str, Any]:
         """Validate the payload separately from transport retries."""

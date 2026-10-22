@@ -116,8 +116,12 @@ ends that retry sequence. It is not a persistent cross-refresh cooldown.
 Current/forecast clients have their documented circuit pauses; not every family
 has the same breaker. Polling, caches, multiple entries, archive downloads and
 retries determine total traffic: there is no fixed requests/hour guarantee.
-Station asset destinations are supplied by STAC metadata; universal asset
-host/scheme/redirect and response-size boundaries remain a hardening scope.
+In unreleased development after stable 8.2.0, all active sources use fixed-host
+HTTPS validation, reject redirects and enforce streaming wire/decompressed
+limits. STAC asset URLs are constrained before fetching. Historical decade CSVs
+have a separate 64 MiB budget, preserving the official archive path. See the
+[exact contract, sample sizes and acceptance boundary](HTTP_SOURCE_HARDENING.md).
+The published 8.2.0 package does not contain this follow-up.
 
 Expected errors omit raw coordinate/postcode URLs and CSV values from logs;
 diagnostics redact configured locations and omit raw payloads/cache keys.

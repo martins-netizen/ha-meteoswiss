@@ -34,6 +34,7 @@ def validate(path: Path) -> None:
     for module in (
         "__init__.py",
         "retry.py",
+        "http.py",
         "coordinator.py",
         "pollen_coordinator_openmeteo.py",
         "pollen_meteoswiss.py",
