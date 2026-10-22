@@ -59,7 +59,7 @@ async def test_registered_oak_missing_outage_recovery_and_reload_keep_identity(
         for target, data in {
             "coordinator.MeteoSwissDataUpdateCoordinator": {"temperature": 12},
             "forecast_coordinator.MeteoSwissForecastCoordinator": [],
-            "binary_sensor.MeteoSwissAlertsCoordinator": [],
+            "coordinator.MeteoSwissAlertsCoordinator": [],
             "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
         }.items():
             stack.enter_context(patch(

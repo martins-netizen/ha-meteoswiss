@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.10 · **Updated:** 22 October 2026
+**Plan version:** 1.11 · **Updated:** 22 October 2026
 **Status:** Approved planning; Q1 is documented and P0 has partial evidence.
 This document does not approve a new feature, installation or release.
 
@@ -102,7 +102,7 @@ as the checklist. These work packages do not claim completed compliance.
 
 | Area | Starting evidence / next check |
 |---|---|
-| Bronze prerequisite | Reconcile all twenty rules. Unreleased field help/source translations and unused-placeholder cleanup are recorded in the dated follow-up; shared metadata and polling/options migration now have bounded evidence; remaining coordinator placement and final UX review remain open. Local HACS brand files are not Core-brands inclusion. |
+| Bronze prerequisite | Reconcile all twenty rules. Unreleased field help/source translations and unused-placeholder cleanup are recorded in the dated follow-up; shared metadata and polling/options migration now have bounded evidence; warning coordinator placement and catalogue diagnostic availability are corrected; five source-module placement findings and final UX review remain open. Local HACS brand files are not Core-brands inclusion. |
 | action-exceptions | Justified exemption while no integration actions exist; reassess if introduced. |
 | config-entry-unloading | Retain Recorder/reload/unload tests; check remaining tasks, pollers and listeners by family. |
 | docs-configuration-parameters, docs-installation-parameters | Explain purpose, source and effects; separate forecast, observation, warning and measured-pollen locations. |
@@ -126,7 +126,10 @@ supported independently of the removed standalone-product placeholders.
 
 No wholesale architectural rewrite is planned. Retain source separation and
 HA-owned sessions. The shared entity metadata follow-up preserves nine existing
-device/identity contracts; remaining coordinator placement is a separate review.
+device/identity contracts. The [coordinator placement review](COORDINATOR_LAYOUT_REVIEW.md)
+now inventories all seven coordinators, moves warnings out of the platform, and
+records five remaining source-module placement findings. Catalogue diagnostic
+expiry/failure/recovery is implemented and tested separately from source freshness.
 Use the
 [expected module layout](https://contributors.home-assistant.io/core/quality-scale/common-modules/)
 rather than equating central constants with full compliance.

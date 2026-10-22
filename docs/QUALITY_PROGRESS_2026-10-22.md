@@ -1,6 +1,6 @@
 # Bronze/Silver follow-up — 22 October 2026
 
-**Record version:** 1.3. **Scope:** unreleased development after stable 8.2.0.
+**Record version:** 1.4. **Scope:** unreleased development after stable 8.2.0.
 The [dated original audit](QUALITY_AUDIT_2026-10-17.md) remains historical.
 This document records individual improvements, not an official HA quality tier.
 
@@ -129,6 +129,53 @@ mock source transport and do not establish a new live installation/acceptance.
 Published-release setup instructions remain explicitly scoped to 8.2.0 alongside
 a clear unreleased-flow note, avoiding an instruction to find a removed field.
 
+## Make catalogue diagnosis honest and remove a platform dependency
+
+The optional station-count sensor previously stayed available whenever last-good
+metadata existed, including after the 24-hour deadline and a failed refresh.
+It now requires a successful current catalogue and its own completed update.
+Availability and catalogue status check freshness when read, including between
+polls. HA publishes state on its normal or explicit state update; no expiry
+background task or extra request is added. No loaded snapshot means a None
+native value instead of a healthy-looking zero. Stale station lists and public
+exports are retained as last-good metadata; a successful refresh restores the
+same entity/device/registry identity.
+
+HA omits extra entity attributes while unavailable. The safe catalogue status
+therefore includes retained `station_count` as well as current/stale/unavailable,
+last success and sanitized error class. It remains accessible through the
+redacted diagnostic without network access or a raw station/location payload.
+Local cache counters remain available independently of provider connectivity.
+The existing catalogue lock, 24-hour original cache deadline, bounded retries,
+five-minute retry suppression and transition logging remain unchanged.
+
+Seven new cold-load/expiry/failure/recovery cases reproduce the old defect,
+including a complete HA config-entry/platform registration test. HTTP 404, 503
+and invalid metadata retain the correct unavailable/last-good distinction.
+The registered test verifies actual HA states, retained diagnostic count/status
+without another request, recovery on the same identity and normal unload.
+The preceding-tree run uses the previous warning-coordinator patch location;
+only this test-fixture import path differs from the current run.
+
+The [placement review](COORDINATOR_LAYOUT_REVIEW.md) inventories all seven actual
+DataUpdateCoordinator definitions. Move the complete warning class from the
+binary-sensor platform to coordinator.py; its class AST is identical. Setup
+and typed runtime import the canonical module directly. The platform retains
+an import of the same class for its entity annotation/old import path, with no
+second class or wrapper. Logger namespace follows coordinator.py; warning
+parsing, labels/timing, error/recovery logs, session close and startup/unload
+behaviour remain covered by the existing regression suite.
+
+Local HA **2026.8.3/2026.10.2** runs pass **963 tests and 14 subtests**,
+**99.96791786974656%** combined coverage and **676/676 branches**. Catalogue,
+entity, warning coordinator and all existing strict module gates remain at
+100% lines/branches; every module exceeds 95%. Four catalogues still have
+**101 keys**, manifest/module version remains 8.2.0, and CI still uses
+**2026.8.3/2026.10.1**. No new dependency, lint/coverage suppression, altered
+workflow, release or live installation. The five remaining source-specific
+coordinator definitions still fail the literal module-placement rule; document
+the source-client extraction prerequisite rather than claiming full compliance.
+
 ## Remaining prerequisites and boundaries
 
 - The version-module coverage gap is closed through its diagnostic consumer.
@@ -140,8 +187,9 @@ a clear unreleased-flow note, avoiding an instruction to find a removed field.
 - Legacy intervals are retained through the explicit compatibility bridge; no
   existing 900/1200-second choice is silently replaced with 600 seconds.
 - Shared entity metadata is now implemented and reviewed within this scope.
-  Remaining source-specific coordinator placement, Core-brand evidence and the
-  complete catalogue diagnostic availability contract remain separate findings.
+  Warning coordinator platform coupling and the catalogue diagnostic gap are
+  corrected. Five source-module coordinator definitions and Core-brand evidence
+  remain open; the placement review records a concrete extraction path.
 - The official [coverage rule](https://developers.home-assistant.io/docs/core/integration-quality-scale/rules/test-coverage/)
   applies per module, not only to the aggregate. The
   [UI setup rule](https://contributors.home-assistant.io/core/quality-scale/config-flow/)

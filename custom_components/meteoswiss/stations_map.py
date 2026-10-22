@@ -160,6 +160,7 @@ class MeteoSwissStationsMap:
     def get_status(self) -> dict:
         return {
             "data_status": self.data_status,
+            "station_count": len(self._stations),
             "last_update_success": self.last_update_success,
             "last_successful_update": self.last_successful_update,
             "last_exception": self.last_exception,

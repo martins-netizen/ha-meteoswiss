@@ -358,6 +358,34 @@ The [HTTP contract](HTTP_SOURCE_HARDENING.md) records per-class budgets,
 encoding support, real archive samples and focused HA acceptance still required.
 No source, coordinator lifecycle, entity identity or HA-owned session changes.
 
+## Catalogue diagnostic availability and coordinator placement (unreleased)
+
+The station metadata service keeps its existing 24-hour monotonic deadline,
+five-minute retry suppression, single-flight lock and last-good snapshot. The
+optional station-count entity now reports available only after its own update
+and while the loader reports `current`. The property checks expiry on read;
+there is no extra expiry task or network call. HA writes frontend state on its
+regular/explicit state update. No valid snapshot means a `None` native value,
+not a healthy-looking zero. Stale metadata remains retained, not reclassified as
+fresh or deleted. Recovery uses the same entity ID/device/registry preference.
+
+The safe catalogue status adds a retained `station_count`. This remains
+accessible in the redacted integration diagnostic even when HA hides the extra
+attributes of an unavailable entity; neither getter nor diagnostic download
+starts a metadata fetch. Public station exports remain part of the optional
+entity's retained attributes and do not enter the redacted diagnostic payload.
+Cache statistics observe local counters and are not a provider-health signal.
+
+The warning coordinator definition moves from binary_sensor.py to coordinator.py.
+Setup and typed runtime data import the canonical class directly; the platform
+still imports that same class, preserving its old import path without a second
+implementation. Its complete class AST is unchanged. Logging now uses the
+coordinator module namespace; warning parsing, labels, timing, once-per-outage
+logging, session ownership and cleanup remain covered by source/lifecycle tests.
+The [placement review](COORDINATOR_LAYOUT_REVIEW.md) inventories all seven actual
+coordinators and the five remaining source-module placement findings. No
+blanket common-modules/Silver completion follows from this move.
+
 ## Verification and remaining limits
 
 Tests cover warning failure/recovery, invalid payloads, bounded retries,

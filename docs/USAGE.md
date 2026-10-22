@@ -303,6 +303,22 @@ catalogue. `current` means valid cached metadata, `stale` means retained last-go
 metadata after expiry/failure, and `unavailable` means no valid catalogue has
 been loaded. These are catalogue states, not weather measurement freshness.
 Setup still validates the selected station's actual observation source.
+
+**Unreleased after 8.2.0:** the optional stations diagnostic is available only
+with a current, successfully loaded catalogue. An expired/failed catalogue makes
+it unavailable even when last-good station metadata remains in memory. A first
+failed load does not report a healthy zero-station value. A subsequent successful
+refresh restores the existing entity; no new entity or automatic enabling is
+needed. Freshness is checked when the entity is read; HA publishes the changed
+state on its next scheduled or requested state update, without a new timer.
+
+HA omits extra entity attributes while an entity is unavailable. Use the
+integration diagnostic's `station_catalogue` section for `data_status`, retained
+`station_count`, last-success time and sanitized error type. Its count describes
+the retained snapshot, not fresh weather readings. Downloading diagnostics does
+not request station metadata. The local cache-statistics sensor remains usable
+during a provider outage because it describes local counters, not connectivity.
+
 Automatic retries wait five minutes after a failure; retrying setup explicitly
 can try immediately. A repeated cache hit does not renew the download time.
 

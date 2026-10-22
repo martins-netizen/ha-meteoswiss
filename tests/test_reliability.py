@@ -23,8 +23,8 @@ from custom_components.meteoswiss.alerts import MeteoSwissAlertsAPI, WeatherAler
 from custom_components.meteoswiss.binary_sensor import (
     ALERT_SENSOR_DESCRIPTIONS,
     MeteoSwissAlertsBinarySensor,
-    MeteoSwissAlertsCoordinator,
 )
+from custom_components.meteoswiss.coordinator import MeteoSwissAlertsCoordinator
 from custom_components.meteoswiss.const import (
     DOMAIN,
     SENSOR_PRECIPITATION,
@@ -451,7 +451,7 @@ async def _exercise_entry_lifecycle(hass, source, *, with_recorder, legacy_inter
             "last_update": dt_util.utcnow().isoformat(),
         },
         "forecast_coordinator.MeteoSwissForecastCoordinator": [],
-        "binary_sensor.MeteoSwissAlertsCoordinator": [],
+        "coordinator.MeteoSwissAlertsCoordinator": [],
         "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
         "pollen_meteoswiss.MeteoSwissPollenCoordinator": {},
         "precipitation.MeteoSwissHourlyPrecipitationCoordinator": {},

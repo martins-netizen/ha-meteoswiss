@@ -25,8 +25,8 @@ from custom_components.meteoswiss.binary_sensor import (
     ALERT_SENSOR_DESCRIPTIONS,
     MeteoSwissAlertsBinarySensor,
     MeteoSwissAlertsBinarySensorDescription,
-    MeteoSwissAlertsCoordinator,
 )
+from custom_components.meteoswiss.coordinator import MeteoSwissAlertsCoordinator
 from custom_components.meteoswiss.const import DOMAIN
 from custom_components.meteoswiss.pollen_sensor import async_setup_entry as setup_pollen
 from custom_components.meteoswiss.sensor import (
