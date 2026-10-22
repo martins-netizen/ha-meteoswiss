@@ -11,14 +11,10 @@ and brings reviewed corrections together in one maintained version. The original
 project provides the foundation; its MIT licence and attribution are retained.
 This is an independent community project, not an official MeteoSwiss product.
 
-**First maintained-fork beta: `8.2.0b1`.** The deployed runtime has completed
-its live acceptance. See [release availability and beta limits](#release-status)
-before installing.
-
-**Next test candidate: `8.2.0b2`.** It adds the initial pollen-station choice,
-verified station list and clearer postcode guidance. It is available only once
-an explicit prerelease appears on the Releases page. See the
-[candidate notes and focused HA check](docs/RELEASE_8.2.0b2.md).
+**Stable `8.2.0` is being prepared.** The latest published test release is
+**`8.2.0b2`**, including explicit pollen-station selection during setup. Its
+focused new-setup/data check was operator-confirmed on 22 October 2026. See
+[release status](#release-status) before downloading; a PR is not a release.
 
 ## Why choose this fork?
 
@@ -58,11 +54,12 @@ Read the [plain-language overview](docs/GETTING_STARTED.md#what-this-fork-provid
 
 ## Release status
 
-**8.2.0b1 is the first maintained-fork beta, with completed deployed
-24-hour acceptance.** It is intended for explicit prerelease testing.
-Download it only when the [published GitHub prerelease](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.2.0b1)
-is available. If that page is not available, publication has not completed;
-do not substitute a tag or development-branch download.
+**Latest published prerelease: [8.2.0b2](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.2.0b2)**,
+published on 22 October 2026 at 07:12:40 Europe/Zurich.
+**First stable candidate: 8.2.0**, described in the [stable notes](docs/RELEASE_8.2.0.md).
+It is not published or available to install until an explicit stable release
+appears on the [Releases page](https://github.com/martins-netizen/ha-meteoswiss/releases).
+Do not substitute a development branch or commit.
 
 Minimum supported/tested HA: **2026.8.3**; CI also covers **2026.10.1**.
 The candidate additionally passed local tests and deployed acceptance on
@@ -70,7 +67,9 @@ The candidate additionally passed local tests and deployed acceptance on
 The operator confirmed the HACS 2.0.5 source switch, downloaded version
 `8.2.0b1`, restart and a positive initial visual check on 20 October 2026.
 A clean first HACS installation and isolated restore were operator-confirmed
-on 21 October. The initial pollen picker still needs its focused HA check.
+on 21 October. On 22 October the operator completed Beta2 setup with other
+geographic locations and reported values. The focused setup check is
+complete; a separate manual test of every source/station combination is not claimed.
 The [HACS acceptance record](docs/HACS_ACCEPTANCE.md)
 distinguishes this operator-confirmed result from independent technical evidence.
 A default-store listing and an official HA quality tier are not claimed.
@@ -111,19 +110,20 @@ Once a tested release is approved:
 2. In **HACS → menu → Custom repositories**, add
    `https://github.com/martins-netizen/ha-meteoswiss` as **Integration**.
 3. Open Download/Redownload, expand **Need a different version?**, and explicitly
-   select **8.2.0b1** in **Release**. Check the announced version before confirming
-   the download, then restart Home Assistant. Older HACS versions may additionally
+   select **8.2.0** in **Release** after its stable publication. Check the announced
+   version before confirming the download, then restart Home Assistant. Older HACS versions may additionally
    require enabling beta visibility. Do not substitute a branch or commit.
    Do not keep two HACS repositories managing the same `meteoswiss` directory.
 4. **New users only:** add **MeteoSwiss** under **Settings → Devices & services**.
-   Choose **MeteoSwiss STAC API (Swiss Stations)** for measured station weather;
-   enter the weather station and the four-digit warning postcode.
-5. Check the HA home location for forecasts/AQ and independently select the
-   measured pollen station in the integration's **Configure** options.
-   The 8.2.0b2 candidate makes this station an explicit choice in
-   the initial dialog; it is not yet part of the published **8.2.0b1** beta.
-   When testing an explicitly published **8.2.0b2**, choose that version instead
-   of 8.2.0b1 and follow its focused test checklist.
+   In the first dialog choose **MeteoSwiss STAC API (Swiss Stations)** and a
+   **measured-pollen station**. Keep 600 seconds initially. Continue to the next
+   dialog to select the weather station and four-digit warning postcode.
+5. Check the HA home location for forecasts/AQ. **Configure** later changes the
+   interval and measured-pollen station, not the weather station or postcode.
+
+For explicit prerelease testing before stable publication, select published
+**8.2.0b2** instead; the same new-setup flow applies. Existing Beta1 entries
+retain their settings and can select a pollen station under Configure.
 
 Existing users keep their existing HA entry; they do not add it a second time.
 `development` is the maintained default branch and `main` is an upstream mirror.

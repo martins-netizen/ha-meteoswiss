@@ -2,10 +2,26 @@
 
 ## [Unreleased]
 
+## [8.2.0] — first stable maintained-fork candidate
+
+Prepared stable package; not yet published. See [release notes](docs/RELEASE_8.2.0.md)
+and [current readiness](docs/RELEASE_READINESS.md).
+
+- Promote the operator-tested Beta2 component code without functional changes;
+  only manifest/module versions become 8.2.0. Preserve HACS branch hiding,
+  workflows and both immutable beta tags.
+- Record the completed Beta2 new-setup/data check alongside the completed
+  Beta1 runtime, HACS first installation and isolated restore evidence.
+- Reconcile README/setup/migration, exact evidence and known security/quality
+  limits. Keep POI, Silver/Gold and independent usability work separate.
+- Derive guarded stable publisher V1.2 from Beta Publisher V1.1: read-only
+  --check, exact approved protected merge, unchanged source/HACS/workflows,
+  both beta tags and successful GitHub Actions checks; no HA access.
+
 ## [8.2.0b2] — pollen setup test candidate
 
-Prepared candidate; an explicit GitHub prerelease is required before HACS
-installation. See [candidate notes and acceptance](docs/RELEASE_8.2.0b2.md).
+Published on 22 October 2026 at 07:12:40 Europe/Zurich. See
+[beta notes and acceptance](docs/RELEASE_8.2.0b2.md).
 
 ### Changed
 

@@ -1,22 +1,17 @@
-# HACS acceptance of the first beta
+# HACS acceptance of the maintained fork
 
-**Updated: 21 October 2026 · Plan and evidence V1.5**
+**Updated: 22 October 2026 · Plan and evidence V1.6**
 
-Beta **8.2.0b1** is public. Its component files match the runtime already
-accepted on HA 2026.10.2. The operator has confirmed the HACS 2.0.5 source switch,
-download, restart and positive initial visual check. On 21 October, the operator
-also completed a clean installation and backup restoration in a temporary HA
-instance. That walkthrough found the missing initial pollen-station choice;
-the correction is unreleased and still needs its focused HA UI check. The
-accepted beta runtime does not need another full observation window.
+Both betas are public. Beta1's deployed runtime, the HACS 2.0.5 source switch,
+temporary clean first installation and isolated backup restore are complete.
+Beta2 added the explicit initial pollen choice; on 22 October the operator
+completed new setup with other geographic locations and reported values.
+This closes the focused practical setup/data check, with the evidence limits
+below. The stable 8.2.0 package is prepared, not yet published.
 
-[Release readiness](RELEASE_READINESS.md) separates remaining stable-release
-work from later location/POI features.
-
-The corrected setup is integrated through PR #37. Its **8.2.0b2** packaging is
-prepared separately; publication, download and focused UI acceptance are still
-distinct steps. Use the [candidate checklist](RELEASE_8.2.0b2.md), retaining the
-completed first-beta install/restore evidence.
+[Release readiness](RELEASE_READINESS.md) tracks the exact stable candidate.
+The protocols below describe acceptance methods, not requests to repeat
+completed tests. An independent newcomer review remains separate.
 
 ## 1. Inspect before changing anything
 
@@ -29,7 +24,8 @@ The following precheck does not remove/download software or restart HA.
 3. If it already points to **martins-netizen/ha-meteoswiss**, select
    **Update information**. This refreshes metadata without downloading components.
 4. Open **Download** or **Redownload**, expand **Need a different version?** and
-   select **8.2.0b1** under **Release**. Check the announced version, then
+   select the intended **published release** under **Release**. Currently Beta2
+   is published; select stable 8.2.0 only after publication. Check the version, then
    **Cancel** for this precheck. Older HACS versions may need beta visibility.
 5. If the entry points to **LNKtwo/ha-meteoswiss**, retain it during this
    precheck. Confirm provenance, backup and recovery before following
@@ -44,7 +40,7 @@ device or access details. A GitHub release alone does not prove local HACS visib
 
 | Check | Suitable environment | Evidence required |
 |---|---|---|
-| Clean first installation | Temporary empty HA instance with HACS and no production device control | Add the repository as Integration; explicitly download 8.2.0b1; restart; configure MeteoSwiss once; check station, warning postcode and initial data. |
+| Clean first installation | Temporary empty HA instance with HACS and no production device control | Add the repository as Integration; explicitly download the intended published release; restart; configure MeteoSwiss once; check station, warning postcode and initial data. |
 | Source switch | Temporary instance with existing MeteoSwiss, or a separately planned production switch after precheck/recovery preparation | Replace the HACS software source while retaining the HA entry; compare target version/files and continued IDs, settings and statistics. |
 
 No second permanent HA installation is required. An existing configured
@@ -89,10 +85,12 @@ software and its corresponding warning filters together.
 | Clean first HACS installation | Operator-confirmed on 21 October: temporary HA 2026.10.2 / HACS 2.0.5, downloaded 8.2.0b1, restart, new STAC entry, 600 seconds, KLO and warning postcode 8302; observations appeared immediately. |
 | Isolated backup restoration | Operator-confirmed on 21 October: after changing the interval to 900 seconds and restoring the backup, the saved 600 seconds returned. This confirms the reported configuration recovery, not a separately collected file/registry comparison. |
 | Measured-pollen comparison | After choosing a station in Configure, the operator reported the same measurements as on production. The exact station identifier was not separately supplied. |
-| Initial pollen-station choice | Missing in 8.2.0b1. An unreleased correction adds explicit selection for both weather sources; focused HA UI acceptance of that correction remains open. |
-| Pollen station identities and live files | On 21 October, 15 choices matched official metadata and hourly assets; all 15 URLs returned HTTP 200. Twelve feeds were current, three stale, including Luzern. Unsupported BLR is removed in the unreleased correction; dated evidence and offline regressions are in [POLLEN_STATIONS.md](POLLEN_STATIONS.md). |
+| Initial pollen-station choice | Added in published Beta2 for both source paths. On 22 October the operator completed setup with other geographic locations and reported values. Exact additional paths/stations were not separately supplied; automated tests cover both paths and persistence. |
+| Pollen station identities and live files | On 21 October, 15 choices matched official metadata and hourly assets; all 15 URLs returned HTTP 200. Twelve feeds were current, three stale, including Luzern. Unsupported BLR is removed in Beta2; dated evidence and offline regressions are in [POLLEN_STATIONS.md](POLLEN_STATIONS.md). |
+| Beta2 UI and retained options | Screenshot shows 8.2.0b2, 600 seconds and Zürich (PZH) in the temporary HA instance. This is not a new source-hash or all-entities comparison. |
+| Beta2 public tag | Confirmed: 8.2.0b2 → 80bf9195ecc3d42d9e4d1beb4ce8143e2c2df2c8, published 22 October 2026 at 07:12:40 Europe/Zurich. |
 | New independent post-switch live file/ID/statistics comparison | Not collected; earlier technical runtime acceptance remains valid within its original scope. |
-| Default branch reliably hidden in version selection | Not guaranteed for 8.2.0b1; its hacs.json does not contain hide_default_branch. |
+| Default branch hidden | Beta2/stable manifests set hide_default_branch=true. Its practical UI result was not separately reported; immutable Beta1 lacks that flag and is unchanged. |
 | HACS default listing or official HA quality tier | Not applied for or confirmed. |
 
 The written operator confirmation proves reported source, downloaded version
@@ -113,10 +111,12 @@ uninstalled entry's bottom-right Download button opens the download dialog.
 Adding a custom repository is not a download. Both are distinct from the HA
 integration entry under **Devices & services**.
 
-The immutable beta tag remains unchanged. Future branch hiding must be checked
-with the corresponding released manifest. The completed first-install and
-restore rehearsals are not reopened by a documentation change. Test the new
-pollen picker on the exact next candidate without deleting production entries.
+Both immutable beta tags remain unchanged. The completed first-install, restore
+and Beta2 setup checks are not reopened by a documentation/version-only change.
+A successful complete setup demonstrates the required picker path; it does not
+independently prove every source/station change. Do not delete production entries
+for these tests. Existing-entry Configure edits interval/pollen only; a new-entry
+flow continues to the weather-station/postcode step.
 
 ## References
 

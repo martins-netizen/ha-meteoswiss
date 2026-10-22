@@ -64,7 +64,8 @@ A prerelease is a test version, not an automatically approved everyday release.
 3. Enter `https://github.com/martins-netizen/ha-meteoswiss`, choose
    **Integration** and select **Add**.
 4. Open **MeteoSwiss (maintained fork)** and **Download**. Expand
-   **Need a different version?**, select **8.2.0b1** under **Release**, and check
+   **Need a different version?**, select **8.2.0** under **Release** after its
+   stable publication, and check
    the announced version before confirming. Older HACS versions may also need
    beta visibility. If the intended version is missing, stop; do not substitute
    a commit or development branch.
@@ -75,7 +76,9 @@ downloading components. The [HACS acceptance record](HACS_ACCEPTANCE.md)
 records the completed operator-confirmed source switch, clean first installation
 and recovery rehearsal, with their evidence limits.
 
-Downloading supplies software. The next step configures its data locations.
+Until stable publication, **8.2.0b2** is the available prerelease for explicit
+testing; use its exact version instead. Downloading supplies software. The next
+step configures its data locations.
 
 ## 3. Select pollen, weather and warning locations
 
@@ -85,20 +88,19 @@ For measured Swiss weather, choose **MeteoSwiss STAC API (Swiss Stations)**.
 You do not need to work with its underlying API. Keep the initial update
 interval at **600 seconds**.
 
-**8.2.0b2 candidate:** also explicitly choose a **Station for
-measured pollen** in this first dialog. Choose the measuring station relevant
+In this first dialog also explicitly choose a **Station for measured pollen**. Choose the measuring station relevant
 to you; it is independent of the weather station and warning postcode. It does
 not change the modelled pollen forecast location. No pollen station is
 preselected for a new entry. You can change it later in **Configure**.
 
-Test 8.2.0b2 only after that prerelease is explicitly published; see its
-[focused acceptance checklist](RELEASE_8.2.0b2.md).
+This flow is present in published Beta2 and the stable candidate. The
+[acceptance record](HACS_ACCEPTANCE.md) records the completed operator check.
 
-**When testing the published 8.2.0b1 beta:** its setup does not yet ask for a
-pollen station. Choose it afterwards in **Configure**, as described below.
+**Older Beta1 entries:** setup did not ask for a pollen station. Choose it
+in **Configure**, as described below; do not recreate the entry.
 
-Choose a weather station and enter the warning location's **four-digit
-Swiss postcode**, for example **8302**.
+Continue to the **next dialog**. Choose a weather station and enter the
+warning location's **four-digit Swiss postcode**, for example **8302**.
 The integration checks the weather source before saving; a connection error
 leaves the same form available to retry.
 
@@ -107,7 +109,7 @@ leaves the same form available to retry.
 | Weather station, for example Zürich / Kloten | Measured temperature, rain, wind and other station values. |
 | Postcode | Weather/natural-hazard warning selection. |
 | Home Assistant home location | Weather forecasts, modelled pollen and air quality. |
-| Measured-pollen station | Pollen observations; choose independently during 8.2.0b2 setup, or in Configure. |
+| Measured-pollen station | Pollen observations; choose independently during setup, or in Configure. |
 
 The postcode does not automatically select the weather station. Check the HA
 home location under **Settings → System → General** and change it only if it is
@@ -123,7 +125,9 @@ four-digit postcode.
 Check the selected measured-pollen station under the existing MeteoSwiss
 entry's **Configure** options. You can change it without deleting the entry.
 It is not derived from the weather station and does not select the modelled
-pollen forecast location.
+pollen forecast location. Configure shows the update interval and pollen
+station only; saving it ends that dialog. The weather station and warning
+postcode belong to the new-entry setup, not these existing-entry options.
 
 For **8.2.0b1** or an older entry without a saved pollen choice, the fallback is
 **Luzern (PLZ)**. Select your intended station explicitly. Here PLZ is Luzern's
