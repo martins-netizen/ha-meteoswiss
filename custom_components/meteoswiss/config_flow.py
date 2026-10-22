@@ -34,8 +34,7 @@ from .const import (
     DOMAIN,
     POLLEN_STATIONS,
 )
-from .coordinator import MeteoSwissDataUpdateCoordinator
-from .openmeteo_coordinator import OpenMeteoDataUpdateCoordinator
+from .coordinator import MeteoSwissDataUpdateCoordinator, OpenMeteoDataUpdateCoordinator
 from .stations_map import WeatherStation, get_stations_map, parse_station_catalogue
 
 WARNING_POSTCODE = re.compile(r"[1-9][0-9]{3}")

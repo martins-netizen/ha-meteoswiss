@@ -31,10 +31,9 @@ from .const import (
     SENSOR_WIND_DIRECTION,
     SENSOR_WIND_SPEED,
 )
-from .coordinator import MeteoSwissDataUpdateCoordinator
-from .forecast_coordinator import MeteoSwissForecastCoordinator
-from .openmeteo_coordinator import OpenMeteoDataUpdateCoordinator
+from .coordinator import MeteoSwissDataUpdateCoordinator, OpenMeteoDataUpdateCoordinator
 from .entity import MeteoSwissCoordinatorEntity, weather_device_info
+from .forecast_coordinator import MeteoSwissForecastCoordinator
 from .runtime_data import MeteoSwissConfigEntry
 from .weather_data import (
     FORECAST_TIME_ZONE,

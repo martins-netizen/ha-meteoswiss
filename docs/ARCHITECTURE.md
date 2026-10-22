@@ -202,6 +202,16 @@ attempts); malformed payloads do not retry. HA logs unavailable/recovered
 transitions; client logging suppresses private request URLs and raw HTTP causes.
 Cancellation propagates and the borrowed HA session remains open on close.
 
+OpenMeteoCurrentClient in openmeteo.py owns the request and parsers without an
+HA coordinator or cache. The genuine OpenMeteoDataUpdateCoordinator in
+coordinator.py composes it and owns the acceptance state described above:
+cache lookup/TTL, freshness for both cached and newly fetched data, failure
+counts, circuit pause and weather-code commit. Client source exceptions carry
+no payload/coordinates in their message; the coordinator maps them to the same
+HA UpdateFailed message as before. Setup/config-flow/weather/runtime imports
+use the canonical class; the old mixed module is removed. No compatibility
+wrapper, duplicate implementation, session owner or additional poller is added.
+
 Current precipitation is the amount over the provider's backward-looking
 `current.interval` in seconds, not an hourly total or rate. The precipitation
 sensor exposes it as `measurement_interval_seconds`; an absent interval stays
@@ -412,8 +422,9 @@ renames; four-hour age, ten-minute future skew, seven species, zero/None
 semantics, units and 24-row history stay unchanged. Direct-client tests verify
 borrowed-session ownership, message-free source errors and cancellation without passing
 an HA runtime/coordinator to the client. This is not a separately packaged library.
-The [placement review](COORDINATOR_LAYOUT_REVIEW.md) now records four open source
-placements rather than five; full common-modules/Silver evidence remains open.
+The [placement review](COORDINATOR_LAYOUT_REVIEW.md) records three open source
+placements after the additional alternative-current extraction; full
+common-modules/Silver evidence remains open.
 
 ## Verification and remaining limits
 

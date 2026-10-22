@@ -446,7 +446,7 @@ async def _exercise_entry_lifecycle(hass, source, *, with_recorder, legacy_inter
             SENSOR_TEMPERATURE: 12,
             "last_update": dt_util.utcnow().isoformat(),
         },
-        "openmeteo_coordinator.OpenMeteoDataUpdateCoordinator": {
+        "coordinator.OpenMeteoDataUpdateCoordinator": {
             SENSOR_TEMPERATURE: 12,
             "last_update": dt_util.utcnow().isoformat(),
         },

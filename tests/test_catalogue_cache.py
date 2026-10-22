@@ -516,7 +516,7 @@ async def test_registered_catalogue_sensor_reports_unavailable_and_recovers(
     aioclient_mock.get(STATIONS_METADATA_URL, content=catalogue())
     with ExitStack() as stack:
         for target, data in {
-            "openmeteo_coordinator.OpenMeteoDataUpdateCoordinator": {"temperature": 12},
+            "coordinator.OpenMeteoDataUpdateCoordinator": {"temperature": 12},
             "forecast_coordinator.MeteoSwissForecastCoordinator": [],
             "coordinator.MeteoSwissAlertsCoordinator": [],
             "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
