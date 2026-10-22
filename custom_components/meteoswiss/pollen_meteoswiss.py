@@ -22,8 +22,9 @@ import aiohttp
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DEFAULT_API_TIMEOUT, DOMAIN
+from .const import DOMAIN
 from .coordinator import _parse_reference_timestamp
+from .http import MAX_CSV_BYTES, OGD_HOST, async_get_bytes
 from .retry import async_retry_with_backoff
 
 _LOGGER = logging.getLogger(__name__)
@@ -92,15 +93,17 @@ class MeteoSwissPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 "No aiohttp session provided to MeteoSwissPollenCoordinator"
             )
         url = f"{POLLEN_DATA_BASE_URL}/{self._station_id}/ogd-pollen_{self._station_id}_h_now.csv"
-        async with self._session.get(url, timeout=DEFAULT_API_TIMEOUT) as response:
-            response.raise_for_status()
-            return await response.text(encoding="cp1252")
+        return (
+            await async_get_bytes(
+                self._session, url, host=OGD_HOST, max_bytes=MAX_CSV_BYTES
+            )
+        ).decode("cp1252")
 
     async def _async_update_data(self) -> dict[str, Any]:
         """A failed/invalid feed is unavailable, and a later valid feed recovers."""
         try:
             content = await self._async_fetch_csv()
-        except (aiohttp.ClientError, TimeoutError, UnicodeError):
+        except (aiohttp.ClientError, TimeoutError, ValueError):
             raise UpdateFailed("Measured pollen source unavailable") from None
         data = self._parse_csv(content)
         if not data:

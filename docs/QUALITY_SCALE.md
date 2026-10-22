@@ -1,6 +1,21 @@
 # Quality roadmap and evidence
 
-## Latest acceptance update — 20 October 2026
+## Current follow-up — 22 October 2026
+
+Stable 8.2.0 is published, and its HACS update is operator-confirmed. The clean
+first installation/isolated restore and Beta2 setup are complete within their
+[recorded scope](HACS_ACCEPTANCE.md); no new independent runtime comparison
+is inferred from the update confirmation. The dated account below remains
+historical.
+
+Unreleased [shared HTTP hardening](HTTP_SOURCE_HARDENING.md) adds fixed
+per-source destinations and bounded wire/decompressed reads, with preserved
+archive budgets and failure semantics. The transport joins the existing strict
+100% line/branch gates. A focused next-package HA acceptance remains separate;
+this change alone does not close all Bronze/Silver rules. Inactive placeholders,
+layout/field help and the location/reconfiguration contract remain on the plan.
+
+## Historical acceptance update — 20 October 2026
 
 The live candidate is `8.2.0b1` at
 `0086b956d44b7144b242c5d5c1881d0b0650e524`. Local verification recorded 786

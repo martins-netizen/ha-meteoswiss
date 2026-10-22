@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import asyncio
+import io
+import json
 from datetime import UTC, datetime
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
@@ -46,6 +48,9 @@ class Response:
 
     def __init__(self, payload=None, status=200):
         self.payload, self.status = payload, status
+        self.headers = {}
+        self.content = AsyncMock()
+        self.content.read.side_effect = io.BytesIO(json.dumps(payload).encode()).read
 
     async def __aenter__(self):
         return self

@@ -16,7 +16,6 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from .cache import get_current_weather_cache
 from .const import (
     API_BASE,
-    DEFAULT_API_TIMEOUT,
     DOMAIN,
     MIN_UPDATE_INTERVAL,
     SENSOR_DEW_POINT,
@@ -33,6 +32,7 @@ from .const import (
     SENSOR_WIND_SPEED,
     STAC_COLLECTION,
 )
+from .http import MAX_CSV_BYTES, OGD_HOST, async_get_bytes, async_get_json
 from .retry import async_retry_with_backoff
 from .weather_data import validate_observation_time
 
@@ -119,47 +119,44 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         try:
             url = f"{API_BASE}/collections/{STAC_COLLECTION}/items/{self.station_id}"
             _LOGGER.debug("Fetching station metadata")
-            async with self._session.get(url, timeout=DEFAULT_API_TIMEOUT) as response:
-                response.raise_for_status()
+            data = await async_get_json(self._session, url, host=OGD_HOST)
 
-                data = await response.json()
+            # Find the t_now.csv asset (most recent 10-min data)
+            if not isinstance(data, dict) or not isinstance(
+                data.get("assets", {}), dict
+            ):
+                raise TypeError("Invalid station metadata")
+            assets = data.get("assets", {})
+            asset_key = f"ogd-smn_{self.station_id}_t_now.csv"
 
-                # Find the t_now.csv asset (most recent 10-min data)
-                if not isinstance(data, dict) or not isinstance(
-                    data.get("assets", {}), dict
+            if asset_key in assets:
+                asset = assets[asset_key]
+                if (
+                    not isinstance(asset, dict)
+                    or not isinstance(asset.get("href"), str)
+                    or not asset["href"].strip()
                 ):
-                    raise TypeError("Invalid station metadata")
-                assets = data.get("assets", {})
-                asset_key = f"ogd-smn_{self.station_id}_t_now.csv"
+                    raise ValueError("Invalid station asset")
+                csv_url = asset["href"]
+                _LOGGER.debug("Selected station measurement asset")
+                return csv_url
 
-                if asset_key in assets:
-                    asset = assets[asset_key]
-                    if (
-                        not isinstance(asset, dict)
-                        or not isinstance(asset.get("href"), str)
-                        or not asset["href"].strip()
-                    ):
-                        raise ValueError("Invalid station asset")
-                    csv_url = asset["href"]
-                    _LOGGER.debug("Selected station measurement asset")
-                    return csv_url
+            # Fallback to t_recent.csv if t_now.csv not available
+            asset_key = f"ogd-smn_{self.station_id}_t_recent.csv"
+            if asset_key in assets:
+                asset = assets[asset_key]
+                if (
+                    not isinstance(asset, dict)
+                    or not isinstance(asset.get("href"), str)
+                    or not asset["href"].strip()
+                ):
+                    raise ValueError("Invalid station asset")
+                csv_url = asset["href"]
+                _LOGGER.debug("Selected station measurement asset")
+                return csv_url
 
-                # Fallback to t_recent.csv if t_now.csv not available
-                asset_key = f"ogd-smn_{self.station_id}_t_recent.csv"
-                if asset_key in assets:
-                    asset = assets[asset_key]
-                    if (
-                        not isinstance(asset, dict)
-                        or not isinstance(asset.get("href"), str)
-                        or not asset["href"].strip()
-                    ):
-                        raise ValueError("Invalid station asset")
-                    csv_url = asset["href"]
-                    _LOGGER.debug("Selected station measurement asset")
-                    return csv_url
-
-                _LOGGER.debug("Station metadata has no current or recent asset")
-                return None
+            _LOGGER.debug("Station metadata has no current or recent asset")
+            return None
 
         except (aiohttp.ClientError, TimeoutError):
             raise
@@ -177,12 +174,11 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         try:
             _LOGGER.debug("Fetching station measurements")
-            async with self._session.get(
-                csv_url, timeout=DEFAULT_API_TIMEOUT
-            ) as response:
-                response.raise_for_status()
-
-                content = await response.text(encoding="cp1252")
+            content = (
+                await async_get_bytes(
+                    self._session, csv_url, host=OGD_HOST, max_bytes=MAX_CSV_BYTES
+                )
+            ).decode("cp1252")
 
             _LOGGER.debug("CSV content length: %d chars", len(content))
 

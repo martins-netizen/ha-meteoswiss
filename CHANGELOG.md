@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- Bound every active HTTP source by its own HTTPS destination, refuse redirects,
+  and enforce streaming wire/decompressed limits. Preserve official decade
+  precipitation archives with a separate budget and retain source/identity/
+  availability contracts. See [source hardening](docs/HTTP_SOURCE_HARDENING.md).
+
 ## [8.2.0] — first stable maintained-fork release
 
 Published on **22 October 2026 at 08:52:40 Europe/Zurich**, immutable tag at

@@ -12,7 +12,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .cache import get_forecast_cache
-from .const import DEFAULT_API_TIMEOUT
+from .http import FORECAST_HOST, async_get_json
 from .retry import async_retry_with_backoff
 from .weather_data import (
     FORECAST_TIME_ZONE,
@@ -122,9 +122,7 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
     @async_retry_with_backoff(max_attempts=3)
     async def _async_fetch_payload(self, url: str) -> Any:
         """Retry transient HTTP failures without logging the location URL."""
-        async with self._session.get(url, timeout=DEFAULT_API_TIMEOUT) as response:
-            response.raise_for_status()
-            return await response.json()
+        return await async_get_json(self._session, url, host=FORECAST_HOST)
 
     def _parse_response(self, data: Any) -> list[dict[str, Any]]:
         """Normalize a usable rolling forecast without manufacturing values."""

@@ -160,7 +160,19 @@ class _FakeResponse:
     async def __aexit__(self, exc_type, exc, tb):
         return False
 
-    async def json(self):
+    headers = {}
+
+    @property
+    def content(self):
+        import io
+        import json
+        from unittest.mock import AsyncMock
+
+        stream = AsyncMock()
+        stream.read.side_effect = io.BytesIO(json.dumps(self.payload()).encode()).read
+        return stream
+
+    def payload(self):
         return {
             "hourly": {
                 "time": ["2026-08-20T12:00"],
@@ -182,7 +194,7 @@ class _FakeSession:
     def __init__(self) -> None:
         self.requested_url: str | None = None
 
-    def get(self, url, timeout=None):
+    def get(self, url, **kwargs):
         self.requested_url = url
         return _FakeResponse()
 

@@ -12,7 +12,8 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .cache import get_current_weather_cache
-from .const import DEFAULT_API_TIMEOUT, DOMAIN, MIN_UPDATE_INTERVAL
+from .const import DOMAIN, MIN_UPDATE_INTERVAL
+from .http import AIR_QUALITY_HOST, FORECAST_HOST, async_get_json
 from .retry import async_retry_with_backoff
 from .weather_data import forecast_datetime
 
@@ -131,11 +132,9 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             "timezone": "Europe/Zurich",
             "timeformat": "unixtime",
         }
-        async with self._session.get(
-            OPENMETEO_AQ_BASE_URL, params=params, timeout=DEFAULT_API_TIMEOUT
-        ) as response:
-            response.raise_for_status()
-            payload = await response.json()
+        payload = await async_get_json(
+            self._session, OPENMETEO_AQ_BASE_URL, params=params, host=AIR_QUALITY_HOST
+        )
         result = self._parse_response(payload)
         if not result:
             raise ValueError("No valid current pollen or air quality values")
@@ -151,11 +150,9 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             "timezone": "Europe/Zurich",
         }
         try:
-            async with self._session.get(
-                OPENMETEO_FORECAST_URL, params=params, timeout=DEFAULT_API_TIMEOUT
-            ) as response:
-                response.raise_for_status()
-                payload = await response.json()
+            payload = await async_get_json(
+                self._session, OPENMETEO_FORECAST_URL, params=params, host=FORECAST_HOST
+            )
         except (aiohttp.ClientError, TimeoutError, ValueError):
             # The source state is published atomically with the AQ result.
             # Do not expose coordinate-bearing URLs or raw exception chains.

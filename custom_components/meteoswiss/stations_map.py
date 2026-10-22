@@ -15,13 +15,13 @@ import aiohttp
 
 from .cache import get_stations_cache
 from .const import DEFAULT_API_TIMEOUT, STATIONS_METADATA_URL
+from .http import MAX_CATALOGUE_BYTES, OGD_HOST, async_get_bytes
 from .retry import async_retry_with_backoff
 from .weather_data import weather_number
 
 _LOGGER = logging.getLogger(__name__)
 CATALOGUE_TTL = 86400.0
 CATALOGUE_RETRY_DELAY = 300.0
-MAX_CATALOGUE_BYTES = 2 * 1024 * 1024
 
 
 @dataclass(frozen=True)
@@ -167,11 +167,9 @@ class MeteoSwissStationsMap:
 
     @async_retry_with_backoff(max_attempts=3, base_delay=1.0, max_delay=10.0)
     async def _async_download(self, session: aiohttp.ClientSession) -> bytes:
-        async with session.get(
-            STATIONS_METADATA_URL, timeout=DEFAULT_API_TIMEOUT
-        ) as response:
-            response.raise_for_status()
-            return await response.read()
+        return await async_get_bytes(
+            session, STATIONS_METADATA_URL, host=OGD_HOST, max_bytes=MAX_CATALOGUE_BYTES
+        )
 
     async def _async_content(self, session: aiohttp.ClientSession | None) -> bytes:
         async with asyncio.timeout(DEFAULT_API_TIMEOUT.total):
