@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+- Schedule new observation entries automatically at 600 seconds and remove the
+  polling field from setup/Configure in all four languages. Migrate existing
+  intervals from entry data into options without changing the effective value;
+  existing options take precedence. Preserve hidden legacy/other options when
+  changing the measured-pollen station, together with entry/entity identities.
+  Config schema 1.2 remains readable by stable 8.2.0; no release is implied.
+
 - Share entity naming/attribution and repeated weather/AQ device metadata while
   retaining all nine family identity, grouping and lifecycle contracts. Report
   the declared integration version separately from the config-entry format in

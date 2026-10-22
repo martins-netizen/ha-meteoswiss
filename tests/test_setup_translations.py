@@ -11,8 +11,9 @@ async def test_ha_serves_field_help_for_every_setup_step(
     hass, enable_custom_integrations, language
 ):
     translated = await async_get_translations(hass, language, "config", {DOMAIN})
+    assert not any("update_interval" in key for key in translated)
     for step, fields in {
-        "user": ("data_source", "pollen_station", "update_interval"),
+        "user": ("data_source", "pollen_station"),
         "meteoswiss": ("postal_code", "station_id"),
         "openmeteo": ("postal_code", "latitude", "longitude"),
     }.items():
@@ -26,11 +27,12 @@ async def test_ha_serves_only_real_options_with_help(
     hass, enable_custom_integrations, language
 ):
     translated = await async_get_translations(hass, language, "options", {DOMAIN})
-    for field in ("update_interval", "pollen_station"):
+    for field in ("pollen_station",):
         assert translated.get(
             f"component.{DOMAIN}.options.step.init.data_description.{field}"
         )
     assert f"component.{DOMAIN}.options.step.init.data.data_source" not in translated
+    assert not any("update_interval" in key for key in translated)
 
 
 @pytest.mark.parametrize("language", ["en", "de", "fr", "it"])

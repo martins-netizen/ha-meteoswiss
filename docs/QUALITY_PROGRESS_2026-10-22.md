@@ -1,6 +1,6 @@
 # Bronze/Silver follow-up — 22 October 2026
 
-**Record version:** 1.2. **Scope:** unreleased development after stable 8.2.0.
+**Record version:** 1.3. **Scope:** unreleased development after stable 8.2.0.
 The [dated original audit](QUALITY_AUDIT_2026-10-17.md) remains historical.
 This document records individual improvements, not an official HA quality tier.
 
@@ -87,16 +87,58 @@ reject a synthetic 95%/94.9% module despite a high aggregate. No module
 or error-branch exclusions are added. This evidences the coverage rule, not the
 complete Bronze/Silver assessment.
 
+## Migrate installed polling choices and simplify Configure
+
+New entries use **600 seconds** for observation polling without asking the user
+for an interval. Remove that field, its help and its label from setup/Configure
+in all four catalogues; keep canonical English synchronized (**101 keys each**).
+Configure now explains its one purpose: selecting the measured-pollen station.
+Source/location selections, source validation, independent refresh schedules,
+minimum-interval guards and warning behaviour stay unchanged.
+
+Schema **1.2** moves a legacy `update_interval` from data into options, keeping an
+existing options value in preference to data. Missing intervals remain absent
+and use the 600-second default. Copy both dictionaries through HA's update API;
+retain unknown keys, pollen choice and all non-polling data. Reject unsupported
+major schemas without writes; leave current/future minor schemas unchanged.
+The migration is idempotent and needs no network or registry/statistics writes.
+Stable **8.2.0** already reads the options value first, so migrated entries remain
+readable when returning to it. Its older Configure UI can still change that
+option; upgrading again retains the option value. No downgrade walkthrough on
+live HA is claimed.
+
+The new options flow merges its supported pollen field into existing options.
+It cannot discard the hidden legacy interval or other stored options when the
+user changes stations. Existing-entry polling is a deliberate compatibility
+bridge, not a new polling field or an unqualified exemption from the current
+[appropriate-polling rule](https://contributors.home-assistant.io/core/quality-scale/appropriate-polling/).
+Future standardization of installed custom intervals needs a separate migration
+and review; the default and source-specific schedules remain documented.
+
+Fourteen new regressions fail against the preceding tree and pass after the
+change. They cover both providers, absent/data/options/conflicting intervals,
+unchanged registry/entry identity, repeated migration, unsupported/future
+schemas and hidden-field rejection. The actual HA setup/options/reload/unload
+paths additionally verify migrated 1200-second and new 600-second operation,
+pollen changes, retained extra options, registry IDs and Recorder listeners.
+Local HA **2026.8.3/2026.10.2** suites pass **956 tests and 14 subtests**,
+**99.96787664632187%** combined coverage and **676/676 branches**. Migration and
+config flow retain **100% lines/branches**; every module remains above 95% and
+all stricter gates pass. CI still uses HA **2026.8.3/2026.10.1**. These tests
+mock source transport and do not establish a new live installation/acceptance.
+Published-release setup instructions remain explicitly scoped to 8.2.0 alongside
+a clear unreleased-flow note, avoiding an instruction to find a removed field.
+
 ## Remaining prerequisites and boundaries
 
 - The version-module coverage gap is closed through its diagnostic consumer.
   Keep manifest/module consistency and all-module coverage checks; a percentage
   does not establish a complete integration-quality tier.
-- Field help and translated source selection are now implemented. The full
-  config-flow rule remains open for polling-field migration, data/options
-  placement and final selector/UX review; these text changes do not close it.
-- Polling-interval removal needs a deliberate legacy-value migration decision;
-  never silently replace an existing 900/1200-second choice with 600 seconds.
+- Field help, translated source selection and the bounded polling/options
+  migration are implemented. Final selector/UX and remaining provider/module
+  contracts still need their own rule-specific review.
+- Legacy intervals are retained through the explicit compatibility bridge; no
+  existing 900/1200-second choice is silently replaced with 600 seconds.
 - Shared entity metadata is now implemented and reviewed within this scope.
   Remaining source-specific coordinator placement, Core-brand evidence and the
   complete catalogue diagnostic availability contract remain separate findings.

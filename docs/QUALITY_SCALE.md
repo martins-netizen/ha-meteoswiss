@@ -15,9 +15,10 @@ archive budgets and failure semantics. The transport joins the existing strict
 this change alone does not close all Bronze/Silver rules. Placeholder cleanup,
 translated field help and shared entity metadata are now documented separately.
 The version metadata's real diagnostic consumer closes its coverage gap; every
-module exceeds 95%, enforced alongside existing stricter gates. Polling/data-
-options design, remaining coordinator placement and the location/reconfiguration
-contract remain on the plan.
+module exceeds 95%, enforced alongside existing stricter gates. Polling/UI
+defaults and the legacy options bridge are now implemented with real
+reload/registry tests. Remaining coordinator placement and the
+location/reconfiguration contract remain on the plan.
 
 ## Historical acceptance update — 20 October 2026
 
@@ -70,11 +71,11 @@ requests and the remaining warning/height requirements.
 | Rule | Evidence / applicability |
 |---|---|
 | `action-setup` | Exempt: no integration-specific actions are registered. |
-| `appropriate-polling` | Partial: coordinator intervals are bounded, but `config_flow.py` still exposes the polling interval. Current HA rules require a developer-chosen interval rather than a flow field; legacy values need a deliberate compatibility decision. |
+| `appropriate-polling` | Unreleased setup/Configure no longer exposes polling; new observations use a developer-selected 600 seconds. Schema 1.2 preserves installed intervals as a documented compatibility bridge, with options precedence and existing coordinator minimum guards. Source-specific schedules remain unchanged. This bridge is not a blanket exemption or complete Bronze claim; provider-wide interval review and eventual legacy policy remain explicit. |
 | `brands` | Local `custom_components/meteoswiss/brand/icon.png` (256 px) and `icon@2x.png` (512 px), with reproducible original artwork. Domain retained; no HA/provider logo or official-product claim. See [publication requirements](PUBLISHING.md). Partial for the separate Core rule: the expected `home-assistant/brands/core_integrations/meteoswiss` path returned 404 on 17 October 2026. |
 | `common-modules` | Unreleased entity.py centralizes entity/coordinator metadata and the genuinely duplicated weather/AQ device definitions across all nine families. Primary observations retain coordinator.py; typed runtime/source boundaries remain intact. Fixed identity/metadata contracts pass before and after the refactor; remaining source-specific coordinator placement still needs its own review. |
 | `config-flow-test-coverage` | 100% lines and branches in `config_flow.py`, including options, errors/recovery and legacy/current duplicates; CI enforces it. |
-| `config-flow` | Native user/options flow; no YAML setup. Unreleased development adds DE/EN/FR/IT help for all ten actual field occurrences, a native translated source selector and canonical English strings.json. HA translation-loader regressions and full flow coverage pass. Polling-field migration, data/options placement and the final selector/UX review remain open; see the dated follow-up. |
+| `config-flow` | Native user/options flow; no YAML setup. Unreleased development adds DE/EN/FR/IT help for all remaining actual field occurrences, a native translated source selector and canonical English strings.json. HA translation-loader regressions and full flow coverage pass. Schema 1.2 moves only legacy polling data to options without value/identity changes; Configure merges its pollen choice into existing options. Real reload/registry/Recorder regressions cover this. Final selector/UX and remaining prerequisites stay separate; see the dated follow-up. |
 | `dependency-transparency` | Exempt for the current integration: `manifest.json` has no extra Python `requirements`. Public provider/location dependencies are separately documented; that is not the criterion of this rule. |
 | `docs-actions`, `docs-triggers`, `docs-conditions` | Exempt: no integration-specific actions, triggers or conditions. Usage still explains standard HA entity automations and forecast functions. |
 | `docs-high-level-description` | README lists data families, scope and fork provenance. |
@@ -104,7 +105,7 @@ snapshot as having acquired these changes.
 | `log-when-unavailable` | Pollen/AQ, measured pollen and the ICON forecast client use coordinator transition logs. Forecast failures suppress raw coordinate URLs/HTTP exception chains even in debug logs; repeated failure and recovery are tested. The alternative Open-Meteo current client also suppresses coordinate URLs/raw error chains and tests repeated failure and recovery. The station observation client now uses the same once-per-transition logging; selected station IDs, CSV values, asset URLs and expected HTTP error chains stay absent even in debug logs. The separate UV request now has a cached source flag and once-per-outage/recovery logs. Registered tests cover transport, timeout, invalid JSON/shape, cache reuse and private error chains. No complete Silver claim follows from this individual fix. |
 | `parallel-updates` | Explicit platform limits: sensor 1 for diagnostic polling, coordinator-driven weather/binary sensor 0; no device actions. |
 | `reauthentication-flow` | Exempt: the public APIs require no credentials. |
-| `test-coverage` | Evidenced for unreleased development: every module exceeds 95%; entity.py/version.py have real consumers and full coverage, const.py is 98.51%, all others 100%. CI enforces the per-module floor plus stricter existing gates; a synthetic low module cannot hide behind the aggregate. Local supported-HA runs pass 940 tests/14 subtests, 99.9677% combined. This single rule does not establish full Silver. |
+| `test-coverage` | Evidenced for unreleased development: every module exceeds 95%; entity.py/version.py have real consumers and full coverage, const.py is 98.51%, all others 100%. CI enforces the per-module floor plus stricter existing gates; a synthetic low module cannot hide behind the aggregate. Local supported-HA runs pass 956 tests/14 subtests, 99.9679% combined. This single rule does not establish full Silver. |
 
 The starting snapshot had 68 passing tests and 54.78% combined line/branch
 coverage (58.50% lines, 40.42% branches). Config flow was 33.79% combined.

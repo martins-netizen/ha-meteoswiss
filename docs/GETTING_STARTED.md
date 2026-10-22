@@ -86,6 +86,12 @@ Stable **8.2.0** is published. Downloading supplies software; the next step
 configures its data locations. If it is missing in HACS, refresh the repository
 information and check that the source is this maintained fork.
 
+The steps below describe published **8.2.0**. In unreleased development, the
+interval field is removed from setup/Configure: new entries update automatically
+at 600 seconds, and existing individual intervals remain unchanged. Configure
+then edits only the measured-pollen station. Do not download development merely
+to obtain that dialog change.
+
 ## 3. Select pollen, weather and warning locations
 
 Open **Settings → Devices & services → Add integration → MeteoSwiss**.
