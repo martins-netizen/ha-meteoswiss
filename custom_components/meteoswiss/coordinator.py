@@ -35,7 +35,13 @@ from .const import (
     STAC_COLLECTION,
 )
 from .http import MAX_CSV_BYTES, OGD_HOST, async_get_bytes, async_get_json
+from .pollen_meteoswiss import (
+    InvalidMeasuredPollenData,
+    MeasuredPollenUnavailable,
+    MeteoSwissPollenClient,
+)
 from .retry import async_retry_with_backoff
+from .weather_data import parse_reference_timestamp as _parse_reference_timestamp
 from .weather_data import validate_observation_time
 
 _LOGGER = logging.getLogger(__name__)
@@ -55,27 +61,6 @@ PARAM_GLOBAL_RAD = "gre000z0"  # Globalstrahlung; Zehnminutenmittel (W/m²)
 PARAM_SNOW_DEPTH = "htoauts0"  # Gesamtschneehöhe; Momentanwert (cm)
 PARAM_DEW_POINT = "tde200s0"  # Taupunkt 2m über Boden; Momentanwert (°C)
 PARAM_FOEHN_INDEX = "wcc006s0"  # Föhnindex; Momentanwert (Code)
-
-
-def _parse_reference_timestamp(value: str | None) -> datetime | None:
-    """Parse a MeteoSwiss reference timestamp as UTC."""
-    timestamp = (value or "").strip()
-    if not timestamp:
-        return None
-
-    try:
-        return datetime.strptime(timestamp, "%d.%m.%Y %H:%M").replace(tzinfo=UTC)
-    except ValueError:
-        pass
-
-    try:
-        parsed = datetime.fromisoformat(timestamp)
-    except ValueError:
-        return None
-
-    if parsed.tzinfo is None:
-        return parsed.replace(tzinfo=UTC)
-    return parsed.astimezone(UTC)
 
 
 class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -603,3 +588,31 @@ class MeteoSwissAlertsCoordinator(DataUpdateCoordinator[list[WeatherAlert]]):
     async def async_close(self) -> None:
         """Close alerts API session."""
         await self._alerts_api.close()
+
+
+class MeteoSwissPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
+    """Schedule measured pollen and translate source failures for HA."""
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        station_id: str = "PBE",
+        update_interval: int = 3600,
+        session: aiohttp.ClientSession | None = None,
+    ) -> None:
+        self.client = MeteoSwissPollenClient(station_id, session=session)
+        super().__init__(
+            hass,
+            _LOGGER,
+            name=f"{DOMAIN}_pollen_meteoswiss",
+            update_interval=timedelta(seconds=update_interval),
+        )
+
+    async def _async_update_data(self) -> dict[str, Any]:
+        """Preserve HA source failure versus missing-value semantics."""
+        try:
+            return await self.client.async_get_data()
+        except MeasuredPollenUnavailable:
+            raise UpdateFailed("Measured pollen source unavailable") from None
+        except InvalidMeasuredPollenData:
+            raise UpdateFailed("No valid measured pollen values") from None

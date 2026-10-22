@@ -1,6 +1,6 @@
 # Bronze/Silver follow-up — 22 October 2026
 
-**Record version:** 1.4. **Scope:** unreleased development after stable 8.2.0.
+**Record version:** 1.5. **Scope:** unreleased development after stable 8.2.0.
 The [dated original audit](QUALITY_AUDIT_2026-10-17.md) remains historical.
 This document records individual improvements, not an official HA quality tier.
 
@@ -176,6 +176,51 @@ workflow, release or live installation. The five remaining source-specific
 coordinator definitions still fail the literal module-placement rule; document
 the source-client extraction prerequisite rather than claiming full compliance.
 
+## Separate the measured-pollen source client from HA scheduling
+
+The genuine MeteoSwissPollenCoordinator definition now lives in coordinator.py.
+It composes MeteoSwissPollenClient from pollen_meteoswiss.py rather than inheriting
+an implementation hidden in the source module. The client owns the same bounded
+OGD CSV fetch, cp1252 decoding, transient retries, station/time validation, seven
+species and existing payload/history format. The HA class owns its hourly
+schedule and maps two payload-free source exceptions to the existing UpdateFailed
+messages. No HA exception, coordinator or runtime type is imported by the client.
+Cancellation and a missing-session setup error still propagate. Logger namespace
+follows coordinator.py; once-per-outage/recovery and privacy tests remain active.
+
+The source client borrows its session; it creates/closes no session and adds no
+poller, task, cache, dependency or network destination. Actual station/option
+choices, source schedules, four-hour age, ten-minute future skew, zero/missing
+values, units and 24-row history remain unchanged. Setup and runtime typing use
+the canonical class; HA fixtures now target that class and source parser tests
+address client.parse_csv. Persisted configuration and entity/device/statistic
+identities require no migration.
+
+The provider reference-time parser moves once into weather_data.py as
+parse_reference_timestamp. Observations use its previous private import alias;
+measured pollen and hourly/archive precipitation use the canonical function.
+The parser body, count conversion and CSV parser body are AST-equivalent to the
+previous tree after documented identifier renames, preventing an import cycle
+without introducing a competing UTC interpretation. Actual observation,
+precipitation and pollen tests continue to exercise those consumers.
+
+Four new direct-client tests pass no HA runtime/coordinator to the client: a
+borrowed mocked aiohttp session supplies an oak-only zero/partial response, a transport
+failure, invalid data and cancellation. Source exception messages contain no payload/text;
+the client keeps the session open and the owner closes it. Existing HA source,
+error/recovery/privacy, setup/options/reload/unload, Recorder and registry tests
+remain green. These are internal source boundaries, not a separately published
+library or an assertion that this integration imports without HA installed.
+
+Local HA **2026.8.3/2026.10.2** runs pass **967 tests and 14 subtests**,
+**99.968%** combined coverage and **676/676 branches**. Both strict coverage
+checks pass: all modules exceed 95%, with the same source/flow 100% contracts.
+Only the existing const.py line remains uncovered. DE/EN/FR/IT retain **101 keys**
+and manifest/module version stays 8.2.0. CI remains **2026.8.3/2026.10.1**.
+No release/tag or live HA change. The [placement review](COORDINATOR_LAYOUT_REVIEW.md)
+now records **four** remaining source-module definitions; this closes the
+measured-pollen finding without claiming complete common-modules or Silver.
+
 ## Remaining prerequisites and boundaries
 
 - The version-module coverage gap is closed through its diagnostic consumer.
@@ -188,8 +233,9 @@ the source-client extraction prerequisite rather than claiming full compliance.
   existing 900/1200-second choice is silently replaced with 600 seconds.
 - Shared entity metadata is now implemented and reviewed within this scope.
   Warning coordinator platform coupling and the catalogue diagnostic gap are
-  corrected. Five source-module coordinator definitions and Core-brand evidence
-  remain open; the placement review records a concrete extraction path.
+  corrected. Measured pollen now also has a source-client/canonical-coordinator
+  boundary and the shared UTC parser prerequisite is complete. Four source-module
+  coordinator definitions and Core-brand evidence remain open.
 - The official [coverage rule](https://developers.home-assistant.io/docs/core/integration-quality-scale/rules/test-coverage/)
   applies per module, not only to the aggregate. The
   [UI setup rule](https://contributors.home-assistant.io/core/quality-scale/config-flow/)

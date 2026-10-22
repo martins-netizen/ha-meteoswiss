@@ -1,7 +1,7 @@
-"""Pollen data coordinator using MeteoSwiss measured pollen data (ogd-pollen).
+"""Measured pollen client using MeteoSwiss measured pollen data (ogd-pollen).
 
-Fetches measured pollen concentrations from MeteoSwiss pollen stations
-via the data.geo.admin.ch STAC API (ch.meteoschweiz.ogd-pollen).
+Fetches measured pollen concentrations from the stations' hourly CSV assets
+in the public MeteoSwiss ogd-pollen collection on data.geo.admin.ch.
 
 The current hourly CSV schema supplies birch, alder, hazel, beech, ash, grasses
 and oak. Modelled mugwort/ragweed entities belong to the separate Open-Meteo
@@ -14,20 +14,14 @@ from __future__ import annotations
 
 import csv
 import io
-import logging
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import aiohttp
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import DOMAIN
-from .coordinator import _parse_reference_timestamp
 from .http import MAX_CSV_BYTES, OGD_HOST, async_get_bytes
 from .retry import async_retry_with_backoff
-
-_LOGGER = logging.getLogger(__name__)
+from .weather_data import parse_reference_timestamp
 
 # STAC API for pollen collection
 POLLEN_STAC_COLLECTION_URL = (
@@ -64,53 +58,49 @@ def _count(raw: str | None) -> int | None:
     return value if value >= 0 else None
 
 
-class MeteoSwissPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
-    """Class to manage fetching measured pollen data from MeteoSwiss."""
+class MeasuredPollenUnavailable(Exception):
+    """The measured-pollen transport could not supply a valid response."""
+
+
+class InvalidMeasuredPollenData(Exception):
+    """The response has no usable measurement for the requested station/time."""
+
+
+class MeteoSwissPollenClient:
+    """Fetch and validate measured pollen without an HA coordinator/runtime."""
 
     def __init__(
         self,
-        hass: HomeAssistant,
         station_id: str = "PBE",
-        update_interval: int = 3600,  # 1 hour default
         session: aiohttp.ClientSession | None = None,
     ) -> None:
-        """Initialize."""
-        self._station_id = station_id.lower()
+        self.station_id = station_id.lower()
         self._session = session
 
-        super().__init__(
-            hass,
-            _LOGGER,
-            name=f"{DOMAIN}_pollen_meteoswiss",
-            update_interval=timedelta(seconds=update_interval),
-        )
+    async def async_get_data(self) -> dict[str, Any]:
+        """Return validated values or a payload-free source exception."""
+        try:
+            content = await self._async_fetch_csv()
+        except (aiohttp.ClientError, TimeoutError, ValueError):
+            raise MeasuredPollenUnavailable from None
+        data = self.parse_csv(content)
+        if not data:
+            raise InvalidMeasuredPollenData
+        return data
 
     @async_retry_with_backoff(max_attempts=3)
     async def _async_fetch_csv(self) -> str:
         """Retry only transient transport failures, before parsing the payload."""
         if self._session is None:
-            raise RuntimeError(
-                "No aiohttp session provided to MeteoSwissPollenCoordinator"
-            )
-        url = f"{POLLEN_DATA_BASE_URL}/{self._station_id}/ogd-pollen_{self._station_id}_h_now.csv"
+            raise RuntimeError("No aiohttp session provided to MeteoSwissPollenClient")
+        url = f"{POLLEN_DATA_BASE_URL}/{self.station_id}/ogd-pollen_{self.station_id}_h_now.csv"
         return (
             await async_get_bytes(
                 self._session, url, host=OGD_HOST, max_bytes=MAX_CSV_BYTES
             )
         ).decode("cp1252")
 
-    async def _async_update_data(self) -> dict[str, Any]:
-        """A failed/invalid feed is unavailable, and a later valid feed recovers."""
-        try:
-            content = await self._async_fetch_csv()
-        except (aiohttp.ClientError, TimeoutError, ValueError):
-            raise UpdateFailed("Measured pollen source unavailable") from None
-        data = self._parse_csv(content)
-        if not data:
-            raise UpdateFailed("No valid measured pollen values")
-        return data
-
-    def _parse_csv(self, csv_text: str) -> dict[str, Any]:
+    def parse_csv(self, csv_text: str) -> dict[str, Any]:
         """Validate station/time and retain the existing output/history format."""
         rows = list(csv.DictReader(io.StringIO(csv_text), delimiter=";"))
         if not rows:
@@ -118,14 +108,14 @@ class MeteoSwissPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         latest = rows[-1]
         timestamp = (latest.get("reference_timestamp") or "").strip()
         station = (latest.get("station_abbr") or "").strip().lower()
-        measurement_time = _parse_reference_timestamp(timestamp)
-        if station != self._station_id or measurement_time is None:
+        measurement_time = parse_reference_timestamp(timestamp)
+        if station != self.station_id or measurement_time is None:
             return {}
         age = datetime.now(UTC) - measurement_time
         if age > MAX_MEASUREMENT_AGE or age < -MAX_MEASUREMENT_FUTURE_SKEW:
             return {}
         result: dict[str, Any] = {
-            "station_id": self._station_id.upper(),
+            "station_id": self.station_id.upper(),
             "last_update": timestamp,
             "source": "MeteoSwiss ogd-pollen",
         }

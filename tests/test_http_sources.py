@@ -15,7 +15,7 @@ from homeassistant.helpers.update_coordinator import UpdateFailed
 from custom_components.meteoswiss import http
 from custom_components.meteoswiss.alerts import MeteoSwissAlertsAPI
 from custom_components.meteoswiss.coordinator import MeteoSwissDataUpdateCoordinator
-from custom_components.meteoswiss.pollen_meteoswiss import MeteoSwissPollenCoordinator
+from custom_components.meteoswiss.coordinator import MeteoSwissPollenCoordinator
 from custom_components.meteoswiss.precipitation import (
     MeteoSwissHourlyPrecipitationCoordinator,
 )

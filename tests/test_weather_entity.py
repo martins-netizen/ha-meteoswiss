@@ -103,7 +103,7 @@ async def installed_weather(hass, enable_custom_integrations):
             "forecast_coordinator.MeteoSwissForecastCoordinator": [row()],
             "coordinator.MeteoSwissAlertsCoordinator": [],
             "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
-            "pollen_meteoswiss.MeteoSwissPollenCoordinator": {},
+            "coordinator.MeteoSwissPollenCoordinator": {},
         }.items():
             stack.enter_context(
                 patch(

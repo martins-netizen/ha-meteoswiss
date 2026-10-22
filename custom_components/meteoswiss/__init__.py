@@ -24,11 +24,14 @@ from .const import (
     DEFAULT_UPDATE_INTERVAL_SEC,
     DOMAIN,
 )
-from .coordinator import MeteoSwissAlertsCoordinator, MeteoSwissDataUpdateCoordinator
+from .coordinator import (
+    MeteoSwissAlertsCoordinator,
+    MeteoSwissDataUpdateCoordinator,
+    MeteoSwissPollenCoordinator,
+)
 from .forecast_coordinator import MeteoSwissForecastCoordinator
 from .localization import async_load_warning_labels
 from .openmeteo_coordinator import OpenMeteoDataUpdateCoordinator
-from .pollen_meteoswiss import MeteoSwissPollenCoordinator
 from .precipitation import (
     ARCHIVE_LOOKBACK_MONTHS,
     ARCHIVE_UPDATE_INTERVAL,

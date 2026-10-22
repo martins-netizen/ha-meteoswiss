@@ -386,6 +386,35 @@ The [placement review](COORDINATOR_LAYOUT_REVIEW.md) inventories all seven actua
 coordinators and the five remaining source-module placement findings. No
 blanket common-modules/Silver completion follows from this move.
 
+## Measured pollen client boundary (unreleased)
+
+pollen_meteoswiss.py now contains MeteoSwissPollenClient, its pure CSV parser and
+two payload-free source exceptions, with no HA coordinator/runtime dependency.
+The client borrows its caller's session and keeps the same fixed OGD host,
+bounded CSV read, cp1252 decoding, transient retry budget and station path.
+It returns the existing current/history/source/time payload or signals a
+transport/invalid-data failure. It creates no session, background task, new cache
+or polling schedule. Cancellation and a missing-session setup error propagate.
+
+MeteoSwissPollenCoordinator lives in coordinator.py and composes the client.
+It keeps the old constructor inputs, hourly default and name, translating the
+two source exceptions into the same HA UpdateFailed messages without exposing
+raw error chains. The logger namespace now follows the coordinator module.
+Entity, device and statistics identity are independent of this internal class
+location; persisted configuration needs no migration. Source-facing fixtures
+now address client.parse_csv; HA lifecycle fixtures use the canonical class.
+
+parse_reference_timestamp in weather_data.py supplies the one shared provider
+UTC parser for observations, measured pollen and hourly/archive statistics.
+The previous observation-module private name remains an import alias only.
+The parser bodies and count conversion are AST-equivalent after identifier
+renames; four-hour age, ten-minute future skew, seven species, zero/None
+semantics, units and 24-row history stay unchanged. Direct-client tests verify
+borrowed-session ownership, message-free source errors and cancellation without passing
+an HA runtime/coordinator to the client. This is not a separately packaged library.
+The [placement review](COORDINATOR_LAYOUT_REVIEW.md) now records four open source
+placements rather than five; full common-modules/Silver evidence remains open.
+
 ## Verification and remaining limits
 
 Tests cover warning failure/recovery, invalid payloads, bounded retries,

@@ -520,7 +520,7 @@ async def test_registered_catalogue_sensor_reports_unavailable_and_recovers(
             "forecast_coordinator.MeteoSwissForecastCoordinator": [],
             "coordinator.MeteoSwissAlertsCoordinator": [],
             "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
-            "pollen_meteoswiss.MeteoSwissPollenCoordinator": {},
+            "coordinator.MeteoSwissPollenCoordinator": {},
         }.items():
             stack.enter_context(
                 patch(
