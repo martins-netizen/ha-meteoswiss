@@ -112,9 +112,11 @@ warning-entity, numeric-sensor, pollen-sensor, config-entry setup, retry and sta
 coordinator line/branch coverage. The combined integration floor is 99.0%
 (raised from 98.5%, previously 98%, 95%, 89%, 86%, 80%, 71%, 67% and initially 60%). This
 floor prevents regressions at this stage; it is not a substitute for Silver.
-Unused camera/SLF/hydrology placeholders remain visible in the denominator.
-They must be explicitly removed in a reviewed scope or covered; no exclusions
-are introduced just to improve the metric. Current exact results are in the
+Unreleased development explicitly removes unused camera/SLF/hydrology
+placeholders after a reference/platform review; it does not exclude their
+uncovered lines from an otherwise retained feature. The version module remains
+subject to the per-module gap. No coverage exclusion or lowered gate is added.
+See [current follow-up evidence](QUALITY_PROGRESS_2026-10-22.md). Current exact results are in the
 PR and each CI job's summary.
 
 Station CSV parsing, zero/non-finite values, sparse fallback, source failures and

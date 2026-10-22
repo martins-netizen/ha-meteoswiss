@@ -1,6 +1,6 @@
 # Release readiness: beta and first stable version
 
-**Document version:** 1.5 · **Updated:** 22 October 2026
+**Document version:** 1.6 · **Updated:** 22 October 2026
 **Purpose:** One entry point for completed evidence, remaining publication steps
 and work deliberately deferred to later versions.
 
@@ -55,12 +55,14 @@ paths and pollen persistence/change behaviour have automated coverage.
 The [22 October bounded review](RELEASE_REVIEW_2026-10-22.md) reassesses the
 known source-destination/redirect/body-size gaps for this unchanged-runtime
 promotion. It does not demonstrate a concrete exploit or claim zero
-vulnerabilities. Prioritise scoped source hardening separately. Before accepting
-external-fork code, provide safe actual CodeQL analysis; the current foreign-fork
-skip remains a limitation, not successful analysis.
+vulnerabilities. The separate [HTTP follow-up](HTTP_SOURCE_HARDENING.md) is now
+in unreleased development and needs focused HA acceptance before release.
+The [CodeQL follow-up](CODEQL_FORK_REVIEW.md) removes the foreign-fork skip on
+development; the first actual external run still needs its own evidence.
 
 Other Bronze/Silver gaps include interval/field design, common module layout,
-external Core-brand evidence and inactive placeholders/per-module coverage.
+external Core-brand evidence and per-module coverage. The unused-placeholder
+cleanup and its evidence are tracked in the [dated follow-up](QUALITY_PROGRESS_2026-10-22.md).
 They remain in the [quality matrix](QUALITY_SCALE.md). High aggregate coverage,
 HACS validation and successful operation do not close them collectively.
 Independent beginner usability review remains separate. Neither it nor complete

@@ -322,5 +322,10 @@ HA test environments plus Hassfest and CodeQL. Passing CI is not a live-house
 acceptance test. The `quality_scale: platinum` claim inherited from upstream is
 removed; no HA quality certification is asserted.
 
-Inactive camera/SLF/hydrology placeholders remain outside the runtime platform
-list. Removing them or adding new providers is a separate scoped change.
+Unreleased development after 8.2.0 removes the unused camera/SLF/hydrology
+placeholders after checking imports, platform registration and repository
+references. No active platform, entity or provider is removed. Flood/avalanche
+warnings remain part of the existing App v3 feed; a separate radar integration
+is unaffected. Adding standalone radar/river/bulletin products would require
+new source contracts, not reinstating unimplemented modules. See the
+[dated quality follow-up](QUALITY_PROGRESS_2026-10-22.md).
