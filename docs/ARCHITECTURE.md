@@ -294,6 +294,15 @@ See `examples/button-card-warnings.yaml`. Existing local dashboard translations
 stay in place until a separately verified adoption of the common template.
 Do not rename established entities during this change.
 
+## Setup text and source choices (unreleased after 8.2.0)
+
+Canonical English `strings.json` matches translations/en.json. All DE/EN/FR/IT
+form fields carry their own purpose text; the translation checker enforces
+label/help parity. Native source selection uses translated labels while keeping
+the saved source keys. This introduces no data migration, interval change or
+new Configure field. Field-help/source-choice delivery is exercised through
+HA's real translation loader. See the [quality follow-up](QUALITY_PROGRESS_2026-10-22.md).
+
 ## Shared HTTP boundary (unreleased after 8.2.0)
 
 `http.py` owns destination validation and bounded reads for every active client;

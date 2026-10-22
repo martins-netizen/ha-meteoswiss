@@ -10,7 +10,9 @@
           "pollen_station": "Station de mesure du pollen"
         },
         "data_description": {
-          "pollen_station": "Choisissez la station de mesure du pollen indépendamment de la station météo et du code postal des alertes. Ce choix ne modifie pas le lieu des prévisions modélisées de pollen. Vous pourrez le modifier dans Configurer."
+          "pollen_station": "Choisissez la station de mesure du pollen indépendamment de la station météo et du code postal des alertes. Ce choix ne modifie pas le lieu des prévisions modélisées de pollen. Vous pourrez le modifier dans Configurer.",
+          "data_source": "Choisissez les mesures d’une station MétéoSuisse ou les données Open-Meteo pour des coordonnées. Les deux utilisent les prévisions MétéoSuisse ICON Seamless via Open-Meteo.",
+          "update_interval": "Intervalle de récupération des données météo actuelles. Valeur par défaut et minimum : 600 secondes (10 minutes). Les prévisions, alertes et pollens ont leurs propres intervalles ; des requêtes plus fréquentes ne rendent pas les données plus récentes."
         }
       },
       "meteoswiss": {
@@ -19,15 +21,24 @@
         "data": {
           "postal_code": "Code postal",
           "station_id": "Station météo"
+        },
+        "data_description": {
+          "postal_code": "Code postal suisse à quatre chiffres, uniquement pour les alertes de dangers naturels. Il ne choisit ni le lieu des prévisions météo ni la station de mesure du pollen.",
+          "station_id": "Fournit la température, le vent et les précipitations mesurés. Les prévisions, pollens modélisés, qualité de l’air et UV utilisent les coordonnées du domicile Home Assistant, indépendamment de cette station et du code postal des alertes."
         }
       },
       "openmeteo": {
         "title": "Configuration Open-Meteo",
-        "description": "Entrez vos coordonnées pour l'API Open-Meteo.",
+        "description": "Entrez les coordonnées pour les données météo actuelles, les prévisions météo et de pollens modélisés, la qualité de l’air et les UV. Le code postal des alertes est indépendant.",
         "data": {
           "postal_code": "Code postal des alertes météo",
           "latitude": "Latitude",
           "longitude": "Longitude"
+        },
+        "data_description": {
+          "postal_code": "Code postal suisse à quatre chiffres, uniquement pour les alertes de dangers naturels. Il ne choisit ni le lieu des prévisions météo ni la station de mesure du pollen.",
+          "latitude": "Latitude du lieu météo en degrés décimaux (WGS84, de -90 à 90). Avec la longitude, elle sert aux données météo actuelles, prévisions, pollens modélisés, qualité de l’air et UV.",
+          "longitude": "Longitude du même lieu météo en degrés décimaux (WGS84, de -180 à 180). Ces coordonnées ne changent ni le code postal des alertes ni la station de mesure du pollen."
         }
       }
     },
@@ -49,11 +60,11 @@
         "description": "Modifiez la fréquence de mise à jour et la station de mesure du pollen.",
         "data": {
           "update_interval": "Intervalle de mise à jour (secondes, min. 600)",
-          "data_source": "Source de données",
           "pollen_station": "Station de mesure du pollen"
         },
         "data_description": {
-          "pollen_station": "Choisissez la station de mesure du pollen indépendamment de la station météo et du code postal des alertes. Ce choix ne modifie pas le lieu des prévisions modélisées de pollen. Vous pourrez le modifier dans Configurer."
+          "pollen_station": "Choisissez la station de mesure du pollen indépendamment de la station météo et du code postal des alertes. Ce choix ne modifie pas le lieu des prévisions modélisées de pollen. Vous pourrez le modifier dans Configurer.",
+          "update_interval": "Intervalle de récupération des données météo actuelles. Valeur par défaut et minimum : 600 secondes (10 minutes). Les prévisions, alertes et pollens ont leurs propres intervalles ; des requêtes plus fréquentes ne rendent pas les données plus récentes."
         }
       }
     }
@@ -226,6 +237,12 @@
         "unavailable": "Alertes météo indisponibles",
         "unknown": "Aucune donnée d’alerte reçue",
         "no_alerts": "Aucune alerte météo"
+      }
+    },
+    "data_source": {
+      "options": {
+        "openmeteo": "Open-Meteo : météo aux coordonnées",
+        "meteoswiss": "MétéoSuisse : mesures d’une station"
       }
     }
   }
