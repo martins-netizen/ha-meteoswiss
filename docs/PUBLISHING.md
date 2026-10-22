@@ -1,5 +1,40 @@
 # Fork releases: publication and HACS acceptance
 
+## Current stable package: 8.2.0
+
+**Prepared, not yet published.** The latest published version is Beta2 at
+`80bf9195ecc3d42d9e4d1beb4ce8143e2c2df2c8`, published on 22 October 2026 at
+07:12:40 Europe/Zurich. Its focused new-setup/data check is operator-confirmed.
+See [readiness](RELEASE_READINESS.md) and [stable notes](RELEASE_8.2.0.md).
+
+Stable packaging changes only the component manifest/module version. The other
+31 component files, HACS manifest and workflows must remain identical to Beta2.
+After the regular stable-package merge and successful post-merge checks, use
+the exact full merge SHA:
+
+```sh
+bash veroeffentliche_meteoswiss_stable_v1.2.sh --check APPROVED_MERGE_COMMIT
+# After reviewing that exact candidate and approving stable publication:
+bash veroeffentliche_meteoswiss_stable_v1.2.sh --publish APPROVED_MERGE_COMMIT
+```
+
+V1.2 is derived from Beta Publisher V1.1. `--check` makes no remote write.
+`--publish` can create only stable **8.2.0**, with `prerelease=false` and
+`make_latest=true`. It verifies the protected exact head, source identity,
+version-only edits, unchanged HACS/workflows, both immutable beta tags and
+successful checks from GitHub Actions on that commit. Repeating verifies an
+existing matching release; it never overwrites notes or retags. It uses the
+existing Mac gh login and performs no HA connection, restart or device action.
+Keep its JSON/log receipt. A timeout after a write requires rechecking, not
+deleting/recreating a release. Actual HACS availability is checked afterwards.
+
+The older procedures below are historical records. V1.0/V1.1 publish only their
+respective betas and must not be used to publish stable 8.2.0. They do not reopen
+completed acceptance. Security/quality and independent usability limits remain
+visible in the [bounded release review](RELEASE_REVIEW_2026-10-22.md).
+
+## Historical first-beta publication
+
 The first [GitHub prerelease 8.2.0b1](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.2.0b1)
 was published on **20 October 2026 at 15:56:24 UTC (17:56:24 Europe/Zurich)**.
 The published tag resolves to `abbb6b7701134ac2573f35b425ab3f0697a80540`;
@@ -22,12 +57,13 @@ tasks to repeat.
 
 ## Second beta: explicit pollen setup
 
-**8.2.0b2 is a prepared test package, not a claimed published release.** Its
+**8.2.0b2 was published on 22 October 2026 at 07:12:40 Europe/Zurich.** Its
 [release notes](RELEASE_8.2.0b2.md) define the focused HA check of the new initial
 pollen picker. PR #37's CI-tested source is
-`a90ed05cd9d23ce1bee341bcc5a662678a7e9bcc`; no new UI acceptance is inferred.
+`a90ed05cd9d23ce1bee341bcc5a662678a7e9bcc`. The subsequent focused new-setup/data
+check was operator-confirmed on 22 October; see the current readiness record.
 
-After a regular packaging merge and successful post-merge checks, run:
+The historical Beta2 publication command was:
 
 ```sh
 bash veroeffentliche_meteoswiss_beta_v1.1.sh --publish APPROVED_MERGE_COMMIT
@@ -164,8 +200,8 @@ The beta-selection route was checked against the source of HACS 2.0.5 and its
 pinned frontend 20250128065759 on 20 October 2026. The operator subsequently
 confirmed that version selection, download, source switch and restart succeeded.
 Source inspection alone is not a practical test. The first-beta clean install
-was subsequently operator-confirmed; the new picker and branch-hiding behaviour
-still require their focused practical check on the next published candidate.
+was subsequently operator-confirmed, followed by Beta2 new setup/data on
+22 October. Practical branch hiding was not separately reported.
 
 ## Published beta scope
 

@@ -1,9 +1,10 @@
 # 8.2.0b2 — pollen setup test prerelease
 
-**Prepared test candidate; publication is a separate step.** A branch, PR or
-tag alone is not an available HACS release. Check the
-[fork Releases page](https://github.com/martins-netizen/ha-meteoswiss/releases)
-for an explicitly published **8.2.0b2** prerelease before downloading it.
+**Published prerelease:** 22 October 2026 at 07:12:40 Europe/Zurich, immutable
+tag at `80bf9195ecc3d42d9e4d1beb4ce8143e2c2df2c8`.
+[Published release](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.2.0b2).
+The operator subsequently completed new setup with other geographic locations
+and reported values. See [current acceptance](HACS_ACCEPTANCE.md).
 
 This community fork builds on LNKtwo/ha-meteoswiss and retains its MIT licence
 and attribution. It is not an official MeteoSwiss product.
@@ -29,11 +30,14 @@ and stale Luzern data. A valid station may temporarily publish no new values;
 old zero concentrations must not appear as current measurements. There is no
 automatic substitute station.
 
-## Focused acceptance in the temporary HA instance
+## Focused acceptance protocol and evidence boundary
 
 The operator already completed a clean 8.2.0b1 HACS installation and an isolated
 backup restore on HA 2026.10.2 / HACS 2.0.5. Those results and the earlier
-runtime observation are retained; they do not claim this new UI was tested.
+runtime observation are retained. The new-entry UI/data check was then
+operator-confirmed on 22 October. The protocol below records the intended
+checks; it is not a request to repeat the completed walkthrough. Exact additional
+source paths, station identifiers and every manual subcheck were not reported.
 
 1. Back up the temporary instance. After this prerelease is actually published,
    explicitly select **8.2.0b2** under HACS Download/Redownload → Release and
@@ -72,8 +76,9 @@ version changes in the other two component files. It also checks branch hiding,
 unchanged workflows, the old immutable beta tag, versions and all post-merge
 checks. Publication creates only the new prerelease; it does not install HA.
 
-The new onboarding code has automated regression coverage. Its focused HA UI
-acceptance is still pending. Existing [beta limits](RELEASE_8.2.0b1.md),
+The new onboarding code has automated regression coverage and the focused
+new-setup/data check is operator-confirmed. No separate manual Open-Meteo-path,
+station-change or branch-hiding result is inferred from that general report. Existing [beta limits](RELEASE_8.2.0b1.md),
 [migration requirements](MIGRATION.md), provider availability, and
 [security/quality follow-ups](RELEASE_READINESS.md) remain applicable. This is
 not stable 8.2.0, a HACS default-catalogue approval or an official HA quality tier.

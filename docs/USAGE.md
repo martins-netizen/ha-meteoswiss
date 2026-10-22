@@ -38,7 +38,7 @@ must retain their config entry, domain, entity unique IDs and statistic IDs.
 2. Choose **MeteoSwiss STAC API** for measured Swiss station weather, or
    **Open-Meteo API** for weather at explicit coordinates. Select an update
    interval of at least 600 seconds (default 600).
-   The 8.2.0b2 candidate also requires an explicit **Station for
+   Published Beta2 and stable 8.2.0 require an explicit **Station for
    measured pollen** from the supported list, independently of the weather
    location. In the published **8.2.0b1**, choose this later in **Configure**.
 3. For MeteoSwiss, select a weather station and enter the postcode for warnings.
@@ -61,7 +61,7 @@ checked. Separate warning postcodes intentionally allow separate entries.
 | Postal code | MeteoSwiss weather-warning area, independent of observation station | Required by the setup form |
 | Latitude / longitude | Open-Meteo weather and forecast location | 47.05 / 8.31; finite values in −90…90 / −180…180 |
 | Update interval | Observation polling interval in seconds | 600; minimum 600 |
-| Pollen station | Measured MeteoSwiss pollen station, independently of weather station and forecast location | Explicit choice during 8.2.0b2 setup; 8.2.0b1 and existing entries without a saved choice fall back to Luzern (PLZ). |
+| Pollen station | Measured MeteoSwiss pollen station, independently of weather station and forecast location | Explicit choice during Beta2/stable setup; 8.2.0b1 and existing entries without a saved choice fall back to Luzern (PLZ). |
 
 Change the update interval and measured pollen station using the entry's
 **Configure** button. Saving options reloads the entry without recreating it.

@@ -1,13 +1,15 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.3 · **Updated:** 21 October 2026
+**Plan version:** 1.4 · **Updated:** 22 October 2026
 **Status:** Approved planning; Q1 is documented and P0 has partial evidence.
 This document does not approve a new feature, installation or release.
 
 ## Current position
 
 The first beta, its deployed HA 2026.10.2 acceptance and the operator-confirmed
-HACS source switch are complete. A clean first installation remains open.
+HACS source switch are complete. The temporary clean first installation and
+isolated restore were confirmed on 21 October; Beta2 new setup with other
+locations and observations was confirmed on 22 October.
 [Release readiness](RELEASE_READINESS.md) is the current release checklist.
 The historical candidate sequence below does not reopen completed acceptance.
 
@@ -80,7 +82,7 @@ accepted runtime.
 
 | Package | Scope | Completion criterion | Dependency |
 |---|---|---|---|
-| R0: release | Exact candidate, paired warning consumers, recovery, runtime and HACS evidence | Evidence and remaining first-install/recovery steps reconciled in RELEASE_READINESS.md | Keep new POIs out of the accepted beta. |
+| R0: release | Exact candidate, paired warning consumers, recovery, runtime and HACS evidence | Completed first-install/restore/Beta2 setup evidence and exact stable packaging reconciled in RELEASE_READINESS.md | Keep new POIs out of the accepted beta. |
 | Q1: Bronze/Silver audit | Every applicable rule with code/test/practice evidence | Complete gap list without blanket “done” claims | Dated audit complete; update evidence as changes land. |
 | S1: close Silver | Source behaviour, lifecycle, module coverage and understandable fields | All applicable Bronze/Silver requirements evidenced; justified exceptions | Q1; small scoped PRs separate from release-only changes. |
 | P0: location feasibility | Official catalogue, identities, point forecasts and explicit warning boundary | Summit/pass/hut plus postcode control; supported data and limits established | Read-only investigation can run independently of R0. |
@@ -208,5 +210,5 @@ validation. Documentation-only merges do not need HA reinstallation.
 
 No second permanent operator HA environment is assumed. Prepare temporary
 isolated first-install/recovery checks; automated HA/Recorder/flow tests already
-supply scoped evidence. The operator's source switch is complete, while a clean
-first-install UI run remains open. Do not actuate production devices for testing.
+supply scoped evidence. The operator's source switch, clean first installation, isolated restore and
+focused Beta2 setup/data run are complete within their documented scope. Do not actuate production devices for testing.
