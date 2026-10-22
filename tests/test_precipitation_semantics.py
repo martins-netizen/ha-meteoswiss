@@ -71,7 +71,7 @@ async def test_retirement_and_source_labels_preserve_surviving_entities_on_reloa
             "forecast_coordinator.MeteoSwissForecastCoordinator": [],
             "coordinator.MeteoSwissAlertsCoordinator": [],
             "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
-            "pollen_meteoswiss.MeteoSwissPollenCoordinator": {},
+            "coordinator.MeteoSwissPollenCoordinator": {},
         }.items():
             stack.enter_context(patch(f"custom_components.meteoswiss.{target}._async_update_data", return_value=data))
         assert await hass.config_entries.async_setup(entry.entry_id)

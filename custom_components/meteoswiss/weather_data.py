@@ -75,3 +75,24 @@ def weather_number(
     ):
         return None
     return value
+
+
+def parse_reference_timestamp(value: str | None) -> datetime | None:
+    """Parse a MeteoSwiss reference timestamp as UTC."""
+    timestamp = (value or "").strip()
+    if not timestamp:
+        return None
+
+    try:
+        return datetime.strptime(timestamp, "%d.%m.%Y %H:%M").replace(tzinfo=UTC)
+    except ValueError:
+        pass
+
+    try:
+        parsed = datetime.fromisoformat(timestamp)
+    except ValueError:
+        return None
+
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=UTC)
+    return parsed.astimezone(UTC)

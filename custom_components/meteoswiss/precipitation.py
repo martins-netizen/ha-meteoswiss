@@ -23,7 +23,6 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import API_BASE, DOMAIN, STAC_COLLECTION
-from .coordinator import _parse_reference_timestamp
 from .http import (
     MAX_ARCHIVE_BYTES,
     MAX_CSV_BYTES,
@@ -32,6 +31,7 @@ from .http import (
     async_get_json,
 )
 from .retry import async_retry_with_backoff
+from .weather_data import parse_reference_timestamp
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -100,7 +100,7 @@ def _parse_hourly_statistics(
             and (row.get("station_abbr") or "").strip().lower() != station_id.lower()
         ):
             continue
-        reference = _parse_reference_timestamp(row.get("reference_timestamp", ""))
+        reference = parse_reference_timestamp(row.get("reference_timestamp", ""))
         value = (row.get(PARAM_PRECIPITATION_HOURLY) or "").strip()
         if (
             reference is None

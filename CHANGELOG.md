@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- Separate the measured-pollen CSV client from its HA coordinator. Keep the
+  canonical coordinator in coordinator.py, with the same schedule, source-error
+  messages, station choice, payload/history and entity identities. Reuse the
+  unchanged UTC reference-time parser from weather_data.py for observations,
+  measured pollen and hourly precipitation, avoiding a circular dependency.
+  The client owns no session and exposes payload-free source errors; HA maps
+  them to its existing unavailable/recovery behaviour. Four placement gaps remain.
+
 - Mark the optional station-catalogue diagnostic unavailable after expiry or a
   failed refresh instead of presenting retained metadata as current. Preserve
   last-good metadata, expose its count/status in redacted diagnostics without

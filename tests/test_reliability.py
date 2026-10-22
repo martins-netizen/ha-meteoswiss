@@ -453,7 +453,7 @@ async def _exercise_entry_lifecycle(hass, source, *, with_recorder, legacy_inter
         "forecast_coordinator.MeteoSwissForecastCoordinator": [],
         "coordinator.MeteoSwissAlertsCoordinator": [],
         "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
-        "pollen_meteoswiss.MeteoSwissPollenCoordinator": {},
+        "coordinator.MeteoSwissPollenCoordinator": {},
         "precipitation.MeteoSwissHourlyPrecipitationCoordinator": {},
     }
     with ExitStack() as stack:
@@ -489,7 +489,7 @@ async def _exercise_entry_lifecycle(hass, source, *, with_recorder, legacy_inter
         assert "update_interval" not in entry.data
         expected_interval = timedelta(seconds=1200 if legacy_interval else 600)
         assert entry.runtime_data.coordinator.update_interval == expected_interval
-        assert entry.runtime_data.meteoswiss_pollen_coordinator._station_id == "pzh"
+        assert entry.runtime_data.meteoswiss_pollen_coordinator.client.station_id == "pzh"
         assert entry.runtime_data.forecast_coordinator.update_interval == timedelta(hours=1)
         assert entry.runtime_data.alerts_coordinator.update_interval == timedelta(minutes=10)
         assert not session.closed
@@ -513,7 +513,7 @@ async def _exercise_entry_lifecycle(hass, source, *, with_recorder, legacy_inter
         assert entry.options == {"pollen_station": "PBE", "unknown_option": "retain",
                                  **({"update_interval": 1200} if legacy_interval else {})}
         assert entry.runtime_data.coordinator.update_interval == expected_interval
-        assert entry.runtime_data.meteoswiss_pollen_coordinator._station_id == "pbe"
+        assert entry.runtime_data.meteoswiss_pollen_coordinator.client.station_id == "pbe"
         assert entry.runtime_data is not previous_runtime
         assert not previous_runtime.coordinator._listeners
         assert not previous_runtime.forecast_coordinator._listeners

@@ -13,11 +13,11 @@ if TYPE_CHECKING:
     from .coordinator import (
         MeteoSwissAlertsCoordinator,
         MeteoSwissDataUpdateCoordinator,
+        MeteoSwissPollenCoordinator,
     )
     from .forecast_coordinator import MeteoSwissForecastCoordinator
     from .openmeteo_coordinator import OpenMeteoDataUpdateCoordinator
     from .pollen_coordinator_openmeteo import OpenMeteoPollenCoordinator
-    from .pollen_meteoswiss import MeteoSwissPollenCoordinator
     from .precipitation import MeteoSwissHourlyPrecipitationCoordinator
 
 

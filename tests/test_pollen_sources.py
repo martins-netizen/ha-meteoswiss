@@ -18,6 +18,7 @@ from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from custom_components.meteoswiss.coordinator import MeteoSwissPollenCoordinator
 from custom_components.meteoswiss.cache import (
     clear_all_caches,
     get_current_weather_cache,
@@ -34,7 +35,6 @@ from custom_components.meteoswiss.pollen_coordinator_openmeteo import (
 )
 from custom_components.meteoswiss.pollen_meteoswiss import (
     POLLEN_DATA_BASE_URL,
-    MeteoSwissPollenCoordinator,
 )
 from custom_components.meteoswiss.pollen_sensor import (
     POLLEN_SENSOR_DESCRIPTIONS,
@@ -77,7 +77,7 @@ def test_real_current_zurich_and_stale_luzern_samples(
     evidence = _station_evidence()
     freezer.move_to(evidence["retrieved_at_utc"])
     coordinator = MeteoSwissPollenCoordinator(hass, station_id=station)
-    data = coordinator._parse_csv(evidence["sample_hourly_csv"][station]["csv"])
+    data = coordinator.client.parse_csv(evidence["sample_hourly_csv"][station]["csv"])
     assert bool(data) is expected_current
     if expected_current:
         assert data["station_id"] == station
@@ -178,21 +178,21 @@ def test_repeated_autumn_hour_is_unambiguous(hass, freezer, hour, index):
     ],
 )
 def test_invalid_measured_pollen_is_not_success(hass, row):
-    assert MeteoSwissPollenCoordinator(hass, "PLZ")._parse_csv(CSV_HEADER + row) == {}
+    assert MeteoSwissPollenCoordinator(hass, "PLZ").client.parse_csv(CSV_HEADER + row) == {}
 
 
 @pytest.mark.parametrize(
     "content", ["", CSV_HEADER, "<html>Service unavailable</html>"]
 )
 def test_empty_or_wrong_csv_is_not_success(hass, content):
-    assert MeteoSwissPollenCoordinator(hass, "PLZ")._parse_csv(content) == {}
+    assert MeteoSwissPollenCoordinator(hass, "PLZ").client.parse_csv(content) == {}
 
 
 def test_measured_zero_and_partial_values_keep_provider_time_and_history(hass):
     coordinator = MeteoSwissPollenCoordinator(hass, "plz")
     rows = [f"PLZ;15.10.2026 09:00;{i};bad;;-1;0;2" for i in range(25)]
     rows.append(" plz ;15.10.2026 10:00;0; 5 ;;-1;0;2")
-    data = coordinator._parse_csv(CSV_HEADER + "\n".join(rows))
+    data = coordinator.client.parse_csv(CSV_HEADER + "\n".join(rows))
     assert data["station_id"] == "PLZ"
     assert data["last_update"] == "15.10.2026 10:00"
     assert data["birch"]["current"] == 0
@@ -205,7 +205,7 @@ def test_measured_zero_and_partial_values_keep_provider_time_and_history(hass):
 
 
 def test_missing_csv_columns_do_not_mask_a_valid_partial_measurement(hass):
-    data = MeteoSwissPollenCoordinator(hass, "PLZ")._parse_csv(
+    data = MeteoSwissPollenCoordinator(hass, "PLZ").client.parse_csv(
         "station_abbr;reference_timestamp;kabetuh0\nPLZ;15.10.2026 10:00;0"
     )
     assert data["birch"]["current"] == 0
@@ -255,7 +255,7 @@ async def test_measured_age_bounds_use_measurement_time_not_fetch_time(
 )
 def test_measured_provider_times_stay_utc_across_zurich_dst(hass, freezer, now, stamp):
     freezer.move_to(now)
-    data = MeteoSwissPollenCoordinator(hass, "PLZ")._parse_csv(
+    data = MeteoSwissPollenCoordinator(hass, "PLZ").client.parse_csv(
         CSV_HEADER + f"PLZ;{stamp};0;;;;;"
     )
     assert data["last_update"] == stamp
@@ -649,7 +649,7 @@ def test_aq_and_measured_entities_read_existing_data_on_initial_add(hass):
     aq.data = None
     assert aq_entity.native_value is None
     measured = MeteoSwissPollenCoordinator(hass, "PLZ")
-    measured.data = measured._parse_csv(CSV_ZERO)
+    measured.data = measured.client.parse_csv(CSV_ZERO)
     measured_entity = MeteoSwissMeasuredPollenSensor(
         measured, entry, MS_POLLEN_SENSOR_DESCRIPTIONS[0], "Luzern"
     )
