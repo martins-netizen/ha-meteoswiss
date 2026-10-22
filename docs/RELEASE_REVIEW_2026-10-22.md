@@ -72,11 +72,19 @@ original upstream attribution remain intact.
 This is an editorial check for clear steps and consistent facts. An independent
 nontechnical user walkthrough remains an explicitly separate improvement.
 
-## Final decision still required
+## Publication follow-up
 
-Review the exact stable PR diff and its successful checks, merge normally and
-then approve publication of that exact merge commit. The publication tool has
+Publication required review of the exact stable PR diff, successful checks,
+a regular merge and approval of that exact merge commit. The publication tool has
 a read-only `--check` mode and can create only the new stable 8.2.0 release;
 it preserves both beta tags, rejects code/workflow/HACS drift, and performs no
 HA action. Stable publication and actual HACS availability must be recorded
 after they happen, never inferred from the manifest version.
+
+**Confirmed afterwards:** the operator published stable 8.2.0 on 22 October
+at 08:52:40 Europe/Zurich using the guarded V1.2 helper, run
+20261022-085229-238. Its receipt and independent release/latest/tag reads
+confirm immutable commit 5a0bf684eb44fd54c4e91d7cbce9e90798b72fa5,
+release ID 420392277 and prerelease=false. All seven PR/six post-merge checks
+were successful. Local HACS visibility/download remains separate; no new
+HA installation or security-hardening completion is inferred.

@@ -1,6 +1,6 @@
 # Release readiness: beta and first stable version
 
-**Document version:** 1.4 · **Updated:** 22 October 2026
+**Document version:** 1.5 · **Updated:** 22 October 2026
 **Purpose:** One entry point for completed evidence, remaining publication steps
 and work deliberately deferred to later versions.
 
@@ -17,6 +17,7 @@ and work deliberately deferred to later versions.
 | Second public beta | `8.2.0b2`, published 22 October at 07:12:40 Europe/Zurich; immutable tag `80bf9195ecc3d42d9e4d1beb4ce8143e2c2df2c8`. PR #37's setup changes and PR #38's packaging are integrated. |
 | Beta2 tests | 836 passing tests and four subtests locally on each of HA 2026.8.3 and 2026.10.2; 99.05% combined coverage. Seven PR/six post-merge checks succeeded. CI's current-HA label remains 2026.10.1; local patch testing is separate evidence. |
 | Stable candidate local tests | 859 tests and 14 subtests pass on each of HA 2026.8.3 and 2026.10.2; 99.0535% combined coverage, all 652 branches covered and existing module/flow gates retained. Four catalogues have 96 keys each. These local results do not replace candidate PR/post-merge checks. |
+| First stable publication | **8.2.0** published 22 October at **08:52:40 Europe/Zurich**, immutable tag **5a0bf684eb44fd54c4e91d7cbce9e90798b72fa5**, release ID 420392277, draft=false/prerelease=false. Receipt, independent tag and GitHub latest-stable endpoint agree. |
 | Beta2 focused setup/data check | On 22 October the temporary UI showed b2 and existing 600 seconds/Zürich (PZH). The operator then completed new setup with other geographic locations and reported values. The practical new-entry test is complete; exact additional source paths/stations and every manual subcheck were not separately reported. |
 | Warnings and source semantics | App v3 catalogue, bundled DE/EN/FR/IT, deployed warning consumers, retained identities and official rain statistics were checked during runtime acceptance. The isolated optional UV outage recovered at the next scheduled request. |
 
@@ -26,17 +27,18 @@ completed source switch, clean install, restore or Beta2 walkthrough without a
 concrete new failure. No new blanket 24-hour window is required for promotion
 of identical component code.
 
-## Remaining steps for stable 8.2.0
+## Stable publication complete; local HACS confirmation next
 
-**8.2.0 is prepared, not yet published or automatically approved.**
+**8.2.0 is published.** Publication is not a download or installation on HA.
 
 | Order | Work | Completion criterion |
 |---|---|---|
-| 1 | Review the stable package | Only component versions differ from accepted Beta2; HACS/workflows and both beta tags remain unchanged. Reconcile guides, migration and [bounded release review](RELEASE_REVIEW_2026-10-22.md). POI and quality-tier features stay outside this package. |
-| 2 | Check and merge the exact candidate | Supported-HA tests, HACS, Hassfest, CodeQL and all required PR checks succeed at the reviewed SHA; regular protected squash merge, then successful post-merge checks. |
-| 3 | Approve and publish that exact merge | Guarded stable publisher V1.2 supports read-only `--check`; `--publish` creates only stable 8.2.0. Verify the new release/tag/package, then actual HACS visibility. A manifest or successful preflight alone is not publication. |
+| 1 | Stable package review | Complete: only component versions differ from Beta2; HACS/workflows and both beta tags are unchanged. See [bounded review](RELEASE_REVIEW_2026-10-22.md). |
+| 2 | Exact checks and merge | Complete: PR #39, seven successful PR checks, regular protected squash merge 5a0bf684eb44fd54c4e91d7cbce9e90798b72fa5 and six successful post-merge checks. |
+| 3 | Stable publication | Complete: guarded publisher V1.2 run 20261022-085229-238 reports published_and_verified; independent release/latest/tag reads confirm the exact approved commit. No HA write, restart or device call. |
+| 4 | Local HACS visibility/update | Refresh information for this fork; confirm Release 8.2.0 is offered. The operator may then back up, download and restart the intended instance, retaining its HA entry. Not yet reported for stable 8.2.0; no repeated clean install/restore is required. |
 
-The component version/module both become 8.2.0. The other 31 component files
+The component version/module both read 8.2.0. The other 31 component files
 and HACS manifest match Beta2 exactly. No new functionality or dependency is
 introduced. Existing production entries remain in place; a version-only change
 does not require a repeated clean installation or restore.

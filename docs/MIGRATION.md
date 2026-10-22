@@ -130,11 +130,10 @@ When moving from `LNKtwo/ha-meteoswiss`:
 2. Under **HACS → three-dot menu → Custom repositories**, add
    `https://github.com/martins-netizen/ha-meteoswiss` as **Integration**.
 3. Open **MeteoSwiss (maintained fork)** and **Download/Redownload**.
-   Under **Need a different version? → Release**, explicitly select **8.2.0**
-   after its stable publication. Before that, **8.2.0b2** is the published
-   prerelease for explicit testing.
-   Verify the announced version before download. Older HACS versions may need
-   beta visibility. If the target is missing or HACS rejects the switch, stop;
+   Under **Need a different version? → Release**, explicitly select the
+   published stable **8.2.0**.
+   Verify the announced version before download. If the target is missing
+   or HACS rejects the switch, stop;
    do not delete HA configuration or edit hidden storage files.
 4. Check the paired warning changes, then restart HA **once**. No extra restart
    is intended between removing and replacing software.

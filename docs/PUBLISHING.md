@@ -1,13 +1,19 @@
 # Fork releases: publication and HACS acceptance
 
-## Current stable package: 8.2.0
+## Published stable release: 8.2.0
 
-**Prepared, not yet published.** The latest published version is Beta2 at
-`80bf9195ecc3d42d9e4d1beb4ce8143e2c2df2c8`, published on 22 October 2026 at
-07:12:40 Europe/Zurich. Its focused new-setup/data check is operator-confirmed.
+**Published on 22 October 2026 at 08:52:40 Europe/Zurich** (06:52:40 UTC).
+The immutable tag resolves to **5a0bf684eb44fd54c4e91d7cbce9e90798b72fa5**;
+release ID **420392277**, draft=false, prerelease=false, immutable=true. The
+V1.2 receipt/log for run **20261022-085229-238** and independent release,
+latest-stable and tag reads confirm publication. No HA action was performed.
 See [readiness](RELEASE_READINESS.md) and [stable notes](RELEASE_8.2.0.md).
 
-Stable packaging changes only the component manifest/module version. The other
+Publication is complete. Check actual HACS visibility next; do not publish or
+retag again merely because documentation advances the development branch.
+The commands below record the completed procedure and its guard conditions.
+
+Stable packaging changed only the component manifest/module version. The other
 31 component files, HACS manifest and workflows must remain identical to Beta2.
 After the regular stable-package merge and successful post-merge checks, use
 the exact full merge SHA:

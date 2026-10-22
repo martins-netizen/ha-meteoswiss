@@ -1,9 +1,11 @@
 # 8.2.0 — first stable maintained-fork release
 
-**Prepared candidate; not yet published.** Install this version only after
-the [Releases page](https://github.com/martins-netizen/ha-meteoswiss/releases)
-contains an explicitly published **8.2.0** release, with no prerelease flag.
-A version in a branch or PR is not an available HACS download.
+**Published stable release:** 22 October 2026 at **08:52:40 Europe/Zurich**
+(06:52:40 UTC), [release 8.2.0](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.2.0).
+Immutable tag: `5a0bf684eb44fd54c4e91d7cbce9e90798b72fa5`; release ID
+`420392277`, `draft=false`, `prerelease=false`. The publication receipt and
+independent release/latest/tag reads agree. Actual HACS download and HA
+installation are separate operator actions.
 
 This community fork builds on LNKtwo/ha-meteoswiss and retains its MIT licence
 and attribution. It is not an official MeteoSwiss product.
@@ -39,8 +41,8 @@ retains the documented Luzern fallback until explicitly changed in Configure.
 
 ## Installation and migration
 
-New users follow [getting started](GETTING_STARTED.md). Once 8.2.0 is actually
-published, explicitly select **8.2.0** under HACS Download/Redownload → Release,
+New users follow [getting started](GETTING_STARTED.md). Explicitly select
+**8.2.0** under HACS Download/Redownload → Release,
 download, restart HA and add MeteoSwiss. Select a measured-pollen station in the
 first dialog, followed by the chosen weather source's location settings.
 

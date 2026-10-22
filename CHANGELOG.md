@@ -2,10 +2,11 @@
 
 ## [Unreleased]
 
-## [8.2.0] — first stable maintained-fork candidate
+## [8.2.0] — first stable maintained-fork release
 
-Prepared stable package; not yet published. See [release notes](docs/RELEASE_8.2.0.md)
-and [current readiness](docs/RELEASE_READINESS.md).
+Published on **22 October 2026 at 08:52:40 Europe/Zurich**, immutable tag at
+`5a0bf684eb44fd54c4e91d7cbce9e90798b72fa5`. See
+[release notes](docs/RELEASE_8.2.0.md) and [current readiness](docs/RELEASE_READINESS.md).
 
 - Promote the operator-tested Beta2 component code without functional changes;
   only manifest/module versions become 8.2.0. Preserve HACS branch hiding,
