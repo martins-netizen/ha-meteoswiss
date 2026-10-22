@@ -320,6 +320,35 @@ the saved source keys. This introduces no data migration, interval change or
 new Configure field. Field-help/source-choice delivery is exercised through
 HA's real translation loader. See the [quality follow-up](QUALITY_PROGRESS_2026-10-22.md).
 
+## Polling and options migration (unreleased after 8.2.0)
+
+New entries use a developer-selected observation refresh of 600 seconds; no
+polling field is exposed by setup or Configure. MeteoSwiss station data is
+published in ten-minute intervals. Existing source-specific forecast, warning,
+pollen and external-statistics schedules remain independent and unchanged.
+
+Config schema **1.2** moves `update_interval` from `entry.data` to `entry.options`
+when present. An already saved options value wins, preserving the previous
+runtime precedence and exact stored choice. No interval is synthesized when
+neither field exists: runtime falls back to 600 seconds. Existing coordinator
+minimum-interval guards remain intact. This is a compatibility bridge for
+installed choices, not a new user-editable polling feature or a blanket quality
+rule exemption. A future removal of that bridge needs its own migration/review.
+
+Only the polling setting moves. Measured-pollen choice remains in options;
+weather source, station, coordinates and warning postcode remain in data.
+Unknown fields, entry identity/title, entity/device registrations and statistics
+are not rewritten. Future major schemas are rejected without mutation; current
+and newer minor schemas are left intact. Stable 8.2.0 already reads interval
+options before data, so it can still read migrated entries. Its older Configure
+form can still edit that value; a later upgrade keeps the options value.
+
+The new Configure form changes the measured-pollen station only and merges that
+field into existing options, preserving the compatibility interval and other
+saved options. HA's registered listener reloads the existing entry. Regression
+tests exercise this through the real flow manager, entity registry and optional
+Recorder, verifying effective intervals, station changes, IDs and cleanup.
+
 ## Shared HTTP boundary (unreleased after 8.2.0)
 
 `http.py` owns destination validation and bounded reads for every active client;

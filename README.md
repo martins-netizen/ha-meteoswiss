@@ -119,6 +119,11 @@ Stable 8.2.0 is published. For installation or update:
 5. Check the HA home location for forecasts/AQ. **Configure** later changes the
    interval and measured-pollen station, not the weather station or postcode.
 
+**Unreleased development:** the next setup/Configure flow removes the polling
+field and schedules new observation entries automatically at 600 seconds.
+Existing individual intervals remain effective when upgrading or changing the
+pollen station; this is not yet part of the published 8.2.0 instructions above.
+
 Existing Beta1 entries retain their settings and can select a pollen station
 under Configure. Update through HACS while keeping the existing HA entry.
 

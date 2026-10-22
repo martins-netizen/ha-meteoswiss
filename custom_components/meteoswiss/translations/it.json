@@ -6,13 +6,11 @@
         "description": "Scegli una fonte di dati meteo e una stazione di misurazione dei pollini. Sceglierai la località dei dati meteo nel passaggio successivo.",
         "data": {
           "data_source": "Fonte dati",
-          "update_interval": "Intervallo di aggiornamento (secondi)",
           "pollen_station": "Stazione di misurazione dei pollini"
         },
         "data_description": {
           "pollen_station": "Scegli la stazione di misurazione dei pollini indipendentemente dalla stazione meteo e dal codice postale degli avvisi. La scelta non modifica la località delle previsioni modellate dei pollini. Potrai cambiarla in Configura.",
-          "data_source": "Scegli le misure di una stazione MeteoSvizzera o i dati Open-Meteo per delle coordinate. Entrambi usano le previsioni MeteoSvizzera ICON Seamless tramite Open-Meteo.",
-          "update_interval": "Intervallo di acquisizione dei dati meteo attuali. Valore predefinito e minimo: 600 secondi (10 minuti). Previsioni, avvisi e pollini hanno intervalli propri; richieste più frequenti non rendono i dati più recenti."
+          "data_source": "Scegli le misure di una stazione MeteoSvizzera o i dati Open-Meteo per delle coordinate. Entrambi usano le previsioni MeteoSvizzera ICON Seamless tramite Open-Meteo."
         }
       },
       "meteoswiss": {
@@ -57,14 +55,12 @@
     "step": {
       "init": {
         "title": "Impostazioni MeteoSwiss",
-        "description": "Modifica l’intervallo di aggiornamento e la stazione di misurazione del polline.",
+        "description": "Modifica la stazione di misurazione del polline. Le località delle osservazioni, delle previsioni e delle allerte restano invariate. I dati vengono aggiornati automaticamente.",
         "data": {
-          "update_interval": "Intervallo di aggiornamento (secondi, min. 600)",
           "pollen_station": "Stazione di misurazione dei pollini"
         },
         "data_description": {
-          "pollen_station": "Scegli la stazione di misurazione dei pollini indipendentemente dalla stazione meteo e dal codice postale degli avvisi. La scelta non modifica la località delle previsioni modellate dei pollini. Potrai cambiarla in Configura.",
-          "update_interval": "Intervallo di acquisizione dei dati meteo attuali. Valore predefinito e minimo: 600 secondi (10 minuti). Previsioni, avvisi e pollini hanno intervalli propri; richieste più frequenti non rendono i dati più recenti."
+          "pollen_station": "Scegli la stazione di misurazione dei pollini indipendentemente dalla stazione meteo e dal codice postale degli avvisi. La scelta non modifica la località delle previsioni modellate dei pollini. Potrai cambiarla in Configura."
         }
       }
     }

@@ -5,7 +5,7 @@ from __future__ import annotations
 import asyncio
 import io
 import json
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
@@ -412,7 +412,14 @@ async def test_complete_entry_with_recorder_removes_all_polling_listeners(
     await _exercise_entry_lifecycle(hass, source, with_recorder=True)
 
 
-async def _exercise_entry_lifecycle(hass, source, *, with_recorder):
+@pytest.mark.parametrize("source", ["meteoswiss", "openmeteo"])
+async def test_new_entry_uses_developer_polling_after_options_reload(
+    hass, enable_custom_integrations, source
+):
+    await _exercise_entry_lifecycle(hass, source, with_recorder=False, legacy_interval=False)
+
+
+async def _exercise_entry_lifecycle(hass, source, *, with_recorder, legacy_interval=True):
     from contextlib import ExitStack
 
     from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -427,7 +434,11 @@ async def _exercise_entry_lifecycle(hass, source, *, with_recorder):
             "data_source": source,
             "latitude": 0,
             "longitude": 0,
+            **({"update_interval": 900} if legacy_interval else {}),
         },
+        options={"pollen_station": "PZH", "unknown_option": "retain",
+                 **({"update_interval": 1200} if legacy_interval else {})},
+        version=1, minor_version=1 if legacy_interval else 2,
     )
     entry.add_to_hass(hass)
     targets = {
@@ -474,6 +485,13 @@ async def _exercise_entry_lifecycle(hass, source, *, with_recorder):
             assert entry.runtime_data.forecast_coordinator._longitude == 0
         session = async_get_clientsession(hass)
         assert entry.runtime_data.session is session
+        assert entry.minor_version == 2
+        assert "update_interval" not in entry.data
+        expected_interval = timedelta(seconds=1200 if legacy_interval else 600)
+        assert entry.runtime_data.coordinator.update_interval == expected_interval
+        assert entry.runtime_data.meteoswiss_pollen_coordinator._station_id == "pzh"
+        assert entry.runtime_data.forecast_coordinator.update_interval == timedelta(hours=1)
+        assert entry.runtime_data.alerts_coordinator.update_interval == timedelta(minutes=10)
         assert not session.closed
         assert (
             entry.runtime_data.alerts_coordinator.warning_labels[
@@ -485,8 +503,17 @@ async def _exercise_entry_lifecycle(hass, source, *, with_recorder):
         assert previous_runtime.coordinator._listeners
         assert previous_runtime.forecast_coordinator._listeners
         registry_ids = {item.unique_id: item.entity_id for item in er.async_entries_for_config_entry(registry, entry.entry_id)}
-        assert await hass.config_entries.async_reload(entry.entry_id)
+        # Exercise the real options manager and registered reload listener.
+        form = await hass.config_entries.options.async_init(entry.entry_id)
+        result = await hass.config_entries.options.async_configure(
+            form["flow_id"], {"pollen_station": "PBE"}
+        )
+        assert result["type"] == "create_entry"
         await hass.async_block_till_done()
+        assert entry.options == {"pollen_station": "PBE", "unknown_option": "retain",
+                                 **({"update_interval": 1200} if legacy_interval else {})}
+        assert entry.runtime_data.coordinator.update_interval == expected_interval
+        assert entry.runtime_data.meteoswiss_pollen_coordinator._station_id == "pbe"
         assert entry.runtime_data is not previous_runtime
         assert not previous_runtime.coordinator._listeners
         assert not previous_runtime.forecast_coordinator._listeners

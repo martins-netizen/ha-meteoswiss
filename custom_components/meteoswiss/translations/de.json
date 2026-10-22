@@ -6,13 +6,11 @@
         "description": "Wähle eine Wetterdatenquelle und eine Station für gemessene Pollen. Den Wetterstandort wählst du im nächsten Schritt.",
         "data": {
           "data_source": "Datenquelle",
-          "update_interval": "Update-Intervall (Sekunden)",
           "pollen_station": "Station für Pollenmessungen"
         },
         "data_description": {
           "pollen_station": "Wähle die Pollenmessstation unabhängig von Wetterstation und Warnungs-Postleitzahl. Die Auswahl ändert den Standort der modellierten Pollenprognose nicht. Du kannst sie später unter Konfigurieren ändern.",
-          "data_source": "Wähle Messwerte einer MeteoSchweiz-Wetterstation oder Open-Meteo-Wetterdaten für Koordinaten. Beide nutzen MeteoSchweiz ICON Seamless für Wetterprognosen über Open-Meteo.",
-          "update_interval": "Aktuelle Wetterdaten in diesem Intervall abrufen. Standard und Minimum: 600 Sekunden (10 Minuten). Prognosen, Warnungen und Pollen haben eigene Abrufintervalle; häufigere Abfragen machen die Quelldaten nicht aktueller."
+          "data_source": "Wähle Messwerte einer MeteoSchweiz-Wetterstation oder Open-Meteo-Wetterdaten für Koordinaten. Beide nutzen MeteoSchweiz ICON Seamless für Wetterprognosen über Open-Meteo."
         }
       },
       "meteoswiss": {
@@ -57,14 +55,12 @@
     "step": {
       "init": {
         "title": "MeteoSwiss Einstellungen",
-        "description": "Passe das Aktualisierungsintervall und die Messstation für Pollen an.",
+        "description": "Ändere die Messstation für Pollen. Wetter-, Prognose- und Warnungsstandorte bleiben erhalten. Aktualisierungen erfolgen automatisch.",
         "data": {
-          "update_interval": "Update-Intervall (Sekunden, min. 600)",
           "pollen_station": "Station für Pollenmessungen"
         },
         "data_description": {
-          "pollen_station": "Wähle die Pollenmessstation unabhängig von Wetterstation und Warnungs-Postleitzahl. Die Auswahl ändert den Standort der modellierten Pollenprognose nicht. Du kannst sie später unter Konfigurieren ändern.",
-          "update_interval": "Aktuelle Wetterdaten in diesem Intervall abrufen. Standard und Minimum: 600 Sekunden (10 Minuten). Prognosen, Warnungen und Pollen haben eigene Abrufintervalle; häufigere Abfragen machen die Quelldaten nicht aktueller."
+          "pollen_station": "Wähle die Pollenmessstation unabhängig von Wetterstation und Warnungs-Postleitzahl. Die Auswahl ändert den Standort der modellierten Pollenprognose nicht. Du kannst sie später unter Konfigurieren ändern."
         }
       }
     }

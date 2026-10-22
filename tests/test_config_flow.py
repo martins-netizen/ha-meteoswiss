@@ -172,7 +172,8 @@ async def test_user_flow_success_and_connection_recovery(
     assert result["type"] == "create_entry"
     assert result["result"].unique_id == unique_id
     assert result["data"][CONF_DATA_SOURCE] == source
-    assert result["data"][CONF_UPDATE_INTERVAL] == 600
+    assert CONF_UPDATE_INTERVAL not in result["data"]
+    assert result["result"].minor_version == 2
     assert result["data"][CONF_POSTAL_CODE] == "8302"
     assert result["result"].options[CONF_POLLEN_STATION] == pollen_station
     await hass.async_block_till_done()
@@ -414,15 +415,15 @@ async def test_options_flow_preserves_entry_identity(
     entry.add_to_hass(hass)
     result = await hass.config_entries.options.async_init(entry.entry_id)
     assert result["type"] == "form"
-    assert result["data_schema"]({})[CONF_UPDATE_INTERVAL] == 1200
+    assert CONF_UPDATE_INTERVAL not in result["data_schema"]({})
     assert result["data_schema"]({})[CONF_POLLEN_STATION] == (
         pollen_station or DEFAULT_POLLEN_STATION
     )
     result = await hass.config_entries.options.async_configure(
-        result["flow_id"], {CONF_UPDATE_INTERVAL: 1800, CONF_POLLEN_STATION: "PZH"}
+        result["flow_id"], {CONF_POLLEN_STATION: "PZH"}
     )
     assert result["type"] == "create_entry"
-    assert entry.options[CONF_UPDATE_INTERVAL] == 1800
+    assert entry.options[CONF_UPDATE_INTERVAL] == 1200
     assert entry.data[CONF_UPDATE_INTERVAL] == 900
     assert entry.options[CONF_POLLEN_STATION] == "PZH"
     assert hass.config_entries.async_get_entry(entry.entry_id) is entry

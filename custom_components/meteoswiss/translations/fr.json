@@ -6,13 +6,11 @@
         "description": "Choisissez une source de données météo et une station de mesure du pollen. Vous choisirez le lieu des données météo à l’étape suivante.",
         "data": {
           "data_source": "Source de données",
-          "update_interval": "Intervalle de mise à jour (secondes)",
           "pollen_station": "Station de mesure du pollen"
         },
         "data_description": {
           "pollen_station": "Choisissez la station de mesure du pollen indépendamment de la station météo et du code postal des alertes. Ce choix ne modifie pas le lieu des prévisions modélisées de pollen. Vous pourrez le modifier dans Configurer.",
-          "data_source": "Choisissez les mesures d’une station MétéoSuisse ou les données Open-Meteo pour des coordonnées. Les deux utilisent les prévisions MétéoSuisse ICON Seamless via Open-Meteo.",
-          "update_interval": "Intervalle de récupération des données météo actuelles. Valeur par défaut et minimum : 600 secondes (10 minutes). Les prévisions, alertes et pollens ont leurs propres intervalles ; des requêtes plus fréquentes ne rendent pas les données plus récentes."
+          "data_source": "Choisissez les mesures d’une station MétéoSuisse ou les données Open-Meteo pour des coordonnées. Les deux utilisent les prévisions MétéoSuisse ICON Seamless via Open-Meteo."
         }
       },
       "meteoswiss": {
@@ -57,14 +55,12 @@
     "step": {
       "init": {
         "title": "Paramètres MeteoSwiss",
-        "description": "Modifiez la fréquence de mise à jour et la station de mesure du pollen.",
+        "description": "Modifiez la station de mesure du pollen. Les lieux des observations, des prévisions et des alertes restent inchangés. Les données sont actualisées automatiquement.",
         "data": {
-          "update_interval": "Intervalle de mise à jour (secondes, min. 600)",
           "pollen_station": "Station de mesure du pollen"
         },
         "data_description": {
-          "pollen_station": "Choisissez la station de mesure du pollen indépendamment de la station météo et du code postal des alertes. Ce choix ne modifie pas le lieu des prévisions modélisées de pollen. Vous pourrez le modifier dans Configurer.",
-          "update_interval": "Intervalle de récupération des données météo actuelles. Valeur par défaut et minimum : 600 secondes (10 minutes). Les prévisions, alertes et pollens ont leurs propres intervalles ; des requêtes plus fréquentes ne rendent pas les données plus récentes."
+          "pollen_station": "Choisissez la station de mesure du pollen indépendamment de la station météo et du code postal des alertes. Ce choix ne modifie pas le lieu des prévisions modélisées de pollen. Vous pourrez le modifier dans Configurer."
         }
       }
     }

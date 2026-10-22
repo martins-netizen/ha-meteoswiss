@@ -32,6 +32,23 @@ Use the approved release and the installation/update procedure in the README.
 A prepared development PR is not a tested HACS release. Existing installations
 must retain their config entry, domain, entity unique IDs and statistic IDs.
 
+## Unreleased polling/options follow-up
+
+The setup/options instructions below describe published **8.2.0**. The next
+development flow removes the observation polling field from both dialogs.
+New entries use **600 seconds automatically**. Existing individual intervals
+remain effective after upgrade and after a measured-pollen change. Configure
+then changes only the measured-pollen station; it still does not change weather,
+forecast or warning locations. The dialog explains that refreshes are automatic
+in DE/EN/FR/IT.
+
+Config schema 1.2 retains a stored legacy interval in options, preserving its
+previous precedence over data. Missing values retain the 600-second default;
+other options and IDs remain unchanged. Diagnostics retain config-format and
+active coordinator-interval metadata for troubleshooting. No manual editing of
+HA storage is needed. Stable 8.2.0 can read the migrated interval. This source
+change is not yet a released HACS update or an installed HA change.
+
 ## Add a new entry
 
 1. In **Settings → Devices & services → Add integration**, choose **MeteoSwiss**.
