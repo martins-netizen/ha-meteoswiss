@@ -71,3 +71,6 @@ retained coverage failures and all three shell entry points. Existing mocked
 publisher tests continue to verify publication/refusal/retry behaviour.
 Removing source patterns is not a claim that SonarQube Cloud has reanalysed
 the commit or computed a quality gate; verify its actual result separately.
+
+See [SonarQube Cloud source/test classification](SONAR_ANALYSIS.md) for the
+automatic-analysis configuration, Python version and coverage evidence limits.
