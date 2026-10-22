@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- Remove arbitrary path arguments from the local coverage checker. Read only
+  repository-root coverage.json, reject symbolic links, and preserve every
+  coverage threshold. Use Bash conditional expressions consistently in all
+  three historical release helpers; their embedded publication logic is unchanged.
+
 - Separate the measured-pollen CSV client from its HA coordinator. Keep the
   canonical coordinator in coordinator.py, with the same schedule, source-error
   messages, station choice, payload/history and entity identities. Reuse the
