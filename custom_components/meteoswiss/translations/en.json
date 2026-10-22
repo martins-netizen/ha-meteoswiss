@@ -10,7 +10,9 @@
           "pollen_station": "Station for measured pollen"
         },
         "data_description": {
-          "pollen_station": "Choose the pollen measuring station independently of the weather station and warning postcode. This choice does not change the modelled pollen forecast location. You can change it later in Configure."
+          "pollen_station": "Choose the pollen measuring station independently of the weather station and warning postcode. This choice does not change the modelled pollen forecast location. You can change it later in Configure.",
+          "data_source": "Choose measured weather from a MeteoSwiss station or Open-Meteo weather for coordinates. Both use MeteoSwiss ICON Seamless forecasts through Open-Meteo.",
+          "update_interval": "Refresh current weather at this interval. Default and minimum: 600 seconds (10 minutes). Forecasts, warnings and pollen follow their own schedules; more frequent requests do not make provider data newer."
         }
       },
       "meteoswiss": {
@@ -19,15 +21,24 @@
         "data": {
           "postal_code": "Postal Code",
           "station_id": "Weather Station"
+        },
+        "data_description": {
+          "postal_code": "Four-digit Swiss postal code for natural-hazard warnings only. It does not select the weather forecast location or pollen station.",
+          "station_id": "Supplies measured temperature, wind and rain. Forecasts, modelled pollen, air quality and UV use the Home Assistant home coordinates, independently of this station and the warning postcode."
         }
       },
       "openmeteo": {
         "title": "Open-Meteo Setup",
-        "description": "Enter your location coordinates for Open-Meteo API.",
+        "description": "Enter the coordinates for current weather, weather/modelled-pollen forecasts, air quality and UV. Choose the warning postcode separately.",
         "data": {
           "postal_code": "Postal code for weather warnings",
           "latitude": "Latitude",
           "longitude": "Longitude"
+        },
+        "data_description": {
+          "postal_code": "Four-digit Swiss postal code for natural-hazard warnings only. It does not select the weather forecast location or pollen station.",
+          "latitude": "Latitude of the weather location in decimal degrees (WGS84, -90 to 90). Used with longitude for current weather, forecasts, modelled pollen, air quality and UV.",
+          "longitude": "Longitude of the same weather location in decimal degrees (WGS84, -180 to 180). These coordinates do not change the warning postcode or the measured-pollen station."
         }
       }
     },
@@ -49,11 +60,11 @@
         "description": "Adjust the update interval and measured pollen station.",
         "data": {
           "update_interval": "Update Interval (seconds, min 600)",
-          "data_source": "Data Source",
           "pollen_station": "Station for measured pollen"
         },
         "data_description": {
-          "pollen_station": "Choose the pollen measuring station independently of the weather station and warning postcode. This choice does not change the modelled pollen forecast location. You can change it later in Configure."
+          "pollen_station": "Choose the pollen measuring station independently of the weather station and warning postcode. This choice does not change the modelled pollen forecast location. You can change it later in Configure.",
+          "update_interval": "Refresh current weather at this interval. Default and minimum: 600 seconds (10 minutes). Forecasts, warnings and pollen follow their own schedules; more frequent requests do not make provider data newer."
         }
       }
     }
@@ -226,6 +237,12 @@
         "unavailable": "Weather warning feed unavailable",
         "unknown": "No warning data received yet",
         "no_alerts": "No weather warnings"
+      }
+    },
+    "data_source": {
+      "options": {
+        "openmeteo": "Open-Meteo weather at coordinates",
+        "meteoswiss": "MeteoSwiss station observations"
       }
     }
   }

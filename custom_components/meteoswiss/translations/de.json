@@ -10,7 +10,9 @@
           "pollen_station": "Station für Pollenmessungen"
         },
         "data_description": {
-          "pollen_station": "Wähle die Pollenmessstation unabhängig von Wetterstation und Warnungs-Postleitzahl. Die Auswahl ändert den Standort der modellierten Pollenprognose nicht. Du kannst sie später unter Konfigurieren ändern."
+          "pollen_station": "Wähle die Pollenmessstation unabhängig von Wetterstation und Warnungs-Postleitzahl. Die Auswahl ändert den Standort der modellierten Pollenprognose nicht. Du kannst sie später unter Konfigurieren ändern.",
+          "data_source": "Wähle Messwerte einer MeteoSchweiz-Wetterstation oder Open-Meteo-Wetterdaten für Koordinaten. Beide nutzen MeteoSchweiz ICON Seamless für Wetterprognosen über Open-Meteo.",
+          "update_interval": "Aktuelle Wetterdaten in diesem Intervall abrufen. Standard und Minimum: 600 Sekunden (10 Minuten). Prognosen, Warnungen und Pollen haben eigene Abrufintervalle; häufigere Abfragen machen die Quelldaten nicht aktueller."
         }
       },
       "meteoswiss": {
@@ -19,15 +21,24 @@
         "data": {
           "postal_code": "PLZ (Wetterwarnungen)",
           "station_id": "Messstation"
+        },
+        "data_description": {
+          "postal_code": "Vierstellige Schweizer Postleitzahl nur für Naturgefahrenwarnungen. Sie bestimmt weder den Wetterprognosestandort noch die Pollenmessstation.",
+          "station_id": "Liefert gemessene Temperatur, Wind und Niederschlag. Wetterprognosen, modellierte Pollen, Luftqualität und UV nutzen die in Home Assistant hinterlegten Wohnortkoordinaten, unabhängig von dieser Station und der Warnungs-PLZ."
         }
       },
       "openmeteo": {
         "title": "Open-Meteo Einrichtung",
-        "description": "Gib die Koordinaten für aktuelle Wetterdaten, Wetter- und Pollenprognosen ein. Die PLZ wird für Wetterwarnungen verwendet.",
+        "description": "Gib die Koordinaten für aktuelle Wetterdaten, Wetter- und modellierte Pollenprognosen, Luftqualität und UV ein. Die Warnungs-PLZ wählst du unabhängig davon.",
         "data": {
           "postal_code": "Postleitzahl für Wetterwarnungen",
           "latitude": "Breitengrad",
           "longitude": "Längengrad"
+        },
+        "data_description": {
+          "postal_code": "Vierstellige Schweizer Postleitzahl nur für Naturgefahrenwarnungen. Sie bestimmt weder den Wetterprognosestandort noch die Pollenmessstation.",
+          "latitude": "Breitengrad des Wetterstandorts in Dezimalgrad (WGS84, -90 bis 90). Gilt zusammen mit dem Längengrad für aktuelle Wetterdaten, Prognosen, modellierte Pollen, Luftqualität und UV.",
+          "longitude": "Längengrad desselben Wetterstandorts in Dezimalgrad (WGS84, -180 bis 180). Die Koordinaten ändern weder die Warnungs-PLZ noch die Pollenmessstation."
         }
       }
     },
@@ -49,11 +60,11 @@
         "description": "Passe das Aktualisierungsintervall und die Messstation für Pollen an.",
         "data": {
           "update_interval": "Update-Intervall (Sekunden, min. 600)",
-          "data_source": "Datenquelle",
           "pollen_station": "Station für Pollenmessungen"
         },
         "data_description": {
-          "pollen_station": "Wähle die Pollenmessstation unabhängig von Wetterstation und Warnungs-Postleitzahl. Die Auswahl ändert den Standort der modellierten Pollenprognose nicht. Du kannst sie später unter Konfigurieren ändern."
+          "pollen_station": "Wähle die Pollenmessstation unabhängig von Wetterstation und Warnungs-Postleitzahl. Die Auswahl ändert den Standort der modellierten Pollenprognose nicht. Du kannst sie später unter Konfigurieren ändern.",
+          "update_interval": "Aktuelle Wetterdaten in diesem Intervall abrufen. Standard und Minimum: 600 Sekunden (10 Minuten). Prognosen, Warnungen und Pollen haben eigene Abrufintervalle; häufigere Abfragen machen die Quelldaten nicht aktueller."
         }
       }
     }
@@ -226,6 +237,12 @@
         "unavailable": "Warnungsabfrage nicht verfügbar",
         "unknown": "Noch keine Warnungsdaten",
         "no_alerts": "Keine Wetterwarnung"
+      }
+    },
+    "data_source": {
+      "options": {
+        "openmeteo": "Open-Meteo: Wetterdaten für Koordinaten",
+        "meteoswiss": "MeteoSchweiz: Messwerte einer Wetterstation"
       }
     }
   }

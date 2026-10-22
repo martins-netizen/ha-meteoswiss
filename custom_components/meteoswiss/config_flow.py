@@ -12,6 +12,11 @@ from homeassistant.config_entries import ConfigFlow, OptionsFlow
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.selector import (
+    SelectSelector,
+    SelectSelectorConfig,
+    SelectSelectorMode,
+)
 
 from .const import (
     CONF_DATA_SOURCE,
@@ -168,11 +173,12 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
                 {
                     vol.Required(
                         CONF_DATA_SOURCE, default=DATA_SOURCE_OPENMETEO
-                    ): vol.In(
-                        {
-                            DATA_SOURCE_OPENMETEO: "Open-Meteo API (Free, Global)",
-                            DATA_SOURCE_METEOSWISS: "MeteoSwiss STAC API (Swiss Stations)",
-                        }
+                    ): SelectSelector(
+                        SelectSelectorConfig(
+                            options=[DATA_SOURCE_OPENMETEO, DATA_SOURCE_METEOSWISS],
+                            translation_key="data_source",
+                            mode=SelectSelectorMode.DROPDOWN,
+                        )
                     ),
                     vol.Required(CONF_POLLEN_STATION): vol.In(POLLEN_STATIONS),
                     vol.Optional(

@@ -36,17 +36,33 @@ def validate():
     english = None
     for language in ("en", "de", "fr", "it"):
         path = COMPONENT / "translations" / f"{language}.json"
-        current = flatten(
-            json.loads(
-                path.read_text(encoding="utf-8"), object_pairs_hook=unique_object
-            )
+        catalogue = json.loads(
+            path.read_text(encoding="utf-8"), object_pairs_hook=unique_object
         )
+        for category in ("config", "options"):
+            for step, form in catalogue[category]["step"].items():
+                fields = set(form.get("data", {}))
+                help_fields = set(form.get("data_description", {}))
+                if fields != help_fields:
+                    raise ValueError(
+                        f"{language}: {category}.{step} help/field mismatch: "
+                        f"missing={fields - help_fields}, extra={help_fields - fields}"
+                    )
+        current = flatten(catalogue)
         if english is None:
             english = current
         elif set(current) != set(english):
             raise ValueError(
                 f"{language}: missing={set(english) - set(current)}, extra={set(current) - set(english)}"
             )
+    strings = flatten(
+        json.loads(
+            (COMPONENT / "strings.json").read_text(encoding="utf-8"),
+            object_pairs_hook=unique_object,
+        )
+    )
+    if strings != english:
+        raise ValueError("strings.json and English translations differ")
     manifest = json.loads((COMPONENT / "manifest.json").read_text())
     version = next(
         ast.literal_eval(node.value)

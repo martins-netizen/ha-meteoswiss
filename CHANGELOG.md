@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- Explain every setup/options field in DE/EN/FR/IT, localise the native weather
+  source selector, and keep canonical English strings in sync. Clarify the
+  independent observation, forecast, warning and measured-pollen locations;
+  retain saved source keys, intervals and existing-entry behaviour.
+
 - Remove unused camera/hydrology/SLF placeholders after checking imports and
   active platforms. Keep all active entities, the shared flood/avalanche warning
   feed and separately installed radar integrations unchanged.
