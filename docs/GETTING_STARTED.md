@@ -59,15 +59,21 @@ A prerelease is a test version, not an automatically approved everyday release.
 
 ## 2. Download through HACS
 
+The maintained fork is currently added as a **custom repository**. A stable
+GitHub release does not automatically add it to the HACS default catalogue.
+If `martins-netizen/ha-meteoswiss` is already present in your HACS list, **skip
+steps 2–3** and open that existing repository. Do not add it a second time.
+If you already have a configured MeteoSwiss installation, use the
+[migration/update guide](MIGRATION.md) and retain its HA entry.
+
 1. Open **HACS** in the sidebar.
 2. Open the top-right **three-dot menu → Custom repositories**.
 3. Enter `https://github.com/martins-netizen/ha-meteoswiss`, choose
    **Integration** and select **Add**.
 4. Open **MeteoSwiss (maintained fork)** and **Download**. Expand
-   **Need a different version?**, select **8.2.0** under **Release** after its
-   stable publication, and check
-   the announced version before confirming. Older HACS versions may also need
-   beta visibility. If the intended version is missing, stop; do not substitute
+   **Need a different version?**, select **8.2.0** under **Release**, and check
+   the announced version before confirming. If the intended version is missing,
+   refresh information first; do not substitute
    a commit or development branch.
 5. Restart Home Assistant and wait for the interface to return.
 
@@ -76,9 +82,9 @@ downloading components. The [HACS acceptance record](HACS_ACCEPTANCE.md)
 records the completed operator-confirmed source switch, clean first installation
 and recovery rehearsal, with their evidence limits.
 
-Until stable publication, **8.2.0b2** is the available prerelease for explicit
-testing; use its exact version instead. Downloading supplies software. The next
-step configures its data locations.
+Stable **8.2.0** is published. Downloading supplies software; the next step
+configures its data locations. If it is missing in HACS, refresh the repository
+information and check that the source is this maintained fork.
 
 ## 3. Select pollen, weather and warning locations
 
@@ -88,12 +94,12 @@ For measured Swiss weather, choose **MeteoSwiss STAC API (Swiss Stations)**.
 You do not need to work with its underlying API. Keep the initial update
 interval at **600 seconds**.
 
-In this first dialog also explicitly choose a **Station for measured pollen**. Choose the measuring station relevant
-to you; it is independent of the weather station and warning postcode. It does
+In this first dialog also explicitly choose a **Station for measured pollen**.
+Choose the measuring station relevant to you; it is independent of the weather station and warning postcode. It does
 not change the modelled pollen forecast location. No pollen station is
 preselected for a new entry. You can change it later in **Configure**.
 
-This flow is present in published Beta2 and the stable candidate. The
+This flow was introduced in Beta2 and is included in stable 8.2.0. The
 [acceptance record](HACS_ACCEPTANCE.md) records the completed operator check.
 
 **Older Beta1 entries:** setup did not ask for a pollen station. Choose it

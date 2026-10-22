@@ -1,13 +1,14 @@
 # HACS acceptance of the maintained fork
 
-**Updated: 22 October 2026 · Plan and evidence V1.6**
+**Updated: 22 October 2026 · Plan and evidence V1.7**
 
 Both betas are public. Beta1's deployed runtime, the HACS 2.0.5 source switch,
 temporary clean first installation and isolated backup restore are complete.
 Beta2 added the explicit initial pollen choice; on 22 October the operator
 completed new setup with other geographic locations and reported values.
 This closes the focused practical setup/data check, with the evidence limits
-below. The stable 8.2.0 package is prepared, not yet published.
+below. Stable **8.2.0** was published on 22 October at **08:52:40 Europe/Zurich**.
+Its actual HACS visibility/download on the operator's instances is still to be confirmed.
 
 [Release readiness](RELEASE_READINESS.md) tracks the exact stable candidate.
 The protocols below describe acceptance methods, not requests to repeat
@@ -24,9 +25,8 @@ The following precheck does not remove/download software or restart HA.
 3. If it already points to **martins-netizen/ha-meteoswiss**, select
    **Update information**. This refreshes metadata without downloading components.
 4. Open **Download** or **Redownload**, expand **Need a different version?** and
-   select the intended **published release** under **Release**. Currently Beta2
-   is published; select stable 8.2.0 only after publication. Check the version, then
-   **Cancel** for this precheck. Older HACS versions may need beta visibility.
+   select the published stable **8.2.0** under **Release**. Check the version, then
+   **Cancel** for this precheck. Stable 8.2.0 does not require beta visibility.
 5. If the entry points to **LNKtwo/ha-meteoswiss**, retain it during this
    precheck. Confirm provenance, backup and recovery before following
    [migration](MIGRATION.md). Two repositories must not unknowingly manage the
@@ -76,6 +76,8 @@ software and its corresponding warning filters together.
 
 | Evidence | State |
 |---|---|
+| Stable release and resolved tag | Independently confirmed: 8.2.0 → 5a0bf684eb44fd54c4e91d7cbce9e90798b72fa5, published 22 October at 08:52:40 Europe/Zurich; GitHub latest-stable endpoint agrees. |
+| Stable 8.2.0 visible/downloaded in local HACS | Not yet reported. Refresh this fork's metadata and check the offered release; do not infer download or HA installation from GitHub publication. |
 | Public prerelease and resolved tag | Confirmed: 8.2.0b1 → abbb6b7701134ac2573f35b425ab3f0697a80540. |
 | HA 2026.10.2 runtime, 24 hours and visual acceptance | Complete; publication contains the same 33 component/translation/brand files. |
 | HACS version and original source | Operator confirmed HACS 2.0.5 and LNKtwo/ha-meteoswiss. |
@@ -91,7 +93,7 @@ software and its corresponding warning filters together.
 | Beta2 public tag | Confirmed: 8.2.0b2 → 80bf9195ecc3d42d9e4d1beb4ce8143e2c2df2c8, published 22 October 2026 at 07:12:40 Europe/Zurich. |
 | New independent post-switch live file/ID/statistics comparison | Not collected; earlier technical runtime acceptance remains valid within its original scope. |
 | Default branch hidden | Beta2/stable manifests set hide_default_branch=true. Its practical UI result was not separately reported; immutable Beta1 lacks that flag and is unchanged. |
-| HACS default listing or official HA quality tier | Not applied for or confirmed. |
+| HACS default listing or official HA quality tier | On 22 October the maintained fork was absent from the current [default integration catalogue](https://github.com/hacs/default/blob/master/integration). New users therefore add it as a custom repository; users who already added it skip that step. Neither default inclusion nor an official HA tier is claimed. |
 
 The written operator confirmation proves reported source, downloaded version
 and restart; the preceding report confirms initial visual success. Submitted
