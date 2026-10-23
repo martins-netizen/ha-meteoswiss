@@ -45,6 +45,7 @@ def validate() -> None:
         "pollen_coordinator_openmeteo.py",
         "pollen_meteoswiss.py",
         "forecast.py",
+        "forecast_summary.py",
         "openmeteo.py",
         "weather.py",
         "weather_data.py",

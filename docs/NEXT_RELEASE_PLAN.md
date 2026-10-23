@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.15 · **Updated:** 23 October 2026
+**Plan version:** 1.16 · **Updated:** 23 October 2026
 **Status:** Approved planning; Q1 is documented and P0 has partial evidence.
 This document does not approve a new feature, installation or release.
 
@@ -137,15 +137,16 @@ Use the
 [expected module layout](https://contributors.home-assistant.io/core/quality-scale/common-modules/)
 rather than equating central constants with full compliance.
 
-## F1: forecast summary sensors (proposal)
+## F1: forecast summary sensors (implemented candidate)
 
 Hourly and daily forecasts are already supplied by the existing weather entity
 through [weather.get_forecasts](https://www.home-assistant.io/integrations/weather/).
 The calculated daily heating-degree-day sensor is also forecast-derived.
-The refined proposal supports today and tomorrow: maximum/minimum temperature,
-native full-day precipitation sum, and the highest hourly precipitation
-probability with its matching interval(s). This plan records the requested
-time information and current-day temperature scope; it implements no sensors.
+The implemented, unreleased candidate supports today and tomorrow: maximum/
+minimum temperature, native full-day precipitation sum, and the highest hourly
+precipitation probability with its matching interval(s). The
+[forecast sensor guide](FORECAST_SENSORS.md) documents the eight numeric sensors,
+attributes, missing-data behaviour and ordinary-card/automation use.
 
 Temperature extrema and precipitation sums describe the complete target
 calendar day, including elapsed hours today. They remain predictions, not
@@ -172,7 +173,8 @@ or full forecast-list state attribute. Use Europe/Zurich target dates, source
 and retrieval time. Missing fields are unknown; an unavailable/stale source
 is unavailable. Check local-midnight rollover, changing remaining-day windows,
 23/25-hour DST days and end-of-day interval assignment, entity identity,
-HA-owned listener cleanup and DE/EN/FR/IT help/tests before implementation.
+HA-owned listener cleanup and DE/EN/FR/IT names. These cases now have regression
+evidence; the candidate still requires review and separate runtime acceptance.
 Avoid treating changing forecast targets as measured historical totals.
 
 ## P0/P1: location purpose and compatibility

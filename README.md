@@ -79,6 +79,8 @@ separates completed beta work from the remaining release gates and later feature
 
 - SwissMetNet observations and hourly precipitation statistics.
 - MeteoSwiss ICON Seamless forecasts via Open-Meteo.
+- Unreleased development after 8.2.0: [eight forecast sensors](docs/FORECAST_SENSORS.md)
+  for today/tomorrow, including matching maximum-probability rain windows.
 - Active/upcoming weather and natural-hazard warnings through the MeteoSwiss
   postcode feed, with explicit feed availability. This includes flood (BAFU)
   and avalanche (SLF) warnings when supplied for the selected postcode; it is

@@ -178,6 +178,11 @@ Forecasts use **MeteoSwiss ICON Seamless via Open-Meteo**. They are model output
 not measurements at your house or a guaranteed selection of the most accurate
 model in every situation. Modelled air quality does not replace a local sensor.
 
+**Unreleased development after 8.2.0:** eight forecast sensors for today and
+tomorrow can be used in ordinary cards and automations. The
+[forecast sensor guide](FORECAST_SENSORS.md) explains full-day temperature/rain
+predictions and the times of the highest hourly rain probability.
+
 For problems, retain the integration instead of deleting/recreating it.
 Record version, time and affected value; use [troubleshooting](USAGE.md#quick-troubleshooting)
 or the [fork issue tracker](https://github.com/martins-netizen/ha-meteoswiss/issues).

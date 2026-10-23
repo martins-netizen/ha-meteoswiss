@@ -172,6 +172,30 @@
       },
       "precipitation_modelled": {
         "name": "Niederschlag (Modellintervall)"
+      },
+      "forecast_maximum_temperature_today": {
+        "name": "Höchsttemperatur heute (Prognose)"
+      },
+      "forecast_minimum_temperature_today": {
+        "name": "Tiefsttemperatur heute (Prognose)"
+      },
+      "forecast_precipitation_today": {
+        "name": "Niederschlag heute (Prognose)"
+      },
+      "forecast_probability_today": {
+        "name": "Höchste stündliche Niederschlagswahrscheinlichkeit heute"
+      },
+      "forecast_maximum_temperature_tomorrow": {
+        "name": "Höchsttemperatur morgen (Prognose)"
+      },
+      "forecast_minimum_temperature_tomorrow": {
+        "name": "Tiefsttemperatur morgen (Prognose)"
+      },
+      "forecast_precipitation_tomorrow": {
+        "name": "Niederschlag morgen (Prognose)"
+      },
+      "forecast_probability_tomorrow": {
+        "name": "Höchste stündliche Niederschlagswahrscheinlichkeit morgen"
       }
     },
     "binary_sensor": {
