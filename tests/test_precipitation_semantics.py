@@ -15,8 +15,8 @@ from pytest_homeassistant_custom_component.components.recorder.common import (
 )
 
 from custom_components.meteoswiss.const import DOMAIN
-from custom_components.meteoswiss.coordinator import MeteoSwissDataUpdateCoordinator
-from custom_components.meteoswiss.precipitation import (
+from custom_components.meteoswiss.coordinator import (
+    MeteoSwissDataUpdateCoordinator,
     MeteoSwissHourlyPrecipitationCoordinator,
 )
 from custom_components.meteoswiss.sensor import (

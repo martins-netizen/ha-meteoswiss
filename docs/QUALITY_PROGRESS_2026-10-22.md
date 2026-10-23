@@ -1,8 +1,44 @@
 # Bronze/Silver follow-up — 22 October 2026
 
-**Record version:** 1.10. **Updated:** 23 October 2026. **Scope:** unreleased development after stable 8.2.0.
+**Record version:** 1.11. **Updated:** 23 October 2026. **Scope:** unreleased development after stable 8.2.0.
 The [dated original audit](QUALITY_AUDIT_2026-10-17.md) remains historical.
 This document records individual improvements, not an official HA quality tier.
+
+## Separate hourly/archive precipitation, Recorder and HA coordination
+
+precipitation.py now defines a borrowed-session source client and a pure
+completed-hour parser returning start/amount without HA or Recorder imports.
+precipitation_recorder.py owns executor parsing, ordered corrections and the
+same Recorder projection/metadata/queue result. The real HA coordinator moves
+to coordinator.py and composes both. All four availability messages, optional
+Recorder startup, hourly/weekly polling and entry-owned cleanup remain.
+
+Source requests retain fixed host/body limits, cp1252, four transient attempts
+and empty private errors; cancellation propagates. CSV validation, thirteen-month
+calendar lookback, station checks, zero/invalid values and UTC interval conversion
+are retained. Source amounts become the same Recorder mean/min/max rows only
+in the adapter. Partial file failures preserve valid hours; all-invalid data
+never becomes zero or a successful empty import. Real-Recorder tests retain
+repeat-import upserts and a corrected hour without duplicate statistics.
+
+Seventeen new cases cover direct source requests without an HA object, both
+transport cancellation points, private errors/retry counts, each HA failure
+category, partial parser failure and executor cancellation before queueing.
+Both actual local HA environments, **2026.8.3 and 2026.10.2**, pass **1,050 tests
+and 53 subtests**; combined line/branch coverage is **99.97036%**, all **716/716
+branches**. Every module exceeds 95%; source, Recorder adapter and coordinator
+have 100% line/branch coverage. Both strict gates pass, with the new adapter
+additionally gated at 100%; no exclusions or lower thresholds were introduced.
+
+AST checks retain asset/calendar helpers, all CSV validation, source request/
+retry after a private period-attribute adaptation, Recorder metadata/result,
+all six previous coordinators, setup functions and runtime fields. The only
+parser-boundary projection change moves mean/min/max creation to the adapter.
+All seven actual coordinator definitions are now canonical, closing this
+bounded inventory. Official location/POI selection remains in the agreed next
+release scope before packaging. CI remains HA 2026.8.3/2026.10.1, separately
+from actual local 2026.10.2. No manifest/dependency, source/model, identity,
+HA installation, release or complete Bronze/Silver/Gold claim changes.
 
 ## Separate modelled pollen/AQ and optional UV from HA coordination
 

@@ -1,6 +1,6 @@
 # Coordinator placement review
 
-**Review version:** 1.4 · **Date:** 23 October 2026
+**Review version:** 1.5 · **Date:** 23 October 2026
 **Scope:** unreleased development after stable 8.2.0.
 
 The [HA common-modules rule](https://contributors.home-assistant.io/core/quality-scale/common-modules/)
@@ -16,7 +16,7 @@ This review records actual class definitions, not imports or type annotations.
 | OpenMeteoDataUpdateCoordinator | coordinator.py | Extracted current-condition client handles HTTP/parsing; HA coordinator retains cache, freshness, failure pause and lifecycle. |
 | OpenMeteoPollenCoordinator | coordinator.py | Source-only pollen/AQ client includes the separate optional UV request; the real HA coordinator retains current-hour validation, the shared AQ/UV result cache and transition logs. |
 | MeteoSwissPollenCoordinator | coordinator.py | Extracted measured-pollen client owns transport, parsing and freshness; HA coordinator owns scheduling and exception translation. |
-| MeteoSwissHourlyPrecipitationCoordinator | precipitation.py | Open: official hourly/archive parsing, Recorder import and coordinator lifecycle share a source module. |
+| MeteoSwissHourlyPrecipitationCoordinator | coordinator.py | Source-only hourly/archive client and amount parser in precipitation.py; explicit Recorder projection/import in precipitation_recorder.py; genuine HA coordinator composes both. |
 
 There are seven real coordinator classes. MeteoSwissSensor/MeteoSwissWeather
 are coordinator-backed entities, not additional coordinator definitions. The
@@ -155,35 +155,59 @@ cases include direct borrowed-session requests without an HA runtime, private
 failures, both cancellation points, missing session, invalid AQ, optional UV
 failure and a cache hit that cannot postpone expiry.
 
-Six of seven actual coordinators are now canonical. Only the precipitation
-source/importer boundary remains below; this is not full Silver/Gold completion.
+At that step six of seven coordinators were canonical. The precipitation
+source/importer extraction below closes the final inventory finding.
 
-## Remaining source boundaries
+## Completed hourly/archive precipitation boundaries
 
-The precipitation finding remains open against the literal HA module-placement rule.
-Do not mark it complete merely because these modules have source-specific names.
-Do not add lint suppressions, aliases or inheritance-only wrappers to conceal a
-definition outside the canonical module. A useful next extraction separates a
-source's transport/parser/cache contract from its thin HA coordinator lifecycle,
-with the actual coordinator defined in coordinator.py.
+precipitation.py now defines MeteoSwissHourlyPrecipitationClient, the unchanged
+asset/calendar helpers and a pure parser returning UTC interval start plus
+amount in mm. It imports neither HA nor Recorder. The original station metadata
+and CSV requests retain four transient attempts, the fixed OGD host, cp1252 and
+separate current/archive byte limits. Source methods suppress raw transport/
+data exception chains behind an empty PrecipitationSourceError; cancellation
+propagates. The session is borrowed, with no new cache, scheduler or close call.
 
-Continue with a bounded source and compare its class/client contract before
-and afterwards. The shared timestamp-parser prerequisite is complete; reuse
-that implementation rather than introducing competing copies. Keep transport
-and parsing in the source client, and define its genuine scheduling/HA lifecycle
-in coordinator.py. The next bounded work separates hourly/archive precipitation
-source parsing, Recorder import and the actual HA coordinator. Forecast, AQ/UV
-and Recorder statistics remain distinct.
+precipitation_recorder.py defines MeteoSwissPrecipitationImporter, an explicit
+HA/Recorder adapter. It runs pure CSV parsing through HA's executor, merges
+valid files in the configured period order and retains later valid corrections
+without duplicates. Lookback remains thirteen calendar months for the archive.
+It projects source amounts to the same Recorder mean/min/max entries and retains
+statistic ID, arithmetic mean type, has_sum=false, unit class, mm and name.
+A valid subset remains queueable when another file fails. Missing assets,
+all-invalid data and queue failure do not report success or manufacture zeros.
+The returned import/partial/failure metadata is unchanged.
 
-Preserve per-host HTTP bounds, request/retry/cancellation budgets, freshness,
-partial-value versus source-failure semantics, once-per-outage logs, cache keys
-and original TTLs. Retain HA-owned sessions, optional-source startup and polling
-listener cleanup. Measured pollen, forecasts, AQ/UV and Recorder imports keep
-their separate data contracts and schedules. Validate each extraction through
-existing source regressions and real HA registration/reload/unload tests before
-combining it into a reviewed candidate.
+The genuine MeteoSwissHourlyPrecipitationCoordinator now lives in coordinator.py
+and composes source plus importer. All four HA failure messages remain distinct,
+with private formatted chains. Hourly and weekly schedules, optional Recorder
+dependency, startup, keepalive polling and unload cancellation remain unchanged.
+There is no old-module alias or inheritance-only wrapper. Both source and Recorder
+adapter have strict 100% line/branch gates, alongside the canonical coordinator.
 
-This review neither changes the live installation nor grants a Bronze/Silver
-tier. Stable 8.2.0 remains unchanged; a later accepted package needs its focused
-HA acceptance. See the [quality follow-up](QUALITY_PROGRESS_2026-10-22.md) and
+AST comparisons retain asset/calendar helpers, all CSV validation, source
+requests/retry after the period-attribute adaptation, Recorder metadata/result,
+all six earlier coordinators, setup functions and runtime fields. Source parser
+output changes only at its boundary: amount replaces Recorder mean/min/max;
+the adapter supplies the same old projection. Existing real-Recorder regressions
+confirm repeated upserts and correction without duplicate hours. Seventeen new
+cases cover direct borrowed-session requests, both transport cancellation points,
+private errors/retry budgets, four HA failure categories, partial parser failure
+and executor cancellation before queuing.
+
+All seven actual coordinator definitions are now canonical. This closes the
+seven-class placement inventory, not every Bronze/Silver/Gold requirement.
+
+## Remaining architecture and release limits
+
+Keep independent data-family timing, freshness, per-host HTTP bounds, original
+cache TTLs and HA-owned sessions. No suppression, coverage exclusion or lowered
+threshold replaces an architecture boundary. Later changes must retain source
+and registered entity/Recorder lifecycle evidence.
+
+The agreed next feature release still includes official-catalogue location/POI
+selection. Its stored location, altitude, migration and translated UI contracts
+remain separate work before packaging and focused HA acceptance. This inventory
+does not change the running HA or grant an official quality tier. See the
+[quality evidence](QUALITY_PROGRESS_2026-10-22.md) and
 [next release plan](NEXT_RELEASE_PLAN.md).

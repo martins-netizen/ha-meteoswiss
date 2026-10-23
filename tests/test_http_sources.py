@@ -14,10 +14,10 @@ from homeassistant.helpers.update_coordinator import UpdateFailed
 
 from custom_components.meteoswiss import http
 from custom_components.meteoswiss.alerts import MeteoSwissAlertsAPI
-from custom_components.meteoswiss.coordinator import MeteoSwissDataUpdateCoordinator
-from custom_components.meteoswiss.coordinator import MeteoSwissPollenCoordinator
-from custom_components.meteoswiss.precipitation import (
+from custom_components.meteoswiss.coordinator import (
+    MeteoSwissDataUpdateCoordinator,
     MeteoSwissHourlyPrecipitationCoordinator,
+    MeteoSwissPollenCoordinator,
 )
 
 URL = "https://data.geo.admin.ch/data.csv"
@@ -211,7 +211,7 @@ async def test_untrusted_stac_asset_cannot_fetch_or_import(hass, aioclient_mock)
         await current._async_update_data()
     hourly = MeteoSwissHourlyPrecipitationCoordinator(hass, "KLO", session)
     with patch(
-        "custom_components.meteoswiss.precipitation.async_add_external_statistics"
+        "custom_components.meteoswiss.precipitation_recorder.async_add_external_statistics"
     ) as queue:
         with pytest.raises(UpdateFailed):
             await hourly._async_update_data()
@@ -232,8 +232,8 @@ async def test_archive_has_a_separate_budget_and_keeps_provider_encoding(
         patch("custom_components.meteoswiss.precipitation.MAX_ARCHIVE_BYTES", 200),
     ):
         with pytest.raises(ValueError, match="size"):
-            await source._async_download_hourly_csv(URL, "now")
-        assert await source._async_download_hourly_csv(URL, "historical") == body
+            await source.client._async_download_hourly_csv(URL, "now")
+        assert await source.client._async_download_hourly_csv(URL, "historical") == body
 
 
 async def test_warning_redirect_is_unavailable_not_all_clear(hass, aioclient_mock):

@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.17 · **Updated:** 23 October 2026
+**Plan version:** 1.18 · **Updated:** 23 October 2026
 **Status:** Approved planning; Q1 is documented and P0 has partial evidence.
 This document does not approve a new feature, installation or release.
 
@@ -10,8 +10,9 @@ The operator explicitly includes both remaining architecture boundaries and
 location/POI selection in the next release. Do not freeze the scope at the
 forecast sensors alone. The sequence is modelled pollen/AQ/UV separation,
 hourly/archive precipitation separation, then official-catalogue location search
-and compatible selection/reconfiguration. This candidate implements the first
-boundary; the latter architecture boundary and POI implementation remain open.
+and compatible selection/reconfiguration. Both architecture boundaries are now
+implemented; this candidate completes precipitation. POI implementation remains
+open before the release candidate.
 Only then freeze features, reconcile release documentation, package a reviewed
 candidate and perform focused acceptance in the existing temporary HA.
 
@@ -48,6 +49,22 @@ The detailed, separately reviewed proposal is in
 A working App-POI catalogue endpoint is not a prerequisite for that OGD route.
 Selecting a forecast POI does not establish point-specific warning coverage;
 a separately confirmed warning postcode can remain supported.
+
+## HACS default-list submission gate
+
+Checked against the [current inclusion rules](https://www.hacs.xyz/docs/publish/include/)
+on 23 October 2026. The maintained fork is not in the retrieved hacs/default
+integration list. Its current hacs.json lacks country; include **country: CH**
+in the next released HACS manifest. Do not rewrite the immutable 8.2.0 release.
+
+After the agreed POI implementation and candidate acceptance, rerun HACS without
+ignores and Hassfest, then publish the reviewed stable release before submitting
+an owner-authored, editable, alphabetical addition to hacs/default. Recheck
+branding, manifest, licence, active repository and Core-domain eligibility at
+submission time. Explain the fork origin and shared domain transparently;
+the published rules do not impose a blanket ban on forks. HACS review is still
+required and can take months. Passing our checks or completing HA quality-tier
+work is not acceptance into the default list.
 
 ## Baseline and quality claims
 
@@ -124,7 +141,7 @@ as the checklist. These work packages do not claim completed compliance.
 
 | Area | Starting evidence / next check |
 |---|---|
-| Bronze prerequisite | Reconcile all twenty rules. Unreleased field help/source translations and unused-placeholder cleanup are recorded in the dated follow-up; shared metadata and polling/options migration now have bounded evidence; warning coordinator placement and catalogue diagnostic availability are corrected; measured pollen, alternative current conditions and ICON forecasts now have separate clients/canonical coordinators with a shared timestamp parser; one precipitation source-module placement finding and final UX review remain open. Local HACS brand files are not Core-brands inclusion. |
+| Bronze prerequisite | Reconcile all twenty rules. Unreleased field help/source translations and unused-placeholder cleanup are recorded in the dated follow-up; shared metadata and polling/options migration now have bounded evidence; warning coordinator placement and catalogue diagnostic availability are corrected; measured pollen, alternative current conditions and ICON forecasts now have separate clients/canonical coordinators with a shared timestamp parser; all seven real coordinators are canonical after the precipitation source/Recorder split; final UX and broader rule evidence remain open. Local HACS brand files are not Core-brands inclusion. |
 | action-exceptions | Justified exemption while no integration actions exist; reassess if introduced. |
 | config-entry-unloading | Retain Recorder/reload/unload tests; check remaining tasks, pollers and listeners by family. |
 | docs-configuration-parameters, docs-installation-parameters | Explain purpose, source and effects; separate forecast, observation, warning and measured-pollen locations. |
@@ -150,10 +167,10 @@ No wholesale architectural rewrite is planned. Retain source separation and
 HA-owned sessions. The shared entity metadata follow-up preserves nine existing
 device/identity contracts. The [coordinator placement review](COORDINATOR_LAYOUT_REVIEW.md)
 now inventories all seven coordinators, moves warnings out of the platform, and
-records one remaining source-module placement finding after the measured-pollen,
-alternative-current, ICON-forecast and modelled-pollen/AQ/UV client extractions
-and shared UTC parser move. The next bounded work separates precipitation
-source parsing, Recorder import and the real HA coordinator. Catalogue diagnostic
+closes its seven-class placement inventory after the measured-pollen,
+alternative-current, ICON-forecast, modelled-pollen/AQ/UV and precipitation
+source/importer extractions and shared UTC parser move. The next package is
+the agreed location/POI contract and implementation. Catalogue diagnostic
 expiry/failure/recovery is implemented and tested separately from source freshness.
 Use the
 [expected module layout](https://contributors.home-assistant.io/core/quality-scale/common-modules/)
