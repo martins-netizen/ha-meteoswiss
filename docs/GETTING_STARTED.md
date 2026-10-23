@@ -89,7 +89,10 @@ information and check that the source is this maintained fork.
 The steps below describe published **8.2.0**. In unreleased development, the
 interval field is removed from setup/Configure: new entries update automatically
 at 600 seconds, and existing individual intervals remain unchanged. Configure
-then edits only the measured-pollen station. Do not download development merely
+then edits only the measured-pollen station. Development also adds an explicit
+forecast-location dialog and a separate **Reconfigure** path; see the
+[postcode/town/POI guide](FORECAST_LOCATION_SETUP.md), including the distinction
+between translated dialogs and provider place names. Do not download development merely
 to obtain that dialog change.
 
 ## 3. Select pollen, weather and warning locations

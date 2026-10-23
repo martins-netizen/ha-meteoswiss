@@ -22,12 +22,12 @@
         },
         "data_description": {
           "postal_code": "Vierstellige Schweizer Postleitzahl nur für Naturgefahrenwarnungen. Sie bestimmt weder den Wetterprognosestandort noch die Pollenmessstation.",
-          "station_id": "Liefert gemessene Temperatur, Wind und Niederschlag. Wetterprognosen, modellierte Pollen, Luftqualität und UV nutzen die in Home Assistant hinterlegten Wohnortkoordinaten, unabhängig von dieser Station und der Warnungs-PLZ."
+          "station_id": "Liefert gemessene Temperatur, Wind und Regen. Den ICON-Prognoseort wählst du anschliessend. Modellierte Pollen, Luftqualität und UV behalten die HA-Hauskoordinaten."
         }
       },
       "openmeteo": {
         "title": "Open-Meteo Einrichtung",
-        "description": "Gib die Koordinaten für aktuelle Wetterdaten, Wetter- und modellierte Pollenprognosen, Luftqualität und UV ein. Die Warnungs-PLZ wählst du unabhängig davon.",
+        "description": "Basiskoordinaten für aktuelles Wetter, modellierte Pollen, Luftqualität und UV eingeben. Den ICON-Prognoseort wählst du anschliessend; die Warnungs-PLZ bleibt getrennt.",
         "data": {
           "postal_code": "Postleitzahl für Wetterwarnungen",
           "latitude": "Breitengrad",
@@ -35,8 +35,48 @@
         },
         "data_description": {
           "postal_code": "Vierstellige Schweizer Postleitzahl nur für Naturgefahrenwarnungen. Sie bestimmt weder den Wetterprognosestandort noch die Pollenmessstation.",
-          "latitude": "Breitengrad des Wetterstandorts in Dezimalgrad (WGS84, -90 bis 90). Gilt zusammen mit dem Längengrad für aktuelle Wetterdaten, Prognosen, modellierte Pollen, Luftqualität und UV.",
+          "latitude": "Breitengrad des Basisstandorts in Dezimalgrad (WGS84, -90 bis 90). Zusammen mit dem Längengrad für aktuelles Wetter, modellierte Pollen, Luftqualität und UV. Der Prognoseort folgt im nächsten Schritt.",
           "longitude": "Längengrad desselben Wetterstandorts in Dezimalgrad (WGS84, -180 bis 180). Die Koordinaten ändern weder die Warnungs-PLZ noch die Pollenmessstation."
+        }
+      },
+      "forecast_location": {
+        "title": "Ort für die Wetterprognose",
+        "description": "Bisheriger Prognoseort: {current_location}. Wähle eine Postleitzahl, einen Ort oder POI für ICON-Wetterprognosen und Prognosesensoren. Messwerte, modellierte Luftqualität/Pollen/UV, gemessene Pollen und Warnungs-PLZ behalten ihre getrennten Standorte.",
+        "data": {
+          "action": "Prognoseort"
+        },
+        "data_description": {
+          "action": "Bisherigen Ort beibehalten, im amtlichen Katalog suchen oder ausdrücklich zu den ursprünglichen Basiskoordinaten zurückkehren. Erst die Bestätigung übernimmt eine Änderung."
+        }
+      },
+      "forecast_search": {
+        "title": "Prognoseort suchen",
+        "description": "Suche mit vierstelliger Schweizer PLZ oder Orts-/POI-Namen, z. B. 8302, Säntis oder Gotthardpass. Die Suche erfolgt lokal im amtlichen MeteoSchweiz-Katalog. Damit wählst du Wetterprognosen, keine Warnabdeckung.",
+        "data": {
+          "query": "Postleitzahl oder Ort/POI"
+        },
+        "data_description": {
+          "query": "2–128 Zeichen eingeben. Akzente und ae/oe/ue-Schreibweisen werden unterstützt. Breite Suche verfeinern, bis höchstens 20 Treffer vorliegen."
+        }
+      },
+      "forecast_select": {
+        "title": "Prognosepunkt auswählen",
+        "description": "Wähle den gewünschten Punkt bewusst. Die Beschriftung zeigt Name, Punktkategorie, Kataloghöhe über Meer und Koordinaten. Station und gleichnamiger POI sind unterschiedliche Prognosepunkte.",
+        "data": {
+          "point": "Prognosepunkt"
+        },
+        "data_description": {
+          "point": "Kategorie und Höhe prüfen. Ein PLZ-Punkt ist eine zugeordnete Prognosekoordinate, keine Postfiliale oder genaue Wohnadresse. Kein Treffer ist vorausgewählt."
+        }
+      },
+      "forecast_confirm": {
+        "title": "Prognoseort bestätigen",
+        "description": "Prognoseort: {location}. Warnungs-PLZ bleibt {postal_code}; daraus folgt keine Warnabdeckung für den gewählten POI. Nur ICON-Prognosen und abgeleitete Prognosesensoren/Heizgradtage ändern sich. Aktuelle Messwerte und andere Quellenstandorte bleiben erhalten. Zum Übernehmen absenden.",
+        "data": {
+          "search_again": "Anderen Ort suchen"
+        },
+        "data_description": {
+          "search_again": "Aktivieren, um ohne Speichern zur Suche zurückzukehren. Andernfalls mit Absenden den angezeigten Ort bestätigen."
         }
       }
     },
@@ -45,10 +85,16 @@
       "station_not_found": "Station nicht gefunden",
       "invalid_location": "Ungültige Koordinaten",
       "invalid_postal_code": "Gib eine vierstellige Schweizer Postleitzahl ein, z. B. 8302.",
-      "invalid_pollen_station": "Wähle eine Pollenmessstation aus der Liste."
+      "invalid_pollen_station": "Wähle eine Pollenmessstation aus der Liste.",
+      "invalid_forecast_selection": "Eine gültige Auswahl aus diesem Dialog wählen. Eine ungültig gespeicherte Auswahl muss ersetzt oder auf Basiskoordinaten zurückgesetzt werden.",
+      "invalid_forecast_query": "2–128 Zeichen eingeben: vierstellige PLZ oder Orts-/POI-Name.",
+      "forecast_catalogue_unavailable": "Der Ortskatalog ist vorübergehend nicht verfügbar. Später erneut versuchen oder abbrechen; der gespeicherte Ort bleibt erhalten.",
+      "forecast_no_matches": "Kein passender Prognosepunkt. Schreibweise prüfen oder eine andere PLZ/einen anderen Namen versuchen.",
+      "forecast_too_many_matches": "Mehr als 20 Treffer. Einen genaueren Namen oder eine Postleitzahl eingeben."
     },
     "abort": {
-      "already_configured": "Diese Datenquelle und dieser Standort sind bereits eingerichtet."
+      "already_configured": "Diese Datenquelle und dieser Standort sind bereits eingerichtet.",
+      "reconfigure_successful": "Prognoseort beibehalten."
     }
   },
   "options": {
@@ -263,6 +309,23 @@
       "options": {
         "openmeteo": "Open-Meteo: Wetterdaten für Koordinaten",
         "meteoswiss": "MeteoSchweiz: Messwerte einer Wetterstation"
+      }
+    },
+    "forecast_point_type": {
+      "options": {
+        "1": "Station",
+        "2": "Postleitzahl",
+        "3": "Point of Interest",
+        "unknown_height": "Höhe nicht verfügbar",
+        "legacy": "Ursprüngliche Basiskoordinaten",
+        "invalid": "Gespeicherte Auswahl ungültig"
+      }
+    },
+    "forecast_location_action": {
+      "options": {
+        "keep": "Bisherigen Prognoseort beibehalten",
+        "search": "Postleitzahl, Ort oder POI suchen",
+        "base": "Zu den ursprünglichen Basiskoordinaten zurückkehren"
       }
     }
   }

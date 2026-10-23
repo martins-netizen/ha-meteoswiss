@@ -1,10 +1,11 @@
 # Local forecast points: separate catalogue and forecast decisions
 
-**Plan version:** 1.6 · **Updated:** 23 October 2026
-**Status:** Catalogue foundation and offline saved-selection/height-aware ICON routing implemented in development; translated HA flows and focused acceptance remain open.
+**Plan version:** 1.7 · **Updated:** 23 October 2026
+**Status:** Catalogue foundation and offline saved-selection/height-aware ICON routing implemented in development; translated HA flows are implemented and regression-tested; focused candidate acceptance remains open.
 Existing entries without a selection retain their forecast coordinates and IDs. Installed version remains unchanged.
 
-See the [saved-location contract](SAVED_FORECAST_LOCATION.md) and
+See the [translated selection/reconfiguration guide](FORECAST_LOCATION_SETUP.md),
+[saved-location contract](SAVED_FORECAST_LOCATION.md) and
 [catalogue implementation contract](FORECAST_LOCATION_CATALOGUE.md)
 and its fresh 23 October source/client evidence. The dated audits below remain
 historical rather than evidence of a completed HA selection feature.

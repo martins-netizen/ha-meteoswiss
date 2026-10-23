@@ -104,6 +104,14 @@ async def start_flow(hass, source, pollen_station="PZH"):
     )
 
 
+async def finish_forecast(hass, result):
+    if result.get("step_id") == "forecast_location":
+        return await hass.config_entries.flow.async_configure(
+            result["flow_id"], {"action": "keep"}
+        )
+    return result
+
+
 async def test_initial_form_requires_an_explicit_measured_pollen_station(
     hass, enable_custom_integrations
 ):
@@ -128,9 +136,7 @@ async def test_invalid_pollen_station_can_be_corrected_before_network_access(
     user_input = {CONF_DATA_SOURCE: DATA_SOURCE_METEOSWISS}
     if station is not None:
         user_input[CONF_POLLEN_STATION] = station
-    with patch.object(
-        flow, "_load_stations", return_value=STATIONS
-    ) as load_stations:
+    with patch.object(flow, "_load_stations", return_value=STATIONS) as load_stations:
         result = await flow.async_step_user(user_input)
         assert result["step_id"] == "user"
         assert result["errors"] == {CONF_POLLEN_STATION: "invalid_pollen_station"}
@@ -169,6 +175,7 @@ async def test_user_flow_success_and_connection_recovery(
         result = await hass.config_entries.flow.async_configure(
             result["flow_id"], inputs
         )
+    result = await finish_forecast(hass, result)
     assert result["type"] == "create_entry"
     assert result["result"].unique_id == unique_id
     assert result["data"][CONF_DATA_SOURCE] == source
@@ -191,7 +198,8 @@ async def test_catalogue_failure_is_retryable(hass, enable_custom_integrations):
         result = await hass.config_entries.flow.async_configure(
             result["flow_id"], MS_INPUT
         )
-        assert result["type"] == "create_entry"
+        result = await finish_forecast(hass, result)
+    assert result["type"] == "create_entry"
     await hass.async_block_till_done()
 
 
@@ -224,6 +232,7 @@ async def test_invalid_warning_postcode_is_correctable_before_observation_check(
         result = await hass.config_entries.flow.async_configure(
             result["flow_id"], {**inputs, CONF_POSTAL_CODE: " 8302 "}
         )
+        result = await finish_forecast(hass, result)
         assert result["type"] == "create_entry"
         assert result["data"][CONF_POSTAL_CODE] == "8302"
         validate_source.assert_called_once()
@@ -243,6 +252,7 @@ async def test_unknown_station_then_valid_station(hass, enable_custom_integratio
         )
         assert result["errors"] == {"base": "station_not_found"}
         result = await flow.async_step_meteoswiss(MS_INPUT)
+    result = await flow.async_step_forecast_location({"action": "keep"})
     assert result["type"] == "create_entry"
 
 
@@ -270,6 +280,7 @@ async def test_invalid_location_can_be_corrected(
         result = await hass.config_entries.flow.async_configure(
             result["flow_id"], OM_INPUT
         )
+    result = await finish_forecast(hass, result)
     assert result["type"] == "create_entry"
     await hass.async_block_till_done()
 
@@ -422,6 +433,7 @@ async def test_options_flow_preserves_entry_identity(
     result = await hass.config_entries.options.async_configure(
         result["flow_id"], {CONF_POLLEN_STATION: "PZH"}
     )
+    result = await finish_forecast(hass, result)
     assert result["type"] == "create_entry"
     assert entry.options[CONF_UPDATE_INTERVAL] == 1200
     assert entry.data[CONF_UPDATE_INTERVAL] == 900

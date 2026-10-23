@@ -1,0 +1,2 @@
+point_id;point_type_id;station_abbr;postal_code;point_name;point_type_de;point_type_fr;point_type_it;point_type_en;point_height_masl;point_coordinates_lv95_east;point_coordinates_lv95_north;point_coordinates_wgs84_lat;point_coordinates_wgs84_lon
+328000;2;;3280;Murten;Zentrum Postleitzahl;Centre code postal;Centro codice postale;Postal code center;452.0;2575668.0;1197196.0;46.925414;7.119161

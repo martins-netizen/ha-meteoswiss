@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.22 · **Updated:** 23 October 2026
+**Plan version:** 1.23 · **Updated:** 23 October 2026
 **Status:** Approved catalogue-based location implementation; dated catalogue audit complete, selection and compatibility acceptance remain open.
 This document does not approve a new feature, installation or release.
 
@@ -17,8 +17,9 @@ The first implementation package now provides the bounded official catalogue
 client, immutable point/selection provenance and deterministic local search;
 see the [catalogue contract](FORECAST_LOCATION_CATALOGUE.md). The second package
 adds [offline saved-selection routing](SAVED_FORECAST_LOCATION.md), explicit
-catalogue-height requests and height-aware cache identity. Translated HA flows
-and focused compatibility acceptance remain open.
+catalogue-height requests and height-aware cache identity. The third package now supplies [translated HA selection and reconfiguration](FORECAST_LOCATION_SETUP.md).
+Review/integration, the final scope/quality review and focused candidate
+acceptance remain open.
 Only then freeze features, reconcile release documentation, package a reviewed
 candidate and perform focused acceptance in the existing temporary HA.
 
@@ -58,8 +59,8 @@ The 21 October download verifies **5816 unique type/ID pairs**, including
 fully identical; 86 bare IDs span multiple types. The plan records hashes,
 coordinates, catalogue heights and a proposed result display. Catalogue-backed
 selection uses the existing ICON forecast source. Processed OGD forecast
-payload/resource evaluation is a separate future decision; actual selection UX and practical
-compatibility acceptance remain open for this release. Height/request/cache
+payload/resource evaluation is a separate future decision; selection dialogs are now implemented and regression-tested; practical
+compatibility acceptance remains open for this release. Height/request/cache
 semantics are now defined and regression-tested in the second package.
 Selecting a forecast POI does not establish point-specific warning coverage;
 a separately confirmed warning postcode can remain supported.

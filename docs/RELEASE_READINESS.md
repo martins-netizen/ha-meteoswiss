@@ -1,8 +1,26 @@
 # Release readiness: beta and first stable version
 
-**Document version:** 1.6 · **Updated:** 22 October 2026
+**Document version:** 1.7 · **Updated:** 23 October 2026
 **Purpose:** One entry point for completed evidence, remaining publication steps
 and work deliberately deferred to later versions.
+
+## Current next-feature release position
+
+The operator confirmed the HACS update to stable **8.2.0** on 22 October.
+Completed source switch, clean install, restore and Beta2 setup are retained;
+no repeat is required merely for the next feature packet. The old publication
+sequence below remains historical evidence for 8.2.0.
+
+The agreed next scope includes the architecture boundaries (PRs #54/#55),
+forecast scalars (#53), official catalogue (#56), saved-location/height-aware
+ICON routing (#57) and translated postcode/town/POI setup/reconfiguration.
+The dialog package is prepared with tests, not yet an operator-approved
+candidate. Its [guide](FORECAST_LOCATION_SETUP.md) records the remaining focused
+UI checks and the known locality-name alias limit. Next: review/integrate that
+package, perform the final scope/quality/documentation review, freeze and build
+the exact reviewed 8.3.0b1 candidate, then check it in the existing temporary HA.
+Feature implementation alone is not candidate acceptance, stable publication,
+HACS default-list inclusion or a complete Silver/Gold assessment.
 
 ## Completed evidence
 

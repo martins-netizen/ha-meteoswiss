@@ -173,3 +173,11 @@ full backups or credentials.
 
 Bundled UI languages update with the software. Do not overwrite them with old
 translation files. Personal dashboard labels remain separately maintained.
+
+## Forecast-location selection in unreleased development
+
+Existing entries retain their original forecast location until a deliberate
+change. Use the entry's **three-dot menu → Reconfigure**, not pollen Configure
+and not deletion/recreation. The [forecast-location guide](FORECAST_LOCATION_SETUP.md)
+explains search, confirmation, cancel/keep/reset and unchanged location roles.
+Candidate checks for this feature remain separate from completed 8.2.0 acceptance.

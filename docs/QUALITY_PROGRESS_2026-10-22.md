@@ -1,10 +1,44 @@
 # Bronze/Silver follow-up — 22 October 2026
 
-**Record version:** 1.13. **Updated:** 23 October 2026. **Scope:** unreleased development after stable 8.2.0.
+**Record version:** 1.14. **Updated:** 23 October 2026. **Scope:** unreleased development after stable 8.2.0.
 The [dated original audit](QUALITY_AUDIT_2026-10-17.md) remains historical.
 This document records individual improvements, not an official HA quality tier.
 
-## Saved forecast location, altitude routing and independent current weather
+## Translated forecast-location dialogs and existing-entry reconfiguration
+
+The third POI package exposes explicit postcode/town/POI search after the existing
+observation-source check and through the existing entry's Reconfigure menu.
+One per-flow bounded catalogue client is reused across searches; the local
+search runs in HA's executor. No result is preselected. Category, catalogue
+height and full catalogue coordinates distinguish candidates; a final form
+shows the selected forecast location and separate unchanged warning postcode.
+An actual ICON client check precedes a selected-point commit. Cancellation,
+keep, retry and search-again do not write a location. Explicit reset returns to
+the original base coordinates. Concurrent unrelated entry data/options survive.
+
+Reconfigure uses async_update_and_abort: the existing entry listener owns one
+reload, with no Core restart or duplicate reload scheduling. An actual loaded-HA
+regression checks exactly one reload, new forecast target/height, retained
+pollen/base/warning roles, entity identities and old-listener cleanup. Other
+cases use HA's real flow manager, not a claimed browser/UTM walkthrough.
+
+**55 new cases** bring each actual local HA **2026.8.3 / 2026.10.2** run to
+**1,274 tests plus 53 subtests**. Combined line/branch coverage is
+**99.97491%**, **3,121/3,122 lines and 864/864 branches**. Config flow remains
+100% line/branch covered and all strict gates pass without lowered thresholds
+or new exclusion rules. Four complete translation catalogues now contain
+**140 keys** each; strings.json matches English. CI remains 2026.8.3/2026.10.1.
+
+[The user guide](FORECAST_LOCATION_SETUP.md) distinguishes translated dialogs/
+categories from unchanged official place names. The actual Murten row proves
+that postcode 3280 and Murten select point 2/328000, while Morat/Môrat is not a
+catalogue search alias. A sourced multilingual alias index remains a separate
+follow-up; identity is never inferred solely from a shared postcode. New setup,
+all four public postcode/summit/pass/hut examples, both weather sources and
+four HA languages are tested. Focused candidate UI acceptance remains pending;
+no operator HA installation, release or complete quality-tier claim follows.
+
+## Saved forecast location, altitude routing and independent current weather (preceding package)
 
 The second POI package adds an offline versioned encoder/decoder and explicit
 legacy/catalogue/invalid target resolution. Setup routes only ICON forecasts
