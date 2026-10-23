@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.14 · **Updated:** 23 October 2026
+**Plan version:** 1.15 · **Updated:** 23 October 2026
 **Status:** Approved planning; Q1 is documented and P0 has partial evidence.
 This document does not approve a new feature, installation or release.
 
@@ -142,18 +142,36 @@ rather than equating central constants with full compliance.
 Hourly and daily forecasts are already supplied by the existing weather entity
 through [weather.get_forecasts](https://www.home-assistant.io/integrations/weather/).
 The calculated daily heating-degree-day sensor is also forecast-derived.
-Additional scalar entities could make selected predictions easier to use in
-dashboards and automations. The proposed first set is tomorrow's maximum and
-minimum temperature, native daily precipitation sum and maximum hourly
-precipitation probability for tomorrow. Final scope needs operator agreement;
-this plan does not implement or enable additional sensors.
+The refined proposal supports today and tomorrow: maximum/minimum temperature,
+native full-day precipitation sum, and the highest hourly precipitation
+probability with its matching interval(s). This plan records the requested
+time information and current-day temperature scope; it implements no sensors.
 
-Reuse the existing ICON coordinator and request, without a second API fetch,
-large forecast-list state attributes or replacing the weather entity. Clearly
-label predictions and their Europe/Zurich target date, source and retrieval
-time. A missing native daily value is unknown; an unavailable/stale forecast
-is unavailable. Never substitute zero or relabel a remaining-hours aggregate
-as a full calendar day. Define local-midnight rollover, DST, entity identity,
+Temperature extrema and precipitation sums describe the complete target
+calendar day, including elapsed hours today. They remain predictions, not
+observed daily records; today's maximum/minimum may already have occurred.
+Label that distinction in translated help rather than presenting them as
+remaining-day extrema. Never reconstruct a full-day value from only the
+remaining rolling hours when the native daily field is absent.
+
+For today's probability, use the ongoing and upcoming hourly intervals; for
+tomorrow use the complete target local day. Calculate the peak value and its
+time windows from the same valid hourly rows. Do not attach a future time to
+a provider daily maximum that may have occurred in an already elapsed hour.
+[Provider hourly semantics](https://open-meteo.com/en/docs) specify the preceding
+hour: a value timestamped 15:00 applies to 14:00–15:00, not 15:00–16:00.
+Group adjacent tied peak intervals and retain distinct equally high windows.
+A zero peak has no uniquely useful peak time; absent probabilities remain
+unknown. Incomplete interval coverage must be explicit, not a full-day claim.
+
+Keep the probability state numeric in percent and expose timezone-aware peak
+start/end metadata for dashboards to render e.g. “80% between 14:00 and 15:00”.
+Retain all tied windows without replacing numeric states with combined text.
+Reuse the existing ICON coordinator and request; add no duplicate HTTP fetch
+or full forecast-list state attribute. Use Europe/Zurich target dates, source
+and retrieval time. Missing fields are unknown; an unavailable/stale source
+is unavailable. Check local-midnight rollover, changing remaining-day windows,
+23/25-hour DST days and end-of-day interval assignment, entity identity,
 HA-owned listener cleanup and DE/EN/FR/IT help/tests before implementation.
 Avoid treating changing forecast targets as measured historical totals.
 
