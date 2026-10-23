@@ -1,10 +1,11 @@
 # Local forecast points: separate catalogue and forecast decisions
 
-**Plan version:** 1.5 · **Updated:** 23 October 2026
-**Status:** Catalogue source, immutable identity/provenance and local search implemented as an unreleased foundation; persisted selection and translated HA flows remain open.
-No change to HA setup, forecast coordinates, entities or installed version.
+**Plan version:** 1.6 · **Updated:** 23 October 2026
+**Status:** Catalogue foundation and offline saved-selection/height-aware ICON routing implemented in development; translated HA flows and focused acceptance remain open.
+Existing entries without a selection retain their forecast coordinates and IDs. Installed version remains unchanged.
 
-See the [catalogue implementation contract](FORECAST_LOCATION_CATALOGUE.md)
+See the [saved-location contract](SAVED_FORECAST_LOCATION.md) and
+[catalogue implementation contract](FORECAST_LOCATION_CATALOGUE.md)
 and its fresh 23 October source/client evidence. The dated audits below remain
 historical rather than evidence of a completed HA selection feature.
 
@@ -212,7 +213,7 @@ release. Complete these bounded packages before freezing features:
 | Package | Deliverable | Evidence required before completion |
 |---|---|---|
 | Catalogue and location contract | Source-only bounded client/parser; typed identity/provenance and deterministic search over the official point catalogue. | Latin1/semicolon schema, identical/conflicting duplicates, distinct type/ID pairs, accents, ambiguous/empty results, invalid coordinates/heights, size limit, cancellation and private errors. |
-| Forecast-location plumbing | Explicit saved catalogue choice, independent of measurement/warning roles; reuse the existing ICON coordinator/client. | Decide catalogue altitude versus provider grid/downscaling semantics from primary documentation; make request and cache identity agree. Preserve existing HA-home location semantics and IDs until a deliberate change. Test failure/recovery, migration and reload. |
+| Forecast-location plumbing | Explicit saved catalogue choice, independent of measurement/warning roles; reuse the existing ICON coordinator/client. | Implemented: known catalogue altitude is the explicit Open-Meteo downscaling target; unknown height retains automatic DEM. Request and cache identity agree. Preserve existing HA-home location semantics and IDs until a deliberate change. Test failure/recovery, migration and reload. |
 | HA selection and user guide | Search by four-digit postcode or town/POI name, then confirm a labelled result; matching new-setup and reconfiguration paths, DE/EN/FR/IT help. | Explain forecast purpose before entry. Distinguish station/postal code/POI and catalogue height. Keep warning postcode separate. Check Kloten, summit, pass and hut in the existing temporary HA. |
 
 Keep L0's remaining selection/altitude contract work inside the first two

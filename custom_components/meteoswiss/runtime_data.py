@@ -19,6 +19,7 @@ if TYPE_CHECKING:
         OpenMeteoDataUpdateCoordinator,
         OpenMeteoPollenCoordinator,
     )
+    from .forecast_location_config import ForecastTarget
 
 
 @dataclass(slots=True)
@@ -28,6 +29,7 @@ class MeteoSwissRuntimeData:
     coordinator: MeteoSwissDataUpdateCoordinator | OpenMeteoDataUpdateCoordinator
     data_source: str
     session: ClientSession
+    forecast_target: ForecastTarget | None = None
     forecast_coordinator: MeteoSwissForecastCoordinator | None = None
     alerts_coordinator: MeteoSwissAlertsCoordinator | None = None
     pollen_coordinator: OpenMeteoPollenCoordinator | None = None

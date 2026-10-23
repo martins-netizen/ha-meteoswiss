@@ -33,6 +33,7 @@ from .coordinator import (
     OpenMeteoDataUpdateCoordinator,
     OpenMeteoPollenCoordinator,
 )
+from .forecast_location_config import resolve_forecast_target
 from .localization import async_load_warning_labels
 from .precipitation import (
     ARCHIVE_LOOKBACK_MONTHS,
@@ -49,15 +50,15 @@ PLATFORMS: list[Platform] = [
 ]
 
 
-def _get_forecast_coordinates(
+def _get_base_coordinates(
     hass: HomeAssistant,
     entry: MeteoSwissConfigEntry,
     data_source: str,
 ) -> tuple[float, float]:
-    """Return coordinates used for forecasts and location-based pollen data."""
+    """Retain legacy current/AQ/pollen coordinates independently of new forecasts."""
     if data_source == DATA_SOURCE_METEOSWISS:
-        # Observations are station-based, while forecasts should describe
-        # the Home Assistant installation location.
+        # Observations are station-based. Legacy forecast and modelled AQ/pollen
+        # base coordinates come from the Home Assistant installation location.
         return hass.config.latitude, hass.config.longitude
 
     latitude = entry.data.get(CONF_LATITUDE)
@@ -106,7 +107,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
     data_source = entry.data.get(CONF_DATA_SOURCE, DATA_SOURCE_METEOSWISS)
     station_id = entry.data.get(CONF_STATION_ID)
     post_code = entry.data.get(CONF_POSTAL_CODE)
-    lat, lon = _get_forecast_coordinates(hass, entry, data_source)
+    lat, lon = _get_base_coordinates(hass, entry, data_source)
+    forecast_target = resolve_forecast_target(entry.data, lat, lon)
+    if forecast_target.status == "invalid":
+        _LOGGER.error(
+            "Saved forecast location is invalid; forecast disabled until reconfigured"
+        )
 
     if data_source == DATA_SOURCE_OPENMETEO:
         # Alternative modelled current conditions; ICON forecasts stay separate.
@@ -121,8 +127,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
 
         forecast_coordinator = MeteoSwissForecastCoordinator(
             hass,
-            latitude=lat,
-            longitude=lon,
+            latitude=forecast_target.latitude,
+            longitude=forecast_target.longitude,
+            elevation=forecast_target.elevation,
             post_code=post_code,
             update_interval=3600,
             session=shared_session,
@@ -145,13 +152,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
         forecast_coordinator = MeteoSwissForecastCoordinator(
             hass,
             station_id=station_id,
-            latitude=lat,
-            longitude=lon,
+            latitude=forecast_target.latitude,
+            longitude=forecast_target.longitude,
+            elevation=forecast_target.elevation,
             post_code=post_code,
             update_interval=3600,
             session=shared_session,
         )
-        _LOGGER.debug("Forecast coordinator uses Home Assistant location")
+        _LOGGER.debug("Forecast coordinator configured independently of observations")
         hourly_precipitation_coordinator = None
         precipitation_archive_coordinator = None
         if "recorder" in hass.config.components:
@@ -187,7 +195,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
 
     # Create pollen API and coordinator (using Open-Meteo Air Quality API)
 
-    # Location-based pollen forecast follows the same coordinates as weather.
+    # AQ/pollen retain their existing base coordinates, independent of a new POI.
     pollen_coordinator = OpenMeteoPollenCoordinator(
         hass,
         latitude=lat,
@@ -215,6 +223,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
         precipitation_archive_coordinator=precipitation_archive_coordinator,
         data_source=data_source,
         session=shared_session,
+        forecast_target=forecast_target,
     )
 
     # Set up platforms

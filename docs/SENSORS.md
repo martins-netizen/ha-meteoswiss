@@ -9,13 +9,19 @@ For setup use [GETTING_STARTED.md](GETTING_STARTED.md); existing users use [MIGR
 
 Current temperature, humidity, pressure and wind follow the selected observation
 source: measured SwissMetNet station or explicitly selected Open-Meteo modelled
-current weather. The weather symbol can use a valid location forecast when no
+current weather. For legacy entries without an explicit catalogue selection, the weather symbol
+can use a valid location forecast when no
 direct station condition exists.
 
 Hourly/daily forecasts use **MeteoSwiss ICON Seamless via Open-Meteo**, refreshed
 hourly, projected to up to 24 hours/five Swiss calendar days. For station entries
-the forecast point is HA's home location; for Open-Meteo entries it is the explicit
-location. The warning postcode does not move the forecast. Native units are °C,
+the legacy forecast point is HA's home location; for Open-Meteo entries it is the
+existing configured base location. In unreleased development, a deliberately
+saved catalogue point overrides the weather forecast only; the translated
+selection dialog is still pending. Weather/forecast scalars/HGT expose the
+selected name, category and height locally. Current weather and AQ/pollen/UV
+keep the base location, and a selected point cannot supply the current-weather
+forecast fallback. See [the saved-location contract](SAVED_FORECAST_LOCATION.md). The warning postcode does not move the forecast. Native units are °C,
 hPa, km/h and mm; HA converts weather attributes to the user's selected units.
 Forecast failure returns an empty forecast while valid observations remain usable.
 

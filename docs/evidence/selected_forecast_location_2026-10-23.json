@@ -1,0 +1,60 @@
+{
+  "checked_at": "2026-10-23T18:42:00.289661+00:00",
+  "source": "meteoswiss_icon_seamless_via_open_meteo",
+  "public_fixture_only": true,
+  "points": [
+    {
+      "name": "Kloten",
+      "point_type": "2",
+      "point_id": "830200",
+      "latitude": 47.451253,
+      "longitude": 8.579761,
+      "requested_elevation_masl": 436.0,
+      "hours": 120,
+      "first_forecast": "2026-10-23T18:00:00+00:00",
+      "last_forecast": "2026-10-28T17:00:00+00:00",
+      "source": "meteoswiss_icon_seamless_via_open_meteo",
+      "daily_aggregate_present": true
+    },
+    {
+      "name": "Säntis",
+      "point_type": "3",
+      "point_id": "711",
+      "latitude": 47.249425,
+      "longitude": 9.343242,
+      "requested_elevation_masl": 2502.0,
+      "hours": 120,
+      "first_forecast": "2026-10-23T18:00:00+00:00",
+      "last_forecast": "2026-10-28T17:00:00+00:00",
+      "source": "meteoswiss_icon_seamless_via_open_meteo",
+      "daily_aggregate_present": true
+    },
+    {
+      "name": "Gotthardpass",
+      "point_type": "3",
+      "point_id": "594",
+      "latitude": 46.559306,
+      "longitude": 8.561156,
+      "requested_elevation_masl": 2107.0,
+      "hours": 120,
+      "first_forecast": "2026-10-23T18:00:00+00:00",
+      "last_forecast": "2026-10-28T17:00:00+00:00",
+      "source": "meteoswiss_icon_seamless_via_open_meteo",
+      "daily_aggregate_present": true
+    },
+    {
+      "name": "Albert-Heim-Hütte SAC",
+      "point_type": "3",
+      "point_id": "454",
+      "latitude": 46.608917,
+      "longitude": 8.463553,
+      "requested_elevation_masl": 2542.0,
+      "hours": 120,
+      "first_forecast": "2026-10-23T18:00:00+00:00",
+      "last_forecast": "2026-10-28T17:00:00+00:00",
+      "source": "meteoswiss_icon_seamless_via_open_meteo",
+      "daily_aggregate_present": true
+    }
+  ],
+  "caller_session_open_after_clients": true
+}

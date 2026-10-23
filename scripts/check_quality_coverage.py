@@ -48,6 +48,7 @@ def validate() -> None:
         "forecast_summary.py",
         "forecast_locations.py",
         "forecast_location_client.py",
+        "forecast_location_config.py",
         "openmeteo.py",
         "weather.py",
         "weather_data.py",

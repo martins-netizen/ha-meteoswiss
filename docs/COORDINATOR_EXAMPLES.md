@@ -1,9 +1,9 @@
 # Coordinator examples for contributors
 
-**Guide version:** 1.0 · **Updated:** 23 October 2026
-**Scope:** development after PRs #54 and #55, unreleased after stable 8.2.0.
-This guide explains existing behaviour; it does not implement location/POI
-selection or change polling. Use the [architecture](ARCHITECTURE.md) for the
+**Guide version:** 1.1 · **Updated:** 23 October 2026
+**Scope:** development including saved forecast-location routing, unreleased after stable 8.2.0.
+This guide explains development behaviour; it does not implement the HA
+selection dialog or change polling. Use the [architecture](ARCHITECTURE.md) for the
 full contracts and [sensor guide](SENSORS.md) for end-user features.
 
 ## Choose the existing data family
@@ -22,7 +22,7 @@ and its archive use two instances of the same class.
 | MeteoSwissForecastCoordinator | ICON forecast and today/tomorrow summaries at forecast coordinates, independently of the observation station. | 3600 seconds. | IconForecastClient in forecast.py; weather.get_forecasts and eight scalar forecast sensors share the data. |
 | MeteoSwissAlertsCoordinator | App v3 warnings for the separately configured warning postcode, for example 8302. | 600 seconds. | MeteoSwissAlertsAPI in alerts.py; warning entities use validated alerts/validity windows. |
 | MeteoSwissPollenCoordinator | Actual measured pollen at the independently selected pollen station, for example PZH. | 3600 seconds. | MeteoSwissPollenClient in pollen_meteoswiss.py; measured-pollen sensors. |
-| OpenMeteoPollenCoordinator | Modelled pollen/AQ and optional UV at forecast coordinates; not measured-pollen station data. | 1800 seconds. | OpenMeteoPollenClient in pollen_openmeteo.py; modelled pollen/AQ/UV entities. |
+| OpenMeteoPollenCoordinator | Modelled pollen/AQ and optional UV at existing base coordinates, independent of a weather-forecast POI; not measured-pollen station data. | 1800 seconds. | OpenMeteoPollenClient in pollen_openmeteo.py; modelled pollen/AQ/UV entities. |
 | MeteoSwissHourlyPrecipitationCoordinator | Official completed-hour precipitation and its archive for the observation station. | now assets hourly; historical/recent assets every seven days, with a thirteen-calendar-month lookback. | Source/parser in precipitation.py, Recorder projection in precipitation_recorder.py; external statistics, no replacement current-hour entity. |
 
 These are attempted-refresh schedules, not a guarantee that the provider has
@@ -30,7 +30,8 @@ published a new value. Cache hits do not extend their original expiry. Source
 measurement time, retrieval time, cache lifetime and polling interval are
 different concepts. Current setup obtains forecast coordinates from HA home
 for station entries, or the configured coordinates for Open-Meteo entries;
-catalogue-based POI selection is still planned. See
+the saved-selection backend now independently routes ICON to a confirmed
+catalogue point; the selection UI remains planned. See
 [source/time contracts](ARCHITECTURE.md#sources-and-time) and
 [polling/options migration](ARCHITECTURE.md#polling-and-options-migration-unreleased-after-820).
 
@@ -127,3 +128,29 @@ change retained entity/statistic identities to simplify a refactor.
 Canonical placement closes one specific layout finding. The station
 observation coordinator still contains source-processing logic; seven canonical
 definitions alone are not a complete Silver/Gold or architectural-purity claim.
+
+## Route an explicitly confirmed catalogue point
+
+The [saved-location contract](SAVED_FORECAST_LOCATION.md) supplies versioned
+encode/decode and resolve_forecast_target helpers. Setup resolves a saved
+selection offline, then passes its latitude, longitude and optional elevation
+to the existing MeteoSwissForecastCoordinator. For a public source-only probe:
+
+```python
+async def selected_forecast_example(session, confirmed_location):
+    from .forecast import IconForecastClient
+    from .forecast_location_config import encode_forecast_location, resolve_forecast_target
+
+    saved = encode_forecast_location(confirmed_location)
+    target = resolve_forecast_target({"forecast_location": saved}, None, None)
+    client = IconForecastClient(
+        target.latitude, target.longitude, session, elevation=target.elevation
+    )
+    return await client.async_get_data()
+```
+
+The caller supplies a deliberate selection from the catalogue; never take the
+first search result automatically. This probe creates no HA entry or session.
+Known height is sent explicitly; absent height leaves automatic DEM active.
+Warnings, observations and modelled AQ/pollen are not rerouted by this helper.
+The upcoming HA flows own confirmed persistence and user-visible reconfiguration.

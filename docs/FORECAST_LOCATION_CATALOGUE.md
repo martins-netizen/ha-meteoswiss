@@ -1,8 +1,9 @@
 # Official forecast-location catalogue foundation
 
-**Guide version:** 1.0 · **Updated:** 23 October 2026
+**Guide version:** 1.1 · **Updated:** 23 October 2026
 **Status:** Tested development foundation, unreleased after 8.2.0. This package
-adds no HA selection dialog, config migration or changed forecast coordinates.
+adds no HA selection dialog. Its successor supplies explicit saved-selection
+routing; see [the saved-location contract](SAVED_FORECAST_LOCATION.md).
 The [location plan](LOCAL_FORECAST_PLAN.md) records the remaining steps.
 
 ## What this package supplies
@@ -28,8 +29,8 @@ The pure forecast_locations.py module supplies immutable ForecastPoint,
 ForecastCatalogue, ForecastLocation and ForecastSearchResult records.
 A deliberate catalogue selection includes the point, fixed provider/source URL,
 raw-byte SHA-256 and UTC retrieval time. The hash is a content version, not a
-digital signature or provider issuance time. Persisting this contract in HA and
-choosing altitude/request/cache semantics belong to the next package.
+digital signature or provider issuance time. The [saved-location package](SAVED_FORECAST_LOCATION.md) now defines its offline
+versioned entry representation, ICON altitude handling and matching cache keys.
 
 ## Parsing and atomic acceptance
 
@@ -101,7 +102,8 @@ error. They preserve the previous immutable snapshot without returning it as
 fresh success. The explicit last_good_snapshot property retains original
 hash/retrieval time and may be stale. It is a future recovery aid, not a reason
 to replace an already confirmed location or make old forecasts appear current.
-This package supplies no global factory or disk/config persistence yet.
+This source client supplies no global factory or disk cache. Confirmed
+selection persistence is owned by the separate saved-location contract.
 
 ## Evidence and remaining acceptance
 
@@ -122,8 +124,8 @@ schema/roles/coordinates, duplicate conflicts, missing heights, search ambiguity
 limits/ranking, original TTL, coalescing, failure pause/recovery, retained old
 metadata, privacy, cancellation, total timeout and the actual shared HTTP path.
 
-This establishes catalogue mechanics. Compatible persisted selection, height
-semantics, existing-entry migration, translated new setup/reconfiguration and
+This establishes catalogue mechanics. The saved-location package adds compatible
+offline routing and height semantics; translated new setup/reconfiguration and
 focused temporary-HA acceptance remain required. ICON Seamless and App v3
-warnings are unchanged. No HA installation, release or quality-tier/HACS-list
+warnings retain their source roles. No HA installation, release or quality-tier/HACS-list
 acceptance follows from this foundation.

@@ -37,6 +37,7 @@ from .coordinator import (
     OpenMeteoDataUpdateCoordinator,
 )
 from .entity import MeteoSwissCoordinatorEntity, weather_device_info
+from .forecast_location_config import resolve_forecast_target
 from .runtime_data import MeteoSwissConfigEntry
 from .weather_data import (
     FORECAST_TIME_ZONE,
@@ -153,6 +154,7 @@ class MeteoSwissWeather(
         super().__init__(coordinator)
         self._entry = entry
         self._forecast_coordinator = forecast_coordinator
+        self._forecast_target = resolve_forecast_target(entry.data, None, None)
         self._attr_device_info = weather_device_info(entry.entry_id, station_name)
         self._attr_name = None
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_weather"
@@ -231,6 +233,23 @@ class MeteoSwissWeather(
         """Compatibility mapping; unknown input stays unknown."""
         return weather_condition(weather_code)
 
+    @property
+    def extra_state_attributes(self) -> dict[str, Any] | None:
+        """Explain an explicit forecast point without relabelling observations."""
+        return self._forecast_target.state_attributes() or None
+
+    def _current_forecast_condition(self) -> str | None:
+        """A selected POI forecast must never become the home current condition."""
+        if self._forecast_target.status != "legacy":
+            return None
+        now = dt_util.utcnow()
+        for timestamp, item in self._forecast_entries():
+            if timestamp <= now < timestamp + timedelta(hours=1) and (
+                condition := _forecast(timestamp, item)["condition"]
+            ):
+                return condition
+        return None
+
     def _resolve_condition(self) -> str | None:
         """Prefer current weather, then a current forecast interval, then rain."""
         current = self.coordinator_data
@@ -242,12 +261,8 @@ class MeteoSwissWeather(
                 condition := self.METEOSWISS_CONDITION_MAP.get(str(symbol).lower())
             ):
                 return condition
-        now = dt_util.utcnow()
-        for timestamp, item in self._forecast_entries():
-            if timestamp <= now < timestamp + timedelta(hours=1) and (
-                condition := _forecast(timestamp, item)["condition"]
-            ):
-                return condition
+        if condition := self._current_forecast_condition():
+            return condition
         rain = weather_number(current.get(SENSOR_PRECIPITATION), 0)
         return "rainy" if rain is not None and rain > 0 else None
 
