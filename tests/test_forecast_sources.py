@@ -6,8 +6,9 @@ import asyncio
 import json
 import logging
 from contextlib import ExitStack
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, datetime, timedelta, timezone
 from unittest.mock import AsyncMock, patch
+from zoneinfo import ZoneInfo
 
 import aiohttp
 import pytest
@@ -182,6 +183,53 @@ async def test_zero_partial_numeric_and_daily_values_keep_their_meaning(
     assert first["datetime"] == "2026-10-16T07:00:00+00:00"
     assert first["fetched_at"] == NOW.isoformat()
     assert first["source"] == "meteoswiss_icon_seamless_via_open_meteo"
+
+
+@pytest.mark.parametrize(
+    "day,offset,aligned",
+    [
+        ("2026-03-28", 3600, True),
+        ("2026-03-29", 3600, False),
+        ("2026-03-30", 3600, False),
+        ("2026-03-30", 7200, True),
+        ("2026-10-24", 7200, True),
+        ("2026-10-25", 7200, False),
+        ("2026-10-25", 3600, False),
+        ("2026-10-26", 7200, False),
+        ("2026-10-26", 3600, True),
+    ],
+)
+async def test_native_day_must_match_both_swiss_midnights(
+    hass, aioclient_mock, freezer, day, offset, aligned
+):
+    """A provider's fixed 24-hour bucket cannot stand in for another period."""
+    local = datetime.fromisoformat(day).replace(tzinfo=ZoneInfo("Europe/Zurich"))
+    now = local + timedelta(hours=12)
+    freezer.move_to(now)
+    hour = int(now.timestamp())
+    provider_start = datetime.fromisoformat(day).replace(
+        tzinfo=timezone(timedelta(seconds=offset))
+    )
+    data = payload(time=[hour, hour + 3600])
+    data.update(
+        utc_offset_seconds=offset,
+        daily={
+            "time": [int(provider_start.timestamp())],
+            "temperature_2m_max": [10],
+            "temperature_2m_min": [-2],
+            "temperature_2m_mean": [4],
+            "precipitation_sum": [0],
+            "precipitation_probability_max": [0],
+        },
+    )
+    aioclient_mock.get(OPEN_METEO_BASE_URL, json=data)
+    rows = await coordinator(hass)._async_update_data()
+    assert rows[0]["temperature"] == 0  # Keep the usable hourly source.
+    expected = (10, -2, 4, 0, 0) if aligned else (None,) * 5
+    assert tuple(rows[0][key] for key in (
+        "daily_temperature_max", "daily_temperature_min", "daily_temperature_mean",
+        "daily_precipitation", "daily_precipitation_probability",
+    )) == expected
 
 
 @pytest.mark.parametrize(

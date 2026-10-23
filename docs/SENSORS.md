@@ -18,7 +18,8 @@ hourly, projected to up to 24 hours/five Swiss calendar days. For station entrie
 the legacy forecast point is HA's home location; for Open-Meteo entries it is the
 existing configured base location. In unreleased development, a deliberately
 saved catalogue point overrides the weather forecast only; the translated
-selection dialog is still pending. Weather/forecast scalars/HGT expose the
+selection dialog is implemented in unreleased development; see
+[the selection guide](FORECAST_LOCATION_SETUP.md). Weather/forecast scalars/HGT expose the
 selected name, category and height locally. Current weather and AQ/pollen/UV
 keep the base location, and a selected point cannot supply the current-weather
 forecast fallback. See [the saved-location contract](SAVED_FORECAST_LOCATION.md). The warning postcode does not move the forecast. Native units are °C,

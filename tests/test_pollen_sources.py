@@ -291,11 +291,11 @@ async def test_repeated_cached_measurement_cannot_extend_freshness(
 @pytest.mark.parametrize(
     "payload,expected",
     [
-        ({"current": {"uv_index": 0}}, 0),
-        ({"current": {"uv_index": 3.2}}, 3.2),
-        ({"current": {"uv_index": -1}}, None),
-        ({"current": {"uv_index": "nan"}}, None),
-        ({"current": {}}, None),
+        ({"current": {"time": CURRENT_TIME, "uv_index": 0}}, 0),
+        ({"current": {"time": CURRENT_TIME, "uv_index": 3.2}}, 3.2),
+        ({"current": {"time": CURRENT_TIME, "uv_index": -1}}, None),
+        ({"current": {"time": CURRENT_TIME, "uv_index": "nan"}}, None),
+        ({"current": {"time": CURRENT_TIME}}, None),
         ({"current": []}, None),
         ([], None),
     ],
@@ -442,7 +442,7 @@ async def test_valid_cache_shared_but_old_hour_cannot_extend_currentness(
     second = OpenMeteoPollenCoordinator(hass, 47.45, 8.56, session=session)
     freezer.move_to("2026-10-15T10:50:00+00:00")
     aioclient_mock.get(OPENMETEO_AQ_BASE_URL, json=aq_payload(pm10=[2]))
-    aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {"uv_index": 0}})
+    aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {"time": CURRENT_TIME, "uv_index": 0}})
     old = await first._async_update_data()
     assert await second._async_update_data() == old
     assert len(aioclient_mock.mock_calls) == 2
@@ -452,7 +452,7 @@ async def test_valid_cache_shared_but_old_hour_cannot_extend_currentness(
         OPENMETEO_AQ_BASE_URL,
         json={"hourly": {"time": [CURRENT_TIME + 3600], "pm10": [5]}},
     )
-    aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {"uv_index": 0}})
+    aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {"time": CURRENT_TIME, "uv_index": 0}})
     current = await second._async_update_data()
     assert current["pm10"] == 5
     assert current["last_update"] == "2026-10-15T11:00:00+00:00"
@@ -509,7 +509,7 @@ async def test_real_entities_start_failure_recovery_and_unload(
     aioclient_mock.get(
         OPENMETEO_AQ_BASE_URL, json=aq_payload(birch_pollen=[0], pm10=[4])
     )
-    aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {"uv_index": 0}})
+    aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {"time": CURRENT_TIME, "uv_index": 0}})
     aioclient_mock.get(CSV_URL, text=CSV_ZERO)
     with ExitStack() as stack:
         stack.enter_context(
@@ -569,7 +569,7 @@ async def test_real_entities_start_failure_recovery_and_unload(
             if measured_failure == "empty"
             else aq_payload(birch_pollen=[0], pm10=[4]),
         )
-        aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {"uv_index": 0}})
+        aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {"time": CURRENT_TIME, "uv_index": 0}})
         failed_csv = {
             "empty": CSV_HEADER + "PLZ;15.10.2026 10:00;;;;;;",
             "stale": CSV_ZERO.replace("10:00", "06:00"),
@@ -606,7 +606,7 @@ async def test_real_entities_start_failure_recovery_and_unload(
         aioclient_mock.get(
             OPENMETEO_AQ_BASE_URL, json=aq_payload(birch_pollen=[None], pm10=[0])
         )
-        aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {"uv_index": 0}})
+        aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {"time": CURRENT_TIME, "uv_index": 0}})
         aioclient_mock.get(CSV_URL, text=CSV_ZERO)
         await runtime.pollen_coordinator.async_refresh()
         await runtime.meteoswiss_pollen_coordinator.async_refresh()
@@ -725,7 +725,7 @@ async def test_pollen_device_grouping_preserves_existing_entities_on_reload(
     aioclient_mock.get(
         OPENMETEO_AQ_BASE_URL, json=aq_payload(birch_pollen=[0], pm10=[4])
     )
-    aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {"uv_index": 0}})
+    aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {"time": CURRENT_TIME, "uv_index": 0}})
     aioclient_mock.get(CSV_URL, text=CSV_ZERO)
     with ExitStack() as stack:
         stack.enter_context(

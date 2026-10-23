@@ -1,8 +1,25 @@
 # Bronze/Silver follow-up — 22 October 2026
 
-**Record version:** 1.14. **Updated:** 23 October 2026. **Scope:** unreleased development after stable 8.2.0.
+**Record version:** 1.15. **Updated:** 24 October 2026. **Scope:** unreleased development after stable 8.2.0.
 The [dated original audit](QUALITY_AUDIT_2026-10-17.md) remains historical.
 This document records individual improvements, not an official HA quality tier.
+
+## Overall review after PR #58
+
+The approved dialog package is merged at 5bed187 with the expected tree and
+seven successful post-merge checks. The separate overall-review correction PR
+fixes partial-day fallback, native fixed-offset daily boundaries at DST, optional
+UV timestamp acceptance and station CSV event-loop work. New regressions fail
+on the preceding implementation and pass after correction. Both local HA
+2026.8.3/2026.10.2 runs pass 1,295 tests and 53 subtests, 99.97506% combined
+coverage (3,138/3,139 lines; 870/870 branches), retaining every existing gate
+and exclusion. CI still uses 2026.10.1 as its second version.
+
+[The review](RELEASE_REVIEW_2026-10-24.md) and [current rule matrix](QUALITY_SCALE.md)
+replace stale open-item claims; the dated packages below retain their original
+counts. Corrected source/installation docs distinguish published 8.2.0 from
+unreleased point selection and record completed stable HACS acceptance. No new
+release, manual HACS walkthrough or official tier is implied.
 
 ## Translated forecast-location dialogs and existing-entry reconfiguration
 

@@ -144,7 +144,7 @@ async def test_forecast_subscribers_receive_refresh_failure_and_recovery(
     unsub_hourly = entity.async_subscribe_forecast("hourly", hourly.append)
     unsub_daily = entity.async_subscribe_forecast("daily", daily.append)
     forecast = entry.runtime_data.forecast_coordinator
-    forecast.async_set_updated_data([row(temperature=4)])
+    forecast.async_set_updated_data([row(temperature=4, daily_temperature_max=4)])
     await hass.async_block_till_done()
     assert hourly[-1][0]["temperature"] == 4
     assert daily[-1][0]["temperature"] == 4
@@ -152,7 +152,7 @@ async def test_forecast_subscribers_receive_refresh_failure_and_recovery(
     await hass.async_block_till_done()
     assert hourly[-1] == daily[-1] == []
     assert hass.states.get(entity.entity_id).state != "unavailable"
-    forecast.async_set_updated_data([row(temperature=-2)])
+    forecast.async_set_updated_data([row(temperature=-2, daily_temperature_max=-2)])
     await hass.async_block_till_done()
     assert hourly[-1][0]["temperature"] == -2
     assert daily[-1][0]["temperature"] == -2
@@ -183,7 +183,9 @@ async def test_native_units_are_converted_by_ha_and_missing_fields_clear(
                 temperature=0,
                 precipitation=25.4,
                 wind_speed=16.09344,
+                daily_temperature_max=0,
                 daily_temperature_min=-10,
+                daily_precipitation=25.4,
             ),
         ]
     )
@@ -379,15 +381,35 @@ async def test_daily_prefers_full_native_extrema_and_valid_zero_rain(weather_ent
 
 
 async def test_daily_hourly_fallback_preserves_extrema_and_zero(weather_entity):
+    start = datetime(2026, 10, 16, 22, tzinfo=UTC)  # Tomorrow's Swiss midnight.
     weather_entity._forecast_coordinator.data = [
-        row(temperature=-2),
-        row(HOUR + timedelta(hours=1), temperature=0),
+        row(
+            start + timedelta(hours=i),
+            temperature=-2 if i == 0 else (99 if i == 24 else 0),
+            precipitation=99 if i == 0 else 0,
+            precipitation_probability=99 if i == 0 else 0,
+        )
+        for i in range(25)
     ]
     item = (await weather_entity.async_forecast_daily())[0]
     assert item["native_temperature"] == 0
     assert item["native_templow"] == -2
     assert item["native_precipitation"] == 0
     assert item["precipitation_probability"] == 0
+
+
+async def test_partial_hours_cannot_claim_whole_day_aggregates(weather_entity):
+    """Two dry hours do not prove a dry day, nor its temperature extrema."""
+    weather_entity._forecast_coordinator.data = [
+        row(temperature=-2),
+        row(HOUR + timedelta(hours=1), temperature=0),
+    ]
+    item = (await weather_entity.async_forecast_daily())[0]
+    for key in (
+        "native_temperature", "native_templow", "native_precipitation",
+        "precipitation_probability",
+    ):
+        assert item[key] is None
 
 
 @pytest.mark.parametrize(
@@ -408,7 +430,7 @@ async def test_daily_missing_or_gapped_rain_is_not_a_complete_sum(weather_entity
         assert item["precipitation_probability"] is None
 
 
-async def test_daily_unknown_native_extrema_fall_back_to_finite_hourly_values(
+async def test_daily_invalid_native_fields_do_not_rescue_partial_hours(
     weather_entity,
 ):
     weather_entity._forecast_coordinator.data = [
@@ -421,8 +443,41 @@ async def test_daily_unknown_native_extrema_fall_back_to_finite_hourly_values(
         )
     ]
     item = (await weather_entity.async_forecast_daily())[0]
-    assert item["native_temperature"] == item["native_templow"] == -1
-    assert item["native_precipitation"] == item["precipitation_probability"] == 0
+    assert item["native_temperature"] is item["native_templow"] is None
+    assert item["native_precipitation"] is item["precipitation_probability"] is None
+
+
+@pytest.mark.parametrize(
+    "field,value,affected",
+    [
+        ("temperature", None, ("native_temperature", "native_templow")),
+        ("precipitation", -1, ("native_precipitation",)),
+        ("precipitation_probability", 101, ("precipitation_probability",)),
+    ],
+)
+async def test_one_invalid_hour_invalidates_only_its_daily_fallback(
+    weather_entity, field, value, affected
+):
+    start = datetime(2026, 10, 16, 22, tzinfo=UTC)
+    rows = [row(start + timedelta(hours=i)) for i in range(25)]
+    rows[12][field] = value
+    weather_entity._forecast_coordinator.data = rows
+    item = (await weather_entity.async_forecast_daily())[0]
+    for key in (
+        "native_temperature", "native_templow", "native_precipitation",
+        "precipitation_probability",
+    ):
+        assert item[key] == (None if key in affected else 0)
+
+
+async def test_next_midnight_is_required_for_daily_rain_and_probability(weather_entity):
+    start = datetime(2026, 10, 16, 22, tzinfo=UTC)
+    weather_entity._forecast_coordinator.data = [
+        row(start + timedelta(hours=i)) for i in range(24)
+    ]
+    item = (await weather_entity.async_forecast_daily())[0]
+    assert item["native_temperature"] == item["native_templow"] == 0
+    assert item["native_precipitation"] is item["precipitation_probability"] is None
 
 
 async def test_swiss_midnight_and_five_day_limit_ignore_utc_and_legacy_labels(
@@ -457,14 +512,18 @@ async def test_daily_rain_sum_handles_23_and_25_hour_dst_days(
     )
     freezer.move_to(start + timedelta(minutes=20))
     weather_entity._forecast_coordinator.data = [
-        row(start + timedelta(hours=i), fetched_at=None, precipitation=1)
-        for i in range(hours)
+        row(
+            start + timedelta(hours=i), fetched_at=None,
+            precipitation=99 if i == 0 else (3 if i == hours else 1),
+            precipitation_probability=99 if i == 0 else (80 if i == hours else 20),
+        )
+        for i in range(hours + 1)
     ]
     items = await weather_entity.async_forecast_daily()
-    assert len(items) == 1
-    assert items[0]["native_precipitation"] == hours
+    assert items[0]["native_precipitation"] == hours + 2
+    assert items[0]["precipitation_probability"] == 80
     hourly = await weather_entity.async_forecast_hourly()
-    assert len({item["datetime"] for item in hourly}) == min(24, hours)
+    assert len({item["datetime"] for item in hourly}) == 24
 
 
 @pytest.mark.parametrize("raw", [True, {}, [], "bad", float("nan"), float("inf")])

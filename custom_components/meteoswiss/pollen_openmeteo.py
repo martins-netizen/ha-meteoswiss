@@ -130,6 +130,7 @@ class OpenMeteoPollenClient:
             "longitude": self.longitude,
             "current": "uv_index",
             "timezone": "Europe/Zurich",
+            "timeformat": "unixtime",
         }
         try:
             payload = await async_get_json(
@@ -142,6 +143,8 @@ class OpenMeteoPollenClient:
         if not isinstance(payload, dict) or not isinstance(
             payload.get("current"), dict
         ):
+            return None, False
+        if not _is_current_hour(payload["current"].get("time")):
             return None, False
         return _number(payload["current"].get("uv_index")), True
 

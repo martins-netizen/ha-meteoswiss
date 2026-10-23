@@ -1,10 +1,11 @@
 # Official forecast-location catalogue foundation
 
-**Guide version:** 1.2 · **Updated:** 23 October 2026
+**Guide version:** 1.3 · **Updated:** 24 October 2026
 **Status:** Tested development foundation, unreleased after 8.2.0. This package
-adds no HA selection dialog. Its successor supplies explicit saved-selection
-routing; see [the saved-location contract](SAVED_FORECAST_LOCATION.md).
-The [location plan](LOCAL_FORECAST_PLAN.md) records the remaining steps.
+is the source foundation; the integrated successors supply
+[saved-selection routing](SAVED_FORECAST_LOCATION.md) and
+[translated HA selection/Reconfigure](FORECAST_LOCATION_SETUP.md).
+The [location plan](LOCAL_FORECAST_PLAN.md) records candidate acceptance.
 
 ## What this package supplies
 

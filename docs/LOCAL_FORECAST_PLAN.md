@@ -1,6 +1,6 @@
 # Local forecast points: separate catalogue and forecast decisions
 
-**Plan version:** 1.7 · **Updated:** 23 October 2026
+**Plan version:** 1.8 · **Updated:** 24 October 2026
 **Status:** Catalogue foundation and offline saved-selection/height-aware ICON routing implemented in development; translated HA flows are implemented and regression-tested; focused candidate acceptance remains open.
 Existing entries without a selection retain their forecast coordinates and IDs. Installed version remains unchanged.
 
@@ -222,7 +222,9 @@ packages; the 21 October catalogue audit alone is not complete feature
 acceptance. The new catalogue foundation independently fetched and parsed the
 current catalogue on 23 October; see its separate dated evidence. Its client,
 type/ID/provenance records and local candidate search are implemented and tested.
-HA persistence and dialogs remain open.
+HA persistence, height routing and translated dialogs are integrated through
+PRs #57/#58. The final review corrections and focused candidate acceptance
+remain; see [the overall review](RELEASE_REVIEW_2026-10-24.md).
 Persist confirmed coordinates/provenance so a temporary catalogue failure
 does not move a selected location or make valid forecasts unavailable.
 Never label a generic POI as a verified summit/pass/hut subtype solely from

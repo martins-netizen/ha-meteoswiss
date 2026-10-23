@@ -134,8 +134,8 @@ The requested rolling forecast must have ordered, valid times extending beyond
 now, start no more than one hour ahead and contain a valid temperature in an
 unexpired hour. This checks the returned horizon, not the model's issuance time.
 Individual missing/invalid values stay missing; valid zero and negative
-temperature values remain valid. A response with absent daily aggregates can
-use the existing hourly fallback, which may cover only part of today. The
+temperature values remain valid. In unreleased development, missing daily fields
+can use hourly fallback only for a complete, correctly aligned Swiss day. The
 existing 30-minute cache and three-hour age guard in weather forecasts remain.
 
 ### Current weather attributes and ongoing forecast subscriptions
@@ -154,11 +154,14 @@ still belongs to the separate live acceptance.
 Hourly forecasts omit completed intervals and show up to 24 hours from the
 current hour. Daily forecasts show at most five Swiss calendar days, retaining
 provider full-day highs/lows even when the hourly window begins in the afternoon.
-If native daily aggregates are missing, extrema/probability can use available
-hours; these may cover only part of today. A fallback rain sum stays unknown
-when a represented hourly value is missing or an internal time gap exists.
-Valid zero rain stays zero. Provider native daily totals are used when present;
-the integration does not recalculate them as local measurement totals.
+In unreleased development, missing native daily fields are reconstructed only
+from every expected Swiss calendar hour. Rain and probability include the
+next midnight's preceding-hour bucket. Partial/gapped/invalid series leave the
+affected daily field unknown; valid zero stays zero. Native provider buckets
+whose fixed UTC offset does not match both Swiss day boundaries are withheld.
+Consequently scalar daily temperature/rain and HGT can be unknown around DST,
+while hourly forecasts remain usable; they are not based on partial-day estimates.
+These are model predictions, not local measurement totals.
 
 ### Pollen, air quality and UV
 
@@ -170,8 +173,10 @@ forecast pollen has `level_name: No data`, while a real zero retains `None`.
 These existing English attributes are compatibility values, not UI translations.
 
 UV is optional and fetched separately. A transport/JSON/response-shape failure
-makes only UV `unavailable`; a successful response without a valid UV value
-leaves it `unknown`. A valid zero remains zero. Repeated UV failures produce one private
+makes only UV `unavailable`. Unreleased development also rejects missing, future
+or at-least-one-hour-old UV timestamps and requests Unix seconds to avoid local
+time ambiguity. A current valid response without a usable UV number leaves it
+`unknown`. A valid zero remains zero. Repeated UV failures produce one private
 warning, followed by one recovery log when the source responds correctly again.
 Valid pollen/AQ remains available. Source status is retained with the existing
 30-minute current-hour cache; no additional polling loop is introduced. MeteoSwiss measured pollen uses the selected

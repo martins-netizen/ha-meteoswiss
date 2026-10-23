@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import UTC, datetime, timedelta, timezone
+from datetime import UTC, datetime, time, timedelta, timezone
 from itertools import pairwise
 from typing import Any
 
@@ -169,7 +169,21 @@ class IconForecastClient:
             daily_zone = timezone(timedelta(seconds=offset))
         for i, day in enumerate(daily_times):
             day_time = _timestamp(day)
-            daily_extrema[day_time.astimezone(daily_zone).date().isoformat()] = {
+            local_day = day_time.astimezone(daily_zone).date()
+            if provider_offset is not None:
+                first = datetime.combine(local_day, time.min, FORECAST_TIME_ZONE)
+                last = datetime.combine(
+                    local_day + timedelta(days=1), time.min, FORECAST_TIME_ZONE
+                )
+                # A fixed-offset 24-hour bucket can cross different boundaries
+                # from the advertised Swiss day. Preserve the hourly forecast,
+                # but do not present those aggregates as whole-calendar values.
+                if (
+                    day_time != first.astimezone(UTC)
+                    or day_time + timedelta(days=1) != last.astimezone(UTC)
+                ):
+                    continue
+            daily_extrema[local_day.isoformat()] = {
                 "temperature_max": _value(daily_max_temps, i),
                 "temperature_min": _value(daily_min_temps, i),
                 "precipitation": _value(daily_precip, i, 0),

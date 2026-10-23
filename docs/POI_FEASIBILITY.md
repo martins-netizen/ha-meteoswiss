@@ -1,6 +1,6 @@
 # POI feasibility: first bounded source probe
 
-**Document version:** 1.4 · **Probe:** 17 October 2026 · **Updated:** 23 October 2026
+**Document version:** 1.5 · **Probe:** 17 October 2026 · **Updated:** 24 October 2026
 **Result:** Public name search and coordinate-based forecasts were exercised.
 Current App-catalogue access and complete POI-warning coverage were not proved.
 No POI feature was implemented or approved by this probe.
@@ -8,7 +8,10 @@ No POI feature was implemented or approved by this probe.
 On 23 October the operator approved catalogue-based location/POI selection
 for the next feature release, keeping the existing ICON source. That later
 decision is recorded in the local-forecast plan; it does not expand what the
-historical probe below demonstrated. Runtime implementation remains open.
+historical probe below demonstrated. Catalogue, saved routing and translated
+selection/reconfiguration are now integrated through PRs #56–#58. The final
+review and focused candidate acceptance remain; see the
+[selection guide](FORECAST_LOCATION_SETUP.md).
 
 ## Current planning boundary
 

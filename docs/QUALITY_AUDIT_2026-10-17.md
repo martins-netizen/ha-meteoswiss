@@ -8,7 +8,7 @@ Runtime, translations and tests matched `9c50b6b`.
 This is a historical rule-by-rule assessment, not the current deployment status.
 Later warning/icon, UV and oak corrections have landed, runtime acceptance and
 beta publication are complete, and the operator confirmed the HACS source switch.
-A clean first install remains open. Consult [release readiness](RELEASE_READINESS.md)
+Clean first installation and restore were subsequently completed. Consult [release readiness](RELEASE_READINESS.md)
 and the updated [quality matrix](QUALITY_SCALE.md) before treating a historical
 finding below as still unresolved.
 

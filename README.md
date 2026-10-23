@@ -32,7 +32,7 @@ the reviewed Beta2 component code. Follow the setup or migration guide below.
   explains the retired seasonal heating-degree entity, warning-filter changes,
   backup and recovery.
 - **See how changes are checked.** Public review history, automated HA tests,
-  CodeQL and HACS validation accompany changes. The [quality review](docs/REVIEW_2026-10-17.md)
+  CodeQL and HACS validation accompany changes. The [overall review](docs/RELEASE_REVIEW_2026-10-24.md)
   records evidence and remaining work; the fork has its own support and private
   security-reporting routes.
 
@@ -53,27 +53,22 @@ Read the [plain-language overview](docs/GETTING_STARTED.md#what-this-fork-provid
 
 ## Release status
 
-**Latest stable release: [8.2.0](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.2.0)**,
-published on **22 October 2026 at 08:52:40 Europe/Zurich**. Its immutable tag
-points to `5a0bf684eb44fd54c4e91d7cbce9e90798b72fa5`. See the
-[stable notes](docs/RELEASE_8.2.0.md) for scope and migration. The earlier beta
-tags remain unchanged. A published release is distinct from a confirmed HACS
-download or HA installation on a particular system.
+**Published stable: [8.2.0](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.2.0)**,
+22 October 2026. [Release notes](docs/RELEASE_8.2.0.md) describe its scope and
+migration. HACS installation, update and recovery were confirmed within the
+[recorded acceptance scope](docs/HACS_ACCEPTANCE.md).
 
-Minimum supported/tested HA: **2026.8.3**; CI also covers **2026.10.1**.
-Local tests and the earlier deployed runtime acceptance also cover
-**2026.10.2**. See the [beta notes and known limits](docs/RELEASE_8.2.0b1.md).
-The operator confirmed the HACS 2.0.5 source switch, downloaded version
-`8.2.0b1`, restart and a positive initial visual check on 20 October 2026.
-A clean first HACS installation and isolated restore were operator-confirmed
-on 21 October. On 22 October the operator completed Beta2 setup with other
-geographic locations and reported values. The focused setup check is
-complete; a separate manual test of every source/station combination is not claimed.
-The [HACS acceptance record](docs/HACS_ACCEPTANCE.md)
-distinguishes this operator-confirmed result from independent technical evidence.
-A default-store listing and an official HA quality tier are not claimed.
-The [current acceptance and stable-release checklist](docs/RELEASE_READINESS.md)
-separates completed beta work from the remaining release gates and later features.
+**Development after 8.2.0 is unreleased.** It adds explicit postcode/town/POI
+forecast selection, eight today/tomorrow forecast sensors and the reviewed
+source/lifecycle improvements. Its code still declares 8.2.0 until a separately
+reviewed version packet; matching version strings do not prove matching files.
+The [overall review](docs/RELEASE_REVIEW_2026-10-24.md) and
+[next-release checklist](docs/RELEASE_READINESS.md) govern candidate preparation.
+Neither the development branch nor an open PR is an installation target.
+
+Minimum supported/tested HA is **2026.8.3**, with CI on **2026.10.1** and
+additional local/practical evidence on **2026.10.2**. HACS default-catalogue
+inclusion and an official HA quality tier have not been granted.
 
 ## Data and compatibility
 
@@ -110,6 +105,7 @@ Stable 8.2.0 is published. For installation or update:
    the [migration and warning-consumer checks](docs/MIGRATION.md).
 2. In **HACS → menu → Custom repositories**, add
    `https://github.com/martins-netizen/ha-meteoswiss` as **Integration**.
+   Skip this step if that repository is already present.
 3. Open Download/Redownload, expand **Need a different version?**, and explicitly
    select **8.2.0** in **Release**. Check the announced version before confirming
    the download, then restart Home Assistant. Do not substitute a branch or commit.
@@ -124,7 +120,10 @@ Stable 8.2.0 is published. For installation or update:
 **Unreleased development:** the next setup/Configure flow removes the polling
 field and schedules new observation entries automatically at 600 seconds.
 Existing individual intervals remain effective when upgrading or changing the
-pollen station; this is not yet part of the published 8.2.0 instructions above.
+pollen station. The [forecast-location dialog](docs/FORECAST_LOCATION_SETUP.md)
+adds a separate, explicit weather forecast choice; **Reconfigure** later changes
+that choice. It leaves observations, warning postcode and AQ/pollen/UV locations
+intact. These are not yet part of the published 8.2.0 instructions above.
 
 Existing Beta1 entries retain their settings and can select a pollen station
 under Configure. Update through HACS while keeping the existing HA entry.
@@ -143,7 +142,8 @@ See [setup, all parameters, removal and troubleshooting](docs/USAGE.md).
 ## Development and operation
 
 - [Next-release plan: location/POIs, Silver and Gold](docs/NEXT_RELEASE_PLAN.md)
-- [Quality review of 17 October 2026](docs/REVIEW_2026-10-17.md)
+- [Overall release review of 24 October 2026](docs/RELEASE_REVIEW_2026-10-24.md)
+- [Historical review of 17 October 2026](docs/REVIEW_2026-10-17.md)
 - [Quality roadmap and measured gaps](docs/QUALITY_SCALE.md)
 - [Architecture and data contracts](docs/ARCHITECTURE.md)
 - [Maintenance, acceptance and releases](docs/MAINTENANCE.md)
