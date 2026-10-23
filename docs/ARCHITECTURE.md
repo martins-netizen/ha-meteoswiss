@@ -13,6 +13,9 @@ local changes. A release is an explicitly tested snapshot of `development`.
 
 ## Responsibilities
 
+See the [coordinator examples](COORDINATOR_EXAMPLES.md) for the seven concrete
+classes, entry-owned instances, polling and practical consumer/failure examples.
+
 - API clients download and validate payloads. A transport or decoding failure
   must escape to the coordinator; it must not become an empty successful result.
 - Coordinators own refresh intervals, success/failure status and data caching.

@@ -1,7 +1,7 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.18 · **Updated:** 23 October 2026
-**Status:** Approved planning; Q1 is documented and P0 has partial evidence.
+**Plan version:** 1.20 · **Updated:** 23 October 2026
+**Status:** Approved catalogue-based location implementation; dated catalogue audit complete, selection and compatibility acceptance remain open.
 This document does not approve a new feature, installation or release.
 
 ## Next feature release: agreed scope on 23 October 2026
@@ -11,8 +11,8 @@ location/POI selection in the next release. Do not freeze the scope at the
 forecast sensors alone. The sequence is modelled pollen/AQ/UV separation,
 hourly/archive precipitation separation, then official-catalogue location search
 and compatible selection/reconfiguration. Both architecture boundaries are now
-implemented; this candidate completes precipitation. POI implementation remains
-open before the release candidate.
+integrated through PRs #54 and #55. This planning branch is reconciled with that
+development baseline. POI implementation remains open before the candidate.
 Only then freeze features, reconcile release documentation, package a reviewed
 candidate and perform focused acceptance in the existing temporary HA.
 
@@ -44,9 +44,16 @@ is outside the present scope.
 Prioritise the official OGD local-forecast point catalogue for location/POI
 investigation. Catalogue selection and adopting processed local forecasts are
 separate decisions; do not silently replace the existing ICON Seamless source.
-The detailed, separately reviewed proposal is in
-[PR #35](https://github.com/martins-netizen/ha-meteoswiss/pull/35).
+The [bounded local-forecast plan](LOCAL_FORECAST_PLAN.md) defines the
+catalogue, resource and compatibility evidence needed before implementation.
 A working App-POI catalogue endpoint is not a prerequisite for that OGD route.
+The 21 October download verifies **5816 unique type/ID pairs**, including
+**631 POIs** and all four comparison places. Four duplicate station pairs are
+fully identical; 86 bare IDs span multiple types. The plan records hashes,
+coordinates, catalogue heights and a proposed result display. Catalogue-backed
+selection uses the existing ICON forecast source. Processed OGD forecast
+payload/resource evaluation is a separate future decision; actual selection UX,
+altitude handling and compatibility acceptance remain open for this release.
 Selecting a forecast POI does not establish point-specific warning coverage;
 a separately confirmed warning postcode can remain supported.
 
@@ -54,8 +61,8 @@ a separately confirmed warning postcode can remain supported.
 
 Checked against the [current inclusion rules](https://www.hacs.xyz/docs/publish/include/)
 on 23 October 2026. The maintained fork is not in the retrieved hacs/default
-integration list. Its current hacs.json lacks country; include **country: CH**
-in the next released HACS manifest. Do not rewrite the immutable 8.2.0 release.
+integration list. This PR adds **country: CH** to hacs.json; it must be present
+in the next released HACS manifest too. Do not rewrite the immutable 8.2.0 release.
 
 After the agreed POI implementation and candidate acceptance, rerun HACS without
 ignores and Hassfest, then publish the reviewed stable release before submitting

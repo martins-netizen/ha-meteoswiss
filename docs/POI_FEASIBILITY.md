@@ -1,19 +1,35 @@
 # POI feasibility: first bounded source probe
 
-**Document version:** 1.1 · **Probe:** 17 October 2026 · **English update:** 21 October 2026
+**Document version:** 1.4 · **Probe:** 17 October 2026 · **Updated:** 23 October 2026
 **Result:** Public name search and coordinate-based forecasts were exercised.
 Current App-catalogue access and complete POI-warning coverage were not proved.
 No POI feature was implemented or approved by this probe.
 
+On 23 October the operator approved catalogue-based location/POI selection
+for the next feature release, keeping the existing ICON source. That later
+decision is recorded in the local-forecast plan; it does not expand what the
+historical probe below demonstrated. Runtime implementation remains open.
+
 ## Current planning boundary
 
 Keep the original evidence below as history. The official OGD local-forecast
-point catalogue is now the preferred investigation path, proposed in
-[PR #35](https://github.com/martins-netizen/ha-meteoswiss/pull/35).
+point catalogue is now the preferred investigation path, specified in the
+[local-forecast plan](LOCAL_FORECAST_PLAN.md).
 That route does not depend on successful App-POI access. Keep App v3 warnings
 and a separately confirmed warning postcode. A forecast point alone proves no
 point-specific warning coverage; adopting processed OGD forecasts needs its
 own data/resource/source decision.
+
+**New catalogue evidence, 21 October:** a direct bounded OGD download and
+STAC checksum comparison now establish **5820 rows / 5816 unique type/ID pairs**,
+including **631 POIs**. Kloten postal code 8302, Säntis POI, Gotthardpass and
+Albert-Heim-Hütte SAC are present with provider-declared WGS84/LV95 coordinates
+and heights. Four duplicated station keys have fully identical rows; 86 bare
+IDs occur in multiple types. See the
+[current catalogue audit](LOCAL_FORECAST_PLAN.md#catalogue-snapshot-verified-on-21-october-2026)
+and [compact evidence](evidence/local_forecast_catalogue_2026-10-21.json).
+This improves catalogue/altitude provenance; it does not turn the historical
+App probe, forecast-source evaluation or warning-coverage questions into passes.
 
 The [development plan](NEXT_RELEASE_PLAN.md) uses three mountain examples plus
 a postcode control. This probe used documented public swisstopo search and the
@@ -64,7 +80,7 @@ were requested: five GETs, no authentication or mass catalogue download.
 | Säntis, alpine summit, AI | 47.249424 / 9.343241 | First five results were other same-name places; summit appeared in the expanded 34-result response. |
 | Gotthardpass, pass, TI | 46.559311 / 8.561156 | Two differently named results shared coordinates. |
 | Albert-Heim-Hütte SAC, building, UR | 46.608932 / 8.463569 | Two nearby building results; name alone was insufficient. |
-| 8302 Kloten, postcode | 47.458755 / 8.582091 | Unambiguous control; postcode centre is not automatically HA's home location. |
+| 8302 Kloten, postcode | 47.458755 / 8.582091 | Unambiguous control; coordinates for a postal code are not automatically HA's home location. |
 
 Do not auto-select the first result. Show category, canton/municipality and
 verified altitude where available, then let users choose. Bound/debounce
