@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.20 · **Updated:** 23 October 2026
+**Plan version:** 1.21 · **Updated:** 23 October 2026
 **Status:** Approved catalogue-based location implementation; dated catalogue audit complete, selection and compatibility acceptance remain open.
 This document does not approve a new feature, installation or release.
 
@@ -13,6 +13,10 @@ hourly/archive precipitation separation, then official-catalogue location search
 and compatible selection/reconfiguration. Both architecture boundaries are now
 integrated through PRs #54 and #55. This planning branch is reconciled with that
 development baseline. POI implementation remains open before the candidate.
+The first implementation package now provides the bounded official catalogue
+client, immutable point/selection provenance and deterministic local search;
+see the [catalogue contract](FORECAST_LOCATION_CATALOGUE.md). Persisted selection,
+altitude/request/cache semantics and translated HA flows remain open.
 Only then freeze features, reconcile release documentation, package a reviewed
 candidate and perform focused acceptance in the existing temporary HA.
 
@@ -61,7 +65,7 @@ a separately confirmed warning postcode can remain supported.
 
 Checked against the [current inclusion rules](https://www.hacs.xyz/docs/publish/include/)
 on 23 October 2026. The maintained fork is not in the retrieved hacs/default
-integration list. This PR adds **country: CH** to hacs.json; it must be present
+integration list. PR #35 integrated **country: CH** in hacs.json; it must be present
 in the next released HACS manifest too. Do not rewrite the immutable 8.2.0 release.
 
 After the agreed POI implementation and candidate acceptance, rerun HACS without

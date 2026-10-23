@@ -1,0 +1,9 @@
+point_id;point_type_id;station_abbr;postal_code;point_name;point_type_de;point_type_fr;point_type_it;point_type_en;point_height_masl;point_coordinates_lv95_east;point_coordinates_lv95_north;point_coordinates_wgs84_lat;point_coordinates_wgs84_lon
+35;1;SAE;;Säntis;Station;Station;Stazione;Station;2501.0;2744188.0;1234920.0;47.249447;9.343469
+59;1;KLO;;Zürich / Kloten;Station;Station;Stazione;Station;426.0;2682711.0;1259339.0;47.479611;8.535961
+123;1;SNG;;Seengen;Station;Station;Stazione;Station;445.0;2656680.0;1242100.0;47.327328;8.18845
+123;1;SNG;;Seengen;Station;Station;Stazione;Station;445.0;2656680.0;1242100.0;47.327328;8.18845
+830200;2;;8302;Kloten;Zentrum Postleitzahl;Centre code postal;Centro codice postale;Postal code center;436.0;2686058.0;1256233.0;47.451253;8.579761
+454;3;;;Albert-Heim-Hütte SAC;Point of Interest;Point of Interest;Point of Interest;Point of Interest;2542.0;2678518.0;1162475.0;46.608917;8.463553
+594;3;;;Gotthardpass;Point of Interest;Point of Interest;Point of Interest;Point of Interest;2107.0;2686073.0;1157063.0;46.559306;8.561156
+711;3;;;Säntis;Point of Interest;Point of Interest;Point of Interest;Point of Interest;2502.0;2744171.0;1234917.0;47.249425;9.343242

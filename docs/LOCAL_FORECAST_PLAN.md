@@ -1,8 +1,12 @@
 # Local forecast points: separate catalogue and forecast decisions
 
-**Plan version:** 1.4 · **Updated:** 23 October 2026
-**Status:** Catalogue-based location/POI implementation approved for the next feature release; dated catalogue audit retained, runtime implementation remains open.
-No runtime change, new source adapter or HA installation.
+**Plan version:** 1.5 · **Updated:** 23 October 2026
+**Status:** Catalogue source, immutable identity/provenance and local search implemented as an unreleased foundation; persisted selection and translated HA flows remain open.
+No change to HA setup, forecast coordinates, entities or installed version.
+
+See the [catalogue implementation contract](FORECAST_LOCATION_CATALOGUE.md)
+and its fresh 23 October source/client evidence. The dated audits below remain
+historical rather than evidence of a completed HA selection feature.
 
 ## Decision and purpose
 
@@ -105,8 +109,8 @@ records source URLs, UTC times, hashes, schema checks, duplicate findings and
 the selected public rows. The audit used Python's standard-library CSV parser
 with explicit Latin1 and semicolon settings, exact column/row-width checks,
 finite numeric checks, grouping by the unchanged string type/ID pair and
-full-row equality for duplicates. No integration parser or selection flow is
-implemented. Forecast values, update cost, memory, CPU, accuracy and warning
+full-row equality for duplicates. At that audit no integration parser or selection
+flow was implemented. Forecast values, update cost, memory, CPU, accuracy and warning
 coverage remain untested. The proposed display still needs usability review.
 
 ## L0: verify the catalogue at four public examples
@@ -213,7 +217,10 @@ release. Complete these bounded packages before freezing features:
 
 Keep L0's remaining selection/altitude contract work inside the first two
 packages; the 21 October catalogue audit alone is not complete feature
-acceptance. No live catalogue re-download is claimed by this plan update.
+acceptance. The new catalogue foundation independently fetched and parsed the
+current catalogue on 23 October; see its separate dated evidence. Its client,
+type/ID/provenance records and local candidate search are implemented and tested.
+HA persistence and dialogs remain open.
 Persist confirmed coordinates/provenance so a temporary catalogue failure
 does not move a selected location or make valid forecasts unavailable.
 Never label a generic POI as a verified summit/pass/hut subtype solely from
@@ -231,8 +238,8 @@ existing temporary HA; no additional permanent environment is required.
 
 Full Silver/Gold evidence and HACS default-list submission remain separate
 from this feature plan. Neither is awarded by passing our tests. No release,
-installation, catalogue feature or HACS inclusion is claimed by this PR.
-The HACS metadata addition country: CH is prepared here for the next release.
+installation, complete HA location feature or HACS inclusion is claimed here.
+The HACS metadata country: CH is integrated through PR #35 for the next release.
 
 See the [development plan](NEXT_RELEASE_PLAN.md) and
 [earlier POI evidence](POI_FEASIBILITY.md).

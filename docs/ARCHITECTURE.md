@@ -489,6 +489,13 @@ inventory result, not a complete quality-tier or live acceptance claim.
 
 ## Verification and remaining limits
 
+The [official forecast-location catalogue foundation](FORECAST_LOCATION_CATALOGUE.md)
+adds a source-only client, immutable composite identities/provenance and pure
+local candidate search. Strict snapshots, borrowed-session HTTP limits,
+off-loop parsing, coalescing, original cache expiry and explicit stale fallback
+are tested. It is not yet called by setup or entities; saved selections,
+altitude semantics and translated HA flows remain separate implementation work.
+
 Tests cover warning failure/recovery, invalid payloads, bounded retries,
 cancellation, HA-owned sessions, stale observations, current-hour AQ data,
 registered pollen/AQ entity states and unload, forecast service failure/recovery,

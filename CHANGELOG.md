@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- Add the bounded official forecast-point catalogue foundation: immutable
+  type/ID identity and provenance, strict Latin1 CSV acceptance, local
+  postcode/name/POI candidate search and a lazy borrowed-session client.
+  Preserve ambiguity, enforce size/time/retry limits, coalesce fetches and
+  retain old metadata explicitly on failure without labelling it fresh.
+  HA selection/persistence and forecast-location wiring remain the next steps;
+  existing sources, coordinates, entities and polling are unchanged.
+
 - Split hourly/archive precipitation into a pure source client/parser, explicit
   Recorder projection/import adapter and the actual HA coordinator in
   coordinator.py. Preserve hourly/weekly schedules, lookback, ordered corrections,
@@ -15,8 +23,7 @@
   selection, four-attempt AQ retry, shared 30-minute cache/TTL, zero/partial
   values and independent UV availability. Suppress raw source exception chains,
   propagate cancellation/setup errors and retain all entity/lifecycle contracts.
-  Six of seven coordinators are canonical; precipitation and the agreed POI
-  feature remain next-release work before packaging.
+  Keep the agreed POI feature in the next-release scope before packaging.
 
 - Add eight numeric forecast sensors for today/tomorrow: native whole-day
   maximum/minimum temperature and precipitation, plus the highest hourly
@@ -27,13 +34,11 @@
 
 - Separate the ICON client into forecast.py and define its actual HA coordinator
   in coordinator.py. Retain model, retry, cache, schedule and weather contracts.
-  Five of seven actual coordinators now use the canonical module; two placement
-  findings remain.
 
 - Separate the alternative Open-Meteo current-weather client from HA coordination.
   Keep cache TTL/freshness, failure pause, retries, partial/zero values, session
   ownership and entity identities. Define the real coordinator in coordinator.py
-  and retain source parsing in openmeteo.py. Three placement gaps remain.
+  and retain source parsing in openmeteo.py.
 
 - Remove arbitrary path arguments from the local coverage checker. Read only
   repository-root coverage.json, reject symbolic links, and preserve every
