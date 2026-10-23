@@ -11,6 +11,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .cache import get_all_cache_stats
 from .const import (
+    CONF_FORECAST_LOCATION,
     CONF_LATITUDE,
     CONF_LONGITUDE,
     CONF_POLLEN_STATION,
@@ -20,12 +21,14 @@ from .const import (
     DATA_SOURCE_METEOSWISS,
     DATA_SOURCE_OPENMETEO,
 )
+from .forecast_location_config import resolve_forecast_target
 from .runtime_data import MeteoSwissConfigEntry
 from .stations_map import get_stations_map
-from .weather_data import forecast_datetime
 from .version import __version__
+from .weather_data import forecast_datetime
 
 TO_REDACT = {
+    CONF_FORECAST_LOCATION,
     CONF_LATITUDE,
     CONF_LONGITUDE,
     CONF_POLLEN_STATION,
@@ -181,6 +184,13 @@ async def async_get_config_entry_diagnostics(
             **_coordinator_diagnostics(coordinator, key),
         }
 
+    target = resolve_forecast_target(entry.data, None, None)
+    location_sources = _location_sources(data_source)
+    if target.status == "catalogue":
+        location_sources["weather_forecast"] = "meteoswiss_catalogue"
+    elif target.status == "invalid":
+        location_sources["weather_forecast"] = "invalid_selection"
+
     return {
         "integration_version": __version__,
         "config_entry": {
@@ -190,7 +200,11 @@ async def async_get_config_entry_diagnostics(
             "minor_version": entry.minor_version,
         },
         "data_source": data_source,
-        "location_sources": _location_sources(data_source),
+        "location_sources": location_sources,
+        "forecast_location": {
+            "status": target.status,
+            "elevation_mode": target.elevation_mode,
+        },
         "runtime_data_present": entry_data is not None,
         "cache": get_all_cache_stats(),
         "station_catalogue": (await get_stations_map(load=False)).get_status(),

@@ -1,10 +1,46 @@
 # Bronze/Silver follow-up — 22 October 2026
 
-**Record version:** 1.12. **Updated:** 23 October 2026. **Scope:** unreleased development after stable 8.2.0.
+**Record version:** 1.13. **Updated:** 23 October 2026. **Scope:** unreleased development after stable 8.2.0.
 The [dated original audit](QUALITY_AUDIT_2026-10-17.md) remains historical.
 This document records individual improvements, not an official HA quality tier.
 
-## Official forecast-location catalogue, identity and search foundation
+## Saved forecast location, altitude routing and independent current weather
+
+The second POI package adds an offline versioned encoder/decoder and explicit
+legacy/catalogue/invalid target resolution. Setup routes only ICON forecasts
+and derived scalars/HGT to a confirmed point; current weather, AQ/pollen/UV,
+observations, warning postcode and measured pollen retain their existing roles.
+Known catalogue altitude, including zero/negative values, is sent to Open-Meteo
+as its downscaling target. Missing height keeps automatic DEM. Explicit-height
+cache keys include normalized height; the legacy key and original TTL remain.
+
+An invalid saved selection disables forecast requests without moving them to
+home coordinates. A selected POI cannot become the existing weather entity's
+current-condition forecast fallback. Local weather/scalar/HGT attributes
+identify the point; diagnostics redact the entire saved object in both data
+and options and export only fixed status/elevation-mode labels. Normal startup
+and reload never require catalogue access or write a selection into old entries.
+
+Seventy-four additional cases exercise JSON/roles/provenance, malformed private
+inputs, altitude requests/cache isolation, real HA setup for both current-weather
+providers, forecast services, local attributes, ID-preserving reload/unload,
+private unloaded diagnostics and repair from invalid to valid selection.
+Both local HA **2026.8.3 and 2026.10.2** pass **1,219 tests and 53 subtests**;
+combined line/branch coverage is **99.97375%**, **2,990/2,991 lines** and all
+**818/818 branches**. Every strict source/flow gate passes; the new storage
+module is also explicitly held at 100%. Thresholds and the existing exclusion policy are unchanged. CI still targets HA 2026.8.3/2026.10.1.
+
+A real read-only probe through the actual encoder/resolver/ICON client on
+**23 October 2026 at 18:42:00 UTC** returned 120 hours and daily aggregates for
+Kloten postal code, Säntis, Gotthardpass and Albert-Heim-Hütte SAC with explicit
+catalogue heights 436/2502/2107/2542 m. The caller retained its session. See
+[public-point evidence](evidence/selected_forecast_location_2026-10-23.json) and
+[the saved-location contract](SAVED_FORECAST_LOCATION.md). This demonstrates
+request/source compatibility, not point-forecast accuracy or operator-HA
+acceptance. Translated search/confirmation/reconfiguration and the focused
+temporary-HA checks remain open before a candidate. No installation or release.
+
+## Official forecast-location catalogue, identity and search foundation (preceding package)
 
 The first approved POI implementation package adds immutable type/opaque-ID
 points, explicit selected-point provenance, atomic Latin1 catalogue validation

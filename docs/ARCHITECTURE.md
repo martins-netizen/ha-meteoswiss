@@ -56,10 +56,10 @@ with bounded peak-window attributes. See [the forecast guide](FORECAST_SENSORS.m
 | Data | Source and location | Time semantics |
 |---|---|---|
 | Observations | Selected SwissMetNet station, or configured Open-Meteo location | `last_update` is measurement time, aware UTC. Missing timestamps, age over one hour or more than ten minutes in the future fail the update. |
-| Weather forecast | MeteoSwiss ICON Seamless via Open-Meteo at HA location (explicit coordinates for Open-Meteo entries) | Unix seconds from provider become aware UTC ISO strings. `local_date` is the Europe/Zurich date; `fetched_at` is retrieval time, not model issuance time. |
+| Weather forecast | MeteoSwiss ICON Seamless via Open-Meteo at an explicitly saved catalogue point, otherwise legacy HA/configured base coordinates | Unix seconds from provider become aware UTC ISO strings. `local_date` is the Europe/Zurich date; `fetched_at` is retrieval time, not model issuance time. |
 | Warnings | MeteoSwiss App API for configured postal code | UTC validity windows; active, upcoming and outlook remain separate. |
 | Measured pollen | Selected MeteoSwiss pollen station | UTC hourly interval-end measurement time; accepted age up to four hours and future skew up to ten minutes, independently of weather observations. Checked on refresh. |
-| Pollen/AQ forecast | Open-Meteo for forecast location | Request Unix seconds and select the actual current hour, never midnight or the next non-null future value. Missing data stays missing; cached prior-hour values cannot extend this window. |
+| Pollen/AQ forecast | Open-Meteo for the existing base location, independent of a selected weather-forecast POI | Request Unix seconds and select the actual current hour, never midnight or the next non-null future value. Missing data stays missing; cached prior-hour values cannot extend this window. |
 | Hourly precipitation | Official station CSV, external Recorder statistics | Interval-end times are shifted to interval starts in UTC; IDs remain unchanged. |
 
 Trailing partial station rows (for example rain=0 while instantaneous weather
@@ -151,6 +151,14 @@ fall back to hourly aggregates. Invalid individual numbers stay missing;
 valid zero values and negative temperatures are retained. Humidity and
 probability are bounded to 0–100, bearings to 0–360, and negative precipitation,
 snowfall or wind speeds are missing. Unknown codes cannot manufacture clear sky.
+
+A saved catalogue selection is decoded offline and affects ICON forecasts only.
+The [saved-location contract](SAVED_FORECAST_LOCATION.md) defines exact schema,
+height/downscaling, privacy and invalid-selection recovery. Known altitude is
+sent explicitly and included in a height-aware cache key; missing altitude and
+legacy entries retain automatic DEM and the old coordinate key. Current/AQ/
+pollen base coordinates and the warning postcode remain separate. A selected
+forecast cannot supply the existing weather entity's current-condition fallback.
 
 Only validated forecasts enter the versioned 30-minute cache. Transient
 transport failures retry at most three times; malformed data is not retried.

@@ -63,10 +63,15 @@ class IconForecastClient:
         latitude: float | None,
         longitude: float | None,
         session: aiohttp.ClientSession | None = None,
+        *,
+        elevation: float | None = None,
     ) -> None:
         self._latitude = latitude
         self._longitude = longitude
         self._session = session
+        self.elevation = weather_number(elevation)
+        if elevation is not None and self.elevation is None:
+            raise ValueError("Invalid forecast elevation")
 
     async def async_get_data(self) -> list[dict[str, Any]]:
         """Return a valid rolling forecast; keep raw errors out of tracebacks."""
@@ -100,6 +105,8 @@ class IconForecastClient:
             f"&timezone=Europe/Zurich&timeformat=unixtime"
         )
 
+        if self.elevation is not None:
+            url += f"&elevation={self.elevation}"
         return self.parse_response(await self._async_fetch_payload(url))
 
     @async_retry_with_backoff(max_attempts=3)

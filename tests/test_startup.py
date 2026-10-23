@@ -11,7 +11,7 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.meteoswiss import (
     _async_refresh_optional_coordinators,
-    _get_forecast_coordinates,
+    _get_base_coordinates,
     _keep_coordinator_polling,
 )
 from custom_components.meteoswiss.const import (
@@ -68,7 +68,7 @@ def test_meteoswiss_forecast_uses_home_assistant_location() -> None:
         },
     )
 
-    assert _get_forecast_coordinates(hass, entry, DATA_SOURCE_METEOSWISS) == (
+    assert _get_base_coordinates(hass, entry, DATA_SOURCE_METEOSWISS) == (
         47.451,
         8.562,
     )
@@ -85,7 +85,7 @@ def test_openmeteo_forecast_keeps_configured_location() -> None:
         },
     )
 
-    assert _get_forecast_coordinates(hass, entry, DATA_SOURCE_OPENMETEO) == (
+    assert _get_base_coordinates(hass, entry, DATA_SOURCE_OPENMETEO) == (
         46.204,
         6.143,
     )
@@ -107,7 +107,7 @@ def test_legacy_openmeteo_coordinates_fall_back_independently(
     entry = MockConfigEntry(
         domain=DOMAIN, data={CONF_LATITUDE: latitude, CONF_LONGITUDE: longitude}
     )
-    assert _get_forecast_coordinates(hass, entry, DATA_SOURCE_OPENMETEO) == expected
+    assert _get_base_coordinates(hass, entry, DATA_SOURCE_OPENMETEO) == expected
 
 
 async def test_cancel_optional_startup_cancels_all_inflight_sources():

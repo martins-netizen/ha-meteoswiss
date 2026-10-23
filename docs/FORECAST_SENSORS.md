@@ -1,6 +1,6 @@
 # Forecast sensors: today and tomorrow
 
-**Guide version:** 1.0 · **Updated:** 23 October 2026
+**Guide version:** 1.1 · **Updated:** 23 October 2026
 **Availability:** unreleased development after 8.2.0. Stable 8.2.0 does not
 include these sensors.
 
@@ -25,7 +25,11 @@ Native daily fields supply those three full-day values. Missing daily fields
 are not reconstructed from only the remaining rolling hours.
 
 The source remains **MeteoSwiss ICON Seamless via Open-Meteo**, at the existing
-forecast location. Warning postcode, forecast location and observation station
+forecast location. Development can route these and calculated HGT to an
+explicitly saved catalogue point; local forecast_location attributes identify
+its name, category and height. The translated selection dialog remains pending;
+see [the saved-location contract](SAVED_FORECAST_LOCATION.md). Warning postcode,
+forecast location and observation station
 have distinct purposes; see [getting started](GETTING_STARTED.md).
 
 ## What does an 80% probability mean?

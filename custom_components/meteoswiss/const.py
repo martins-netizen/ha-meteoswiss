@@ -40,6 +40,7 @@ CONF_STATION_NAME: Final = "station_name"
 CONF_UPDATE_INTERVAL: Final = "update_interval"
 CONF_POLLEN_STATION_CODE: Final = "polen_station_code"
 CONF_LATITUDE: Final = "latitude"
+CONF_FORECAST_LOCATION: Final = "forecast_location"
 CONF_LONGITUDE: Final = "longitude"
 CONF_DATA_SOURCE: Final = "data_source"
 

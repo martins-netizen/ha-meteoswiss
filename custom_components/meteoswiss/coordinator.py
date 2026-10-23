@@ -719,6 +719,8 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
         post_code: str | None = None,
         update_interval: int = 3600,
         session: aiohttp.ClientSession | None = None,
+        *,
+        elevation: float | None = None,
     ) -> None:
         """Initialize."""
         self._station_id = station_id.lower() if station_id else None
@@ -726,7 +728,10 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
         self._longitude = longitude
         self._post_code = post_code
         self._session = session
-        self.client = IconForecastClient(latitude, longitude, session)
+        self.client = IconForecastClient(
+            latitude, longitude, session, elevation=elevation
+        )
+        self._elevation = self.client.elevation
 
         # Circuit breaker state
         self._consecutive_failures = 0
@@ -756,6 +761,11 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
         # Get cache
         cache = get_forecast_cache()
         cache_key = f"forecast:v3:icon-seamless:{self._latitude},{self._longitude}"
+        if self._elevation is not None:
+            cache_key = (
+                f"forecast:v4:icon-seamless:{self._latitude},{self._longitude}"
+                f":elevation={self._elevation}"
+            )
 
         # Try cache first
         cached_data = cache.get(cache_key)

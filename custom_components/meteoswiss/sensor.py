@@ -75,6 +75,7 @@ from .entity import (
     air_quality_device_info,
     weather_device_info,
 )
+from .forecast_location_config import resolve_forecast_target
 from .forecast_summary import (
     FORECAST_ATTRIBUTION,
     FORECAST_MAX_AGE,
@@ -373,6 +374,7 @@ class MeteoSwissForecastSensor(
         self.entity_description = description
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_{description.key}"
         self._attr_device_info = weather_device_info(entry.entry_id, station_name)
+        self._forecast_target = resolve_forecast_target(entry.data, None, None)
         self._cancel_timer: Callable[[], None] | None = None
 
     @property
@@ -394,12 +396,13 @@ class MeteoSwissForecastSensor(
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
-        return summarize_forecast(
+        attributes = summarize_forecast(
             self.coordinator.data if self.available else [],
             dt_util.utcnow(),
             self.entity_description.day_offset,
             self.entity_description.metric,
         )[1]
+        return {**attributes, **self._forecast_target.state_attributes()}
 
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
@@ -739,6 +742,7 @@ class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntit
         entry: MeteoSwissConfigEntry,
     ) -> None:
         super().__init__(forecast_coordinator)
+        self._forecast_target = resolve_forecast_target(entry.data, None, None)
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_heating_degree_days"
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, f"calculated_{entry.entry_id}")},
@@ -767,10 +771,11 @@ class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntit
     @property
     def extra_state_attributes(self) -> dict | None:
         if not self.coordinator.data:
-            return None
+            return self._forecast_target.state_attributes() or None
         attributes = {
             "method": "HGT 12/20",
             "source": "MeteoSwiss ICON Seamless via Open-Meteo",
+            **self._forecast_target.state_attributes(),
         }
         daily_mean = self._daily_mean()
         if daily_mean is not None:
