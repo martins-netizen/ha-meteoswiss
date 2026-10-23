@@ -14,11 +14,11 @@ if TYPE_CHECKING:
         MeteoSwissAlertsCoordinator,
         MeteoSwissDataUpdateCoordinator,
         MeteoSwissForecastCoordinator,
+        MeteoSwissHourlyPrecipitationCoordinator,
         MeteoSwissPollenCoordinator,
         OpenMeteoDataUpdateCoordinator,
         OpenMeteoPollenCoordinator,
     )
-    from .precipitation import MeteoSwissHourlyPrecipitationCoordinator
 
 
 @dataclass(slots=True)

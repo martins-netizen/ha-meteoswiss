@@ -412,8 +412,8 @@ implementation. Its complete class AST is unchanged. Logging now uses the
 coordinator module namespace; warning parsing, labels, timing, once-per-outage
 logging, session ownership and cleanup remain covered by source/lifecycle tests.
 The [placement review](COORDINATOR_LAYOUT_REVIEW.md) inventories all seven actual
-coordinators; its current assessment retains one precipitation source-module
-placement finding after the subsequent extractions. No
+coordinators; the current seven-class placement inventory is complete after
+the subsequent source/Recorder extractions. No
 blanket common-modules/Silver completion follows from this move.
 
 ## Measured pollen client boundary (unreleased)
@@ -443,7 +443,7 @@ semantics, units and 24-row history stay unchanged. Direct-client tests verify
 borrowed-session ownership, message-free source errors and cancellation without passing
 an HA runtime/coordinator to the client. This is not a separately packaged library.
 The [placement review](COORDINATOR_LAYOUT_REVIEW.md) records the subsequent
-source extractions; one precipitation placement remains open. Full
+source extractions; all seven coordinator definitions are now canonical. Full
 common-modules/Silver evidence remains open.
 
 ## Modelled pollen/AQ and UV source boundary (unreleased)
@@ -462,8 +462,27 @@ values, and logs each UV outage/recovery once. UV value/status travel atomically
 with AQ: the old code did not have a separate UV cache. Cache hits cannot renew
 the TTL. Setup/runtime imports and registered lifecycle mocks use the canonical
 class. Existing entity IDs, grouping, options, source parameters and startup/
-unload/reload contracts remain unchanged. Six of seven genuine coordinators
-are canonical; hourly/archive precipitation is the next architecture step.
+unload/reload contracts remain unchanged. The precipitation boundary below
+completes the seven-class coordinator placement inventory.
+
+## Hourly/archive precipitation source and Recorder boundary (unreleased)
+
+precipitation.py contains the borrowed-session source client, station/asset
+selection and pure completed-hour amount parser, with no HA or Recorder imports.
+The original HTTPS host, redirect/body bounds, cp1252, four transient attempts,
+calendar lookback and interval-end-to-start conversion remain. Source values
+contain start/amount; no Recorder metadata leaks into that contract.
+
+precipitation_recorder.py owns the HA executor call, ordered file/period merging,
+Recorder mean/min/max projection and queue operation. It retains the existing
+statistic IDs/metadata, later valid corrections, partial-import counts and all
+failure categories. Parsing stays off the event loop. Source/parse cancellation
+never queues data; invalid or absent data never becomes a zero statistic.
+MeteoSwissHourlyPrecipitationCoordinator in coordinator.py composes both layers
+and translates the same four failure messages. Entry-owned hourly/weekly polling,
+optional Recorder startup, keepalive listener and unload behaviour are retained.
+All seven genuine coordinators now live in the canonical module. This is an
+inventory result, not a complete quality-tier or live acceptance claim.
 
 ## Verification and remaining limits
 

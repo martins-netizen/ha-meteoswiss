@@ -28,6 +28,7 @@ from .coordinator import (
     MeteoSwissAlertsCoordinator,
     MeteoSwissDataUpdateCoordinator,
     MeteoSwissForecastCoordinator,
+    MeteoSwissHourlyPrecipitationCoordinator,
     MeteoSwissPollenCoordinator,
     OpenMeteoDataUpdateCoordinator,
     OpenMeteoPollenCoordinator,
@@ -36,7 +37,6 @@ from .localization import async_load_warning_labels
 from .precipitation import (
     ARCHIVE_LOOKBACK_MONTHS,
     ARCHIVE_UPDATE_INTERVAL,
-    MeteoSwissHourlyPrecipitationCoordinator,
 )
 from .runtime_data import MeteoSwissConfigEntry, MeteoSwissRuntimeData
 

@@ -14,6 +14,9 @@ from pytest_homeassistant_custom_component.components.recorder.common import (
 
 from custom_components.meteoswiss import precipitation as p
 from custom_components.meteoswiss.const import API_BASE, STAC_COLLECTION
+from custom_components.meteoswiss.coordinator import (
+    MeteoSwissHourlyPrecipitationCoordinator,
+)
 
 STATION_URL = f"{API_BASE}/collections/{STAC_COLLECTION}/items/klo"
 CSV_URL = "https://data.geo.admin.ch/ch.meteoschweiz.ogd-smn/klo/ogd-smn_klo_h_now.csv"
@@ -29,7 +32,7 @@ def fixed_clock(freezer):
 
 
 def coordinator(hass, **kwargs):
-    return p.MeteoSwissHourlyPrecipitationCoordinator(
+    return MeteoSwissHourlyPrecipitationCoordinator(
         hass, "KLO", async_get_clientsession(hass), **kwargs
     )
 
@@ -48,10 +51,10 @@ def test_invalid_totals_cannot_enter_recorder_and_zero_is_preserved():
         f"KLO;16.10.2026 0{i}:00;{value}"
         for i, value in enumerate(["nan", "inf", "-inf", "-1", "bad", "", "0"])
     )
-    values = p._parse_hourly_statistics(content)
+    values = p.parse_hourly_precipitation(content)
     assert len(values) == 1
     assert values[0]["start"] == datetime(2026, 10, 16, 5, tzinfo=UTC)
-    assert values[0]["mean"] == 0
+    assert values[0]["amount"] == 0
 
 
 def test_corrected_duplicates_are_sorted_and_missing_values_do_not_erase_valid_ones():
@@ -59,8 +62,8 @@ def test_corrected_duplicates_are_sorted_and_missing_values_do_not_erase_valid_o
         HEADER
         + "KLO;16.10.2026 07:00;1.2\nKLO;16.10.2026 06:00;0.5\nKLO;16.10.2026 07:00;0.4\nKLO;16.10.2026 07:00;\n"
     )
-    values = p._parse_hourly_statistics(content)
-    assert [v["mean"] for v in values] == [0.5, 0.4]
+    values = p.parse_hourly_precipitation(content)
+    assert [v["amount"] for v in values] == [0.5, 0.4]
     assert [v["start"].hour for v in values] == [5, 6]
 
 
@@ -69,9 +72,9 @@ def test_wrong_station_future_and_nonhourly_records_are_not_imported():
         HEADER
         + "OTHER;16.10.2026 06:00;99\nKLO;16.10.2026 07:30;9\nKLO;16.10.2026 08:00;9\nKLO;16.10.2026 07:00;0\n"
     )
-    values = p._parse_hourly_statistics(content, station_id="klo")
+    values = p.parse_hourly_precipitation(content, station_id="klo")
     assert len(values) == 1
-    assert values[0]["mean"] == 0
+    assert values[0]["amount"] == 0
     assert values[0]["start"] == datetime(2026, 10, 16, 6, tzinfo=UTC)
 
 
@@ -113,12 +116,12 @@ async def test_statistics_transport_retries_are_bounded(
         patch(
             "custom_components.meteoswiss.retry.asyncio.sleep", new_callable=AsyncMock
         ),
-        pytest.raises((aiohttp.ClientError, TimeoutError)),
+        pytest.raises(p.PrecipitationSourceError),
     ):
         if stage == "metadata":
-            await source._async_get_hourly_urls()
+            await source.client.async_get_urls()
         else:
-            await source._async_download_hourly_csv(CSV_URL, "now")
+            await source.client.async_get_csv(CSV_URL, "now")
     assert len(aioclient_mock.mock_calls) == attempts
 
 
@@ -130,7 +133,7 @@ async def test_bad_metadata_never_queues_statistics(hass, aioclient_mock, data):
     aioclient_mock.get(STATION_URL, json=data)
     with (
         patch(
-            "custom_components.meteoswiss.precipitation.async_add_external_statistics"
+            "custom_components.meteoswiss.precipitation_recorder.async_add_external_statistics"
         ) as queue,
         pytest.raises(UpdateFailed),
     ):
@@ -156,7 +159,7 @@ async def test_empty_or_invalid_csv_never_queues_statistics(
     aioclient_mock.get(CSV_URL, text=content)
     with (
         patch(
-            "custom_components.meteoswiss.precipitation.async_add_external_statistics"
+            "custom_components.meteoswiss.precipitation_recorder.async_add_external_statistics"
         ) as queue,
         pytest.raises(UpdateFailed),
     ):
@@ -181,7 +184,7 @@ async def test_archive_partial_download_and_period_precedence(hass, aioclient_mo
             "custom_components.meteoswiss.retry.asyncio.sleep", new_callable=AsyncMock
         ),
         patch(
-            "custom_components.meteoswiss.precipitation.async_add_external_statistics"
+            "custom_components.meteoswiss.precipitation_recorder.async_add_external_statistics"
         ) as queue,
     ):
         data = await source._async_update_data()
@@ -203,7 +206,7 @@ async def test_missing_or_empty_archive_period_does_not_erase_current_data(
     aioclient_mock.get(RECENT_URL, text=HEADER)
     aioclient_mock.get(CSV_URL, text=VALID)
     with patch(
-        "custom_components.meteoswiss.precipitation.async_add_external_statistics"
+        "custom_components.meteoswiss.precipitation_recorder.async_add_external_statistics"
     ) as queue:
         data = await coordinator(
             hass, asset_periods=("historical", "recent", "now")
@@ -218,7 +221,7 @@ async def test_recorder_failure_does_not_report_success(hass, aioclient_mock):
     aioclient_mock.get(CSV_URL, text=VALID)
     source = coordinator(hass)
     with patch(
-        "custom_components.meteoswiss.precipitation.async_add_external_statistics",
+        "custom_components.meteoswiss.precipitation_recorder.async_add_external_statistics",
         side_effect=ValueError("invalid metadata"),
     ):
         await source.async_refresh()

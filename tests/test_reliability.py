@@ -454,7 +454,7 @@ async def _exercise_entry_lifecycle(hass, source, *, with_recorder, legacy_inter
         "coordinator.MeteoSwissAlertsCoordinator": [],
         "coordinator.OpenMeteoPollenCoordinator": {},
         "coordinator.MeteoSwissPollenCoordinator": {},
-        "precipitation.MeteoSwissHourlyPrecipitationCoordinator": {},
+        "coordinator.MeteoSwissHourlyPrecipitationCoordinator": {},
     }
     with ExitStack() as stack:
         stack.enter_context(patch("custom_components.meteoswiss.stations_map.MeteoSwissStationsMap.load_stations", return_value={}))
