@@ -1,6 +1,6 @@
 # Official forecast-location catalogue foundation
 
-**Guide version:** 1.1 · **Updated:** 23 October 2026
+**Guide version:** 1.2 · **Updated:** 23 October 2026
 **Status:** Tested development foundation, unreleased after 8.2.0. This package
 adds no HA selection dialog. Its successor supplies explicit saved-selection
 routing; see [the saved-location contract](SAVED_FORECAST_LOCATION.md).
@@ -125,7 +125,7 @@ limits/ranking, original TTL, coalescing, failure pause/recovery, retained old
 metadata, privacy, cancellation, total timeout and the actual shared HTTP path.
 
 This establishes catalogue mechanics. The saved-location package adds compatible
-offline routing and height semantics; translated new setup/reconfiguration and
-focused temporary-HA acceptance remain required. ICON Seamless and App v3
+offline routing and height semantics; the [translated HA setup/reconfiguration](FORECAST_LOCATION_SETUP.md) now consumes
+this foundation; focused temporary-HA acceptance remains required. ICON Seamless and App v3
 warnings retain their source roles. No HA installation, release or quality-tier/HACS-list
 acceptance follows from this foundation.

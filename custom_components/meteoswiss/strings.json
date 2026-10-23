@@ -22,12 +22,12 @@
         },
         "data_description": {
           "postal_code": "Four-digit Swiss postal code for natural-hazard warnings only. It does not select the weather forecast location or pollen station.",
-          "station_id": "Supplies measured temperature, wind and rain. Forecasts, modelled pollen, air quality and UV use the Home Assistant home coordinates, independently of this station and the warning postcode."
+          "station_id": "Supplies measured temperature, wind and rain. Choose the ICON weather forecast location next. Modelled pollen, air quality and UV keep the Home Assistant home coordinates."
         }
       },
       "openmeteo": {
         "title": "Open-Meteo Setup",
-        "description": "Enter the coordinates for current weather, weather/modelled-pollen forecasts, air quality and UV. Choose the warning postcode separately.",
+        "description": "Enter the base coordinates for current weather, modelled pollen, air quality and UV. Choose the ICON weather forecast location next; warning postcode stays separate.",
         "data": {
           "postal_code": "Postal code for weather warnings",
           "latitude": "Latitude",
@@ -35,8 +35,48 @@
         },
         "data_description": {
           "postal_code": "Four-digit Swiss postal code for natural-hazard warnings only. It does not select the weather forecast location or pollen station.",
-          "latitude": "Latitude of the weather location in decimal degrees (WGS84, -90 to 90). Used with longitude for current weather, forecasts, modelled pollen, air quality and UV.",
+          "latitude": "Base latitude in decimal degrees (WGS84, -90 to 90). Used with longitude for current weather, modelled pollen, air quality and UV. The weather forecast location is chosen next.",
           "longitude": "Longitude of the same weather location in decimal degrees (WGS84, -180 to 180). These coordinates do not change the warning postcode or the measured-pollen station."
+        }
+      },
+      "forecast_location": {
+        "title": "Weather forecast location",
+        "description": "Current forecast location: {current_location}. Choose a postcode, town or POI for ICON weather forecasts and forecast sensors. Observations, modelled air quality/pollen/UV, measured pollen and warning postcode keep their separate locations.",
+        "data": {
+          "action": "Forecast location"
+        },
+        "data_description": {
+          "action": "Keep the current location, search the official catalogue, or explicitly return to the original base coordinates. No location changes until you confirm."
+        }
+      },
+      "forecast_search": {
+        "title": "Find a forecast location",
+        "description": "Search by four-digit Swiss postcode or a town/POI name, for example 8302, Säntis or Gotthardpass. The search is local to the official MeteoSwiss catalogue. This selects weather forecasts, not warning coverage.",
+        "data": {
+          "query": "Postcode or town/POI"
+        },
+        "data_description": {
+          "query": "Enter 2–128 characters. Accents and ae/oe/ue spellings are supported. Narrow a broad search until at most 20 results remain."
+        }
+      },
+      "forecast_select": {
+        "title": "Select the forecast point",
+        "description": "Choose the intended point explicitly. Labels show name, point category, catalogue height above sea level and coordinates. Stations and same-named POIs are different forecast points.",
+        "data": {
+          "point": "Forecast point"
+        },
+        "data_description": {
+          "point": "Check category and height. A postal-code point is an assigned forecast coordinate, not a post office or your exact home address. No result is preselected."
+        }
+      },
+      "forecast_confirm": {
+        "title": "Confirm the forecast location",
+        "description": "Forecast location: {location}. Warning postcode stays {postal_code}; this does not establish warning coverage for the selected POI. Only ICON forecasts and forecast-derived sensors/HGT change. Current observations and other source locations stay unchanged. Submit to apply.",
+        "data": {
+          "search_again": "Search for another location"
+        },
+        "data_description": {
+          "search_again": "Enable to return to search without saving. Otherwise submit to confirm the displayed location."
         }
       }
     },
@@ -45,10 +85,16 @@
       "station_not_found": "Station not found",
       "invalid_location": "Invalid coordinates",
       "invalid_postal_code": "Enter a four-digit Swiss postal code, for example 8302.",
-      "invalid_pollen_station": "Select a pollen measuring station from the list."
+      "invalid_pollen_station": "Select a pollen measuring station from the list.",
+      "invalid_forecast_selection": "Choose a valid forecast location from this dialog. An invalid saved selection must be replaced or reset to the base coordinates.",
+      "invalid_forecast_query": "Enter 2–128 characters: a four-digit postcode or a town/POI name.",
+      "forecast_catalogue_unavailable": "The location catalogue is temporarily unavailable. Retry later or cancel; the saved location is retained.",
+      "forecast_no_matches": "No matching forecast point. Check the spelling or try another postcode/name.",
+      "forecast_too_many_matches": "More than 20 matches. Enter a more precise name or postcode."
     },
     "abort": {
-      "already_configured": "This data source and location are already configured."
+      "already_configured": "This data source and location are already configured.",
+      "reconfigure_successful": "Forecast location retained."
     }
   },
   "options": {
@@ -263,6 +309,23 @@
       "options": {
         "openmeteo": "Open-Meteo weather at coordinates",
         "meteoswiss": "MeteoSwiss station observations"
+      }
+    },
+    "forecast_point_type": {
+      "options": {
+        "1": "Station",
+        "2": "Postal code",
+        "3": "Point of Interest",
+        "unknown_height": "Height unavailable",
+        "legacy": "Original base coordinates",
+        "invalid": "Saved selection invalid"
+      }
+    },
+    "forecast_location_action": {
+      "options": {
+        "keep": "Keep the current forecast location",
+        "search": "Search by postcode, town or POI",
+        "base": "Return to the original base coordinates"
       }
     }
   }

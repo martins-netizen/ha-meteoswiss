@@ -1,8 +1,9 @@
 # Saved forecast location and ICON routing
 
-**Guide version:** 1.0 · **Updated:** 23 October 2026
+**Guide version:** 1.1 · **Updated:** 23 October 2026
 **Status:** Second POI development package, unreleased after 8.2.0. The translated
-search, confirmation and reconfiguration dialogs are the next package. Users
+search, confirmation and reconfiguration package now supplies the
+[HA user path](FORECAST_LOCATION_SETUP.md); practical candidate acceptance remains. Users
 should not edit HA storage manually to try this internal contract.
 
 ## What a selected location means
@@ -57,8 +58,9 @@ A present but invalid selection disables only the forecast request. It cannot
 silently fall back to HA coordinates or another point. Current observations,
 warnings and pollen retain their own availability. Diagnostics distinguish
 legacy, catalogue and invalid status. Recovery requires a valid explicit
-selection and reload; the next dialog package will provide that user path.
-This package itself writes no selections into existing entries. Old 8.2.0 does
+selection and reload; the reconfiguration dialog provides that user path.
+The storage package itself writes no selections into existing entries; the
+new dialog writes only after explicit confirmation. Old 8.2.0 does
 not understand this additive key: downgrading would restore that version's
 legacy forecast-location behaviour, so it is not a same-location rollback for
 an entry deliberately moved to a POI.
@@ -101,6 +103,5 @@ at 18:42:00 UTC on 23 October 2026 returned 120 hourly rows and daily aggregates
 for Kloten postal code, Säntis, Gotthardpass and Albert-Heim-Hütte SAC using their
 catalogue heights. This is source/request compatibility evidence, not a
 forecast-accuracy comparison. The HA tests use controlled source responses; they are
-not the operator's temporary-HA acceptance. The translated dialogs and practical
-postcode/summit/pass/hut selection checks remain required before the next
-candidate. No operator installation or release is performed by this package.
+not the operator's temporary-HA acceptance. The dialogs are now regression-tested; practical postcode/summit/pass/hut
+selection checks remain for the next reviewed candidate. No operator installation or release is performed by this package.

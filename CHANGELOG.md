@@ -2,13 +2,23 @@
 
 ## [Unreleased]
 
+- Add explicit forecast-location setup and reconfiguration in DE/EN/FR/IT:
+  search the official catalogue locally by postcode or town/POI, choose a
+  labelled point without preselection, then confirm after an ICON check.
+  Preserve other source locations/options/IDs; cancel/keep never writes a
+  location, and an explicit reset restores the original base coordinates.
+  Save selected coordinates/provenance offline, request known catalogue
+  altitude and separate height-aware cache entries. Document unchanged provider
+  place names and the Murten/Morat alias limitation. Candidate acceptance remains.
+
+
 - Add the bounded official forecast-point catalogue foundation: immutable
   type/ID identity and provenance, strict Latin1 CSV acceptance, local
   postcode/name/POI candidate search and a lazy borrowed-session client.
   Preserve ambiguity, enforce size/time/retry limits, coalesce fetches and
   retain old metadata explicitly on failure without labelling it fresh.
-  HA selection/persistence and forecast-location wiring remain the next steps;
-  existing sources, coordinates, entities and polling are unchanged.
+  The saved-location and translated-dialog packages now consume this foundation;
+  existing entries retain their location until a deliberate confirmed change.
 
 - Split hourly/archive precipitation into a pure source client/parser, explicit
   Recorder projection/import adapter and the actual HA coordinator in
