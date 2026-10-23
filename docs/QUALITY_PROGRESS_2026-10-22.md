@@ -1,8 +1,41 @@
 # Bronze/Silver follow-up — 22 October 2026
 
-**Record version:** 1.9. **Updated:** 23 October 2026. **Scope:** unreleased development after stable 8.2.0.
+**Record version:** 1.10. **Updated:** 23 October 2026. **Scope:** unreleased development after stable 8.2.0.
 The [dated original audit](QUALITY_AUDIT_2026-10-17.md) remains historical.
 This document records individual improvements, not an official HA quality tier.
+
+## Separate modelled pollen/AQ and optional UV from HA coordination
+
+OpenMeteoPollenClient in pollen_openmeteo.py borrows its session, owns the
+existing bounded AQ/pollen and optional UV requests, and preserves parser,
+transient retry and UTC-current-hour data contracts. The actual coordinator
+moves to coordinator.py, composing the client and keeping cache, polling and
+HA error/logging lifecycle. An empty source error suppresses raw formatted
+transport/data chains. Cancellation from AQ or UV and missing-session setup
+errors propagate. Optional UV failure cannot invalidate good AQ; valid missing
+UV remains unknown. No separate UV cache existed: UV value/status stay in the
+same AQ result, with the original coordinate key and 1800-second TTL. Hits do
+not extend it. No new poller, client-owned session or source model is added.
+
+Ten new cases cover the direct client without an HA object and the cache TTL
+boundary. Existing real entity registration, unknown/unavailable/recovery,
+private logging, session ownership, retry, DST, reload/unload and Recorder
+regressions pass. Actual local HA **2026.8.3 and 2026.10.2** each pass **1,033
+tests and 53 subtests**, **99.96985%** combined line/branch coverage and
+**716/716 branches**. Both existing strict gates pass; source client and canonical
+coordinator retain full line/branch coverage. Parser, three source helpers and
+UV request AST are unchanged. The AQ request only adapts the parser method and
+private missing-session class label. Coordinator initialisation, cache/update
+flow and UV transition logs retain their AST after documented composition/
+source-error/import-name adaptations. All five previously canonical coordinator
+classes remain AST-identical.
+
+Setup, typed runtime and HA mocks reference the genuine class. Six of seven
+coordinators are now canonical, leaving precipitation parsing/Recorder/coordinator
+separation. The operator's next release scope also includes official-catalogue
+location/POI selection; neither remaining task is silently deferred. Manifests,
+dependencies, languages, released 8.2.0 and the CI matrix are unchanged. CI remains
+HA 2026.8.3/2026.10.1. No HA installation, release or completed Silver/Gold claim.
 
 ## Scalar forecast sensors for today and tomorrow
 

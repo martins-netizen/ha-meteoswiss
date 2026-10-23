@@ -324,13 +324,13 @@ async def test_stale_observations_are_not_reported_as_current(hass, freezer):
 async def test_air_quality_uses_current_hour_and_preserves_missing_values(
     hass, freezer
 ):
-    from custom_components.meteoswiss.pollen_coordinator_openmeteo import (
+    from custom_components.meteoswiss.coordinator import (
         OpenMeteoPollenCoordinator,
     )
 
     freezer.move_to("2026-10-15T10:20:00+00:00")
     coordinator = OpenMeteoPollenCoordinator(hass, latitude=47.45, longitude=8.56)
-    data = coordinator._parse_response(
+    data = coordinator.client.parse_response(
         {
             "hourly": {
                 "time": ["2026-10-15T00:00", "2026-10-15T12:00", "2026-10-15T13:00"],
@@ -452,7 +452,7 @@ async def _exercise_entry_lifecycle(hass, source, *, with_recorder, legacy_inter
         },
         "coordinator.MeteoSwissForecastCoordinator": [],
         "coordinator.MeteoSwissAlertsCoordinator": [],
-        "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
+        "coordinator.OpenMeteoPollenCoordinator": {},
         "coordinator.MeteoSwissPollenCoordinator": {},
         "precipitation.MeteoSwissHourlyPrecipitationCoordinator": {},
     }

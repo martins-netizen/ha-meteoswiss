@@ -294,7 +294,7 @@ async def test_registered_weather_survives_forecast_failure_and_recovers(
                 "last_update": NOW.isoformat(),
             },
             "coordinator.MeteoSwissAlertsCoordinator": [],
-            "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
+            "coordinator.OpenMeteoPollenCoordinator": {},
             "coordinator.MeteoSwissPollenCoordinator": {},
         }.items():
             stack.enter_context(

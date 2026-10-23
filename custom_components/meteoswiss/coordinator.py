@@ -42,6 +42,9 @@ from .pollen_meteoswiss import (
     MeasuredPollenUnavailable,
     MeteoSwissPollenClient,
 )
+from .pollen_openmeteo import OpenMeteoPollenClient, OpenMeteoPollenError
+from .pollen_openmeteo import _has_current_values as _pollen_has_current_values
+from .pollen_openmeteo import _is_current_hour as _pollen_is_current_hour
 from .retry import async_retry_with_backoff
 from .weather_data import parse_reference_timestamp as _parse_reference_timestamp
 from .weather_data import validate_observation_time
@@ -788,3 +791,68 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
 
     async def async_close(self) -> None:
         """Close is handled centrally by the integration setup."""
+
+
+class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
+    """Schedule modelled pollen/AQ and retain independent optional UV status."""
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        latitude: float,
+        longitude: float,
+        update_interval: int = 1800,  # 30 minutes default
+        session: aiohttp.ClientSession | None = None,
+    ) -> None:
+        """Initialize."""
+        self.latitude = latitude
+        self.longitude = longitude
+        self._session = session
+        self.client = OpenMeteoPollenClient(latitude, longitude, session)
+        self._uv_last_update_success: bool | None = None
+
+        # Ensure minimum update interval
+        if update_interval < MIN_UPDATE_INTERVAL:
+            _LOGGER.warning(
+                "Update interval %s is below minimum %s, using minimum",
+                update_interval,
+                MIN_UPDATE_INTERVAL,
+            )
+            update_interval = MIN_UPDATE_INTERVAL
+
+        super().__init__(
+            hass,
+            _LOGGER,
+            name=f"{DOMAIN}_pollen",
+            update_interval=timedelta(seconds=update_interval),
+        )
+
+    def _log_uv_availability(self, available: bool) -> None:
+        """Log each optional-source outage and recovery once, without URLs."""
+        if self._uv_last_update_success is available:
+            return
+        if not available:
+            _LOGGER.warning("Optional UV response unavailable")
+        elif self._uv_last_update_success is False:
+            _LOGGER.info("Optional UV response recovered")
+        self._uv_last_update_success = available
+
+    async def _async_update_data(self) -> dict[str, Any]:
+        """Share a validated current-hour cache and log only HA transitions."""
+        cache = get_current_weather_cache()
+        cache_key = f"pollen:{self.latitude},{self.longitude}"
+        data = cache.get(cache_key)
+        if data is not None:
+            if _pollen_is_current_hour(
+                data.get("last_update")
+            ) and _pollen_has_current_values(data):
+                self._log_uv_availability(data.get("uv_available", True))
+                return data
+            cache.invalidate(cache_key)
+        try:
+            data = await self.client.async_get_data()
+        except OpenMeteoPollenError:
+            raise UpdateFailed("Pollen and air quality source unavailable") from None
+        self._log_uv_availability(data["uv_available"])
+        cache.set(cache_key, data, ttl=1800.0)
+        return data

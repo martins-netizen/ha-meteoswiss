@@ -1,6 +1,6 @@
 # Coordinator placement review
 
-**Review version:** 1.3 · **Date:** 23 October 2026
+**Review version:** 1.4 · **Date:** 23 October 2026
 **Scope:** unreleased development after stable 8.2.0.
 
 The [HA common-modules rule](https://contributors.home-assistant.io/core/quality-scale/common-modules/)
@@ -14,7 +14,7 @@ This review records actual class definitions, not imports or type annotations.
 | MeteoSwissAlertsCoordinator | coordinator.py | Moved from binary_sensor.py in this follow-up. |
 | MeteoSwissForecastCoordinator | coordinator.py | Extracted ICON source client owns HTTP/parsing; the canonical coordinator retains caching, scheduling and failure/recovery lifecycle. |
 | OpenMeteoDataUpdateCoordinator | coordinator.py | Extracted current-condition client handles HTTP/parsing; HA coordinator retains cache, freshness, failure pause and lifecycle. |
-| OpenMeteoPollenCoordinator | pollen_coordinator_openmeteo.py | Open: modelled pollen/AQ and the independently cached UV request share a source coordinator. |
+| OpenMeteoPollenCoordinator | coordinator.py | Source-only pollen/AQ client includes the separate optional UV request; the real HA coordinator retains current-hour validation, the shared AQ/UV result cache and transition logs. |
 | MeteoSwissPollenCoordinator | coordinator.py | Extracted measured-pollen client owns transport, parsing and freshness; HA coordinator owns scheduling and exception translation. |
 | MeteoSwissHourlyPrecipitationCoordinator | precipitation.py | Open: official hourly/archive parsing, Recorder import and coordinator lifecycle share a source module. |
 
@@ -119,12 +119,48 @@ model parameters, zero/partial values, private failures, cancellation and setup
 errors. Existing request, DST, daily aggregates, cache expiry, circuit recovery,
 registered forecast services and reload/unload tests remain in place. Request
 and parser ASTs are retained apart from the documented client method name and
-HA-to-source exception type adaptation. Five of seven actual coordinator
-classes are now canonical; the two findings below remain open.
+HA-to-source exception type adaptation. At that extraction step five of seven
+classes were canonical. The modelled-pollen extraction below raises this to six.
+
+## Completed modelled pollen/AQ and optional UV client separation
+
+OpenMeteoPollenClient in pollen_openmeteo.py owns the original two bounded
+requests and current-hour parser. It takes coordinates and a borrowed session,
+with no HA object, coordinator, cache, timer or session ownership. AQ/pollen
+retains four transient attempts, the five-day hourly request, UTC seconds,
+Swiss labels and zero/partial-value handling. An invalid AQ feed still fails
+before requesting UV; optional UV cannot rescue it. UV retains its separate
+HTTP request and independent success flag: a failed request is unavailable,
+while a valid response missing a numeric value remains available/unknown.
+Cancellation from either request propagates. Missing session remains RuntimeError.
+Source transport/data failures expose an empty OpenMeteoPollenError with the
+raw formatted exception chain suppressed; the coordinator maps it to the same
+fixed HA failure message.
+
+The genuine OpenMeteoPollenCoordinator now lives in coordinator.py. It keeps
+the constructor/default/minimum interval, entry-owned lifecycle, coordinate key
+pollen:<latitude>,<longitude>, original 1800-second TTL, current-hour validation
+and invalid-cache removal. UV availability transitions remain logged once by HA.
+UV data/status are cached atomically with the AQ result; there was no separate
+UV cache or independent UV expiry to preserve. Cache hits do not renew TTL.
+Neither a new UV cache nor a new polling schedule is introduced.
+
+The old mixed module is removed. Setup, runtime typing and HA mocks reference
+the actual canonical class. Its logger follows the coordinator module. Parser,
+source helpers and optional UV request retain identical AST; the main request
+only adapts the parser name and private missing-session class label. Coordinator
+initialisation is identical after client composition, as are transition logs
+and cache/update flow after source-call/error/import-name adaptations. Ten new
+cases include direct borrowed-session requests without an HA runtime, private
+failures, both cancellation points, missing session, invalid AQ, optional UV
+failure and a cache hit that cannot postpone expiry.
+
+Six of seven actual coordinators are now canonical. Only the precipitation
+source/importer boundary remains below; this is not full Silver/Gold completion.
 
 ## Remaining source boundaries
 
-The two findings remain open against the literal HA module-placement rule.
+The precipitation finding remains open against the literal HA module-placement rule.
 Do not mark it complete merely because these modules have source-specific names.
 Do not add lint suppressions, aliases or inheritance-only wrappers to conceal a
 definition outside the canonical module. A useful next extraction separates a
@@ -135,9 +171,9 @@ Continue with a bounded source and compare its class/client contract before
 and afterwards. The shared timestamp-parser prerequisite is complete; reuse
 that implementation rather than introducing competing copies. Keep transport
 and parsing in the source client, and define its genuine scheduling/HA lifecycle
-in coordinator.py. The modelled pollen/AQ client and its separately cached UV
-request are a suitable next bounded extraction. Forecast, AQ/UV and Recorder
-statistics remain distinct.
+in coordinator.py. The next bounded work separates hourly/archive precipitation
+source parsing, Recorder import and the actual HA coordinator. Forecast, AQ/UV
+and Recorder statistics remain distinct.
 
 Preserve per-host HTTP bounds, request/retry/cancellation budgets, freshness,
 partial-value versus source-failure semantics, once-per-outage logs, cache keys

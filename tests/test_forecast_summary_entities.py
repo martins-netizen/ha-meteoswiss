@@ -50,7 +50,7 @@ async def installed_summary(hass, enable_custom_integrations, freezer):
             },
             "coordinator.MeteoSwissForecastCoordinator": forecast_rows(probability=0),
             "coordinator.MeteoSwissAlertsCoordinator": [],
-            "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
+            "coordinator.OpenMeteoPollenCoordinator": {},
             "coordinator.MeteoSwissPollenCoordinator": {},
         }.items():
             mocks[target] = stack.enter_context(

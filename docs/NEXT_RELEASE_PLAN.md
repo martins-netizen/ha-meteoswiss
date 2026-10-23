@@ -1,8 +1,30 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.16 · **Updated:** 23 October 2026
+**Plan version:** 1.17 · **Updated:** 23 October 2026
 **Status:** Approved planning; Q1 is documented and P0 has partial evidence.
 This document does not approve a new feature, installation or release.
+
+## Next feature release: agreed scope on 23 October 2026
+
+The operator explicitly includes both remaining architecture boundaries and
+location/POI selection in the next release. Do not freeze the scope at the
+forecast sensors alone. The sequence is modelled pollen/AQ/UV separation,
+hourly/archive precipitation separation, then official-catalogue location search
+and compatible selection/reconfiguration. This candidate implements the first
+boundary; the latter architecture boundary and POI implementation remain open.
+Only then freeze features, reconcile release documentation, package a reviewed
+candidate and perform focused acceptance in the existing temporary HA.
+
+Use the official MeteoSwiss forecast-point catalogue for postcode/town/POI
+selection, with explicit result choice and coordinate/altitude provenance.
+Keep ICON Seamless as the forecast source and App v3 warnings at a separately
+confirmed warning postcode. Catalogue adoption is not permission to silently
+switch to processed OGD forecasts or infer warning coverage for a mountain POI.
+Existing entries retain their location meaning and identities until an explicit
+change. The proposed version is 8.3.0, initially 8.3.0b1; nothing is published.
+The broader Silver/Gold matrix remains a separate evidence claim, not a new
+unbounded prerequisite for every release step. A next-day release estimate for
+the smaller forecast-only scope no longer applies.
 
 ## Current position
 
@@ -87,7 +109,7 @@ accepted runtime.
 | S1: close Silver | Source behaviour, lifecycle, module coverage and understandable fields | All applicable Bronze/Silver requirements evidenced; justified exceptions | Q1; small scoped PRs separate from release-only changes. |
 | P0: location feasibility | Official catalogue, identities, point forecasts and explicit warning boundary | Summit/pass/hut plus postcode control; supported data and limits established | Read-only investigation can run independently of R0. |
 | P1: location/UX contract | Shared search, purpose text and compatible location data | Dialog design, data contract and migration cases reviewed | P0; plan Gold reconfiguration consistently. |
-| P2: location feature | Confirmed scope with translations, tests and help | New/existing entries and affected data families accepted | R0, S1 and P1; separate feature release. |
+| P2: location feature | Confirmed scope with translations, tests and help; included in the next feature release | New/existing entries and affected data families accepted | Completed first release, bounded architecture/lifecycle work and P1; full Silver/Gold tier evidence remains separate. |
 | G1: Gold | Reconfiguration, presentation, diagnostics, actionable repairs and docs | Full Gold matrix plus Bronze/Silver evidence | S1 and the shared P1/P2 location contract. |
 
 Planning and bounded source checks can proceed now. Do not mix production
@@ -102,7 +124,7 @@ as the checklist. These work packages do not claim completed compliance.
 
 | Area | Starting evidence / next check |
 |---|---|
-| Bronze prerequisite | Reconcile all twenty rules. Unreleased field help/source translations and unused-placeholder cleanup are recorded in the dated follow-up; shared metadata and polling/options migration now have bounded evidence; warning coordinator placement and catalogue diagnostic availability are corrected; measured pollen, alternative current conditions and ICON forecasts now have separate clients/canonical coordinators with a shared timestamp parser; two source-module placement findings and final UX review remain open. Local HACS brand files are not Core-brands inclusion. |
+| Bronze prerequisite | Reconcile all twenty rules. Unreleased field help/source translations and unused-placeholder cleanup are recorded in the dated follow-up; shared metadata and polling/options migration now have bounded evidence; warning coordinator placement and catalogue diagnostic availability are corrected; measured pollen, alternative current conditions and ICON forecasts now have separate clients/canonical coordinators with a shared timestamp parser; one precipitation source-module placement finding and final UX review remain open. Local HACS brand files are not Core-brands inclusion. |
 | action-exceptions | Justified exemption while no integration actions exist; reassess if introduced. |
 | config-entry-unloading | Retain Recorder/reload/unload tests; check remaining tasks, pollers and listeners by family. |
 | docs-configuration-parameters, docs-installation-parameters | Explain purpose, source and effects; separate forecast, observation, warning and measured-pollen locations. |
@@ -128,10 +150,10 @@ No wholesale architectural rewrite is planned. Retain source separation and
 HA-owned sessions. The shared entity metadata follow-up preserves nine existing
 device/identity contracts. The [coordinator placement review](COORDINATOR_LAYOUT_REVIEW.md)
 now inventories all seven coordinators, moves warnings out of the platform, and
-records two remaining source-module placement findings after the measured-pollen,
-alternative-current and ICON-forecast client extractions and shared UTC parser
-move. The next bounded extraction is modelled pollen/AQ with the separate UV
-request/cache contract retained. Catalogue diagnostic
+records one remaining source-module placement finding after the measured-pollen,
+alternative-current, ICON-forecast and modelled-pollen/AQ/UV client extractions
+and shared UTC parser move. The next bounded work separates precipitation
+source parsing, Recorder import and the real HA coordinator. Catalogue diagnostic
 expiry/failure/recovery is implemented and tested separately from source freshness.
 Use the
 [expected module layout](https://contributors.home-assistant.io/core/quality-scale/common-modules/)

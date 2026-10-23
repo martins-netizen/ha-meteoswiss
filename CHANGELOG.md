@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- Separate modelled pollen/AQ and optional UV requests into pollen_openmeteo.py,
+  composed by the real HA coordinator in coordinator.py. Preserve current-hour
+  selection, four-attempt AQ retry, shared 30-minute cache/TTL, zero/partial
+  values and independent UV availability. Suppress raw source exception chains,
+  propagate cancellation/setup errors and retain all entity/lifecycle contracts.
+  Six of seven coordinators are canonical; precipitation and the agreed POI
+  feature remain next-release work before packaging.
+
 - Add eight numeric forecast sensors for today/tomorrow: native whole-day
   maximum/minimum temperature and precipitation, plus the highest hourly
   precipitation probability with every tied time window. Reuse the existing

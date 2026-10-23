@@ -16,8 +16,8 @@ if TYPE_CHECKING:
         MeteoSwissForecastCoordinator,
         MeteoSwissPollenCoordinator,
         OpenMeteoDataUpdateCoordinator,
+        OpenMeteoPollenCoordinator,
     )
-    from .pollen_coordinator_openmeteo import OpenMeteoPollenCoordinator
     from .precipitation import MeteoSwissHourlyPrecipitationCoordinator
 
 

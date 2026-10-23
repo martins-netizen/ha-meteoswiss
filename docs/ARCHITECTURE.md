@@ -412,7 +412,8 @@ implementation. Its complete class AST is unchanged. Logging now uses the
 coordinator module namespace; warning parsing, labels, timing, once-per-outage
 logging, session ownership and cleanup remain covered by source/lifecycle tests.
 The [placement review](COORDINATOR_LAYOUT_REVIEW.md) inventories all seven actual
-coordinators and the five remaining source-module placement findings. No
+coordinators; its current assessment retains one precipitation source-module
+placement finding after the subsequent extractions. No
 blanket common-modules/Silver completion follows from this move.
 
 ## Measured pollen client boundary (unreleased)
@@ -441,9 +442,28 @@ renames; four-hour age, ten-minute future skew, seven species, zero/None
 semantics, units and 24-row history stay unchanged. Direct-client tests verify
 borrowed-session ownership, message-free source errors and cancellation without passing
 an HA runtime/coordinator to the client. This is not a separately packaged library.
-The [placement review](COORDINATOR_LAYOUT_REVIEW.md) records three open source
-placements after the additional alternative-current extraction; full
+The [placement review](COORDINATOR_LAYOUT_REVIEW.md) records the subsequent
+source extractions; one precipitation placement remains open. Full
 common-modules/Silver evidence remains open.
+
+## Modelled pollen/AQ and UV source boundary (unreleased)
+
+pollen_openmeteo.py defines OpenMeteoPollenClient, pure current-hour/value
+helpers and an empty source error. coordinator.py defines the actual
+OpenMeteoPollenCoordinator, composing that client. The source owns both bounded
+requests, parsing and the existing four-attempt AQ transport retry; it owns no
+HA runtime, session, cache or polling task. A valid AQ response precedes the
+optional UV request. UV failure leaves valid AQ/pollen usable; valid-but-missing
+UV remains unknown. Cancellation and missing-session setup errors propagate.
+
+HA retains the shared coordinate-specific pollen cache and original 1800-second
+TTL, validates cached data against the current UTC hour and valid current
+values, and logs each UV outage/recovery once. UV value/status travel atomically
+with AQ: the old code did not have a separate UV cache. Cache hits cannot renew
+the TTL. Setup/runtime imports and registered lifecycle mocks use the canonical
+class. Existing entity IDs, grouping, options, source parameters and startup/
+unload/reload contracts remain unchanged. Six of seven genuine coordinators
+are canonical; hourly/archive precipitation is the next architecture step.
 
 ## Verification and remaining limits
 

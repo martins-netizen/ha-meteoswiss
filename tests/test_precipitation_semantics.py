@@ -74,7 +74,7 @@ async def test_retirement_and_source_labels_preserve_surviving_entities_on_reloa
                 "last_update": "2026-10-18T10:20:00+00:00", "precipitation_interval_seconds": interval},
             "coordinator.MeteoSwissForecastCoordinator": [],
             "coordinator.MeteoSwissAlertsCoordinator": [],
-            "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
+            "coordinator.OpenMeteoPollenCoordinator": {},
             "coordinator.MeteoSwissPollenCoordinator": {},
         }.items():
             stack.enter_context(patch(f"custom_components.meteoswiss.{target}._async_update_data", return_value=data))

@@ -30,6 +30,7 @@ from .coordinator import (
     MeteoSwissForecastCoordinator,
     MeteoSwissPollenCoordinator,
     OpenMeteoDataUpdateCoordinator,
+    OpenMeteoPollenCoordinator,
 )
 from .localization import async_load_warning_labels
 from .precipitation import (
@@ -185,7 +186,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
     )
 
     # Create pollen API and coordinator (using Open-Meteo Air Quality API)
-    from .pollen_coordinator_openmeteo import OpenMeteoPollenCoordinator
 
     # Location-based pollen forecast follows the same coordinates as weather.
     pollen_coordinator = OpenMeteoPollenCoordinator(

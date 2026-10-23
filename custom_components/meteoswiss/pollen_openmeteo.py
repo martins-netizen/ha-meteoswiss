@@ -1,23 +1,16 @@
-"""Pollen data coordinator using Open-Meteo Air Quality API."""
+"""Bounded modelled pollen/AQ and optional UV client, without HA coordination."""
 
 from __future__ import annotations
 
-import logging
 import math
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
 import aiohttp
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .cache import get_current_weather_cache
-from .const import DOMAIN, MIN_UPDATE_INTERVAL
 from .http import AIR_QUALITY_HOST, FORECAST_HOST, async_get_json
 from .retry import async_retry_with_backoff
 from .weather_data import forecast_datetime
-
-_LOGGER = logging.getLogger(__name__)
 
 # Open-Meteo Air Quality API
 OPENMETEO_AQ_BASE_URL = "https://air-quality-api.open-meteo.com/v1/air-quality"
@@ -84,46 +77,35 @@ def _is_current_hour(value: Any) -> bool:
     return timestamp is not None and timestamp <= now < timestamp + timedelta(hours=1)
 
 
-class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
-    """Class to manage fetching pollen data from Open-Meteo Air Quality API."""
+class OpenMeteoPollenError(Exception):
+    """The pollen/AQ source failed; no request or payload in its message."""
+
+
+class OpenMeteoPollenClient:
+    """Fetch modelled pollen/AQ and optional UV using a borrowed session."""
 
     def __init__(
         self,
-        hass: HomeAssistant,
         latitude: float,
         longitude: float,
-        update_interval: int = 1800,  # 30 minutes default
         session: aiohttp.ClientSession | None = None,
     ) -> None:
-        """Initialize."""
         self.latitude = latitude
         self.longitude = longitude
         self._session = session
-        self._uv_last_update_success: bool | None = None
 
-        # Ensure minimum update interval
-        if update_interval < MIN_UPDATE_INTERVAL:
-            _LOGGER.warning(
-                "Update interval %s is below minimum %s, using minimum",
-                update_interval,
-                MIN_UPDATE_INTERVAL,
-            )
-            update_interval = MIN_UPDATE_INTERVAL
-
-        super().__init__(
-            hass,
-            _LOGGER,
-            name=f"{DOMAIN}_pollen",
-            update_interval=timedelta(seconds=update_interval),
-        )
+    async def async_get_data(self) -> dict[str, Any]:
+        """Keep raw transport/data errors outside the source boundary."""
+        try:
+            return await self._async_fetch_data()
+        except (aiohttp.ClientError, TimeoutError, ValueError):
+            raise OpenMeteoPollenError() from None
 
     @async_retry_with_backoff(max_attempts=4, base_delay=1.0, max_delay=10.0)
     async def _async_fetch_data(self) -> dict[str, Any]:
         """Fetch AQ/pollen; UV is optional and cannot rescue an invalid feed."""
         if self._session is None:
-            raise RuntimeError(
-                "No aiohttp session provided to OpenMeteoPollenCoordinator"
-            )
+            raise RuntimeError("No aiohttp session provided to OpenMeteoPollenClient")
         params = {
             "latitude": self.latitude,
             "longitude": self.longitude,
@@ -135,7 +117,7 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         payload = await async_get_json(
             self._session, OPENMETEO_AQ_BASE_URL, params=params, host=AIR_QUALITY_HOST
         )
-        result = self._parse_response(payload)
+        result = self.parse_response(payload)
         if not result:
             raise ValueError("No valid current pollen or air quality values")
         result["uv_index"], result["uv_available"] = await self._async_fetch_uv()
@@ -163,17 +145,7 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             return None, False
         return _number(payload["current"].get("uv_index")), True
 
-    def _log_uv_availability(self, available: bool) -> None:
-        """Log each optional-source outage and recovery once, without URLs."""
-        if self._uv_last_update_success is available:
-            return
-        if not available:
-            _LOGGER.warning("Optional UV response unavailable")
-        elif self._uv_last_update_success is False:
-            _LOGGER.info("Optional UV response recovered")
-        self._uv_last_update_success = available
-
-    def _parse_response(self, data: Any) -> dict[str, Any]:
+    def parse_response(self, data: Any) -> dict[str, Any]:
         """Preserve missing fields, require at least one actual current value."""
         if not isinstance(data, dict) or not isinstance(data.get("hourly"), dict):
             return {}
@@ -214,21 +186,3 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             value = _number(values[index])
             result[key] = round(value, 1) if value is not None else None
         return result if _has_current_values(result) else {}
-
-    async def _async_update_data(self) -> dict[str, Any]:
-        """Share a validated current-hour cache and log only HA transitions."""
-        cache = get_current_weather_cache()
-        cache_key = f"pollen:{self.latitude},{self.longitude}"
-        data = cache.get(cache_key)
-        if data is not None:
-            if _is_current_hour(data.get("last_update")) and _has_current_values(data):
-                self._log_uv_availability(data.get("uv_available", True))
-                return data
-            cache.invalidate(cache_key)
-        try:
-            data = await self._async_fetch_data()
-        except (aiohttp.ClientError, TimeoutError, ValueError):
-            raise UpdateFailed("Pollen and air quality source unavailable") from None
-        self._log_uv_availability(data["uv_available"])
-        cache.set(cache_key, data, ttl=1800.0)
-        return data

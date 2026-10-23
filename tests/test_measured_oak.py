@@ -60,7 +60,7 @@ async def test_registered_oak_missing_outage_recovery_and_reload_keep_identity(
             "coordinator.MeteoSwissDataUpdateCoordinator": {"temperature": 12},
             "coordinator.MeteoSwissForecastCoordinator": [],
             "coordinator.MeteoSwissAlertsCoordinator": [],
-            "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
+            "coordinator.OpenMeteoPollenCoordinator": {},
         }.items():
             stack.enter_context(patch(
                 f"custom_components.meteoswiss.{target}._async_update_data",
