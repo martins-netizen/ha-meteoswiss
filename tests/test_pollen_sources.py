@@ -27,14 +27,16 @@ from custom_components.meteoswiss.const import (
     MIN_UPDATE_INTERVAL,
     POLLEN_STATIONS,
 )
-from custom_components.meteoswiss.coordinator import MeteoSwissPollenCoordinator
-from custom_components.meteoswiss.pollen_coordinator_openmeteo import (
-    OPENMETEO_AQ_BASE_URL,
-    OPENMETEO_FORECAST_URL,
+from custom_components.meteoswiss.coordinator import (
+    MeteoSwissPollenCoordinator,
     OpenMeteoPollenCoordinator,
 )
 from custom_components.meteoswiss.pollen_meteoswiss import (
     POLLEN_DATA_BASE_URL,
+)
+from custom_components.meteoswiss.pollen_openmeteo import (
+    OPENMETEO_AQ_BASE_URL,
+    OPENMETEO_FORECAST_URL,
 )
 from custom_components.meteoswiss.pollen_sensor import (
     POLLEN_SENSOR_DESCRIPTIONS,
@@ -104,7 +106,7 @@ def aq_payload(**series):
 )
 def test_invalid_current_values_are_not_success(hass, field, value):
     coordinator = OpenMeteoPollenCoordinator(hass, 47.45, 8.56)
-    assert coordinator._parse_response(aq_payload(**{field: [value]})) == {}
+    assert coordinator.client.parse_response(aq_payload(**{field: [value]})) == {}
 
 
 @pytest.mark.parametrize(
@@ -124,7 +126,7 @@ def test_invalid_current_values_are_not_success(hass, field, value):
     ],
 )
 def test_malformed_or_noncurrent_feed_is_not_success(hass, payload):
-    assert OpenMeteoPollenCoordinator(hass, 47.45, 8.56)._parse_response(payload) == {}
+    assert OpenMeteoPollenCoordinator(hass, 47.45, 8.56).client.parse_response(payload) == {}
 
 
 def test_partial_hour_preserves_zero_missing_and_forecast_alignment(hass):
@@ -141,7 +143,7 @@ def test_partial_hour_preserves_zero_missing_and_forecast_alignment(hass):
             "ozone": [90, 3.25, 40],
         }
     }
-    data = coordinator._parse_response(payload)
+    data = coordinator.client.parse_response(payload)
     assert data["last_update"] == "2026-10-15T10:00:00+00:00"
     assert data["birch_pollen"]["current"] is None
     assert data["birch_pollen"]["forecast"] == [None, 300]
@@ -159,7 +161,7 @@ def test_partial_hour_preserves_zero_missing_and_forecast_alignment(hass):
 def test_repeated_autumn_hour_is_unambiguous(hass, freezer, hour, index):
     freezer.move_to(f"2026-10-25T0{hour}:20:00+00:00")
     times = [int(datetime(2026, 10, 25, h, tzinfo=UTC).timestamp()) for h in (0, 1)]
-    data = OpenMeteoPollenCoordinator(hass, 47.45, 8.56)._parse_response(
+    data = OpenMeteoPollenCoordinator(hass, 47.45, 8.56).client.parse_response(
         {"hourly": {"time": times, "birch_pollen": [2, 8]}}
     )
     assert data["birch_pollen"]["current"] == [2, 8][index]
@@ -640,7 +642,7 @@ def test_pollen_entity_without_data_is_unknown_not_zero(hass):
 def test_aq_and_measured_entities_read_existing_data_on_initial_add(hass):
     entry = MockConfigEntry(domain=DOMAIN)
     aq = OpenMeteoPollenCoordinator(hass, 47.45, 8.56)
-    aq.data = aq._parse_response(aq_payload(pm10=[0]))
+    aq.data = aq.client.parse_response(aq_payload(pm10=[0]))
     description = next(
         d for d in AIR_QUALITY_SENSOR_DESCRIPTIONS if d.value_key == "pm10"
     )

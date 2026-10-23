@@ -42,7 +42,7 @@ def validate() -> None:
         "retry.py",
         "http.py",
         "coordinator.py",
-        "pollen_coordinator_openmeteo.py",
+        "pollen_openmeteo.py",
         "pollen_meteoswiss.py",
         "forecast.py",
         "forecast_summary.py",

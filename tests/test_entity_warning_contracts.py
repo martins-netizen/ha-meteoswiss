@@ -324,7 +324,7 @@ async def installed_entities(hass, enable_custom_integrations, aioclient_mock, c
             "coordinator.MeteoSwissForecastCoordinator": [
                 {"local_date": "2026-10-16", "daily_temperature_mean": 0}
             ],
-            "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
+            "coordinator.OpenMeteoPollenCoordinator": {},
             "coordinator.MeteoSwissPollenCoordinator": {},
         }.items():
             stack.enter_context(
@@ -525,8 +525,6 @@ async def test_optional_source_exception_chains_are_private(hass, caplog, family
     from custom_components.meteoswiss.cache import clear_all_caches
     from custom_components.meteoswiss.coordinator import (
         MeteoSwissPollenCoordinator,
-    )
-    from custom_components.meteoswiss.pollen_coordinator_openmeteo import (
         OpenMeteoPollenCoordinator,
     )
 
@@ -534,7 +532,7 @@ async def test_optional_source_exception_chains_are_private(hass, caplog, family
     if family == "pollen":
         source = OpenMeteoPollenCoordinator(hass, 47.451234, 8.561234)
         method = "_async_fetch_data"
-        request_source = source
+        request_source = source.client
     else:
         source = MeteoSwissPollenCoordinator(hass, "PLZ")
         method = "_async_fetch_csv"

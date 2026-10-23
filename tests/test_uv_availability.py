@@ -13,7 +13,7 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.meteoswiss.cache import clear_all_caches
 from custom_components.meteoswiss.const import DOMAIN
-from custom_components.meteoswiss.pollen_coordinator_openmeteo import (
+from custom_components.meteoswiss.pollen_openmeteo import (
     OPENMETEO_AQ_BASE_URL,
     OPENMETEO_FORECAST_URL,
 )
