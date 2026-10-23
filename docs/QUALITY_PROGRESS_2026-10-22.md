@@ -1,8 +1,44 @@
 # Bronze/Silver follow-up — 22 October 2026
 
-**Record version:** 1.7. **Scope:** unreleased development after stable 8.2.0.
+**Record version:** 1.8. **Updated:** 23 October 2026. **Scope:** unreleased development after stable 8.2.0.
 The [dated original audit](QUALITY_AUDIT_2026-10-17.md) remains historical.
 This document records individual improvements, not an official HA quality tier.
+
+## Separate the ICON forecast source from HA coordination
+
+Move the actual MeteoSwissForecastCoordinator to coordinator.py, composing
+IconForecastClient in forecast.py, and remove the mixed forecast_coordinator.py.
+Setup, weather/runtime imports and HA mocks use the canonical class. Preserve
+the explicit ICON Seamless request, 120 rolling hours, three transient attempts,
+UTC timestamps, Zurich labels, native daily offsets/DST, partial/zero values and
+forecast validation. Source failures use an empty domain error with formatted
+raw context suppressed; cancellation and missing-session setup errors propagate.
+
+HA retains the default hourly schedule, coordinate-specific v3 cache key,
+original 30-minute TTL, five-failure/five-minute pause, fixed availability message
+and HA-owned session closure. Weather/forecast-service freshness, optional
+startup and once-per-outage/recovery behaviour remain covered by existing HA
+regressions. Direct client tests pass only a borrowed mocked session. The
+strict coverage checker follows the renamed source without weakening thresholds.
+Five of seven actual coordinators are canonical; modelled pollen/AQ/UV and
+hourly/archive precipitation remain distinct placement findings. No manifest,
+workflow, dependency, location/ID, model selection or released 8.2.0 change.
+
+Both actual local HA environments, **2026.8.3 and 2026.10.2**, pass **983 tests
+and 53 subtests**. Combined line/branch coverage is **99.96811%**, with all
+**676/676 branches** and every module above 95%; both existing strict gates
+pass. The ICON source and canonical coordinator each retain 100% line/branch
+coverage. Six new direct-client cases cover explicit model parameters, partial/
+zero values, private transport/data errors, cancellation and setup failures.
+AST comparisons retain helpers, request, retry and parser bodies, with the
+private missing-coordinate exception and method names adapted to the source
+boundary; constructor/update lifecycle AST is retained after composing the
+client. Existing coordinator classes remain AST-identical. Compilation, standard Ruff E4/E7/E9/F/I checks on changed Python
+files, four 101-key catalogues/version 8.2.0, 35 local documentation links/anchors
+and diff checks pass. The broader local Ruff profile adds no findings over the
+base; its 21 pre-existing test-style findings remain outside this extraction.
+CI deliberately remains on HA 2026.8.3/2026.10.1. This is an unreleased proposal;
+its exact PR head and GitHub check results remain separate evidence.
 
 ## Separate the alternative current-weather client from HA coordination
 
@@ -301,9 +337,10 @@ measured-pollen finding without claiming complete common-modules or Silver.
   existing 900/1200-second choice is silently replaced with 600 seconds.
 - Shared entity metadata is now implemented and reviewed within this scope.
   Warning coordinator platform coupling and the catalogue diagnostic gap are
-  corrected. Measured pollen now also has a source-client/canonical-coordinator
-  boundary and the shared UTC parser prerequisite is complete. Four source-module
-  coordinator definitions and Core-brand evidence remain open.
+  corrected. Measured pollen, alternative current conditions and ICON forecasts
+  now have separate source clients and canonical coordinators, with the shared
+  UTC parser retained. Two source-module coordinator definitions and Core-brand
+  evidence remain open.
 - The official [coverage rule](https://developers.home-assistant.io/docs/core/integration-quality-scale/rules/test-coverage/)
   applies per module, not only to the aggregate. The
   [UI setup rule](https://contributors.home-assistant.io/core/quality-scale/config-flow/)

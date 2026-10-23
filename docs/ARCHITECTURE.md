@@ -119,7 +119,14 @@ are provider buckets and are not claimed to be recalculated 23/25-hour local
 measurement days. Missing aggregates can fall back to available hourly values;
 for today these may cover only the remaining hours.
 
-The ICON forecast client separates transport retries from response validation.
+IconForecastClient in forecast.py separates transport retries from response
+validation; the genuine MeteoSwissForecastCoordinator in coordinator.py composes
+it. The old forecast_coordinator.py module is removed. The client borrows the
+HA-owned session and has no coordinator/cache/scheduler dependency. HA retains
+the same interval, versioned coordinate cache/TTL and five-failure/five-minute
+pause. Missing-session setup errors and cancellation still propagate; other
+source failures have an empty-message IconForecastError with raw context
+suppressed, translated to the existing UpdateFailed message by the coordinator.
 It requires structured hourly/daily objects, list-valued series and nonempty,
 strictly ordered timestamps. The rolling horizon must extend beyond now and
 start no more than one hour ahead, with at least one finite temperature in an

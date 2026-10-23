@@ -371,7 +371,7 @@ async def test_registered_entities_fail_and_recover_without_duplicate_logs(
             )
         )
         for target, data in {
-            "forecast_coordinator.MeteoSwissForecastCoordinator": [],
+            "coordinator.MeteoSwissForecastCoordinator": [],
             "coordinator.MeteoSwissAlertsCoordinator": [],
             "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
             "coordinator.MeteoSwissPollenCoordinator": {},

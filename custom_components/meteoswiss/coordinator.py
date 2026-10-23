@@ -15,7 +15,7 @@ from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, Upda
 from homeassistant.util import dt as dt_util
 
 from .alerts import MeteoSwissAlertsAPI, WeatherAlert
-from .cache import get_current_weather_cache
+from .cache import get_current_weather_cache, get_forecast_cache
 from .const import (
     API_BASE,
     DOMAIN,
@@ -34,6 +34,7 @@ from .const import (
     SENSOR_WIND_SPEED,
     STAC_COLLECTION,
 )
+from .forecast import IconForecastClient, IconForecastError
 from .http import MAX_CSV_BYTES, OGD_HOST, async_get_bytes, async_get_json
 from .openmeteo import OpenMeteoCurrentClient, OpenMeteoCurrentError
 from .pollen_meteoswiss import (
@@ -693,3 +694,97 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     async def async_close(self) -> None:
         """The borrowed session is owned and closed by Home Assistant."""
+
+
+class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]]):
+    """Schedule ICON forecasts and retain HA cache/availability lifecycle."""
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        station_id: str | None = None,
+        latitude: float | None = None,
+        longitude: float | None = None,
+        post_code: str | None = None,
+        update_interval: int = 3600,
+        session: aiohttp.ClientSession | None = None,
+    ) -> None:
+        """Initialize."""
+        self._station_id = station_id.lower() if station_id else None
+        self._latitude = latitude
+        self._longitude = longitude
+        self._post_code = post_code
+        self._session = session
+        self.client = IconForecastClient(latitude, longitude, session)
+
+        # Circuit breaker state
+        self._consecutive_failures = 0
+        self._circuit_open_until: datetime | None = None
+
+        if latitude is None or longitude is None:
+            _LOGGER.warning(
+                "No coordinates provided for Open-Meteo forecast. "
+                "Forecast will not be available."
+            )
+
+        super().__init__(
+            hass,
+            _LOGGER,
+            name="meteoswiss_forecast",
+            update_interval=timedelta(seconds=update_interval),
+        )
+
+    async def _async_update_data(self) -> list[dict[str, Any]]:
+        """Fetch forecast data from Open-Meteo API with caching."""
+        # Circuit breaker check
+        if self._circuit_open_until and datetime.now(UTC) < self._circuit_open_until:
+            raise UpdateFailed("Circuit breaker open — API temporarily unavailable")
+
+        _LOGGER.debug("Fetching forecast from Open-Meteo API")
+
+        # Get cache
+        cache = get_forecast_cache()
+        cache_key = f"forecast:v3:icon-seamless:{self._latitude},{self._longitude}"
+
+        # Try cache first
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            _LOGGER.debug("Using cached forecast data")
+            self._consecutive_failures = 0
+            self._circuit_open_until = None
+            return cached_data
+
+        try:
+            data = await self.client.async_get_data()
+
+            # Cache the result
+            cache.set(cache_key, data)
+
+            # Circuit breaker: reset on success
+            self._consecutive_failures = 0
+            self._circuit_open_until = None
+
+            _LOGGER.debug("Successfully updated forecast from Open-Meteo")
+            return data
+        except (
+            IconForecastError,
+            aiohttp.ClientError,
+            TimeoutError,
+            TypeError,
+            ValueError,
+            UpdateFailed,
+        ):
+            self._consecutive_failures += 1
+            if self._consecutive_failures >= 5:
+                self._circuit_open_until = datetime.now(UTC) + timedelta(minutes=5)
+            # HA logs availability transitions. Suppress raw HTTP exception chains,
+            # including coordinate URLs, even when coordinator debug logs are on.
+            raise UpdateFailed("Failed to fetch Open-Meteo forecast") from None
+
+    @property
+    def data_source(self) -> str:
+        """Return which API was used to fetch data."""
+        return "open-meteo"
+
+    async def async_close(self) -> None:
+        """Close is handled centrally by the integration setup."""

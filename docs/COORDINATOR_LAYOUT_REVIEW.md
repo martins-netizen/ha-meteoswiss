@@ -1,6 +1,6 @@
 # Coordinator placement review
 
-**Review version:** 1.2 · **Date:** 22 October 2026
+**Review version:** 1.3 · **Date:** 23 October 2026
 **Scope:** unreleased development after stable 8.2.0.
 
 The [HA common-modules rule](https://contributors.home-assistant.io/core/quality-scale/common-modules/)
@@ -12,7 +12,7 @@ This review records actual class definitions, not imports or type annotations.
 |---|---|---|
 | MeteoSwissDataUpdateCoordinator | coordinator.py | Canonical observation coordinator. |
 | MeteoSwissAlertsCoordinator | coordinator.py | Moved from binary_sensor.py in this follow-up. |
-| MeteoSwissForecastCoordinator | forecast_coordinator.py | Open: ICON forecast fetching/parsing/cache and coordinator lifecycle share a source module. |
+| MeteoSwissForecastCoordinator | coordinator.py | Extracted ICON source client owns HTTP/parsing; the canonical coordinator retains caching, scheduling and failure/recovery lifecycle. |
 | OpenMeteoDataUpdateCoordinator | coordinator.py | Extracted current-condition client handles HTTP/parsing; HA coordinator retains cache, freshness, failure pause and lifecycle. |
 | OpenMeteoPollenCoordinator | pollen_coordinator_openmeteo.py | Open: modelled pollen/AQ and the independently cached UV request share a source coordinator. |
 | MeteoSwissPollenCoordinator | coordinator.py | Extracted measured-pollen client owns transport, parsing and freshness; HA coordinator owns scheduling and exception translation. |
@@ -93,9 +93,38 @@ missing session. Existing cache/freshness/HA registration and recovery tests
 continue to apply. Request and parser bodies are AST-identical; ICON forecasts,
 AQ/UV, measured pollen and Recorder statistics retain their independent sources.
 
+## Completed ICON forecast client separation
+
+IconForecastClient in forecast.py owns the same bounded Open-Meteo request,
+explicit meteoswiss_icon_seamless model, three-attempt transient retry and
+rolling-hourly/native-daily parser. It borrows its session and takes no HA
+coordinator/runtime, cache or scheduler. Rolling coverage, finite/partial/zero
+values, UTC timestamps, Zurich date labels and daily fixed-offset/DST handling
+are retained. Missing coordinates and provider/data failures become an empty
+IconForecastError with raw traceback context suppressed. Cancellation and the
+existing missing-session RuntimeError remain unhandled setup/cancellation cases.
+
+The genuine MeteoSwissForecastCoordinator definition now lives in coordinator.py
+and composes the client. HA retains the same constructor/default interval,
+forecast:v3:icon-seamless coordinate key, original 30-minute TTL, five-failure/
+five-minute pause, source marker and borrowed-session close contract. Cache
+hits do not renew the TTL. Existing consumer freshness/forecast-service rules,
+optional source startup and once-per-outage/recovery logs remain required.
+The old forecast_coordinator.py module is removed; imports and HA mocks target
+the actual defining module, not an alias or wrapper. Logger namespace follows
+its owning module without exposing coordinates, payloads or raw error chains.
+
+Direct source tests pass only a borrowed mocked session and exercise explicit
+model parameters, zero/partial values, private failures, cancellation and setup
+errors. Existing request, DST, daily aggregates, cache expiry, circuit recovery,
+registered forecast services and reload/unload tests remain in place. Request
+and parser ASTs are retained apart from the documented client method name and
+HA-to-source exception type adaptation. Five of seven actual coordinator
+classes are now canonical; the two findings below remain open.
+
 ## Remaining source boundaries
 
-The three findings remain open against the literal HA module-placement rule.
+The two findings remain open against the literal HA module-placement rule.
 Do not mark it complete merely because these modules have source-specific names.
 Do not add lint suppressions, aliases or inheritance-only wrappers to conceal a
 definition outside the canonical module. A useful next extraction separates a
@@ -106,8 +135,9 @@ Continue with a bounded source and compare its class/client contract before
 and afterwards. The shared timestamp-parser prerequisite is complete; reuse
 that implementation rather than introducing competing copies. Keep transport
 and parsing in the source client, and define its genuine scheduling/HA lifecycle
-in coordinator.py. The ICON forecast client is a suitable next bounded extraction;
-forecast, AQ/UV and Recorder statistics remain distinct.
+in coordinator.py. The modelled pollen/AQ client and its separately cached UV
+request are a suitable next bounded extraction. Forecast, AQ/UV and Recorder
+statistics remain distinct.
 
 Preserve per-host HTTP bounds, request/retry/cancellation budgets, freshness,
 partial-value versus source-failure semantics, once-per-outage logs, cache keys

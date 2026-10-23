@@ -1,4 +1,4 @@
-"""Forecast coordinator using Open-Meteo API."""
+"""Bounded MeteoSwiss ICON forecast source, independent of HA coordination."""
 
 from __future__ import annotations
 
@@ -8,10 +8,7 @@ from itertools import pairwise
 from typing import Any
 
 import aiohttp
-from homeassistant.core import HomeAssistant
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .cache import get_forecast_cache
 from .http import FORECAST_HOST, async_get_json
 from .retry import async_retry_with_backoff
 from .weather_data import (
@@ -23,7 +20,6 @@ from .weather_data import (
 
 _LOGGER = logging.getLogger(__name__)
 
-# Open-Meteo API
 OPEN_METEO_BASE_URL = "https://api.open-meteo.com/v1/forecast"
 
 
@@ -55,53 +51,40 @@ def _timestamp(raw: Any) -> datetime:
     return value
 
 
-class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]]):
-    """Class to manage fetching forecast data from Open-Meteo API."""
+class IconForecastError(Exception):
+    """The forecast source failed; no request or payload in the message."""
+
+
+class IconForecastClient:
+    """Fetch and validate ICON forecasts using a borrowed HTTP session."""
 
     def __init__(
         self,
-        hass: HomeAssistant,
-        station_id: str | None = None,
-        latitude: float | None = None,
-        longitude: float | None = None,
-        post_code: str | None = None,
-        update_interval: int = 3600,
+        latitude: float | None,
+        longitude: float | None,
         session: aiohttp.ClientSession | None = None,
     ) -> None:
-        """Initialize."""
-        self._station_id = station_id.lower() if station_id else None
         self._latitude = latitude
         self._longitude = longitude
-        self._post_code = post_code
         self._session = session
 
-        # Circuit breaker state
-        self._consecutive_failures = 0
-        self._circuit_open_until: datetime | None = None
+    async def async_get_data(self) -> list[dict[str, Any]]:
+        """Return a valid rolling forecast; keep raw errors out of tracebacks."""
+        try:
+            return await self._fetch_forecast()
+        except (aiohttp.ClientError, TimeoutError, TypeError, ValueError):
+            raise IconForecastError() from None
 
-        if latitude is None or longitude is None:
-            _LOGGER.warning(
-                "No coordinates provided for Open-Meteo forecast. "
-                "Forecast will not be available."
-            )
-
-        super().__init__(
-            hass,
-            _LOGGER,
-            name="meteoswiss_forecast",
-            update_interval=timedelta(seconds=update_interval),
-        )
-
-    def _map_open_meteo_condition(
+    def map_condition(
         self, weather_code: int | None, is_night: bool = False
     ) -> str | None:
         """Map a known provider code without manufacturing a clear sky."""
         return weather_condition(weather_code, is_day=not is_night)
 
-    async def _fetch_open_meteo_forecast(self) -> list[dict[str, Any]]:
+    async def _fetch_forecast(self) -> list[dict[str, Any]]:
         """Fetch and validate once; only transport failures are retried."""
         if self._latitude is None or self._longitude is None:
-            raise UpdateFailed("No coordinates available for Open-Meteo")
+            raise ValueError("No coordinates available for Open-Meteo")
 
         if self._session is None:
             raise RuntimeError("No session provided")
@@ -117,14 +100,14 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
             f"&timezone=Europe/Zurich&timeformat=unixtime"
         )
 
-        return self._parse_response(await self._async_fetch_payload(url))
+        return self.parse_response(await self._async_fetch_payload(url))
 
     @async_retry_with_backoff(max_attempts=3)
     async def _async_fetch_payload(self, url: str) -> Any:
         """Retry transient HTTP failures without logging the location URL."""
         return await async_get_json(self._session, url, host=FORECAST_HOST)
 
-    def _parse_response(self, data: Any) -> list[dict[str, Any]]:
+    def parse_response(self, data: Any) -> list[dict[str, Any]]:
         """Normalize a usable rolling forecast without manufacturing values."""
         if not isinstance(data, dict):
             raise TypeError("Expected a forecast response object")
@@ -236,58 +219,3 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
             "Fetched %d hours of forecast from Open-Meteo", len(forecast_data)
         )
         return forecast_data
-
-    async def _async_update_data(self) -> list[dict[str, Any]]:
-        """Fetch forecast data from Open-Meteo API with caching."""
-        # Circuit breaker check
-        if self._circuit_open_until and datetime.now(UTC) < self._circuit_open_until:
-            raise UpdateFailed("Circuit breaker open — API temporarily unavailable")
-
-        _LOGGER.debug("Fetching forecast from Open-Meteo API")
-
-        # Get cache
-        cache = get_forecast_cache()
-        cache_key = f"forecast:v3:icon-seamless:{self._latitude},{self._longitude}"
-
-        # Try cache first
-        cached_data = cache.get(cache_key)
-        if cached_data:
-            _LOGGER.debug("Using cached forecast data")
-            self._consecutive_failures = 0
-            self._circuit_open_until = None
-            return cached_data
-
-        try:
-            data = await self._fetch_open_meteo_forecast()
-
-            # Cache the result
-            cache.set(cache_key, data)
-
-            # Circuit breaker: reset on success
-            self._consecutive_failures = 0
-            self._circuit_open_until = None
-
-            _LOGGER.debug("Successfully updated forecast from Open-Meteo")
-            return data
-        except (
-            aiohttp.ClientError,
-            TimeoutError,
-            TypeError,
-            ValueError,
-            UpdateFailed,
-        ):
-            self._consecutive_failures += 1
-            if self._consecutive_failures >= 5:
-                self._circuit_open_until = datetime.now(UTC) + timedelta(minutes=5)
-            # HA logs availability transitions. Suppress raw HTTP exception chains,
-            # including coordinate URLs, even when coordinator debug logs are on.
-            raise UpdateFailed("Failed to fetch Open-Meteo forecast") from None
-
-    @property
-    def data_source(self) -> str:
-        """Return which API was used to fetch data."""
-        return "open-meteo"
-
-    async def async_close(self) -> None:
-        """Close is handled centrally by the integration setup."""
-        # Session is shared and closed in async_unload_entry

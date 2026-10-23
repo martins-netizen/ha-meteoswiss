@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.13 · **Updated:** 22 October 2026
+**Plan version:** 1.14 · **Updated:** 23 October 2026
 **Status:** Approved planning; Q1 is documented and P0 has partial evidence.
 This document does not approve a new feature, installation or release.
 
@@ -102,7 +102,7 @@ as the checklist. These work packages do not claim completed compliance.
 
 | Area | Starting evidence / next check |
 |---|---|
-| Bronze prerequisite | Reconcile all twenty rules. Unreleased field help/source translations and unused-placeholder cleanup are recorded in the dated follow-up; shared metadata and polling/options migration now have bounded evidence; warning coordinator placement and catalogue diagnostic availability are corrected; measured pollen and alternative current conditions now have separate clients/canonical coordinators with a shared timestamp parser; three source-module placement findings and final UX review remain open. Local HACS brand files are not Core-brands inclusion. |
+| Bronze prerequisite | Reconcile all twenty rules. Unreleased field help/source translations and unused-placeholder cleanup are recorded in the dated follow-up; shared metadata and polling/options migration now have bounded evidence; warning coordinator placement and catalogue diagnostic availability are corrected; measured pollen, alternative current conditions and ICON forecasts now have separate clients/canonical coordinators with a shared timestamp parser; two source-module placement findings and final UX review remain open. Local HACS brand files are not Core-brands inclusion. |
 | action-exceptions | Justified exemption while no integration actions exist; reassess if introduced. |
 | config-entry-unloading | Retain Recorder/reload/unload tests; check remaining tasks, pollers and listeners by family. |
 | docs-configuration-parameters, docs-installation-parameters | Explain purpose, source and effects; separate forecast, observation, warning and measured-pollen locations. |
@@ -128,13 +128,34 @@ No wholesale architectural rewrite is planned. Retain source separation and
 HA-owned sessions. The shared entity metadata follow-up preserves nine existing
 device/identity contracts. The [coordinator placement review](COORDINATOR_LAYOUT_REVIEW.md)
 now inventories all seven coordinators, moves warnings out of the platform, and
-records three remaining source-module placement findings after the measured-pollen
-and alternative-current client extractions and shared UTC parser move. The next
-bounded extraction is the independent ICON forecast source. Catalogue diagnostic
+records two remaining source-module placement findings after the measured-pollen,
+alternative-current and ICON-forecast client extractions and shared UTC parser
+move. The next bounded extraction is modelled pollen/AQ with the separate UV
+request/cache contract retained. Catalogue diagnostic
 expiry/failure/recovery is implemented and tested separately from source freshness.
 Use the
 [expected module layout](https://contributors.home-assistant.io/core/quality-scale/common-modules/)
 rather than equating central constants with full compliance.
+
+## F1: forecast summary sensors (proposal)
+
+Hourly and daily forecasts are already supplied by the existing weather entity
+through [weather.get_forecasts](https://www.home-assistant.io/integrations/weather/).
+The calculated daily heating-degree-day sensor is also forecast-derived.
+Additional scalar entities could make selected predictions easier to use in
+dashboards and automations. The proposed first set is tomorrow's maximum and
+minimum temperature, native daily precipitation sum and maximum hourly
+precipitation probability for tomorrow. Final scope needs operator agreement;
+this plan does not implement or enable additional sensors.
+
+Reuse the existing ICON coordinator and request, without a second API fetch,
+large forecast-list state attributes or replacing the weather entity. Clearly
+label predictions and their Europe/Zurich target date, source and retrieval
+time. A missing native daily value is unknown; an unavailable/stale forecast
+is unavailable. Never substitute zero or relabel a remaining-hours aggregate
+as a full calendar day. Define local-midnight rollover, DST, entity identity,
+HA-owned listener cleanup and DE/EN/FR/IT help/tests before implementation.
+Avoid treating changing forecast targets as measured historical totals.
 
 ## P0/P1: location purpose and compatibility
 

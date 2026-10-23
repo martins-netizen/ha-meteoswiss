@@ -24,14 +24,14 @@ from custom_components.meteoswiss.binary_sensor import (
     ALERT_SENSOR_DESCRIPTIONS,
     MeteoSwissAlertsBinarySensor,
 )
-from custom_components.meteoswiss.coordinator import MeteoSwissAlertsCoordinator
 from custom_components.meteoswiss.const import (
     DOMAIN,
     SENSOR_PRECIPITATION,
     SENSOR_TEMPERATURE,
 )
-from custom_components.meteoswiss.coordinator import MeteoSwissDataUpdateCoordinator
-from custom_components.meteoswiss.forecast_coordinator import (
+from custom_components.meteoswiss.coordinator import (
+    MeteoSwissAlertsCoordinator,
+    MeteoSwissDataUpdateCoordinator,
     MeteoSwissForecastCoordinator,
 )
 from custom_components.meteoswiss.localization import async_load_warning_labels
@@ -230,7 +230,7 @@ async def test_forecast_contract_preserves_repeated_dst_hour_and_daylight(hass, 
     coordinator = MeteoSwissForecastCoordinator(
         hass, latitude=47.45, longitude=8.56, session=session
     )
-    rows = await coordinator._fetch_open_meteo_forecast()
+    rows = await coordinator.client.async_get_data()
     assert "timeformat=unixtime" in session.url
     assert len({row["datetime"] for row in rows}) == 2
     local = [
@@ -450,7 +450,7 @@ async def _exercise_entry_lifecycle(hass, source, *, with_recorder, legacy_inter
             SENSOR_TEMPERATURE: 12,
             "last_update": dt_util.utcnow().isoformat(),
         },
-        "forecast_coordinator.MeteoSwissForecastCoordinator": [],
+        "coordinator.MeteoSwissForecastCoordinator": [],
         "coordinator.MeteoSwissAlertsCoordinator": [],
         "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
         "coordinator.MeteoSwissPollenCoordinator": {},

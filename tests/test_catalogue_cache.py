@@ -517,7 +517,7 @@ async def test_registered_catalogue_sensor_reports_unavailable_and_recovers(
     with ExitStack() as stack:
         for target, data in {
             "coordinator.OpenMeteoDataUpdateCoordinator": {"temperature": 12},
-            "forecast_coordinator.MeteoSwissForecastCoordinator": [],
+            "coordinator.MeteoSwissForecastCoordinator": [],
             "coordinator.MeteoSwissAlertsCoordinator": [],
             "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
             "coordinator.MeteoSwissPollenCoordinator": {},
