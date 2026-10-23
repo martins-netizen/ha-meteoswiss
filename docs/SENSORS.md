@@ -19,6 +19,15 @@ location. The warning postcode does not move the forecast. Native units are °C,
 hPa, km/h and mm; HA converts weather attributes to the user's selected units.
 Forecast failure returns an empty forecast while valid observations remain usable.
 
+## Forecast summary sensors (unreleased)
+
+Development after 8.2.0 adds eight numeric entities: today's and tomorrow's
+maximum/minimum temperature, native full-day precipitation, and highest hourly
+precipitation probability with matching time windows. Today's probability covers
+current/upcoming hours; daily temperature/rain values describe the whole day.
+See the [forecast sensor guide](FORECAST_SENSORS.md) for examples, missing-data
+behaviour, attributes and the distinction from measured rainfall.
+
 ## Observation sensors
 
 The integration polls at the configured interval (default/minimum ten minutes).

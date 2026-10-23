@@ -1,8 +1,43 @@
 # Bronze/Silver follow-up — 22 October 2026
 
-**Record version:** 1.8. **Updated:** 23 October 2026. **Scope:** unreleased development after stable 8.2.0.
+**Record version:** 1.9. **Updated:** 23 October 2026. **Scope:** unreleased development after stable 8.2.0.
 The [dated original audit](QUALITY_AUDIT_2026-10-17.md) remains historical.
 This document records individual improvements, not an official HA quality tier.
+
+## Scalar forecast sensors for today and tomorrow
+
+The unreleased F1 candidate adds eight numeric sensors to the existing weather
+device: native full-day maximum/minimum temperature and precipitation, plus
+the highest hourly precipitation probability and all tied peak windows. Pure
+calculations live in forecast_summary.py; entities use the existing forecast
+coordinator and add no HTTP request. Today's probability uses current/upcoming
+hour intervals; native temperature/rain fields retain whole-day meaning.
+
+Missing native fields and incomplete hourly coverage stay unknown. Failed or
+stale snapshots are unavailable, with no retained peak times. Local timers
+handle hour/midnight/three-hour age boundaries and are cancelled on unload.
+UTC interval ends map to preceding hours across Swiss DST boundaries. Normal
+numeric states, stable entry-scoped unique IDs, shared device metadata and no
+measurement/total state class keep predictions separate from observations and
+long-term measured statistics. DE/EN/FR/IT names and the English
+[forecast guide](FORECAST_SENSORS.md) explain the user-facing contract.
+
+Forty new cases cover native zero/negative values, missing/invalid fields,
+partial probabilities, elapsed/tied peaks, midnight interval assignment,
+23-/25-hour days, exact freshness boundaries, real HA registration, failure/
+recovery, local-only timer changes, reload identity and unload cleanup. Both
+actual local HA environments, **2026.8.3 and 2026.10.2**, pass **1,023 tests and
+53 subtests**. Combined line/branch coverage is **99.96978%**, with **716/716 branches**.
+Every module exceeds 95%; sensor.py and forecast_summary.py have 100% line/branch
+coverage. Both strict gates pass, with forecast_summary.py newly required at 100%. Source model, request,
+weather service, observations, warnings, polling/options, manifests, dependencies
+and CI matrix remain unchanged. CI still uses HA 2026.8.3/2026.10.1.
+
+A read-only source control at public Zurich city-centre coordinates on
+**23 October 2026 at 15:30 UTC** returned 120 rows and all eight values, including
+complete current-day/tomorrow probability windows. This demonstrates current
+source field availability; it is not acceptance of an installed HA build or a
+forecast-accuracy guarantee. No operator HA installation or release was performed.
 
 ## Separate the ICON forecast source from HA coordination
 

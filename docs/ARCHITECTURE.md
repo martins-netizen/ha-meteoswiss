@@ -36,6 +36,18 @@ when the entity is added and removed with that entity. Configuration validates
 the chosen observation provider with the same coordinator contract, without
 listeners/polling, using HA's shared session and a 30-second total timeout.
 
+## Scalar forecast projections (unreleased)
+
+The eight forecast sensors reuse the existing ICON coordinator; they add no
+HTTP request, cache or independent poller. Pure calculations in
+`forecast_summary.py` select native whole-day temperature/rain fields or complete
+preceding-hour probability intervals. Target dates use Europe/Zurich; UTC hour
+boundaries retain repeated DST intervals. Missing fields yield unknown, while
+failed/stale snapshots yield unavailable. Entity-owned point timers update hour,
+midnight and three-hour retrieval-age boundaries and are cancelled on unload.
+Forecast sensors have no measurement/total state class and retain numeric states
+with bounded peak-window attributes. See [the forecast guide](FORECAST_SENSORS.md).
+
 ## Sources and time
 
 | Data | Source and location | Time semantics |

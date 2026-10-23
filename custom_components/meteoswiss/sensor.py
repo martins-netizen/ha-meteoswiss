@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass, replace
+from datetime import datetime, timedelta
 from typing import Any, Final
 
 from homeassistant.components.sensor import (
@@ -22,15 +24,11 @@ from homeassistant.const import (
     UnitOfTemperature,
     UnitOfTime,
 )
-
-# Retain the existing unit spelling and Recorder metadata. The supported HA
-# baseline (2026.8.3) provides UnitOfIrradiance and UnitOfTime directly.
-_CONCENTRATION_MICROGRAMS_PER_CUBIC_METER = "µg/m³"
-
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
+from homeassistant.helpers.event import async_track_point_in_utc_time
 from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
 )
@@ -70,16 +68,28 @@ from .const import (
     SENSOR_WIND_GUST,
     SENSOR_WIND_SPEED,
 )
-from .coordinator import MeteoSwissDataUpdateCoordinator
+from .coordinator import MeteoSwissDataUpdateCoordinator, MeteoSwissForecastCoordinator
 from .entity import (
     MeteoSwissCoordinatorEntity,
     MeteoSwissEntity,
     air_quality_device_info,
     weather_device_info,
 )
+from .forecast_summary import (
+    FORECAST_ATTRIBUTION,
+    FORECAST_MAX_AGE,
+    ForecastMetric,
+    forecast_is_fresh,
+    forecast_snapshot_time,
+    summarize_forecast,
+)
 from .runtime_data import MeteoSwissConfigEntry
 from .stations_map import MeteoSwissStationsMap
 from .weather_data import FORECAST_TIME_ZONE, forecast_datetime, weather_number
+
+# Retain the existing unit spelling and Recorder metadata. The supported HA
+# baseline (2026.8.3) provides UnitOfIrradiance and UnitOfTime directly.
+_CONCENTRATION_MICROGRAMS_PER_CUBIC_METER = "µg/m³"
 
 # Coordinators centralize refreshes; sensor diagnostics use bounded polling.
 PARALLEL_UPDATES = 1
@@ -261,6 +271,12 @@ async def async_setup_entry(
     forecast_coordinator = entry.runtime_data.forecast_coordinator
     if forecast_coordinator:
         entities.append(MeteoSwissHeatingDegreeDaysSensor(forecast_coordinator, entry))
+        entities.extend(
+            MeteoSwissForecastSensor(
+                forecast_coordinator, entry, description, station_name
+            )
+            for description in FORECAST_SENSOR_DESCRIPTIONS
+        )
         _remove_legacy_season_hgt_entity(hass, entry)
         _LOGGER.debug("Added calculated HGT 12/20 forecast sensor")
 
@@ -288,6 +304,139 @@ async def async_setup_entry(
         )
 
     async_add_entities(entities)
+
+
+@dataclass
+class MeteoSwissForecastSensorDescription(SensorEntityDescription):
+    """A stable scalar prediction, not a measured historical total."""
+
+    day_offset: int = 0
+    metric: ForecastMetric = "maximum_temperature"
+
+
+FORECAST_SENSOR_DESCRIPTIONS = tuple(
+    MeteoSwissForecastSensorDescription(
+        key=f"forecast_{metric}_{day}",
+        translation_key=f"forecast_{metric}_{day}",
+        device_class=device_class,
+        native_unit_of_measurement=unit,
+        suggested_display_precision=precision,
+        icon=icon,
+        day_offset=offset,
+        metric=metric,
+    )
+    for offset, day in ((0, "today"), (1, "tomorrow"))
+    for metric, device_class, unit, precision, icon in (
+        (
+            "maximum_temperature",
+            SensorDeviceClass.TEMPERATURE,
+            UnitOfTemperature.CELSIUS,
+            1,
+            "mdi:thermometer-high",
+        ),
+        (
+            "minimum_temperature",
+            SensorDeviceClass.TEMPERATURE,
+            UnitOfTemperature.CELSIUS,
+            1,
+            "mdi:thermometer-low",
+        ),
+        (
+            "precipitation",
+            SensorDeviceClass.PRECIPITATION,
+            UnitOfPrecipitationDepth.MILLIMETERS,
+            1,
+            "mdi:weather-rainy",
+        ),
+        ("probability", None, PERCENTAGE, 0, "mdi:weather-pouring"),
+    )
+)
+
+
+class MeteoSwissForecastSensor(
+    MeteoSwissCoordinatorEntity[MeteoSwissForecastCoordinator], SensorEntity
+):
+    """Expose a forecast scalar and keep calendar/freshness boundaries current."""
+
+    _attr_attribution = FORECAST_ATTRIBUTION
+    entity_description: MeteoSwissForecastSensorDescription
+
+    def __init__(
+        self,
+        coordinator: MeteoSwissForecastCoordinator,
+        entry: MeteoSwissConfigEntry,
+        description: MeteoSwissForecastSensorDescription,
+        station_name: str,
+    ) -> None:
+        """Attach only to the existing forecast coordinator and weather device."""
+        super().__init__(coordinator)
+        self.entity_description = description
+        self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_{description.key}"
+        self._attr_device_info = weather_device_info(entry.entry_id, station_name)
+        self._cancel_timer: Callable[[], None] | None = None
+
+    @property
+    def available(self) -> bool:
+        return super().available and forecast_is_fresh(
+            self.coordinator.data, dt_util.utcnow()
+        )
+
+    @property
+    def native_value(self) -> float | None:
+        if not self.available:
+            return None
+        return summarize_forecast(
+            self.coordinator.data,
+            dt_util.utcnow(),
+            self.entity_description.day_offset,
+            self.entity_description.metric,
+        )[0]
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        return summarize_forecast(
+            self.coordinator.data if self.available else [],
+            dt_util.utcnow(),
+            self.entity_description.day_offset,
+            self.entity_description.metric,
+        )[1]
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        self.async_on_remove(self._cancel_clock)
+        self._schedule_clock()
+
+    @callback
+    def _cancel_clock(self) -> None:
+        if self._cancel_timer is not None:
+            self._cancel_timer()
+            self._cancel_timer = None
+
+    @callback
+    def _schedule_clock(self) -> None:
+        """Only recompute local state; never fetch or refresh the coordinator."""
+        self._cancel_clock()
+        now = dt_util.utcnow()
+        deadline = now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
+        fetched = forecast_snapshot_time(self.coordinator.data)
+        if fetched is not None:
+            expires = fetched + FORECAST_MAX_AGE + timedelta(microseconds=1)
+            if expires > now:
+                deadline = min(deadline, expires)
+        self._cancel_timer = async_track_point_in_utc_time(
+            self.hass, self._handle_clock, deadline
+        )
+
+    @callback
+    def _handle_clock(self, _now: datetime) -> None:
+        self._cancel_timer = None
+        self.async_write_ha_state()
+        self._schedule_clock()
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        self._schedule_clock()
+        super()._handle_coordinator_update()
 
 
 class MeteoSwissSensor(

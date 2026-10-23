@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+- Add eight numeric forecast sensors for today/tomorrow: native whole-day
+  maximum/minimum temperature and precipitation, plus the highest hourly
+  precipitation probability with every tied time window. Reuse the existing
+  ICON forecast request. Handle missing/incomplete data, source expiry, Swiss
+  midnight/DST and listener cleanup; bundle names in DE/EN/FR/IT. Keep forecast
+  values separate from measured statistics. See docs/FORECAST_SENSORS.md.
+
+- Separate the ICON client into forecast.py and define its actual HA coordinator
+  in coordinator.py. Retain model, retry, cache, schedule and weather contracts.
+  Five of seven actual coordinators now use the canonical module; two placement
+  findings remain.
+
 - Separate the alternative Open-Meteo current-weather client from HA coordination.
   Keep cache TTL/freshness, failure pause, retries, partial/zero values, session
   ownership and entity identities. Define the real coordinator in coordinator.py
