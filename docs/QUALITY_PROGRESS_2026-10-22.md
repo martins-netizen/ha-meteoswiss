@@ -1,8 +1,43 @@
 # Bronze/Silver follow-up — 22 October 2026
 
-**Record version:** 1.11. **Updated:** 23 October 2026. **Scope:** unreleased development after stable 8.2.0.
+**Record version:** 1.12. **Updated:** 23 October 2026. **Scope:** unreleased development after stable 8.2.0.
 The [dated original audit](QUALITY_AUDIT_2026-10-17.md) remains historical.
 This document records individual improvements, not an official HA quality tier.
+
+## Official forecast-location catalogue, identity and search foundation
+
+The first approved POI implementation package adds immutable type/opaque-ID
+points, explicit selected-point provenance, atomic Latin1 catalogue validation
+and bounded deterministic local search in forecast_locations.py. The source-only
+forecast_location_client.py borrows its session, uses existing HTTPS/redirect/
+wire-and-decoded body limits, a total download/retry deadline, off-loop parsing,
+instance coalescing, original monotonic TTL and an explicit failure/retry boundary.
+Invalid refreshes retain last-good hash/time without returning stale success.
+No HA setup, persistent config, forecast coordinates, entity IDs or polling change.
+
+Ninety-five new cases cover the public fixture, role/composite/leading-zero
+identity, provenance/immutability, schema/CSV/controls, duplicate conflicts,
+coordinates/missing heights, candidate ambiguity/ranking/limits, case/accents/
+German transliteration, cache expiry, simultaneous loads, failure pause/recovery,
+retained metadata, private errors, cancellation, deadline and real shared HTTP
+redirect/size/permanent-error/Retry-After behaviour.
+
+Both actual local HA **2026.8.3 and 2026.10.2** pass **1,145 tests and 53 subtests**;
+combined line/branch coverage is **99.97243%**, all **768/768 branches**. Every
+module exceeds 95%; both new modules have 100% line/branch coverage and are
+additionally required at 100% by the existing strict gate. Both environment
+gates pass without lower thresholds, new exclusions or dependency/CI changes.
+CI remains HA 2026.8.3/2026.10.1, separately from local 2026.10.2.
+
+A real borrowed-session client probe at **17:35:21 UTC on 23 October 2026**
+fetched/parsed 828864 bytes, **5816 unique points / 631 POIs**, four identical
+duplicate rows and the same content hash as the earlier audit. It checked
+public search examples, snapshot cache reuse and caller session ownership.
+The [catalogue contract](FORECAST_LOCATION_CATALOGUE.md) links exact source
+evidence and distinguishes this foundation from the remaining persisted
+selection, height/request/cache semantics, translated HA dialogs and practical
+acceptance. No operator HA installation, release, HACS inclusion or complete
+quality-tier claim follows. country: CH is already integrated through PR #35.
 
 ## Separate hourly/archive precipitation, Recorder and HA coordination
 
@@ -443,8 +478,9 @@ measured-pollen finding without claiming complete common-modules or Silver.
   Warning coordinator platform coupling and the catalogue diagnostic gap are
   corrected. Measured pollen, alternative current conditions and ICON forecasts
   now have separate source clients and canonical coordinators, with the shared
-  UTC parser retained. Two source-module coordinator definitions and Core-brand
-  evidence remain open.
+  UTC parser retained. Modelled pollen/AQ/UV and precipitation are also separated;
+  all seven real coordinators are canonical. Broader rule-specific review and
+  Core-brand evidence remain separate from this closed placement inventory.
 - The official [coverage rule](https://developers.home-assistant.io/docs/core/integration-quality-scale/rules/test-coverage/)
   applies per module, not only to the aggregate. The
   [UI setup rule](https://contributors.home-assistant.io/core/quality-scale/config-flow/)

@@ -1,0 +1,368 @@
+{
+  "evidence_version": "1.0",
+  "scope": "Read-only public source/client probe; no HA setup, source-model change or release",
+  "attribution": "Source: MeteoSwiss",
+  "source_url": "https://data.geo.admin.ch/ch.meteoschweiz.ogd-local-forecasting/ogd-local-forecasting_meta_point.csv",
+  "retrieved_at": "2026-10-23T17:35:21.169258+00:00",
+  "source_bytes": 828864,
+  "source_sha256": "bdf63842f244d4e5f232bc116f2dd71080fef34152a770258ffb90f03ed9dfeb",
+  "catalogue_encoding": "latin-1",
+  "enforced_size_limit_bytes": 2097152,
+  "unique_points": 5816,
+  "points_by_type": {
+    "1": 1114,
+    "2": 4071,
+    "3": 631
+  },
+  "identical_duplicate_rows": 4,
+  "cache_hit_returns_same_snapshot": true,
+  "borrowed_session_not_closed_by_client": true,
+  "caller_session_closed_after_probe": true,
+  "download_parse_and_cache_probe_elapsed_seconds": 5.45,
+  "search_examples": {
+    "8302": {
+      "total_matches": 1,
+      "truncated": false,
+      "points": [
+        {
+          "type": "2",
+          "id": "830200",
+          "name": "Kloten",
+          "postal_code": "8302",
+          "station_abbr": null,
+          "latitude": 47.451253,
+          "longitude": 8.579761,
+          "altitude_masl": 436.0
+        }
+      ]
+    },
+    "Kloten": {
+      "total_matches": 2,
+      "truncated": false,
+      "points": [
+        {
+          "type": "2",
+          "id": "830200",
+          "name": "Kloten",
+          "postal_code": "8302",
+          "station_abbr": null,
+          "latitude": 47.451253,
+          "longitude": 8.579761,
+          "altitude_masl": 436.0
+        },
+        {
+          "type": "1",
+          "id": "59",
+          "name": "Zürich / Kloten",
+          "postal_code": null,
+          "station_abbr": "KLO",
+          "latitude": 47.479611,
+          "longitude": 8.535961,
+          "altitude_masl": 426.0
+        }
+      ]
+    },
+    "Säntis": {
+      "total_matches": 2,
+      "truncated": false,
+      "points": [
+        {
+          "type": "1",
+          "id": "35",
+          "name": "Säntis",
+          "postal_code": null,
+          "station_abbr": "SAE",
+          "latitude": 47.249447,
+          "longitude": 9.343469,
+          "altitude_masl": 2501.0
+        },
+        {
+          "type": "3",
+          "id": "711",
+          "name": "Säntis",
+          "postal_code": null,
+          "station_abbr": null,
+          "latitude": 47.249425,
+          "longitude": 9.343242,
+          "altitude_masl": 2502.0
+        }
+      ]
+    },
+    "Saentis": {
+      "total_matches": 2,
+      "truncated": false,
+      "points": [
+        {
+          "type": "1",
+          "id": "35",
+          "name": "Säntis",
+          "postal_code": null,
+          "station_abbr": "SAE",
+          "latitude": 47.249447,
+          "longitude": 9.343469,
+          "altitude_masl": 2501.0
+        },
+        {
+          "type": "3",
+          "id": "711",
+          "name": "Säntis",
+          "postal_code": null,
+          "station_abbr": null,
+          "latitude": 47.249425,
+          "longitude": 9.343242,
+          "altitude_masl": 2502.0
+        }
+      ]
+    },
+    "Zuerich": {
+      "total_matches": 44,
+      "truncated": true,
+      "points": [
+        {
+          "type": "2",
+          "id": "800100",
+          "name": "Zürich",
+          "postal_code": "8001",
+          "station_abbr": null,
+          "latitude": 47.372289,
+          "longitude": 8.542189,
+          "altitude_masl": 409.0
+        },
+        {
+          "type": "2",
+          "id": "800200",
+          "name": "Zürich",
+          "postal_code": "8002",
+          "station_abbr": null,
+          "latitude": 47.361264,
+          "longitude": 8.529636,
+          "altitude_masl": 431.0
+        },
+        {
+          "type": "2",
+          "id": "800300",
+          "name": "Zürich",
+          "postal_code": "8003",
+          "station_abbr": null,
+          "latitude": 47.372897,
+          "longitude": 8.515797,
+          "altitude_masl": 415.0
+        },
+        {
+          "type": "2",
+          "id": "800400",
+          "name": "Zürich",
+          "postal_code": "8004",
+          "station_abbr": null,
+          "latitude": 47.377583,
+          "longitude": 8.520925,
+          "altitude_masl": 410.0
+        },
+        {
+          "type": "2",
+          "id": "800500",
+          "name": "Zürich",
+          "postal_code": "8005",
+          "station_abbr": null,
+          "latitude": 47.387475,
+          "longitude": 8.520992,
+          "altitude_masl": 404.0
+        },
+        {
+          "type": "2",
+          "id": "800600",
+          "name": "Zürich",
+          "postal_code": "8006",
+          "station_abbr": null,
+          "latitude": 47.386092,
+          "longitude": 8.543825,
+          "altitude_masl": 460.0
+        },
+        {
+          "type": "2",
+          "id": "800800",
+          "name": "Zürich",
+          "postal_code": "8008",
+          "station_abbr": null,
+          "latitude": 47.356756,
+          "longitude": 8.560744,
+          "altitude_masl": 435.0
+        },
+        {
+          "type": "2",
+          "id": "803200",
+          "name": "Zürich",
+          "postal_code": "8032",
+          "station_abbr": null,
+          "latitude": 47.367892,
+          "longitude": 8.559006,
+          "altitude_masl": 441.0
+        },
+        {
+          "type": "2",
+          "id": "803700",
+          "name": "Zürich",
+          "postal_code": "8037",
+          "station_abbr": null,
+          "latitude": 47.393617,
+          "longitude": 8.526958,
+          "altitude_masl": 423.0
+        },
+        {
+          "type": "2",
+          "id": "803800",
+          "name": "Zürich",
+          "postal_code": "8038",
+          "station_abbr": null,
+          "latitude": 47.341453,
+          "longitude": 8.530089,
+          "altitude_masl": 439.0
+        },
+        {
+          "type": "2",
+          "id": "804100",
+          "name": "Zürich",
+          "postal_code": "8041",
+          "station_abbr": null,
+          "latitude": 47.327831,
+          "longitude": 8.5151,
+          "altitude_masl": 461.0
+        },
+        {
+          "type": "2",
+          "id": "804400",
+          "name": "Zürich",
+          "postal_code": "8044",
+          "station_abbr": null,
+          "latitude": 47.379269,
+          "longitude": 8.559139,
+          "altitude_masl": 533.0
+        },
+        {
+          "type": "2",
+          "id": "804500",
+          "name": "Zürich",
+          "postal_code": "8045",
+          "station_abbr": null,
+          "latitude": 47.36015,
+          "longitude": 8.516956,
+          "altitude_masl": 430.0
+        },
+        {
+          "type": "2",
+          "id": "804600",
+          "name": "Zürich",
+          "postal_code": "8046",
+          "station_abbr": null,
+          "latitude": 47.419872,
+          "longitude": 8.509842,
+          "altitude_masl": 461.0
+        },
+        {
+          "type": "2",
+          "id": "804700",
+          "name": "Zürich",
+          "postal_code": "8047",
+          "station_abbr": null,
+          "latitude": 47.374928,
+          "longitude": 8.49195,
+          "altitude_masl": 420.0
+        },
+        {
+          "type": "2",
+          "id": "804800",
+          "name": "Zürich",
+          "postal_code": "8048",
+          "station_abbr": null,
+          "latitude": 47.388056,
+          "longitude": 8.485375,
+          "altitude_masl": 402.0
+        },
+        {
+          "type": "2",
+          "id": "804900",
+          "name": "Zürich",
+          "postal_code": "8049",
+          "station_abbr": null,
+          "latitude": 47.405172,
+          "longitude": 8.491528,
+          "altitude_masl": 464.0
+        },
+        {
+          "type": "2",
+          "id": "805000",
+          "name": "Zürich",
+          "postal_code": "8050",
+          "station_abbr": null,
+          "latitude": 47.411083,
+          "longitude": 8.548942,
+          "altitude_masl": 433.0
+        },
+        {
+          "type": "2",
+          "id": "805100",
+          "name": "Zürich",
+          "postal_code": "8051",
+          "station_abbr": null,
+          "latitude": 47.404406,
+          "longitude": 8.579819,
+          "altitude_masl": 429.0
+        },
+        {
+          "type": "2",
+          "id": "805200",
+          "name": "Zürich",
+          "postal_code": "8052",
+          "station_abbr": null,
+          "latitude": 47.42425,
+          "longitude": 8.547253,
+          "altitude_masl": 436.0
+        }
+      ]
+    },
+    "Gotthardpass": {
+      "total_matches": 1,
+      "truncated": false,
+      "points": [
+        {
+          "type": "3",
+          "id": "594",
+          "name": "Gotthardpass",
+          "postal_code": null,
+          "station_abbr": null,
+          "latitude": 46.559306,
+          "longitude": 8.561156,
+          "altitude_masl": 2107.0
+        }
+      ]
+    },
+    "Albert Heim Hutte": {
+      "total_matches": 1,
+      "truncated": false,
+      "points": [
+        {
+          "type": "3",
+          "id": "454",
+          "name": "Albert-Heim-Hütte SAC",
+          "postal_code": null,
+          "station_abbr": null,
+          "latitude": 46.608917,
+          "longitude": 8.463553,
+          "altitude_masl": 2542.0
+        }
+      ]
+    }
+  },
+  "fixture": {
+    "path": "tests/fixtures/forecast_points_2026-10-23.csv",
+    "repository_encoding": "utf-8",
+    "transport_test_encoding": "latin-1",
+    "selected_source_rows": 8,
+    "notes": "Exact decoded public source fields; tests re-encode as Latin1. Includes an identical station duplicate."
+  },
+  "limits": [
+    "This validates current catalogue/source mechanics, not forecast accuracy or warning coverage.",
+    "This feature foundation is not wired to HA setup, persistence, forecast coordinates or entity registration.",
+    "No independent WGS84/LV95 transformation or altitude/downscaling validation is claimed."
+  ]
+}
