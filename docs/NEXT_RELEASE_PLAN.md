@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.13 · **Updated:** 22 October 2026
+**Plan version:** 1.15 · **Updated:** 23 October 2026
 **Status:** Approved planning; Q1 is documented and P0 has partial evidence.
 This document does not approve a new feature, installation or release.
 
@@ -102,7 +102,7 @@ as the checklist. These work packages do not claim completed compliance.
 
 | Area | Starting evidence / next check |
 |---|---|
-| Bronze prerequisite | Reconcile all twenty rules. Unreleased field help/source translations and unused-placeholder cleanup are recorded in the dated follow-up; shared metadata and polling/options migration now have bounded evidence; warning coordinator placement and catalogue diagnostic availability are corrected; measured pollen and alternative current conditions now have separate clients/canonical coordinators with a shared timestamp parser; three source-module placement findings and final UX review remain open. Local HACS brand files are not Core-brands inclusion. |
+| Bronze prerequisite | Reconcile all twenty rules. Unreleased field help/source translations and unused-placeholder cleanup are recorded in the dated follow-up; shared metadata and polling/options migration now have bounded evidence; warning coordinator placement and catalogue diagnostic availability are corrected; measured pollen, alternative current conditions and ICON forecasts now have separate clients/canonical coordinators with a shared timestamp parser; two source-module placement findings and final UX review remain open. Local HACS brand files are not Core-brands inclusion. |
 | action-exceptions | Justified exemption while no integration actions exist; reassess if introduced. |
 | config-entry-unloading | Retain Recorder/reload/unload tests; check remaining tasks, pollers and listeners by family. |
 | docs-configuration-parameters, docs-installation-parameters | Explain purpose, source and effects; separate forecast, observation, warning and measured-pollen locations. |
@@ -128,13 +128,52 @@ No wholesale architectural rewrite is planned. Retain source separation and
 HA-owned sessions. The shared entity metadata follow-up preserves nine existing
 device/identity contracts. The [coordinator placement review](COORDINATOR_LAYOUT_REVIEW.md)
 now inventories all seven coordinators, moves warnings out of the platform, and
-records three remaining source-module placement findings after the measured-pollen
-and alternative-current client extractions and shared UTC parser move. The next
-bounded extraction is the independent ICON forecast source. Catalogue diagnostic
+records two remaining source-module placement findings after the measured-pollen,
+alternative-current and ICON-forecast client extractions and shared UTC parser
+move. The next bounded extraction is modelled pollen/AQ with the separate UV
+request/cache contract retained. Catalogue diagnostic
 expiry/failure/recovery is implemented and tested separately from source freshness.
 Use the
 [expected module layout](https://contributors.home-assistant.io/core/quality-scale/common-modules/)
 rather than equating central constants with full compliance.
+
+## F1: forecast summary sensors (proposal)
+
+Hourly and daily forecasts are already supplied by the existing weather entity
+through [weather.get_forecasts](https://www.home-assistant.io/integrations/weather/).
+The calculated daily heating-degree-day sensor is also forecast-derived.
+The refined proposal supports today and tomorrow: maximum/minimum temperature,
+native full-day precipitation sum, and the highest hourly precipitation
+probability with its matching interval(s). This plan records the requested
+time information and current-day temperature scope; it implements no sensors.
+
+Temperature extrema and precipitation sums describe the complete target
+calendar day, including elapsed hours today. They remain predictions, not
+observed daily records; today's maximum/minimum may already have occurred.
+Label that distinction in translated help rather than presenting them as
+remaining-day extrema. Never reconstruct a full-day value from only the
+remaining rolling hours when the native daily field is absent.
+
+For today's probability, use the ongoing and upcoming hourly intervals; for
+tomorrow use the complete target local day. Calculate the peak value and its
+time windows from the same valid hourly rows. Do not attach a future time to
+a provider daily maximum that may have occurred in an already elapsed hour.
+[Provider hourly semantics](https://open-meteo.com/en/docs) specify the preceding
+hour: a value timestamped 15:00 applies to 14:00–15:00, not 15:00–16:00.
+Group adjacent tied peak intervals and retain distinct equally high windows.
+A zero peak has no uniquely useful peak time; absent probabilities remain
+unknown. Incomplete interval coverage must be explicit, not a full-day claim.
+
+Keep the probability state numeric in percent and expose timezone-aware peak
+start/end metadata for dashboards to render e.g. “80% between 14:00 and 15:00”.
+Retain all tied windows without replacing numeric states with combined text.
+Reuse the existing ICON coordinator and request; add no duplicate HTTP fetch
+or full forecast-list state attribute. Use Europe/Zurich target dates, source
+and retrieval time. Missing fields are unknown; an unavailable/stale source
+is unavailable. Check local-midnight rollover, changing remaining-day windows,
+23/25-hour DST days and end-of-day interval assignment, entity identity,
+HA-owned listener cleanup and DE/EN/FR/IT help/tests before implementation.
+Avoid treating changing forecast targets as measured historical totals.
 
 ## P0/P1: location purpose and compatibility
 

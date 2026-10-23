@@ -21,8 +21,6 @@ from custom_components.meteoswiss.const import (
 )
 from custom_components.meteoswiss.coordinator import (
     MeteoSwissDataUpdateCoordinator,
-)
-from custom_components.meteoswiss.forecast_coordinator import (
     MeteoSwissForecastCoordinator,
 )
 from custom_components.meteoswiss.precipitation import (
@@ -211,7 +209,7 @@ async def test_forecast_request_uses_rolling_meteoswiss_seamless_model(hass, fre
         session=session,
     )
 
-    forecast = await coordinator._fetch_open_meteo_forecast()
+    forecast = await coordinator.client.async_get_data()
 
     assert forecast
     assert session.requested_url is not None

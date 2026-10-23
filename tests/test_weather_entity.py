@@ -17,8 +17,8 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.meteoswiss.cache import clear_all_caches
 from custom_components.meteoswiss.const import DOMAIN
-from custom_components.meteoswiss.coordinator import MeteoSwissDataUpdateCoordinator
-from custom_components.meteoswiss.forecast_coordinator import (
+from custom_components.meteoswiss.coordinator import (
+    MeteoSwissDataUpdateCoordinator,
     MeteoSwissForecastCoordinator,
 )
 from custom_components.meteoswiss.weather import MeteoSwissWeather
@@ -100,7 +100,7 @@ async def installed_weather(hass, enable_custom_integrations):
                 "precipitation": 0.2,
                 "last_update": NOW.isoformat(),
             },
-            "forecast_coordinator.MeteoSwissForecastCoordinator": [row()],
+            "coordinator.MeteoSwissForecastCoordinator": [row()],
             "coordinator.MeteoSwissAlertsCoordinator": [],
             "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
             "coordinator.MeteoSwissPollenCoordinator": {},

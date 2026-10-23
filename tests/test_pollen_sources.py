@@ -18,7 +18,6 @@ from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.update_coordinator import UpdateFailed
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.meteoswiss.coordinator import MeteoSwissPollenCoordinator
 from custom_components.meteoswiss.cache import (
     clear_all_caches,
     get_current_weather_cache,
@@ -28,6 +27,7 @@ from custom_components.meteoswiss.const import (
     MIN_UPDATE_INTERVAL,
     POLLEN_STATIONS,
 )
+from custom_components.meteoswiss.coordinator import MeteoSwissPollenCoordinator
 from custom_components.meteoswiss.pollen_coordinator_openmeteo import (
     OPENMETEO_AQ_BASE_URL,
     OPENMETEO_FORECAST_URL,
@@ -521,7 +521,7 @@ async def test_real_entities_start_failure_recovery_and_unload(
                 "temperature": 12,
                 "last_update": "2026-10-15T10:00:00+00:00",
             },
-            "forecast_coordinator.MeteoSwissForecastCoordinator": [],
+            "coordinator.MeteoSwissForecastCoordinator": [],
             "coordinator.MeteoSwissAlertsCoordinator": [],
         }.items():
             stack.enter_context(
@@ -737,7 +737,7 @@ async def test_pollen_device_grouping_preserves_existing_entities_on_reload(
                 "temperature": 12,
                 "last_update": "2026-10-15T10:00:00+00:00",
             },
-            "forecast_coordinator.MeteoSwissForecastCoordinator": [],
+            "coordinator.MeteoSwissForecastCoordinator": [],
             "coordinator.MeteoSwissAlertsCoordinator": [],
         }.items():
             stack.enter_context(

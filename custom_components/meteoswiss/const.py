@@ -118,7 +118,7 @@ OPENMETEO_AIR_QUALITY_ATTRIBUTION: Final = "Source: Open-Meteo Air Quality API"
 # API timeout (30 seconds for all requests)
 DEFAULT_API_TIMEOUT: Final = aiohttp.ClientTimeout(total=30)
 
-# WMO weather code → HA condition mapping (used by weather.py, forecast_coordinator.py, openmeteo.py)
+# WMO weather code → HA condition mapping (used by weather.py, forecast.py, openmeteo.py)
 WMO_WEATHER_CODES: Final[dict[int, str]] = {
     0: "sunny", 1: "sunny", 2: "partlycloudy", 3: "cloudy",
     45: "fog", 48: "fog",
