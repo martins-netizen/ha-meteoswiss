@@ -25,8 +25,8 @@ from custom_components.meteoswiss.coordinator import (
 )
 from custom_components.meteoswiss.precipitation import (
     _asset_urls_for_period,
-    _parse_hourly_statistics,
     _subtract_calendar_months,
+    parse_hourly_precipitation,
 )
 from custom_components.meteoswiss.sensor import (
     SENSOR_DESCRIPTIONS,
@@ -61,14 +61,12 @@ def test_official_hourly_precipitation_uses_interval_start() -> None:
         "KLO;31.08.2026 02:00;\n"
     )
 
-    statistics = _parse_hourly_statistics(content)
+    statistics = parse_hourly_precipitation(content)
 
     assert statistics == [
         {
             "start": datetime(2026, 8, 31, 0, 0, tzinfo=timezone.utc),
-            "mean": 3.7,
-            "min": 3.7,
-            "max": 3.7,
+            "amount": 3.7,
         }
     ]
 
@@ -84,7 +82,7 @@ def test_hourly_archive_is_limited_to_thirteen_calendar_months() -> None:
         "KLO;01.09.2026 18:00;0.0\n"
     )
 
-    statistics = _parse_hourly_statistics(content, earliest_start)
+    statistics = parse_hourly_precipitation(content, earliest_start)
 
     assert earliest_start == datetime(2025, 8, 1, 0, 0, tzinfo=timezone.utc)
     assert [statistic["start"] for statistic in statistics] == [

@@ -22,7 +22,7 @@ own data/resource/source decision.
 
 **New catalogue evidence, 21 October:** a direct bounded OGD download and
 STAC checksum comparison now establish **5820 rows / 5816 unique type/ID pairs**,
-including **631 POIs**. Kloten postal centre, Säntis POI, Gotthardpass and
+including **631 POIs**. Kloten postal code 8302, Säntis POI, Gotthardpass and
 Albert-Heim-Hütte SAC are present with provider-declared WGS84/LV95 coordinates
 and heights. Four duplicated station keys have fully identical rows; 86 bare
 IDs occur in multiple types. See the
@@ -80,7 +80,7 @@ were requested: five GETs, no authentication or mass catalogue download.
 | Säntis, alpine summit, AI | 47.249424 / 9.343241 | First five results were other same-name places; summit appeared in the expanded 34-result response. |
 | Gotthardpass, pass, TI | 46.559311 / 8.561156 | Two differently named results shared coordinates. |
 | Albert-Heim-Hütte SAC, building, UR | 46.608932 / 8.463569 | Two nearby building results; name alone was insufficient. |
-| 8302 Kloten, postcode | 47.458755 / 8.582091 | Unambiguous control; postcode centre is not automatically HA's home location. |
+| 8302 Kloten, postcode | 47.458755 / 8.582091 | Unambiguous control; coordinates for a postal code are not automatically HA's home location. |
 
 Do not auto-select the first result. Show category, canton/municipality and
 verified altitude where available, then let users choose. Bound/debounce

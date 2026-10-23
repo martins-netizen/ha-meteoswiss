@@ -45,6 +45,14 @@ from .pollen_meteoswiss import (
 from .pollen_openmeteo import OpenMeteoPollenClient, OpenMeteoPollenError
 from .pollen_openmeteo import _has_current_values as _pollen_has_current_values
 from .pollen_openmeteo import _is_current_hour as _pollen_is_current_hour
+from .precipitation import HOURLY_UPDATE_INTERVAL, MeteoSwissHourlyPrecipitationClient
+from .precipitation_recorder import (
+    HourlyPrecipitationDataMissing,
+    HourlyPrecipitationMetadataError,
+    HourlyPrecipitationQueueError,
+    HourlyPrecipitationURLsMissing,
+    MeteoSwissPrecipitationImporter,
+)
 from .retry import async_retry_with_backoff
 from .weather_data import parse_reference_timestamp as _parse_reference_timestamp
 from .weather_data import validate_observation_time
@@ -856,3 +864,54 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self._log_uv_availability(data["uv_available"])
         cache.set(cache_key, data, ttl=1800.0)
         return data
+
+
+class MeteoSwissHourlyPrecipitationCoordinator(DataUpdateCoordinator[dict[str, Any]]):
+    """Schedule official hourly/archive imports and translate failures for HA."""
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        station_id: str,
+        session: aiohttp.ClientSession,
+        *,
+        asset_periods: tuple[str, ...] = ("now",),
+        update_interval: timedelta = HOURLY_UPDATE_INTERVAL,
+        lookback_months: int | None = None,
+    ) -> None:
+        """Initialize the hourly precipitation coordinator."""
+        self.station_id = station_id.lower()
+        self._session = session
+        self._asset_periods = asset_periods
+        self._lookback_months = lookback_months
+        self.client = MeteoSwissHourlyPrecipitationClient(
+            station_id, session, asset_periods=asset_periods
+        )
+        self.importer = MeteoSwissPrecipitationImporter(
+            hass,
+            self.client,
+            asset_periods=asset_periods,
+            lookback_months=lookback_months,
+        )
+        self.statistic_id = self.importer.statistic_id
+        super().__init__(
+            hass,
+            _LOGGER,
+            name=f"{DOMAIN}_hourly_precipitation_{'_'.join(asset_periods)}",
+            update_interval=update_interval,
+        )
+
+    async def _async_update_data(self) -> dict[str, Any]:
+        """Keep each former failure category and HA availability message."""
+        try:
+            return await self.importer.async_import()
+        except HourlyPrecipitationMetadataError:
+            raise UpdateFailed("Hourly precipitation metadata unavailable") from None
+        except HourlyPrecipitationURLsMissing:
+            raise UpdateFailed("Could not find hourly precipitation URLs") from None
+        except HourlyPrecipitationDataMissing:
+            raise UpdateFailed("No valid hourly precipitation data") from None
+        except HourlyPrecipitationQueueError:
+            raise UpdateFailed(
+                "Could not queue hourly precipitation statistics"
+            ) from None

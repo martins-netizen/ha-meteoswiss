@@ -1,6 +1,6 @@
 # Local forecast points: separate catalogue and forecast decisions
 
-**Plan version:** 1.3 · **Updated:** 23 October 2026
+**Plan version:** 1.4 · **Updated:** 23 October 2026
 **Status:** Catalogue-based location/POI implementation approved for the next feature release; dated catalogue audit retained, runtime implementation remains open.
 No runtime change, new source adapter or HA installation.
 
@@ -58,7 +58,7 @@ Checksum agreement identifies this snapshot; it is not a digital signature.
 | Catalogue category | Rows | Unique type/ID pairs |
 |---|---:|---:|
 | 1 — station | 1118 | 1114 |
-| 2 — postal code centre | 4071 | 4071 |
+| 2 — postal code | 4071 | 4071 |
 | 3 — Point of Interest | 631 | 631 |
 | **Total** | **5820** | **5816** |
 
@@ -80,7 +80,7 @@ types**, independently confirming why identity must include type and ID.
 
 | Name | Category | Type / ID | Height | WGS84 latitude / longitude |
 |---|---|---|---:|---|
-| 8302 Kloten | Postal code centre | `2 / 830200` | 436 m | 47.451253 / 8.579761 |
+| 8302 Kloten | Postal code | `2 / 830200` | 436 m | 47.451253 / 8.579761 |
 | Säntis | Point of Interest | `3 / 711` | 2502 m | 47.249425 / 9.343242 |
 | Gotthardpass | Point of Interest | `3 / 594` | 2107 m | 46.559306 / 8.561156 |
 | Albert-Heim-Hütte SAC | Point of Interest | `3 / 454` | 2542 m | 46.608917 / 8.463553 |
@@ -88,7 +88,7 @@ types**, independently confirming why identity must include type and ID.
 All four intended examples exist; no neighbouring point was substituted.
 The catalogue also contains **Säntis station (1,35), 2501 m** and
 **Zürich/Kloten station (1,59), 426 m**. They are distinct from the POI and
-postal-code examples. Do not confuse Kloten's catalogue centre with the
+postal-code examples. Do not confuse the catalogue coordinates for Kloten postal code 8302 with the
 previous swisstopo search result, observation station or HA home coordinates.
 
 The generic POI category supplies no per-record summit/pass/hut subtype.
@@ -199,9 +199,9 @@ or deleting existing HA entries.
 
 ## Implementation sequence confirmed on 23 October 2026
 
-PR #54 integrates the modelled-pollen/AQ/UV source boundary. The separate
-precipitation source/Recorder boundary is prepared in PR #55. This planning
-branch is reconciled with development after #54; it does not duplicate #55.
+PR #54 integrates the modelled-pollen/AQ/UV source boundary. PR #55 integrates
+the precipitation source/Recorder boundary. This planning branch is reconciled
+with development after both merges; it introduces no additional runtime change.
 The operator explicitly retains location/POI selection in the next feature
 release. Complete these bounded packages before freezing features:
 
@@ -209,7 +209,7 @@ release. Complete these bounded packages before freezing features:
 |---|---|---|
 | Catalogue and location contract | Source-only bounded client/parser; typed identity/provenance and deterministic search over the official point catalogue. | Latin1/semicolon schema, identical/conflicting duplicates, distinct type/ID pairs, accents, ambiguous/empty results, invalid coordinates/heights, size limit, cancellation and private errors. |
 | Forecast-location plumbing | Explicit saved catalogue choice, independent of measurement/warning roles; reuse the existing ICON coordinator/client. | Decide catalogue altitude versus provider grid/downscaling semantics from primary documentation; make request and cache identity agree. Preserve existing HA-home location semantics and IDs until a deliberate change. Test failure/recovery, migration and reload. |
-| HA selection and user guide | Search by four-digit postcode or town/POI name, then confirm a labelled result; matching new-setup and reconfiguration paths, DE/EN/FR/IT help. | Explain forecast purpose before entry. Distinguish station/postal centre/POI and catalogue height. Keep warning postcode separate. Check Kloten, summit, pass and hut in the existing temporary HA. |
+| HA selection and user guide | Search by four-digit postcode or town/POI name, then confirm a labelled result; matching new-setup and reconfiguration paths, DE/EN/FR/IT help. | Explain forecast purpose before entry. Distinguish station/postal code/POI and catalogue height. Keep warning postcode separate. Check Kloten, summit, pass and hut in the existing temporary HA. |
 
 Keep L0's remaining selection/altitude contract work inside the first two
 packages; the 21 October catalogue audit alone is not complete feature
@@ -232,6 +232,7 @@ existing temporary HA; no additional permanent environment is required.
 Full Silver/Gold evidence and HACS default-list submission remain separate
 from this feature plan. Neither is awarded by passing our tests. No release,
 installation, catalogue feature or HACS inclusion is claimed by this PR.
+The HACS metadata addition country: CH is prepared here for the next release.
 
 See the [development plan](NEXT_RELEASE_PLAN.md) and
 [earlier POI evidence](POI_FEASIBILITY.md).

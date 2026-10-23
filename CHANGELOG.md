@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- Split hourly/archive precipitation into a pure source client/parser, explicit
+  Recorder projection/import adapter and the actual HA coordinator in
+  coordinator.py. Preserve hourly/weekly schedules, lookback, ordered corrections,
+  statistics metadata/IDs, partial imports and all four availability errors.
+  Keep source and executor cancellation private and non-queuing. All seven
+  genuine coordinators are canonical; the agreed POI feature remains before
+  release packaging.
+
 - Separate modelled pollen/AQ and optional UV requests into pollen_openmeteo.py,
   composed by the real HA coordinator in coordinator.py. Preserve current-hour
   selection, four-attempt AQ retry, shared 30-minute cache/TTL, zero/partial
