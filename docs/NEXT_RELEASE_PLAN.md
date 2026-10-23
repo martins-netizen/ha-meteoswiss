@@ -1,13 +1,38 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.5 · **Updated:** 21 October 2026
-**Status:** Approved planning; Q1 is documented and the current OGD point catalogue is audited. Full P0 remains open.
+**Plan version:** 1.19 · **Updated:** 23 October 2026
+**Status:** Approved catalogue-based location implementation; dated catalogue audit complete, selection and compatibility acceptance remain open.
 This document does not approve a new feature, installation or release.
+
+## Next feature release: agreed scope on 23 October 2026
+
+The operator explicitly includes both remaining architecture boundaries and
+location/POI selection in the next release. Do not freeze the scope at the
+forecast sensors alone. The sequence is modelled pollen/AQ/UV separation,
+hourly/archive precipitation separation, then official-catalogue location search
+and compatible selection/reconfiguration. The first boundary is integrated in
+PR #54; the second is prepared separately in PR #55. This planning PR does not
+include that unmerged runtime change. POI implementation remains open.
+Only then freeze features, reconcile release documentation, package a reviewed
+candidate and perform focused acceptance in the existing temporary HA.
+
+Use the official MeteoSwiss forecast-point catalogue for postcode/town/POI
+selection, with explicit result choice and coordinate/altitude provenance.
+Keep ICON Seamless as the forecast source and App v3 warnings at a separately
+confirmed warning postcode. Catalogue adoption is not permission to silently
+switch to processed OGD forecasts or infer warning coverage for a mountain POI.
+Existing entries retain their location meaning and identities until an explicit
+change. The proposed version is 8.3.0, initially 8.3.0b1; nothing is published.
+The broader Silver/Gold matrix remains a separate evidence claim, not a new
+unbounded prerequisite for every release step. A next-day release estimate for
+the smaller forecast-only scope no longer applies.
 
 ## Current position
 
 The first beta, its deployed HA 2026.10.2 acceptance and the operator-confirmed
-HACS source switch are complete. A clean first installation remains open.
+HACS source switch are complete. The temporary clean first installation and
+isolated restore were confirmed on 21 October; Beta2 new setup with other
+locations and observations was confirmed on 22 October.
 [Release readiness](RELEASE_READINESS.md) is the current release checklist.
 The historical candidate sequence below does not reopen completed acceptance.
 
@@ -25,8 +50,10 @@ A working App-POI catalogue endpoint is not a prerequisite for that OGD route.
 The 21 October download verifies **5816 unique type/ID pairs**, including
 **631 POIs** and all four comparison places. Four duplicate station pairs are
 fully identical; 86 bare IDs span multiple types. The plan records hashes,
-coordinates, catalogue heights and a proposed result display. Forecast payloads,
-resource cost, actual selection UX and complete P0 acceptance remain open.
+coordinates, catalogue heights and a proposed result display. Catalogue-backed
+selection uses the existing ICON forecast source. Processed OGD forecast
+payload/resource evaluation is a separate future decision; actual selection UX,
+altitude handling and compatibility acceptance remain open for this release.
 Selecting a forecast POI does not establish point-specific warning coverage;
 a separately confirmed warning postcode can remain supported.
 
@@ -85,12 +112,12 @@ accepted runtime.
 
 | Package | Scope | Completion criterion | Dependency |
 |---|---|---|---|
-| R0: release | Exact candidate, paired warning consumers, recovery, runtime and HACS evidence | Evidence and remaining first-install/recovery steps reconciled in RELEASE_READINESS.md | Keep new POIs out of the accepted beta. |
+| R0: release | Exact candidate, paired warning consumers, recovery, runtime and HACS evidence | Completed first-install/restore/Beta2 setup evidence and exact stable packaging reconciled in RELEASE_READINESS.md | Keep new POIs out of the accepted beta. |
 | Q1: Bronze/Silver audit | Every applicable rule with code/test/practice evidence | Complete gap list without blanket “done” claims | Dated audit complete; update evidence as changes land. |
 | S1: close Silver | Source behaviour, lifecycle, module coverage and understandable fields | All applicable Bronze/Silver requirements evidenced; justified exceptions | Q1; small scoped PRs separate from release-only changes. |
 | P0: location feasibility | Official catalogue, identities, point forecasts and explicit warning boundary | Summit/pass/hut plus postcode control; supported data and limits established | Read-only investigation can run independently of R0. |
 | P1: location/UX contract | Shared search, purpose text and compatible location data | Dialog design, data contract and migration cases reviewed | P0; plan Gold reconfiguration consistently. |
-| P2: location feature | Confirmed scope with translations, tests and help | New/existing entries and affected data families accepted | R0, S1 and P1; separate feature release. |
+| P2: location feature | Confirmed scope with translations, tests and help; included in the next feature release | New/existing entries and affected data families accepted | Completed first release, bounded architecture/lifecycle work and P1; full Silver/Gold tier evidence remains separate. |
 | G1: Gold | Reconfiguration, presentation, diagnostics, actionable repairs and docs | Full Gold matrix plus Bronze/Silver evidence | S1 and the shared P1/P2 location contract. |
 
 Planning and bounded source checks can proceed now. Do not mix production
@@ -105,7 +132,7 @@ as the checklist. These work packages do not claim completed compliance.
 
 | Area | Starting evidence / next check |
 |---|---|
-| Bronze prerequisite | Reconcile all twenty rules: module layout, field descriptions, data/options and dependencies. Local HACS brand files are not Core-brands inclusion. |
+| Bronze prerequisite | Reconcile all twenty rules. Unreleased field help/source translations and unused-placeholder cleanup are recorded in the dated follow-up; shared metadata and polling/options migration now have bounded evidence; warning coordinator placement and catalogue diagnostic availability are corrected; measured pollen, alternative current conditions and ICON forecasts now have separate clients/canonical coordinators with a shared timestamp parser; one precipitation source-module placement finding and final UX review remain open. Local HACS brand files are not Core-brands inclusion. |
 | action-exceptions | Justified exemption while no integration actions exist; reassess if introduced. |
 | config-entry-unloading | Retain Recorder/reload/unload tests; check remaining tasks, pollers and listeners by family. |
 | docs-configuration-parameters, docs-installation-parameters | Explain purpose, source and effects; separate forecast, observation, warning and measured-pollen locations. |
@@ -118,15 +145,67 @@ as the checklist. These work packages do not claim completed compliance.
 
 In the original 762-test baseline, combined coverage was 99.0517%, but
 camera.py, hydro.py, slf.py and version.py were at 0%; const.py was 98.51%.
-Review references before deciding whether inactive product placeholders should
-be removed or genuinely implemented/tested. Keep version/manifest/tool
-consistency; do not add meaningless tests or exclusions solely for a percentage.
-Shared-feed avalanche/flood warnings are independent of separate SLF/BAFU placeholders.
+The [22 October follow-up](QUALITY_PROGRESS_2026-10-22.md) removes unused
+camera/hydro/SLF placeholders after checking references and active platforms.
+The later metadata follow-up gives version.py a real diagnostic consumer,
+adds shared entity metadata, and evidences above-95% coverage for every module.
+Keep version/manifest/tool consistency and add no meaningless imports, tests or
+exclusions solely for a percentage. Remaining Bronze prerequisites still need
+rule-specific evidence. Shared-feed avalanche/flood warnings remain
+supported independently of the removed standalone-product placeholders.
 
 No wholesale architectural rewrite is planned. Retain source separation and
-HA-owned sessions. Review repeated entity basics and the
+HA-owned sessions. The shared entity metadata follow-up preserves nine existing
+device/identity contracts. The [coordinator placement review](COORDINATOR_LAYOUT_REVIEW.md)
+now inventories all seven coordinators, moves warnings out of the platform, and
+records one remaining source-module placement finding after the measured-pollen,
+alternative-current, ICON-forecast and modelled-pollen/AQ/UV client extractions
+and shared UTC parser move. The next bounded work separates precipitation
+source parsing, Recorder import and the real HA coordinator. Catalogue diagnostic
+expiry/failure/recovery is implemented and tested separately from source freshness.
+Use the
 [expected module layout](https://contributors.home-assistant.io/core/quality-scale/common-modules/)
 rather than equating central constants with full compliance.
+
+## F1: forecast summary sensors (implemented candidate)
+
+Hourly and daily forecasts are already supplied by the existing weather entity
+through [weather.get_forecasts](https://www.home-assistant.io/integrations/weather/).
+The calculated daily heating-degree-day sensor is also forecast-derived.
+The implemented, unreleased candidate supports today and tomorrow: maximum/
+minimum temperature, native full-day precipitation sum, and the highest hourly
+precipitation probability with its matching interval(s). The
+[forecast sensor guide](FORECAST_SENSORS.md) documents the eight numeric sensors,
+attributes, missing-data behaviour and ordinary-card/automation use.
+
+Temperature extrema and precipitation sums describe the complete target
+calendar day, including elapsed hours today. They remain predictions, not
+observed daily records; today's maximum/minimum may already have occurred.
+Label that distinction in translated help rather than presenting them as
+remaining-day extrema. Never reconstruct a full-day value from only the
+remaining rolling hours when the native daily field is absent.
+
+For today's probability, use the ongoing and upcoming hourly intervals; for
+tomorrow use the complete target local day. Calculate the peak value and its
+time windows from the same valid hourly rows. Do not attach a future time to
+a provider daily maximum that may have occurred in an already elapsed hour.
+[Provider hourly semantics](https://open-meteo.com/en/docs) specify the preceding
+hour: a value timestamped 15:00 applies to 14:00–15:00, not 15:00–16:00.
+Group adjacent tied peak intervals and retain distinct equally high windows.
+A zero peak has no uniquely useful peak time; absent probabilities remain
+unknown. Incomplete interval coverage must be explicit, not a full-day claim.
+
+Keep the probability state numeric in percent and expose timezone-aware peak
+start/end metadata for dashboards to render e.g. “80% between 14:00 and 15:00”.
+Retain all tied windows without replacing numeric states with combined text.
+Reuse the existing ICON coordinator and request; add no duplicate HTTP fetch
+or full forecast-list state attribute. Use Europe/Zurich target dates, source
+and retrieval time. Missing fields are unknown; an unavailable/stale source
+is unavailable. Check local-midnight rollover, changing remaining-day windows,
+23/25-hour DST days and end-of-day interval assignment, entity identity,
+HA-owned listener cleanup and DE/EN/FR/IT names. These cases now have regression
+evidence; the candidate still requires review and separate runtime acceptance.
+Avoid treating changing forecast targets as measured historical totals.
 
 ## P0/P1: location purpose and compatibility
 
@@ -188,12 +267,16 @@ Track all twenty-one Gold rules individually; “existing” still means “veri
 
 ## Security and maintenance
 
-Track shared HTTPS/destination/redirect validation and enforced response-size
-limits, including a future POI catalogue. Keep timeouts, cancellation and
+The first unreleased security follow-up implements shared HTTPS/destination
+validation, redirect refusal and streaming wire/decompressed size limits for all
+active sources. See [scope, real archive sizes and required focused HA acceptance](HTTP_SOURCE_HARDENING.md).
+Any future POI catalogue must adopt an equivalently bounded transport. Keep timeouts, cancellation and
 conservative caching; redact search terms from logs/diagnostics.
-Provide safe CodeQL analysis for external-fork contributions without privileged
-execution of untrusted code. Use separate scoped PRs, not an unreviewed bundle
-inside a running release candidate.
+The separate CI follow-up enables CodeQL analysis for external-fork PRs on the
+unprivileged pull_request event, with job-scoped upload permission and no
+repository secrets supplied to public forks. See the [fork review boundary and
+first-external-run evidence still required](CODEQL_FORK_REVIEW.md). Keep these
+changes separate from runtime release packaging and the later Silver/Gold work.
 
 ## Suggested PR order
 
@@ -213,5 +296,5 @@ validation. Documentation-only merges do not need HA reinstallation.
 
 No second permanent operator HA environment is assumed. Prepare temporary
 isolated first-install/recovery checks; automated HA/Recorder/flow tests already
-supply scoped evidence. The operator's source switch is complete, while a clean
-first-install UI run remains open. Do not actuate production devices for testing.
+supply scoped evidence. The operator's source switch, clean first installation, isolated restore and
+focused Beta2 setup/data run are complete within their documented scope. Do not actuate production devices for testing.

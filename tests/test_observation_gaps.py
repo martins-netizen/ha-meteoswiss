@@ -14,7 +14,7 @@ from custom_components.meteoswiss.const import DOMAIN
 from custom_components.meteoswiss.coordinator import MeteoSwissDataUpdateCoordinator
 from custom_components.meteoswiss.sensor import SENSOR_DESCRIPTIONS, MeteoSwissSensor
 
-CSV_URL = "https://example.invalid/station.csv"
+CSV_URL = "https://data.geo.admin.ch/ch.meteoschweiz.ogd-smn/klo/ogd-smn_klo_t_now.csv"
 HEADER = "station_abbr;reference_timestamp;tre200s0;ure200s0;fu3010z1;rre150z0;htoauts0;wcc006s0\n"
 
 

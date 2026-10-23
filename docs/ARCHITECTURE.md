@@ -36,6 +36,18 @@ when the entity is added and removed with that entity. Configuration validates
 the chosen observation provider with the same coordinator contract, without
 listeners/polling, using HA's shared session and a 30-second total timeout.
 
+## Scalar forecast projections (unreleased)
+
+The eight forecast sensors reuse the existing ICON coordinator; they add no
+HTTP request, cache or independent poller. Pure calculations in
+`forecast_summary.py` select native whole-day temperature/rain fields or complete
+preceding-hour probability intervals. Target dates use Europe/Zurich; UTC hour
+boundaries retain repeated DST intervals. Missing fields yield unknown, while
+failed/stale snapshots yield unavailable. Entity-owned point timers update hour,
+midnight and three-hour retrieval-age boundaries and are cancelled on unload.
+Forecast sensors have no measurement/total state class and retain numeric states
+with bounded peak-window attributes. See [the forecast guide](FORECAST_SENSORS.md).
+
 ## Sources and time
 
 | Data | Source and location | Time semantics |
@@ -119,7 +131,14 @@ are provider buckets and are not claimed to be recalculated 23/25-hour local
 measurement days. Missing aggregates can fall back to available hourly values;
 for today these may cover only the remaining hours.
 
-The ICON forecast client separates transport retries from response validation.
+IconForecastClient in forecast.py separates transport retries from response
+validation; the genuine MeteoSwissForecastCoordinator in coordinator.py composes
+it. The old forecast_coordinator.py module is removed. The client borrows the
+HA-owned session and has no coordinator/cache/scheduler dependency. HA retains
+the same interval, versioned coordinate cache/TTL and five-failure/five-minute
+pause. Missing-session setup errors and cancellation still propagate; other
+source failures have an empty-message IconForecastError with raw context
+suppressed, translated to the existing UpdateFailed message by the coordinator.
 It requires structured hourly/daily objects, list-valued series and nonempty,
 strictly ordered timestamps. The rolling horizon must extend beyond now and
 start no more than one hour ahead, with at least one finite temperature in an
@@ -201,6 +220,16 @@ the five-minute circuit pause. Only transient transports retry (at most four
 attempts); malformed payloads do not retry. HA logs unavailable/recovered
 transitions; client logging suppresses private request URLs and raw HTTP causes.
 Cancellation propagates and the borrowed HA session remains open on close.
+
+OpenMeteoCurrentClient in openmeteo.py owns the request and parsers without an
+HA coordinator or cache. The genuine OpenMeteoDataUpdateCoordinator in
+coordinator.py composes it and owns the acceptance state described above:
+cache lookup/TTL, freshness for both cached and newly fetched data, failure
+counts, circuit pause and weather-code commit. Client source exceptions carry
+no payload/coordinates in their message; the coordinator maps them to the same
+HA UpdateFailed message as before. Setup/config-flow/weather/runtime imports
+use the canonical class; the old mixed module is removed. No compatibility
+wrapper, duplicate implementation, session owner or additional poller is added.
 
 Current precipitation is the amount over the provider's backward-looking
 `current.interval` in seconds, not an hourly total or rate. The precipitation
@@ -294,6 +323,148 @@ See `examples/button-card-warnings.yaml`. Existing local dashboard translations
 stay in place until a separately verified adoption of the common template.
 Do not rename established entities during this change.
 
+## Shared entity metadata (unreleased after 8.2.0)
+
+`entity.py` owns common naming/default attribution and the two repeated weather/
+AQ device definitions. Coordinator entities use the typed shared coordinator
+base; polling diagnostics use its plain-entity counterpart. The bases add no
+lifecycle/update/availability overrides or constructor behaviour. Sources,
+distinct device groups, IDs and source-specific attribution stay with their
+existing owners. Nine family contracts pass on both the previous tree and the
+refactor, alongside the existing registered lifecycle/Recorder tests.
+
+Diagnostics expose the declared component release as `integration_version`,
+separately from the config entry's schema version/minor version. This additive,
+non-private value does not identify a commit or prove a deployment. The version
+module is now exercised by a real consumer. Every integration module must exceed
+95% coverage; existing stricter per-module/flow and aggregate gates remain.
+See the [dated review and remaining boundaries](QUALITY_PROGRESS_2026-10-22.md).
+
+## Setup text and source choices (unreleased after 8.2.0)
+
+Canonical English `strings.json` matches translations/en.json. All DE/EN/FR/IT
+form fields carry their own purpose text; the translation checker enforces
+label/help parity. Native source selection uses translated labels while keeping
+the saved source keys. This introduces no data migration, interval change or
+new Configure field. Field-help/source-choice delivery is exercised through
+HA's real translation loader. See the [quality follow-up](QUALITY_PROGRESS_2026-10-22.md).
+
+## Polling and options migration (unreleased after 8.2.0)
+
+New entries use a developer-selected observation refresh of 600 seconds; no
+polling field is exposed by setup or Configure. MeteoSwiss station data is
+published in ten-minute intervals. Existing source-specific forecast, warning,
+pollen and external-statistics schedules remain independent and unchanged.
+
+Config schema **1.2** moves `update_interval` from `entry.data` to `entry.options`
+when present. An already saved options value wins, preserving the previous
+runtime precedence and exact stored choice. No interval is synthesized when
+neither field exists: runtime falls back to 600 seconds. Existing coordinator
+minimum-interval guards remain intact. This is a compatibility bridge for
+installed choices, not a new user-editable polling feature or a blanket quality
+rule exemption. A future removal of that bridge needs its own migration/review.
+
+Only the polling setting moves. Measured-pollen choice remains in options;
+weather source, station, coordinates and warning postcode remain in data.
+Unknown fields, entry identity/title, entity/device registrations and statistics
+are not rewritten. Future major schemas are rejected without mutation; current
+and newer minor schemas are left intact. Stable 8.2.0 already reads interval
+options before data, so it can still read migrated entries. Its older Configure
+form can still edit that value; a later upgrade keeps the options value.
+
+The new Configure form changes the measured-pollen station only and merges that
+field into existing options, preserving the compatibility interval and other
+saved options. HA's registered listener reloads the existing entry. Regression
+tests exercise this through the real flow manager, entity registry and optional
+Recorder, verifying effective intervals, station changes, IDs and cleanup.
+
+## Shared HTTP boundary (unreleased after 8.2.0)
+
+`http.py` owns destination validation and bounded reads for every active client;
+source adapters retain parsing and their existing retry decorators. It disables
+automatic redirects/decompression and separately bounds wire and inflated bytes.
+The [HTTP contract](HTTP_SOURCE_HARDENING.md) records per-class budgets,
+encoding support, real archive samples and focused HA acceptance still required.
+No source, coordinator lifecycle, entity identity or HA-owned session changes.
+
+## Catalogue diagnostic availability and coordinator placement (unreleased)
+
+The station metadata service keeps its existing 24-hour monotonic deadline,
+five-minute retry suppression, single-flight lock and last-good snapshot. The
+optional station-count entity now reports available only after its own update
+and while the loader reports `current`. The property checks expiry on read;
+there is no extra expiry task or network call. HA writes frontend state on its
+regular/explicit state update. No valid snapshot means a `None` native value,
+not a healthy-looking zero. Stale metadata remains retained, not reclassified as
+fresh or deleted. Recovery uses the same entity ID/device/registry preference.
+
+The safe catalogue status adds a retained `station_count`. This remains
+accessible in the redacted integration diagnostic even when HA hides the extra
+attributes of an unavailable entity; neither getter nor diagnostic download
+starts a metadata fetch. Public station exports remain part of the optional
+entity's retained attributes and do not enter the redacted diagnostic payload.
+Cache statistics observe local counters and are not a provider-health signal.
+
+The warning coordinator definition moves from binary_sensor.py to coordinator.py.
+Setup and typed runtime data import the canonical class directly; the platform
+still imports that same class, preserving its old import path without a second
+implementation. Its complete class AST is unchanged. Logging now uses the
+coordinator module namespace; warning parsing, labels, timing, once-per-outage
+logging, session ownership and cleanup remain covered by source/lifecycle tests.
+The [placement review](COORDINATOR_LAYOUT_REVIEW.md) inventories all seven actual
+coordinators; its current assessment retains one precipitation source-module
+placement finding after the subsequent extractions. No
+blanket common-modules/Silver completion follows from this move.
+
+## Measured pollen client boundary (unreleased)
+
+pollen_meteoswiss.py now contains MeteoSwissPollenClient, its pure CSV parser and
+two payload-free source exceptions, with no HA coordinator/runtime dependency.
+The client borrows its caller's session and keeps the same fixed OGD host,
+bounded CSV read, cp1252 decoding, transient retry budget and station path.
+It returns the existing current/history/source/time payload or signals a
+transport/invalid-data failure. It creates no session, background task, new cache
+or polling schedule. Cancellation and a missing-session setup error propagate.
+
+MeteoSwissPollenCoordinator lives in coordinator.py and composes the client.
+It keeps the old constructor inputs, hourly default and name, translating the
+two source exceptions into the same HA UpdateFailed messages without exposing
+raw error chains. The logger namespace now follows the coordinator module.
+Entity, device and statistics identity are independent of this internal class
+location; persisted configuration needs no migration. Source-facing fixtures
+now address client.parse_csv; HA lifecycle fixtures use the canonical class.
+
+parse_reference_timestamp in weather_data.py supplies the one shared provider
+UTC parser for observations, measured pollen and hourly/archive statistics.
+The previous observation-module private name remains an import alias only.
+The parser bodies and count conversion are AST-equivalent after identifier
+renames; four-hour age, ten-minute future skew, seven species, zero/None
+semantics, units and 24-row history stay unchanged. Direct-client tests verify
+borrowed-session ownership, message-free source errors and cancellation without passing
+an HA runtime/coordinator to the client. This is not a separately packaged library.
+The [placement review](COORDINATOR_LAYOUT_REVIEW.md) records the subsequent
+source extractions; one precipitation placement remains open. Full
+common-modules/Silver evidence remains open.
+
+## Modelled pollen/AQ and UV source boundary (unreleased)
+
+pollen_openmeteo.py defines OpenMeteoPollenClient, pure current-hour/value
+helpers and an empty source error. coordinator.py defines the actual
+OpenMeteoPollenCoordinator, composing that client. The source owns both bounded
+requests, parsing and the existing four-attempt AQ transport retry; it owns no
+HA runtime, session, cache or polling task. A valid AQ response precedes the
+optional UV request. UV failure leaves valid AQ/pollen usable; valid-but-missing
+UV remains unknown. Cancellation and missing-session setup errors propagate.
+
+HA retains the shared coordinate-specific pollen cache and original 1800-second
+TTL, validates cached data against the current UTC hour and valid current
+values, and logs each UV outage/recovery once. UV value/status travel atomically
+with AQ: the old code did not have a separate UV cache. Cache hits cannot renew
+the TTL. Setup/runtime imports and registered lifecycle mocks use the canonical
+class. Existing entity IDs, grouping, options, source parameters and startup/
+unload/reload contracts remain unchanged. Six of seven genuine coordinators
+are canonical; hourly/archive precipitation is the next architecture step.
+
 ## Verification and remaining limits
 
 Tests cover warning failure/recovery, invalid payloads, bounded retries,
@@ -313,5 +484,10 @@ HA test environments plus Hassfest and CodeQL. Passing CI is not a live-house
 acceptance test. The `quality_scale: platinum` claim inherited from upstream is
 removed; no HA quality certification is asserted.
 
-Inactive camera/SLF/hydrology placeholders remain outside the runtime platform
-list. Removing them or adding new providers is a separate scoped change.
+Unreleased development after 8.2.0 removes the unused camera/SLF/hydrology
+placeholders after checking imports, platform registration and repository
+references. No active platform, entity or provider is removed. Flood/avalanche
+warnings remain part of the existing App v3 feed; a separate radar integration
+is unaffected. Adding standalone radar/river/bulletin products would require
+new source contracts, not reinstating unimplemented modules. See the
+[dated quality follow-up](QUALITY_PROGRESS_2026-10-22.md).

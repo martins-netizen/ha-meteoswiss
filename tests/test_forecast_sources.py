@@ -18,10 +18,10 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.meteoswiss.cache import clear_all_caches, get_forecast_cache
 from custom_components.meteoswiss.const import DOMAIN
-from custom_components.meteoswiss.forecast_coordinator import (
-    OPEN_METEO_BASE_URL,
+from custom_components.meteoswiss.coordinator import (
     MeteoSwissForecastCoordinator,
 )
+from custom_components.meteoswiss.forecast import OPEN_METEO_BASE_URL
 
 NOW = datetime(2026, 10, 16, 7, 20, tzinfo=UTC)
 HOUR = int(NOW.replace(minute=0).timestamp())
@@ -190,7 +190,7 @@ async def test_zero_partial_numeric_and_daily_values_keep_their_meaning(
 def test_invalid_individual_values_remain_missing(hass, invalid):
     rows = MeteoSwissForecastCoordinator(
         hass, latitude=47.45, longitude=8.56
-    )._parse_response(payload(temperature_2m=[invalid, 0]))
+    ).client.parse_response(payload(temperature_2m=[invalid, 0]))
     assert rows[0]["temperature"] is None
     assert rows[1]["temperature"] == 0
 
@@ -259,8 +259,8 @@ async def test_cancellation_and_setup_errors_are_not_retried(hass, aioclient_moc
     await source.async_close()
     assert not source._session.closed
     assert source.data_source == "open-meteo"
-    assert source._map_open_meteo_condition(0, is_night=True) == "clear-night"
-    assert source._map_open_meteo_condition(999) is None
+    assert source.client.map_condition(0, is_night=True) == "clear-night"
+    assert source.client.map_condition(999) is None
 
 
 async def test_registered_weather_survives_forecast_failure_and_recovers(
@@ -293,9 +293,9 @@ async def test_registered_weather_survives_forecast_failure_and_recovers(
                 "temperature": 12,
                 "last_update": NOW.isoformat(),
             },
-            "binary_sensor.MeteoSwissAlertsCoordinator": [],
-            "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
-            "pollen_meteoswiss.MeteoSwissPollenCoordinator": {},
+            "coordinator.MeteoSwissAlertsCoordinator": [],
+            "coordinator.OpenMeteoPollenCoordinator": {},
+            "coordinator.MeteoSwissPollenCoordinator": {},
         }.items():
             stack.enter_context(
                 patch(

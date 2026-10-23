@@ -11,7 +11,7 @@ the retired legacy season-HGT entity. This page is the detailed reference.
 |---|---|
 | One value is `unknown` | Does that station/provider supply it? Check measurement time; do not replace a missing value with zero. |
 | A family is `unavailable` | Check the relevant source/Internet connection and a later refresh; weather, warnings and pollen fail independently. |
-| Weather observations work but warnings do not | Check the warning postcode, four digits without the internal `00` suffix, and warning-source status. |
+| Weather observations work but warnings do not | Check the four-digit Swiss warning postcode and warning-source status. |
 | Forecast or AQ describes a different location | For station entries check HA's configured home location; postcode and station do not select the forecast point. |
 | Measured pollen is from another station | Choose the pollen station independently in Configure; it is not selected from the weather station. |
 | A warning card uses an old label or misses Wind/Drought | Review the actual dashboard/automation dictionaries and filters using the migration guide. |
@@ -32,12 +32,32 @@ Use the approved release and the installation/update procedure in the README.
 A prepared development PR is not a tested HACS release. Existing installations
 must retain their config entry, domain, entity unique IDs and statistic IDs.
 
+## Unreleased polling/options follow-up
+
+The setup/options instructions below describe published **8.2.0**. The next
+development flow removes the observation polling field from both dialogs.
+New entries use **600 seconds automatically**. Existing individual intervals
+remain effective after upgrade and after a measured-pollen change. Configure
+then changes only the measured-pollen station; it still does not change weather,
+forecast or warning locations. The dialog explains that refreshes are automatic
+in DE/EN/FR/IT.
+
+Config schema 1.2 retains a stored legacy interval in options, preserving its
+previous precedence over data. Missing values retain the 600-second default;
+other options and IDs remain unchanged. Diagnostics retain config-format and
+active coordinator-interval metadata for troubleshooting. No manual editing of
+HA storage is needed. Stable 8.2.0 can read the migrated interval. This source
+change is not yet a released HACS update or an installed HA change.
+
 ## Add a new entry
 
 1. In **Settings → Devices & services → Add integration**, choose **MeteoSwiss**.
 2. Choose **MeteoSwiss STAC API** for measured Swiss station weather, or
    **Open-Meteo API** for weather at explicit coordinates. Select an update
    interval of at least 600 seconds (default 600).
+   Published Beta2 and stable 8.2.0 require an explicit **Station for
+   measured pollen** from the supported list, independently of the weather
+   location. In the published **8.2.0b1**, choose this later in **Configure**.
 3. For MeteoSwiss, select a weather station and enter the postcode for warnings.
    The postcode does not automatically select or filter the station.
    For Open-Meteo, enter latitude, longitude and the warning postcode.
@@ -58,13 +78,18 @@ checked. Separate warning postcodes intentionally allow separate entries.
 | Postal code | MeteoSwiss weather-warning area, independent of observation station | Required by the setup form |
 | Latitude / longitude | Open-Meteo weather and forecast location | 47.05 / 8.31; finite values in −90…90 / −180…180 |
 | Update interval | Observation polling interval in seconds | 600; minimum 600 |
-| Pollen station | Measured MeteoSwiss pollen station, independently of weather station | PLZ; choose from the supported list |
+| Pollen station | Measured MeteoSwiss pollen station, independently of weather station and forecast location | Explicit choice during Beta2/stable setup; 8.2.0b1 and existing entries without a saved choice fall back to Luzern (PLZ). |
 
 Change the update interval and measured pollen station using the entry's
 **Configure** button. Saving options reloads the entry without recreating it.
 Changing source/location is not offered by this options form. For MeteoSwiss
 entries, weather and pollen forecasts use the HA installation location; station
 coordinates describe observations. For Open-Meteo they use the explicit location.
+
+See the [verified measured-pollen catalogue and availability evidence](POLLEN_STATIONS.md).
+The 15 supported stations have official metadata and hourly assets. A reachable
+but stale measurement file remains unavailable; a temporary data gap does not
+remove a real station or automatically substitute another one.
 
 ## Reading values and using automations
 
@@ -278,6 +303,22 @@ catalogue. `current` means valid cached metadata, `stale` means retained last-go
 metadata after expiry/failure, and `unavailable` means no valid catalogue has
 been loaded. These are catalogue states, not weather measurement freshness.
 Setup still validates the selected station's actual observation source.
+
+**Unreleased after 8.2.0:** the optional stations diagnostic is available only
+with a current, successfully loaded catalogue. An expired/failed catalogue makes
+it unavailable even when last-good station metadata remains in memory. A first
+failed load does not report a healthy zero-station value. A subsequent successful
+refresh restores the existing entity; no new entity or automatic enabling is
+needed. Freshness is checked when the entity is read; HA publishes the changed
+state on its next scheduled or requested state update, without a new timer.
+
+HA omits extra entity attributes while an entity is unavailable. Use the
+integration diagnostic's `station_catalogue` section for `data_status`, retained
+`station_count`, last-success time and sanitized error type. Its count describes
+the retained snapshot, not fresh weather readings. Downloading diagnostics does
+not request station metadata. The local cache-statistics sensor remains usable
+during a provider outage because it describes local counters, not connectivity.
+
 Automatic retries wait five minutes after a failure; retrying setup explicitly
 can try immediately. A repeated cache hit does not renew the download time.
 
@@ -295,3 +336,11 @@ its entities. To uninstall the custom component afterwards, remove it in HACS
 and restart HA. Existing Recorder retention/purging remains governed by HA;
 uninstalling is not an instruction to delete historical statistics or backups.
 Do not use removal/re-addition as an update or troubleshooting procedure.
+
+## Diagnostic version fields (unreleased after 8.2.0)
+
+The diagnostic payload's `integration_version` is the component's declared
+release version. `config_entry.version` and `minor_version` describe the saved
+configuration format; they are not the installed release. Include the release
+version when reporting a problem, and retain the private/redacted reporting
+process. A version value alone does not prove the exact installed commit.

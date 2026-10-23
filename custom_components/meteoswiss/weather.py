@@ -19,12 +19,9 @@ from homeassistant.const import (
     UnitOfTemperature,
 )
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.device_registry import DeviceInfo
-from homeassistant.helpers.update_coordinator import CoordinatorEntity
 from homeassistant.util import dt as dt_util
 
 from .const import (
-    ATTRIBUTION,
     CONF_STATION_NAME,
     DOMAIN,
     SENSOR_HUMIDITY,
@@ -34,9 +31,12 @@ from .const import (
     SENSOR_WIND_DIRECTION,
     SENSOR_WIND_SPEED,
 )
-from .coordinator import MeteoSwissDataUpdateCoordinator
-from .forecast_coordinator import MeteoSwissForecastCoordinator
-from .openmeteo_coordinator import OpenMeteoDataUpdateCoordinator
+from .coordinator import (
+    MeteoSwissDataUpdateCoordinator,
+    MeteoSwissForecastCoordinator,
+    OpenMeteoDataUpdateCoordinator,
+)
+from .entity import MeteoSwissCoordinatorEntity, weather_device_info
 from .runtime_data import MeteoSwissConfigEntry
 from .weather_data import (
     FORECAST_TIME_ZONE,
@@ -118,7 +118,9 @@ async def async_setup_entry(
 
 
 class MeteoSwissWeather(
-    CoordinatorEntity[MeteoSwissDataUpdateCoordinator | OpenMeteoDataUpdateCoordinator],
+    MeteoSwissCoordinatorEntity[
+        MeteoSwissDataUpdateCoordinator | OpenMeteoDataUpdateCoordinator
+    ],
     WeatherEntity,
 ):
     """Observations and independent ICON forecasts for one existing entry."""
@@ -151,16 +153,9 @@ class MeteoSwissWeather(
         super().__init__(coordinator)
         self._entry = entry
         self._forecast_coordinator = forecast_coordinator
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, entry.entry_id)},
-            name=f"MeteoSwiss {station_name}",
-            manufacturer="MeteoSwiss",
-            model="SwissMetNet",
-        )
-        self._attr_has_entity_name = True
+        self._attr_device_info = weather_device_info(entry.entry_id, station_name)
         self._attr_name = None
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_weather"
-        self._attr_attribution = ATTRIBUTION
         self._attr_native_temperature_unit = UnitOfTemperature.CELSIUS
         self._attr_native_pressure_unit = UnitOfPressure.HPA
         self._attr_native_wind_speed_unit = UnitOfSpeed.KILOMETERS_PER_HOUR

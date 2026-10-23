@@ -1,13 +1,131 @@
 # Changelog
 
-## [Unreleased] — documentation
+## [Unreleased]
+
+- Separate modelled pollen/AQ and optional UV requests into pollen_openmeteo.py,
+  composed by the real HA coordinator in coordinator.py. Preserve current-hour
+  selection, four-attempt AQ retry, shared 30-minute cache/TTL, zero/partial
+  values and independent UV availability. Suppress raw source exception chains,
+  propagate cancellation/setup errors and retain all entity/lifecycle contracts.
+  Six of seven coordinators are canonical; precipitation and the agreed POI
+  feature remain next-release work before packaging.
+
+- Add eight numeric forecast sensors for today/tomorrow: native whole-day
+  maximum/minimum temperature and precipitation, plus the highest hourly
+  precipitation probability with every tied time window. Reuse the existing
+  ICON forecast request. Handle missing/incomplete data, source expiry, Swiss
+  midnight/DST and listener cleanup; bundle names in DE/EN/FR/IT. Keep forecast
+  values separate from measured statistics. See docs/FORECAST_SENSORS.md.
+
+- Separate the ICON client into forecast.py and define its actual HA coordinator
+  in coordinator.py. Retain model, retry, cache, schedule and weather contracts.
+  Five of seven actual coordinators now use the canonical module; two placement
+  findings remain.
+
+- Separate the alternative Open-Meteo current-weather client from HA coordination.
+  Keep cache TTL/freshness, failure pause, retries, partial/zero values, session
+  ownership and entity identities. Define the real coordinator in coordinator.py
+  and retain source parsing in openmeteo.py. Three placement gaps remain.
+
+- Remove arbitrary path arguments from the local coverage checker. Read only
+  repository-root coverage.json, reject symbolic links, and preserve every
+  coverage threshold. Use Bash conditional expressions consistently in all
+  three historical release helpers; their embedded publication logic is unchanged.
+
+- Separate the measured-pollen CSV client from its HA coordinator. Keep the
+  canonical coordinator in coordinator.py, with the same schedule, source-error
+  messages, station choice, payload/history and entity identities. Reuse the
+  unchanged UTC reference-time parser from weather_data.py for observations,
+  measured pollen and hourly precipitation, avoiding a circular dependency.
+  The client owns no session and exposes payload-free source errors; HA maps
+  them to its existing unavailable/recovery behaviour. Four placement gaps remained at that step.
+
+- Mark the optional station-catalogue diagnostic unavailable after expiry or a
+  failed refresh instead of presenting retained metadata as current. Preserve
+  last-good metadata, expose its count/status in redacted diagnostics without
+  network access, and recover on a successful refresh. Keep identity and
+  registry preferences unchanged. Move the warning coordinator out of the
+  binary-sensor platform into coordinator.py with identical class behaviour.
+  Record the remaining source-coordinator placement gaps explicitly.
+
+- Schedule new observation entries automatically at 600 seconds and remove the
+  polling field from setup/Configure in all four languages. Migrate existing
+  intervals from entry data into options without changing the effective value;
+  existing options take precedence. Preserve hidden legacy/other options when
+  changing the measured-pollen station, together with entry/entity identities.
+  Config schema 1.2 remains readable by stable 8.2.0; no release is implied.
+
+- Share entity naming/attribution and repeated weather/AQ device metadata while
+  retaining all nine family identity, grouping and lifecycle contracts. Report
+  the declared integration version separately from the config-entry format in
+  redacted diagnostics. Enforce above-95% coverage for every integration module
+  while retaining the existing stricter source/flow and aggregate gates.
+
+- Explain every setup/options field in DE/EN/FR/IT, localise the native weather
+  source selector, and keep canonical English strings in sync. Clarify the
+  independent observation, forecast, warning and measured-pollen locations;
+  retain saved source keys, intervals and existing-entry behaviour.
+
+- Remove unused camera/hydrology/SLF placeholders after checking imports and
+  active platforms. Keep all active entities, the shared flood/avalanche warning
+  feed and separately installed radar integrations unchanged.
+
+- Analyze external-fork pull requests with the unprivileged CodeQL PR workflow;
+  restrict upload permission to its analysis job and document actual-run checks
+  for the first external contribution. Preserve pinned actions and branch rules.
+
+- Bound every active HTTP source by its own HTTPS destination, refuse redirects,
+  and enforce streaming wire/decompressed limits. Preserve official decade
+  precipitation archives with a separate budget and retain source/identity/
+  availability contracts. See [source hardening](docs/HTTP_SOURCE_HARDENING.md).
+
+## [8.2.0] — first stable maintained-fork release
+
+Published on **22 October 2026 at 08:52:40 Europe/Zurich**, immutable tag at
+`5a0bf684eb44fd54c4e91d7cbce9e90798b72fa5`. See
+[release notes](docs/RELEASE_8.2.0.md) and [current readiness](docs/RELEASE_READINESS.md).
+
+- Promote the operator-tested Beta2 component code without functional changes;
+  only manifest/module versions become 8.2.0. Preserve HACS branch hiding,
+  workflows and both immutable beta tags.
+- Record the completed Beta2 new-setup/data check alongside the completed
+  Beta1 runtime, HACS first installation and isolated restore evidence.
+- Reconcile README/setup/migration, exact evidence and known security/quality
+  limits. Keep POI, Silver/Gold and independent usability work separate.
+- Derive guarded stable publisher V1.2 from Beta Publisher V1.1: read-only
+  --check, exact approved protected merge, unchanged source/HACS/workflows,
+  both beta tags and successful GitHub Actions checks; no HA access.
+
+## [8.2.0b2] — pollen setup test candidate
+
+Published on 22 October 2026 at 07:12:40 Europe/Zurich. See
+[beta notes and acceptance](docs/RELEASE_8.2.0b2.md).
+
+### Changed
+
+- Require an explicit measured-pollen station during initial setup for both
+  weather sources. Save it in the same options used by Configure, retain it
+  across weather-source retries, and explain the independent measurement and
+  forecast locations in DE/EN/FR/IT. Existing entries retain their settings;
+  the legacy Luzern fallback is unchanged. This change is not in 8.2.0b1.
+- Verify the measured-pollen choices against official station metadata and
+  hourly STAC assets. Remove unsupported BLR, retain the 15 verified stations
+  even during temporary data gaps, and document the real Zürich/current and
+  Luzern/stale samples with offline regressions.
+- Keep postcode guidance focused on the four-digit Swiss postal code in all
+  four UI languages; remove the unnecessary internal App-code explanation.
+- Hide default-branch downloads in the candidate HACS manifest, without
+  changing the immutable first beta tag. Add guarded publisher V1.1 for the
+  version-only package and the focused HA onboarding check.
+
+### Documentation
 
 - Maintain GitHub project documentation in English, including setup, migration,
   acceptance, quality reviews and development plans. Keep multilingual HA UI
   catalogues and quoted source evidence unchanged. Old guide paths redirect
   to their canonical English replacements.
 - Reconcile completed beta publication and the operator-confirmed HACS source
-  switch with the still-open clean first-install/recovery work. Track stable
+  switch, clean first installation and recovery rehearsal. Track stable
   release gates separately from later POI/OGD and Silver/Gold development.
 - Clarify that official rainfall source timestamps mark interval ends while
   HA statistic records use interval starts in UTC.
@@ -33,7 +151,8 @@ a branch or tag alone is not a completed release. See the
 - At publication, clean first HACS installation and a source-switch rehearsal
   were not complete. The operator subsequently confirmed the HACS 2.0.5 switch,
   download, restart and initial visual success on 20 October. A clean first
-  install remains open; see [current evidence](docs/HACS_ACCEPTANCE.md).
+  installation and isolated restore were subsequently confirmed on 21 October;
+  see [current evidence and remaining setup finding](docs/HACS_ACCEPTANCE.md).
   No default-store listing or official HA tier is claimed.
 - Add a guarded Mac publication helper. It checks the exact protected
   branch commit, unchanged accepted runtime/workflows, versions, CI and

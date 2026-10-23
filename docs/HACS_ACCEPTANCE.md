@@ -1,14 +1,18 @@
-# HACS acceptance of the first beta
+# HACS acceptance of the maintained fork
 
-**Updated: 21 October 2026 · Plan and evidence V1.3**
+**Updated: 22 October 2026 · Plan and evidence V1.7**
 
-Beta **8.2.0b1** is public. Its component files match the runtime already
-accepted on HA 2026.10.2. The operator has confirmed the HACS 2.0.5 source switch,
-download, restart and positive initial visual check. A clean first installation
-remains open. The same runtime does not need another full observation window.
+Both betas are public. Beta1's deployed runtime, the HACS 2.0.5 source switch,
+temporary clean first installation and isolated backup restore are complete.
+Beta2 added the explicit initial pollen choice; on 22 October the operator
+completed new setup with other geographic locations and reported values.
+This closes the focused practical setup/data check, with the evidence limits
+below. Stable **8.2.0** was published on 22 October at **08:52:40 Europe/Zurich**.
+Its actual HACS visibility/download on the operator's instances is still to be confirmed.
 
-[Release readiness](RELEASE_READINESS.md) separates remaining stable-release
-work from later location/POI features.
+[Release readiness](RELEASE_READINESS.md) tracks the exact stable candidate.
+The protocols below describe acceptance methods, not requests to repeat
+completed tests. An independent newcomer review remains separate.
 
 ## 1. Inspect before changing anything
 
@@ -21,8 +25,8 @@ The following precheck does not remove/download software or restart HA.
 3. If it already points to **martins-netizen/ha-meteoswiss**, select
    **Update information**. This refreshes metadata without downloading components.
 4. Open **Download** or **Redownload**, expand **Need a different version?** and
-   select **8.2.0b1** under **Release**. Check the announced version, then
-   **Cancel** for this precheck. Older HACS versions may need beta visibility.
+   select the published stable **8.2.0** under **Release**. Check the version, then
+   **Cancel** for this precheck. Stable 8.2.0 does not require beta visibility.
 5. If the entry points to **LNKtwo/ha-meteoswiss**, retain it during this
    precheck. Confirm provenance, backup and recovery before following
    [migration](MIGRATION.md). Two repositories must not unknowingly manage the
@@ -36,7 +40,7 @@ device or access details. A GitHub release alone does not prove local HACS visib
 
 | Check | Suitable environment | Evidence required |
 |---|---|---|
-| Clean first installation | Temporary empty HA instance with HACS and no production device control | Add the repository as Integration; explicitly download 8.2.0b1; restart; configure MeteoSwiss once; check station, warning postcode and initial data. |
+| Clean first installation | Temporary empty HA instance with HACS and no production device control | Add the repository as Integration; explicitly download the intended published release; restart; configure MeteoSwiss once; check station, warning postcode and initial data. |
 | Source switch | Temporary instance with existing MeteoSwiss, or a separately planned production switch after precheck/recovery preparation | Replace the HACS software source while retaining the HA entry; compare target version/files and continued IDs, settings and statistics. |
 
 No second permanent HA installation is required. An existing configured
@@ -72,31 +76,49 @@ software and its corresponding warning filters together.
 
 | Evidence | State |
 |---|---|
+| Stable release and resolved tag | Independently confirmed: 8.2.0 → 5a0bf684eb44fd54c4e91d7cbce9e90798b72fa5, published 22 October at 08:52:40 Europe/Zurich; GitHub latest-stable endpoint agrees. |
+| Stable 8.2.0 visible/downloaded in local HACS | Not yet reported. Refresh this fork's metadata and check the offered release; do not infer download or HA installation from GitHub publication. |
 | Public prerelease and resolved tag | Confirmed: 8.2.0b1 → abbb6b7701134ac2573f35b425ab3f0697a80540. |
 | HA 2026.10.2 runtime, 24 hours and visual acceptance | Complete; publication contains the same 33 component/translation/brand files. |
 | HACS version and original source | Operator confirmed HACS 2.0.5 and LNKtwo/ha-meteoswiss. |
 | 8.2.0b1 selectable and actually downloaded in HACS | Operator confirmed on 20 October 2026. |
 | Active source and restart | Operator confirmation at 19:57 Europe/Zurich on 20 October: martins-netizen/ha-meteoswiss, downloaded 8.2.0b1, HA restarted. |
 | Initial post-switch visual check | Positive operator report at 19:56 Europe/Zurich on 20 October. |
-| Clean first HACS installation | Open. |
+| Clean first HACS installation | Operator-confirmed on 21 October: temporary HA 2026.10.2 / HACS 2.0.5, downloaded 8.2.0b1, restart, new STAC entry, 600 seconds, KLO and warning postcode 8302; observations appeared immediately. |
+| Isolated backup restoration | Operator-confirmed on 21 October: after changing the interval to 900 seconds and restoring the backup, the saved 600 seconds returned. This confirms the reported configuration recovery, not a separately collected file/registry comparison. |
+| Measured-pollen comparison | After choosing a station in Configure, the operator reported the same measurements as on production. The exact station identifier was not separately supplied. |
+| Initial pollen-station choice | Added in published Beta2 for both source paths. On 22 October the operator completed setup with other geographic locations and reported values. Exact additional paths/stations were not separately supplied; automated tests cover both paths and persistence. |
+| Pollen station identities and live files | On 21 October, 15 choices matched official metadata and hourly assets; all 15 URLs returned HTTP 200. Twelve feeds were current, three stale, including Luzern. Unsupported BLR is removed in Beta2; dated evidence and offline regressions are in [POLLEN_STATIONS.md](POLLEN_STATIONS.md). |
+| Beta2 UI and retained options | Screenshot shows 8.2.0b2, 600 seconds and Zürich (PZH) in the temporary HA instance. This is not a new source-hash or all-entities comparison. |
+| Beta2 public tag | Confirmed: 8.2.0b2 → 80bf9195ecc3d42d9e4d1beb4ce8143e2c2df2c8, published 22 October 2026 at 07:12:40 Europe/Zurich. |
 | New independent post-switch live file/ID/statistics comparison | Not collected; earlier technical runtime acceptance remains valid within its original scope. |
-| Default branch reliably hidden in version selection | Not guaranteed for 8.2.0b1; its hacs.json does not contain hide_default_branch. |
-| HACS default listing or official HA quality tier | Not applied for or confirmed. |
+| Default branch hidden | Beta2/stable manifests set hide_default_branch=true. Its practical UI result was not separately reported; immutable Beta1 lacks that flag and is unchanged. |
+| HACS default listing or official HA quality tier | On 22 October the maintained fork was absent from the current [default integration catalogue](https://github.com/hacs/default/blob/master/integration). New users therefore add it as a custom repository; users who already added it skip that step. Neither default inclusion nor an official HA tier is claimed. |
 
 The written operator confirmation proves reported source, downloaded version
 and restart; the preceding report confirms initial visual success. Submitted
 images could not be independently read in that session and are not presented
 as separately verified visual evidence. No new hashes, registry counts,
-statistic identity comparisons or executed rollback are inferred.
+statistic identity comparisons are inferred. The later clean-install and restore
+reports above are separate evidence from that original source-switch report.
+
+The isolated restore selection included **Home Assistant → Settings and
+history**. A custom integration is part of that HA configuration, not a separate
+app in the restore list. **Get HACS 1.3.1** is the installer app and must not be
+confused with the HACS integration version **2.0.5**. No production restore or
+full comparison of all restored entities is claimed.
 
 HACS 2.0.5 source inspection additionally established the UI route: an
 uninstalled entry's bottom-right Download button opens the download dialog.
 Adding a custom repository is not a download. Both are distinct from the HA
 integration entry under **Devices & services**.
 
-The immutable beta tag remains unchanged. Future branch hiding must be checked
-with the corresponding released manifest. The still-open first-install test
-does not require repeating the completed source switch or 24-hour runtime test.
+Both immutable beta tags remain unchanged. The completed first-install, restore
+and Beta2 setup checks are not reopened by a documentation/version-only change.
+A successful complete setup demonstrates the required picker path; it does not
+independently prove every source/station change. Do not delete production entries
+for these tests. Existing-entry Configure edits interval/pollen only; a new-entry
+flow continues to the weather-station/postcode step.
 
 ## References
 

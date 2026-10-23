@@ -1,7 +1,7 @@
 # Local forecast points: separate catalogue and forecast decisions
 
-**Plan version:** 1.2 · **Updated:** 21 October 2026
-**Status:** Current catalogue independently downloaded and audited; implementation remains planned.
+**Plan version:** 1.3 · **Updated:** 23 October 2026
+**Status:** Catalogue-based location/POI implementation approved for the next feature release; dated catalogue audit retained, runtime implementation remains open.
 No runtime change, new source adapter or HA installation.
 
 ## Decision and purpose
@@ -133,7 +133,10 @@ and removed points.
 identity/coordinate contracts are settled and the result-selection prototype is
 understandable. A working App catalogue endpoint is not another prerequisite.
 
-## L1: measure processed forecast cost and semantics
+## L1: optional future processed-forecast evaluation
+
+This is not a prerequisite for the approved catalogue-plus-ICON location
+feature. Evaluate it only for a separately agreed forecast-source change.
 
 Download catalogue metadata first, then only the parameters needed for a bounded
 comparison. Filter the chosen point while parsing instead of retaining the full
@@ -185,19 +188,50 @@ limits. Validate the documented Latin1/semicolon CSV contract; execute no data.
 Logs/diagnostics exclude private searches, coordinate URLs and full payloads.
 Provide correct source attribution.
 
-**Implement only after the source decision:** use small regular PRs for
-catalogue/typed data, translated selection and any forecast adapter. Include
+**The initial source decision is settled:** use official catalogue coordinates
+with the existing MeteoSwiss ICON Seamless forecast via Open-Meteo. Use small
+regular PRs for catalogue/typed data, translated selection and compatible
+forecast-location plumbing. Include
 DE/EN/FR/IT and meaningful failure, duplicate, missing-height, time, cache,
 migration and unload tests. Check HA forecast consumers and existing
 automations separately. Do not explore the catalogue by changing production
 or deleting existing HA entries.
 
+## Implementation sequence confirmed on 23 October 2026
+
+PR #54 integrates the modelled-pollen/AQ/UV source boundary. The separate
+precipitation source/Recorder boundary is prepared in PR #55. This planning
+branch is reconciled with development after #54; it does not duplicate #55.
+The operator explicitly retains location/POI selection in the next feature
+release. Complete these bounded packages before freezing features:
+
+| Package | Deliverable | Evidence required before completion |
+|---|---|---|
+| Catalogue and location contract | Source-only bounded client/parser; typed identity/provenance and deterministic search over the official point catalogue. | Latin1/semicolon schema, identical/conflicting duplicates, distinct type/ID pairs, accents, ambiguous/empty results, invalid coordinates/heights, size limit, cancellation and private errors. |
+| Forecast-location plumbing | Explicit saved catalogue choice, independent of measurement/warning roles; reuse the existing ICON coordinator/client. | Decide catalogue altitude versus provider grid/downscaling semantics from primary documentation; make request and cache identity agree. Preserve existing HA-home location semantics and IDs until a deliberate change. Test failure/recovery, migration and reload. |
+| HA selection and user guide | Search by four-digit postcode or town/POI name, then confirm a labelled result; matching new-setup and reconfiguration paths, DE/EN/FR/IT help. | Explain forecast purpose before entry. Distinguish station/postal centre/POI and catalogue height. Keep warning postcode separate. Check Kloten, summit, pass and hut in the existing temporary HA. |
+
+Keep L0's remaining selection/altitude contract work inside the first two
+packages; the 21 October catalogue audit alone is not complete feature
+acceptance. No live catalogue re-download is claimed by this plan update.
+Persist confirmed coordinates/provenance so a temporary catalogue failure
+does not move a selected location or make valid forecasts unavailable.
+Never label a generic POI as a verified summit/pass/hut subtype solely from
+its name. The practical walkthrough must make the different location roles
+understandable without explaining internal provider IDs to the user.
+
 ## Scope boundaries
 
-Silver/Gold work remains independent. This plan does not change beta 8.2.0b1,
-its runtime acceptance or the confirmed HACS switch. The clean first-install
-test remains separately open; the operator need not provide another permanent
-HA environment.
+Stable 8.2.0 was published on 22 October and its HACS update was confirmed by
+the operator; the particular instance was not explicitly identified. Clean
+first installation and isolated restore were confirmed on 21 October, and
+Beta2 setup with other locations on 22 October. Do not reopen those completed
+checks. The new location feature needs its own focused acceptance in the
+existing temporary HA; no additional permanent environment is required.
+
+Full Silver/Gold evidence and HACS default-list submission remain separate
+from this feature plan. Neither is awarded by passing our tests. No release,
+installation, catalogue feature or HACS inclusion is claimed by this PR.
 
 See the [development plan](NEXT_RELEASE_PLAN.md) and
 [earlier POI evidence](POI_FEASIBILITY.md).

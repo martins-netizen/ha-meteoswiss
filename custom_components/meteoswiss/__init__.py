@@ -21,13 +21,18 @@ from .const import (
     DATA_SOURCE_METEOSWISS,
     DATA_SOURCE_OPENMETEO,
     DEFAULT_POLLEN_STATION,
+    DEFAULT_UPDATE_INTERVAL_SEC,
     DOMAIN,
 )
-from .coordinator import MeteoSwissDataUpdateCoordinator
-from .forecast_coordinator import MeteoSwissForecastCoordinator
+from .coordinator import (
+    MeteoSwissAlertsCoordinator,
+    MeteoSwissDataUpdateCoordinator,
+    MeteoSwissForecastCoordinator,
+    MeteoSwissPollenCoordinator,
+    OpenMeteoDataUpdateCoordinator,
+    OpenMeteoPollenCoordinator,
+)
 from .localization import async_load_warning_labels
-from .openmeteo_coordinator import OpenMeteoDataUpdateCoordinator
-from .pollen_meteoswiss import MeteoSwissPollenCoordinator
 from .precipitation import (
     ARCHIVE_LOOKBACK_MONTHS,
     ARCHIVE_UPDATE_INTERVAL,
@@ -95,7 +100,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
 
     # Create coordinator based on data source
     update_interval = entry.options.get(
-        CONF_UPDATE_INTERVAL, entry.data.get(CONF_UPDATE_INTERVAL, 600)
+        CONF_UPDATE_INTERVAL,
+        entry.data.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL_SEC),
     )
     data_source = entry.data.get(CONF_DATA_SOURCE, DATA_SOURCE_METEOSWISS)
     station_id = entry.data.get(CONF_STATION_ID)
@@ -172,8 +178,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
     alerts_api = MeteoSwissAlertsAPI(session=shared_session)
     alerts_api.postal_code = post_code
 
-    from .binary_sensor import MeteoSwissAlertsCoordinator
-
     alerts_coordinator = MeteoSwissAlertsCoordinator(
         hass,
         alerts_api=alerts_api,
@@ -182,7 +186,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
     )
 
     # Create pollen API and coordinator (using Open-Meteo Air Quality API)
-    from .pollen_coordinator_openmeteo import OpenMeteoPollenCoordinator
 
     # Location-based pollen forecast follows the same coordinates as weather.
     pollen_coordinator = OpenMeteoPollenCoordinator(
@@ -243,6 +246,27 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
     # Update listeners for reload
     entry.async_on_unload(entry.add_update_listener(async_reload_entry))
 
+    return True
+
+
+async def async_migrate_entry(
+    hass: HomeAssistant, entry: MeteoSwissConfigEntry
+) -> bool:
+    """Move the legacy polling setting to options without changing its value.
+
+    Schema 1.2 remains readable by 8.2.0: its runtime already prefers options.
+    New entries need no saved interval and use the developer-selected default.
+    """
+    if entry.version != 1:
+        return False
+    if entry.minor_version < 2:
+        data = dict(entry.data)
+        options = dict(entry.options)
+        if CONF_UPDATE_INTERVAL in data:
+            options.setdefault(CONF_UPDATE_INTERVAL, data.pop(CONF_UPDATE_INTERVAL))
+        hass.config_entries.async_update_entry(
+            entry, data=data, options=options, minor_version=2
+        )
     return True
 
 

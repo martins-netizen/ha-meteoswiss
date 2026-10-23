@@ -12,6 +12,11 @@ from homeassistant.config_entries import ConfigFlow, OptionsFlow
 from homeassistant.core import callback
 from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.selector import (
+    SelectSelector,
+    SelectSelectorConfig,
+    SelectSelectorMode,
+)
 
 from .const import (
     CONF_DATA_SOURCE,
@@ -21,18 +26,15 @@ from .const import (
     CONF_POSTAL_CODE,
     CONF_STATION_ID,
     CONF_STATION_NAME,
-    CONF_UPDATE_INTERVAL,
     DATA_SOURCE_METEOSWISS,
     DATA_SOURCE_OPENMETEO,
     DEFAULT_API_TIMEOUT,
     DEFAULT_POLLEN_STATION,
     DEFAULT_UPDATE_INTERVAL_SEC,
     DOMAIN,
-    MIN_UPDATE_INTERVAL,
     POLLEN_STATIONS,
 )
-from .coordinator import MeteoSwissDataUpdateCoordinator
-from .openmeteo_coordinator import OpenMeteoDataUpdateCoordinator
+from .coordinator import MeteoSwissDataUpdateCoordinator, OpenMeteoDataUpdateCoordinator
 from .stations_map import WeatherStation, get_stations_map, parse_station_catalogue
 
 WARNING_POSTCODE = re.compile(r"[1-9][0-9]{3}")
@@ -98,6 +100,7 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
     """Handle public APIs; no account or authentication is needed."""
 
     VERSION = 1
+    MINOR_VERSION = 2
 
     @staticmethod
     @callback
@@ -106,7 +109,7 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
         return MeteoSwissOptionsFlow()
 
     def __init__(self) -> None:
-        self._update_interval = DEFAULT_UPDATE_INTERVAL_SEC
+        self._pollen_station = DEFAULT_POLLEN_STATION
         self._stations: list[dict[str, Any]] = []
 
     async def _load_stations(self) -> list[dict[str, Any]]:
@@ -127,11 +130,15 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
         session = async_get_clientsession(self.hass)
         if station_id is not None:
             coordinator = MeteoSwissDataUpdateCoordinator(
-                self.hass, station_id, self._update_interval, session=session
+                self.hass, station_id, DEFAULT_UPDATE_INTERVAL_SEC, session=session
             )
         else:
             coordinator = OpenMeteoDataUpdateCoordinator(
-                self.hass, latitude, longitude, self._update_interval, session=session
+                self.hass,
+                latitude,
+                longitude,
+                DEFAULT_UPDATE_INTERVAL_SEC,
+                session=session,
             )
         try:
             async with asyncio.timeout(DEFAULT_API_TIMEOUT.total):
@@ -144,31 +151,37 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
-        """Choose a provider and a minimum-ten-minute polling interval."""
+        """Choose weather source and the independent measured-pollen station."""
+        errors = {}
         if user_input is not None:
-            self._update_interval = user_input.get(
-                CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL_SEC
-            )
-            if user_input[CONF_DATA_SOURCE] == DATA_SOURCE_OPENMETEO:
-                return await self.async_step_openmeteo()
-            return await self.async_step_meteoswiss()
+            pollen_station = user_input.get(CONF_POLLEN_STATION)
+            if (
+                not isinstance(pollen_station, str)
+                or pollen_station not in POLLEN_STATIONS
+            ):
+                errors[CONF_POLLEN_STATION] = "invalid_pollen_station"
+            else:
+                self._pollen_station = pollen_station
+                if user_input[CONF_DATA_SOURCE] == DATA_SOURCE_OPENMETEO:
+                    return await self.async_step_openmeteo()
+                return await self.async_step_meteoswiss()
         return self.async_show_form(
             step_id="user",
             data_schema=vol.Schema(
                 {
                     vol.Required(
                         CONF_DATA_SOURCE, default=DATA_SOURCE_OPENMETEO
-                    ): vol.In(
-                        {
-                            DATA_SOURCE_OPENMETEO: "Open-Meteo API (Free, Global)",
-                            DATA_SOURCE_METEOSWISS: "MeteoSwiss STAC API (Swiss Stations)",
-                        }
+                    ): SelectSelector(
+                        SelectSelectorConfig(
+                            options=[DATA_SOURCE_OPENMETEO, DATA_SOURCE_METEOSWISS],
+                            translation_key="data_source",
+                            mode=SelectSelectorMode.DROPDOWN,
+                        )
                     ),
-                    vol.Optional(
-                        CONF_UPDATE_INTERVAL, default=DEFAULT_UPDATE_INTERVAL_SEC
-                    ): vol.All(vol.Coerce(int), vol.Range(min=MIN_UPDATE_INTERVAL)),
+                    vol.Required(CONF_POLLEN_STATION): vol.In(POLLEN_STATIONS),
                 }
             ),
+            errors=errors,
         )
 
     async def async_step_meteoswiss(
@@ -212,8 +225,8 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
                         CONF_STATION_NAME: station["name"],
                         CONF_LATITUDE: station["lat"],
                         CONF_LONGITUDE: station["lon"],
-                        CONF_UPDATE_INTERVAL: self._update_interval,
                     },
+                    options={CONF_POLLEN_STATION: self._pollen_station},
                 )
         return self.async_show_form(
             step_id="meteoswiss",
@@ -267,8 +280,8 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
                             CONF_LATITUDE: latitude,
                             CONF_LONGITUDE: longitude,
                             CONF_STATION_NAME: "Open-Meteo",
-                            CONF_UPDATE_INTERVAL: self._update_interval,
                         },
+                        options={CONF_POLLEN_STATION: self._pollen_station},
                     )
                 errors["base"] = "cannot_connect"
         return self.async_show_form(
@@ -291,20 +304,18 @@ class MeteoSwissOptionsFlow(OptionsFlow):
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
         if user_input is not None:
-            return self.async_create_entry(title="", data=user_input)
-        interval = self.config_entry.options.get(
-            CONF_UPDATE_INTERVAL,
-            self.config_entry.data.get(
-                CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL_SEC
-            ),
-        )
+            # The form edits one supported setting. Preserve legacy polling and
+            # other saved options that are deliberately not exposed by this UI.
+            options = dict(self.config_entry.options)
+            options[CONF_POLLEN_STATION] = user_input.get(
+                CONF_POLLEN_STATION,
+                options.get(CONF_POLLEN_STATION, DEFAULT_POLLEN_STATION),
+            )
+            return self.async_create_entry(title="", data=options)
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema(
                 {
-                    vol.Optional(CONF_UPDATE_INTERVAL, default=interval): vol.All(
-                        vol.Coerce(int), vol.Range(min=MIN_UPDATE_INTERVAL)
-                    ),
                     vol.Optional(
                         CONF_POLLEN_STATION,
                         default=self.config_entry.options.get(

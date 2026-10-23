@@ -1,6 +1,26 @@
 # Quality roadmap and evidence
 
-## Latest acceptance update — 20 October 2026
+## Current follow-up — 23 October 2026
+
+Stable 8.2.0 is published, and its HACS update is operator-confirmed. The clean
+first installation/isolated restore and Beta2 setup are complete within their
+[recorded scope](HACS_ACCEPTANCE.md); no new independent runtime comparison
+is inferred from the update confirmation. The dated account below remains
+historical.
+
+Unreleased [shared HTTP hardening](HTTP_SOURCE_HARDENING.md) adds fixed
+per-source destinations and bounded wire/decompressed reads, with preserved
+archive budgets and failure semantics. The transport joins the existing strict
+100% line/branch gates. A focused next-package HA acceptance remains separate;
+this change alone does not close all Bronze/Silver rules. Placeholder cleanup,
+translated field help and shared entity metadata are now documented separately.
+The version metadata's real diagnostic consumer closes its coverage gap; every
+module exceeds 95%, enforced alongside existing stricter gates. Polling/UI
+defaults and the legacy options bridge are now implemented with real
+reload/registry tests. Remaining coordinator placement and the
+location/reconfiguration contract remain on the plan.
+
+## Historical acceptance update — 20 October 2026
 
 The live candidate is `8.2.0b1` at
 `0086b956d44b7144b242c5d5c1881d0b0650e524`. Local verification recorded 786
@@ -51,11 +71,11 @@ requests and the remaining warning/height requirements.
 | Rule | Evidence / applicability |
 |---|---|
 | `action-setup` | Exempt: no integration-specific actions are registered. |
-| `appropriate-polling` | Partial: coordinator intervals are bounded, but `config_flow.py` still exposes the polling interval. Current HA rules require a developer-chosen interval rather than a flow field; legacy values need a deliberate compatibility decision. |
+| `appropriate-polling` | Unreleased setup/Configure no longer exposes polling; new observations use a developer-selected 600 seconds. Schema 1.2 preserves installed intervals as a documented compatibility bridge, with options precedence and existing coordinator minimum guards. Source-specific schedules remain unchanged. This bridge is not a blanket exemption or complete Bronze claim; provider-wide interval review and eventual legacy policy remain explicit. |
 | `brands` | Local `custom_components/meteoswiss/brand/icon.png` (256 px) and `icon@2x.png` (512 px), with reproducible original artwork. Domain retained; no HA/provider logo or official-product claim. See [publication requirements](PUBLISHING.md). Partial for the separate Core rule: the expected `home-assistant/brands/core_integrations/meteoswiss` path returned 404 on 17 October 2026. |
-| `common-modules` | Shared constants, time contract and entity descriptions are centralized. Pending full review of coordinator placement and a common entity base against the current rule; central constants alone do not prove completion. |
+| `common-modules` | Unreleased entity.py centralizes entity/coordinator metadata and the genuinely duplicated weather/AQ device definitions across all nine families. Primary observations retain coordinator.py; typed runtime/source boundaries remain intact. Fixed identity/metadata contracts pass before and after the refactor; Warning coordinator now also lives in coordinator.py, removing setup/runtime dependence on binary_sensor.py. Measured pollen now has a source client and canonical coordinator with the shared UTC parser in weather_data.py. Alternative current conditions and ICON forecasts also have separate source clients and canonical coordinators. Modelled pollen/AQ/UV now also has a source-only client and real canonical coordinator. The bounded placement review inventories one remaining precipitation source-module finding; see the [placement review](COORDINATOR_LAYOUT_REVIEW.md). The full common-modules rule remains partial. |
 | `config-flow-test-coverage` | 100% lines and branches in `config_flow.py`, including options, errors/recovery and legacy/current duplicates; CI enforces it. |
-| `config-flow` | Native user/options flow; no YAML setup. Review per-field purpose/help, selector choice and data/options placement before marking the full rule complete. |
+| `config-flow` | Native user/options flow; no YAML setup. Unreleased development adds DE/EN/FR/IT help for all remaining actual field occurrences, a native translated source selector and canonical English strings.json. HA translation-loader regressions and full flow coverage pass. Schema 1.2 moves only legacy polling data to options without value/identity changes; Configure merges its pollen choice into existing options. Real reload/registry/Recorder regressions cover this. Final selector/UX and remaining prerequisites stay separate; see the dated follow-up. |
 | `dependency-transparency` | Exempt for the current integration: `manifest.json` has no extra Python `requirements`. Public provider/location dependencies are separately documented; that is not the criterion of this rule. |
 | `docs-actions`, `docs-triggers`, `docs-conditions` | Exempt: no integration-specific actions, triggers or conditions. Usage still explains standard HA entity automations and forecast functions. |
 | `docs-high-level-description` | README lists data families, scope and fork provenance. |
@@ -80,12 +100,12 @@ snapshot as having acquired these changes.
 | `action-exceptions` | Exempt: no integration-specific service actions. |
 | `config-entry-unloading` | Native unload/reload; tests verify HA session ownership, replaced runtime state, stable entity IDs and removed observation/forecast listeners. Real-Recorder entry lifecycles cover both providers and remove the listener-backed hourly/archive importers on reload/unload; cancelling optional startup cancels every inflight child refresh. |
 | `docs-configuration-parameters`, `docs-installation-parameters` | Usage includes provider selection, intervals, coordinates, warning postcode and measured pollen station. |
-| `entity-unavailable` | Observations/warnings and both pollen/AQ clients have failure/recovery tests, including registered pollen/AQ entity states. All-empty current pollen/AQ payloads fail; partial responses retain unknown fields. Measured pollen rejects age over four hours or future skew over ten minutes on refresh. Both weather forecast services return empty lists on forecast failure and recover, while valid observations remain available. Alternative Open-Meteo current conditions have registered weather/temperature entity outage and recovery tests; invalid individual measurements stay unknown and an all-empty source fails. Registered weather attributes use native HA properties and unit conversion; forecast subscribers receive fresh/empty/recovered payloads, including through HA WebSocket. The optional UV gap is now fixed: a failed request/shape makes only UV unavailable, a successful response with no valid value stays unknown. Registered failure/cache/recovery tests keep AQ/pollen healthy and preserve UV identity. Catalogue-cache diagnostic semantics still need an explicit contract before marking the entire rule complete. |
+| `entity-unavailable` | Observations/warnings and both pollen/AQ clients have failure/recovery tests, including registered pollen/AQ entity states. All-empty current pollen/AQ payloads fail; partial responses retain unknown fields. Measured pollen rejects age over four hours or future skew over ten minutes on refresh. Both weather forecast services return empty lists on forecast failure and recover, while valid observations remain available. Alternative Open-Meteo current conditions have registered weather/temperature entity outage and recovery tests; invalid individual measurements stay unknown and an all-empty source fails. Registered weather attributes use native HA properties and unit conversion; forecast subscribers receive fresh/empty/recovered payloads, including through HA WebSocket. The optional UV gap is now fixed: a failed request/shape makes only UV unavailable, a successful response with no valid value stays unknown. Registered failure/cache/recovery tests keep AQ/pollen healthy and preserve UV identity. Unreleased catalogue diagnostic now becomes unavailable on expiry/failure while retaining last-good metadata; no-snapshot state is not a healthy zero. Registered HA-state and recovery tests verify it, and safe diagnostic count/status remains accessible without IO. Cache counters remain available as local metrics. This closes the identified catalogue gap; whole-rule and later package acceptance remain separate. |
 | `integration-owner` | `@martins-netizen` in manifest. Repository Issues and private vulnerability reporting are verified enabled on 17 October 2026. Bundled issue forms provide a fork-specific support route. |
 | `log-when-unavailable` | Pollen/AQ, measured pollen and the ICON forecast client use coordinator transition logs. Forecast failures suppress raw coordinate URLs/HTTP exception chains even in debug logs; repeated failure and recovery are tested. The alternative Open-Meteo current client also suppresses coordinate URLs/raw error chains and tests repeated failure and recovery. The station observation client now uses the same once-per-transition logging; selected station IDs, CSV values, asset URLs and expected HTTP error chains stay absent even in debug logs. The separate UV request now has a cached source flag and once-per-outage/recovery logs. Registered tests cover transport, timeout, invalid JSON/shape, cache reuse and private error chains. No complete Silver claim follows from this individual fix. |
 | `parallel-updates` | Explicit platform limits: sensor 1 for diagnostic polling, coordinator-driven weather/binary sensor 0; no device actions. |
 | `reauthentication-flow` | Exempt: the public APIs require no credentials. |
-| `test-coverage` | Pending. [Above 95% for every module](https://developers.home-assistant.io/docs/core/integration-quality-scale/rules/test-coverage/) is required; a passing flow or global average is insufficient. |
+| `test-coverage` | Evidenced for unreleased development: every module exceeds 95%; entity.py/version.py have real consumers and full coverage, const.py is 98.51%, all others 100%. CI enforces the per-module floor plus stricter existing gates; a synthetic low module cannot hide behind the aggregate. Local supported-HA runs pass 967 tests/14 subtests, 99.968% combined. This single rule does not establish full Silver. |
 
 The starting snapshot had 68 passing tests and 54.78% combined line/branch
 coverage (58.50% lines, 40.42% branches). Config flow was 33.79% combined.
@@ -97,9 +117,11 @@ warning-entity, numeric-sensor, pollen-sensor, config-entry setup, retry and sta
 coordinator line/branch coverage. The combined integration floor is 99.0%
 (raised from 98.5%, previously 98%, 95%, 89%, 86%, 80%, 71%, 67% and initially 60%). This
 floor prevents regressions at this stage; it is not a substitute for Silver.
-Unused camera/SLF/hydrology placeholders remain visible in the denominator.
-They must be explicitly removed in a reviewed scope or covered; no exclusions
-are introduced just to improve the metric. Current exact results are in the
+Unreleased development explicitly removes unused camera/SLF/hydrology
+placeholders after a reference/platform review; it does not exclude their
+uncovered lines from an otherwise retained feature. The version module now has a meaningful diagnostic consumer and full coverage.
+All modules exceed 95%; no coverage exclusion or lowered gate is added.
+See [current follow-up evidence](QUALITY_PROGRESS_2026-10-22.md). Current exact results are in the
 PR and each CI job's summary.
 
 Station CSV parsing, zero/non-finite values, sparse fallback, source failures and
@@ -111,7 +133,12 @@ HGT tests cover 12/20 thresholds, season boundaries and missing/invalid entries.
 The alternative current-weather client now has full line/branch coverage: valid
 zero/negative temperatures, invalid individual numbers, optional preview isolation,
 observation freshness, bounded retries, cache TTL, circuit recovery, private logs
-and registered HA entity states are tested on both supported HA versions.
+and registered HA entity states are tested on both supported HA versions. The
+source client now lives in openmeteo.py, composed by the actual coordinator in
+coordinator.py. Request/parser logic is retained; HA still owns cache age/TTL,
+circuit recovery, current-data acceptance and session lifecycle. The independent
+ICON source client is now separated in forecast.py, with its genuine coordinator
+also in coordinator.py. Modelled pollen/AQ/UV now follows the same client/coordinator boundary, preserving the shared AQ/UV cache and independent UV success state. One precipitation source coordinator-placement finding remains; this does not complete common-modules.
 
 The weather entity and shared number/time contract have full line/branch
 coverage. Native observations, HA unit conversion, service responses and actual

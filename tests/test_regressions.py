@@ -21,8 +21,6 @@ from custom_components.meteoswiss.const import (
 )
 from custom_components.meteoswiss.coordinator import (
     MeteoSwissDataUpdateCoordinator,
-)
-from custom_components.meteoswiss.forecast_coordinator import (
     MeteoSwissForecastCoordinator,
 )
 from custom_components.meteoswiss.precipitation import (
@@ -160,7 +158,19 @@ class _FakeResponse:
     async def __aexit__(self, exc_type, exc, tb):
         return False
 
-    async def json(self):
+    headers = {}
+
+    @property
+    def content(self):
+        import io
+        import json
+        from unittest.mock import AsyncMock
+
+        stream = AsyncMock()
+        stream.read.side_effect = io.BytesIO(json.dumps(self.payload()).encode()).read
+        return stream
+
+    def payload(self):
         return {
             "hourly": {
                 "time": ["2026-08-20T12:00"],
@@ -182,7 +192,7 @@ class _FakeSession:
     def __init__(self) -> None:
         self.requested_url: str | None = None
 
-    def get(self, url, timeout=None):
+    def get(self, url, **kwargs):
         self.requested_url = url
         return _FakeResponse()
 
@@ -199,7 +209,7 @@ async def test_forecast_request_uses_rolling_meteoswiss_seamless_model(hass, fre
         session=session,
     )
 
-    forecast = await coordinator._fetch_open_meteo_forecast()
+    forecast = await coordinator.client.async_get_data()
 
     assert forecast
     assert session.requested_url is not None

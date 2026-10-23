@@ -22,9 +22,16 @@ from homeassistant.const import UnitOfPrecipitationDepth
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
-from .const import API_BASE, DEFAULT_API_TIMEOUT, DOMAIN, STAC_COLLECTION
-from .coordinator import _parse_reference_timestamp
+from .const import API_BASE, DOMAIN, STAC_COLLECTION
+from .http import (
+    MAX_ARCHIVE_BYTES,
+    MAX_CSV_BYTES,
+    OGD_HOST,
+    async_get_bytes,
+    async_get_json,
+)
 from .retry import async_retry_with_backoff
+from .weather_data import parse_reference_timestamp
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -93,7 +100,7 @@ def _parse_hourly_statistics(
             and (row.get("station_abbr") or "").strip().lower() != station_id.lower()
         ):
             continue
-        reference = _parse_reference_timestamp(row.get("reference_timestamp", ""))
+        reference = parse_reference_timestamp(row.get("reference_timestamp", ""))
         value = (row.get(PARAM_PRECIPITATION_HOURLY) or "").strip()
         if (
             reference is None
@@ -164,9 +171,7 @@ class MeteoSwissHourlyPrecipitationCoordinator(DataUpdateCoordinator[dict[str, A
     ) -> dict[str, list[str]]:
         """Return the requested station-specific hourly CSV URLs."""
         url = f"{API_BASE}/collections/{STAC_COLLECTION}/items/{self.station_id}"
-        async with self._session.get(url, timeout=DEFAULT_API_TIMEOUT) as response:
-            response.raise_for_status()
-            data = await response.json()
+        data = await async_get_json(self._session, url, host=OGD_HOST)
         if not isinstance(data, dict) or not isinstance(data.get("assets"), dict):
             raise TypeError("Invalid hourly station metadata")
         assets = data["assets"]
@@ -182,9 +187,16 @@ class MeteoSwissHourlyPrecipitationCoordinator(DataUpdateCoordinator[dict[str, A
     @async_retry_with_backoff(max_attempts=4, base_delay=1.0, max_delay=10.0)
     async def _async_download_hourly_csv(self, csv_url: str, period: str) -> str:
         """Retry transient HTTP failures; CSV validation belongs to the importer."""
-        async with self._session.get(csv_url, timeout=DEFAULT_API_TIMEOUT) as response:
-            response.raise_for_status()
-            return await response.text(encoding="cp1252")
+        return (
+            await async_get_bytes(
+                self._session,
+                csv_url,
+                host=OGD_HOST,
+                max_bytes=MAX_ARCHIVE_BYTES
+                if period == "historical"
+                else MAX_CSV_BYTES,
+            )
+        ).decode("cp1252")
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch official hourly totals and queue them for Recorder import."""

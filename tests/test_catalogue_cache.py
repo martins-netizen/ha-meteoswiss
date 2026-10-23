@@ -403,7 +403,7 @@ async def test_station_sensor_reports_availability_and_last_good_catalogue(
     aioclient_mock.clear_requests()
     aioclient_mock.get(STATIONS_METADATA_URL, status=404)
     await sensor.async_update()
-    assert sensor.available
+    assert not sensor.available
     assert sensor.extra_state_attributes["catalogue_status"]["data_status"] == "stale"
     assert sensor.extra_state_attributes["station_count"] == 1
 
@@ -420,3 +420,142 @@ async def test_overall_cache_hit_rate_includes_station_metadata():
     ):
         await sensor.async_update()
     assert sensor.extra_state_attributes["overall_hit_rate"] == 60
+
+
+@pytest.mark.parametrize(
+    "response", [{"status": 404}, {"status": 503}, {"content": b"wrong;header\nx;y"}]
+)
+async def test_cold_catalogue_failure_never_reports_a_healthy_zero(
+    hass, aioclient_mock, response
+):
+    sensor = MeteoSwissStationsMapSensor(MeteoSwissStationsMap())
+    sensor.hass = hass
+    aioclient_mock.get(STATIONS_METADATA_URL, **response)
+    with patch(
+        "custom_components.meteoswiss.retry.asyncio.sleep", new_callable=AsyncMock
+    ):
+        await sensor.async_update()
+    assert not sensor.available
+    assert sensor.native_value is None
+    assert (
+        sensor.extra_state_attributes["catalogue_status"]["data_status"]
+        == "unavailable"
+    )
+    assert sensor.extra_state_attributes["station_count"] == 0
+
+
+@pytest.mark.parametrize(
+    "response", [{"status": 404}, {"status": 503}, {"content": b"wrong;header\nx;y"}]
+)
+async def test_catalogue_sensor_expires_fails_and_recovers_without_losing_metadata(
+    hass, aioclient_mock, metadata_clock, freezer, response
+):
+    loader = MeteoSwissStationsMap()
+    sensor = MeteoSwissStationsMapSensor(loader)
+    sensor.hass = hass
+    aioclient_mock.get(STATIONS_METADATA_URL, content=catalogue())
+    await sensor.async_update()
+    assert sensor.available
+    snapshot = sensor.extra_state_attributes
+    successful = loader.last_successful_update
+    # Expiry is effective even before the next diagnostic polling callback.
+    metadata_clock.return_value += 86400
+    freezer.tick(86400)
+    assert not sensor.available
+    assert sensor.extra_state_attributes["catalogue_status"]["data_status"] == "stale"
+    aioclient_mock.clear_requests()
+    aioclient_mock.get(STATIONS_METADATA_URL, **response)
+    with patch(
+        "custom_components.meteoswiss.retry.asyncio.sleep", new_callable=AsyncMock
+    ):
+        await sensor.async_update()
+    assert not sensor.available
+    assert sensor.extra_state_attributes["station_count"] == 1
+    assert sensor.extra_state_attributes["stations"] == snapshot["stations"]
+    assert sensor.extra_state_attributes["geojson"] == snapshot["geojson"]
+    assert loader.last_successful_update == successful
+    assert (
+        sensor.extra_state_attributes["catalogue_status"]["last_update_success"]
+        is False
+    )
+    metadata_clock.return_value += 300
+    aioclient_mock.clear_requests()
+    aioclient_mock.get(STATIONS_METADATA_URL, content=catalogue("Recovered"))
+    await sensor.async_update()
+    assert sensor.available
+    assert sensor.native_value == "1 stations"
+    assert sensor.extra_state_attributes["catalogue_status"]["data_status"] == "current"
+    assert sensor.extra_state_attributes["catalogue_status"]["last_exception"] is None
+    assert loader.last_successful_update != successful
+
+
+async def test_registered_catalogue_sensor_reports_unavailable_and_recovers(
+    hass, aioclient_mock, metadata_clock, enable_custom_integrations
+):
+    from contextlib import ExitStack
+
+    from homeassistant.components.sensor import DATA_COMPONENT
+    from homeassistant.helpers import entity_registry as er
+    from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+    from custom_components.meteoswiss.const import DOMAIN
+    from custom_components.meteoswiss.diagnostics import (
+        async_get_config_entry_diagnostics,
+    )
+
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        data={
+            "data_source": "openmeteo",
+            "latitude": 0,
+            "longitude": 0,
+            "postal_code": "9997",
+        },
+    )
+    entry.add_to_hass(hass)
+    aioclient_mock.get(STATIONS_METADATA_URL, content=catalogue())
+    with ExitStack() as stack:
+        for target, data in {
+            "coordinator.OpenMeteoDataUpdateCoordinator": {"temperature": 12},
+            "coordinator.MeteoSwissForecastCoordinator": [],
+            "coordinator.MeteoSwissAlertsCoordinator": [],
+            "coordinator.OpenMeteoPollenCoordinator": {},
+            "coordinator.MeteoSwissPollenCoordinator": {},
+        }.items():
+            stack.enter_context(
+                patch(
+                    f"custom_components.meteoswiss.{target}._async_update_data",
+                    return_value=data,
+                )
+            )
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done()
+        registry = er.async_get(hass)
+        entity_id = registry.async_get_entity_id(
+            "sensor", DOMAIN, f"{DOMAIN}_stations_map"
+        )
+        sensor = hass.data[DATA_COMPONENT].get_entity(entity_id)
+        identity = (sensor.unique_id, sensor.device_info)
+        await sensor.async_update_ha_state(force_refresh=True)
+        assert hass.states.get(entity_id).state == "1 stations"
+        metadata_clock.return_value += 86400
+        aioclient_mock.clear_requests()
+        aioclient_mock.get(STATIONS_METADATA_URL, status=404)
+        await sensor.async_update_ha_state(force_refresh=True)
+        assert hass.states.get(entity_id).state == "unavailable"
+        # HA omits extra entity attributes while unavailable. Retained catalogue
+        # evidence remains in the redacted integration diagnostic, without IO.
+        calls = len(aioclient_mock.mock_calls)
+        report = await async_get_config_entry_diagnostics(hass, entry)
+        assert len(aioclient_mock.mock_calls) == calls
+        assert report["station_catalogue"]["data_status"] == "stale"
+        assert report["station_catalogue"]["station_count"] == 1
+        metadata_clock.return_value += 300
+        aioclient_mock.clear_requests()
+        aioclient_mock.get(STATIONS_METADATA_URL, content=catalogue("Recovered"))
+        await sensor.async_update_ha_state(force_refresh=True)
+        assert hass.states.get(entity_id).state == "1 stations"
+        assert sensor.entity_id == entity_id
+        assert (sensor.unique_id, sensor.device_info) == identity
+        assert await hass.config_entries.async_unload(entry.entry_id)
+        await hass.async_block_till_done()

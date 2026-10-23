@@ -16,8 +16,12 @@ from pytest_homeassistant_custom_component.components.recorder.common import (
 
 from custom_components.meteoswiss.const import DOMAIN
 from custom_components.meteoswiss.coordinator import MeteoSwissDataUpdateCoordinator
-from custom_components.meteoswiss.precipitation import MeteoSwissHourlyPrecipitationCoordinator
-from custom_components.meteoswiss.sensor import _remove_legacy_current_hour_precipitation_entity
+from custom_components.meteoswiss.precipitation import (
+    MeteoSwissHourlyPrecipitationCoordinator,
+)
+from custom_components.meteoswiss.sensor import (
+    _remove_legacy_current_hour_precipitation_entity,
+)
 
 NOW = datetime(2026, 10, 18, 10, 35, tzinfo=UTC)
 BASE = "https://data.geo.admin.ch/ch.meteoschweiz.ogd-smn/klo/ogd-smn_klo_"
@@ -66,12 +70,12 @@ async def test_retirement_and_source_labels_preserve_surviving_entities_on_reloa
         for target, data in {
             "coordinator.MeteoSwissDataUpdateCoordinator": {"temperature": 10, "precipitation": 0.3,
                 "last_update": "2026-10-18T10:20:00+00:00", "precipitation_interval_seconds": interval},
-            "openmeteo_coordinator.OpenMeteoDataUpdateCoordinator": {"temperature": 10, "precipitation": 0.3,
+            "coordinator.OpenMeteoDataUpdateCoordinator": {"temperature": 10, "precipitation": 0.3,
                 "last_update": "2026-10-18T10:20:00+00:00", "precipitation_interval_seconds": interval},
-            "forecast_coordinator.MeteoSwissForecastCoordinator": [],
-            "binary_sensor.MeteoSwissAlertsCoordinator": [],
-            "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
-            "pollen_meteoswiss.MeteoSwissPollenCoordinator": {},
+            "coordinator.MeteoSwissForecastCoordinator": [],
+            "coordinator.MeteoSwissAlertsCoordinator": [],
+            "coordinator.OpenMeteoPollenCoordinator": {},
+            "coordinator.MeteoSwissPollenCoordinator": {},
         }.items():
             stack.enter_context(patch(f"custom_components.meteoswiss.{target}._async_update_data", return_value=data))
         assert await hass.config_entries.async_setup(entry.entry_id)

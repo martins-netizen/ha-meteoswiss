@@ -22,10 +22,8 @@ from custom_components.meteoswiss.cache import (
     get_current_weather_cache,
 )
 from custom_components.meteoswiss.const import DATA_SOURCE_OPENMETEO, DOMAIN
-from custom_components.meteoswiss.openmeteo_coordinator import (
-    OPENMETEO_BASE_URL,
-    OpenMeteoDataUpdateCoordinator,
-)
+from custom_components.meteoswiss.coordinator import OpenMeteoDataUpdateCoordinator
+from custom_components.meteoswiss.openmeteo import OPENMETEO_BASE_URL
 
 NOW = datetime(2026, 10, 16, 7, 20, tzinfo=UTC)
 HOUR = int(NOW.replace(minute=0).timestamp())
@@ -101,7 +99,7 @@ async def test_request_units_time_interval_and_session_ownership(hass, aioclient
     "invalid", [None, True, "bad", {}, [], "nan", "inf", -float("inf")]
 )
 async def test_invalid_individual_measurements_do_not_discard_others(hass, invalid):
-    data = coordinator(hass)._parse_response(
+    data = coordinator(hass).client.parse_response(
         payload(
             temperature_2m=invalid,
             relative_humidity_2m=invalid,
@@ -129,7 +127,7 @@ async def test_invalid_individual_measurements_do_not_discard_others(hass, inval
 
 async def test_ranges_and_unknown_conditions_keep_missing_values(hass):
     source = coordinator(hass)
-    data = source._parse_response(
+    data = source.client.parse_response(
         payload(
             temperature_2m="-3.5",
             relative_humidity_2m=101,
@@ -155,16 +153,16 @@ async def test_ranges_and_unknown_conditions_keep_missing_values(hass):
             "weather_condition",
         )
     )
-    assert source.get_weather_condition(None) == "unknown"
-    assert source.get_weather_condition(999) == "unknown"
-    assert source.get_weather_description(999) == "Unknown"
-    assert source.get_weather_condition(63) == "rainy"
+    assert source.client.get_weather_condition(None) == "unknown"
+    assert source.client.get_weather_condition(999) == "unknown"
+    assert source.client.get_weather_description(999) == "Unknown"
+    assert source.client.get_weather_condition(63) == "rainy"
     assert (
-        source._parse_response(payload(is_day="0"))["weather_condition"]
+        source.client.parse_response(payload(is_day="0"))["weather_condition"]
         == "clear-night"
     )
-    assert source._parse_response(payload(is_day=1))["weather_condition"] == "sunny"
-    assert source._parse_response(payload(is_day=None))["weather_condition"] == "sunny"
+    assert source.client.parse_response(payload(is_day=1))["weather_condition"] == "sunny"
+    assert source.client.parse_response(payload(is_day=None))["weather_condition"] == "sunny"
 
 
 @pytest.mark.parametrize(
@@ -293,14 +291,14 @@ async def test_cache_age_original_ttl_and_circuit_recovery(
     ],
 )
 async def test_optional_bad_hourly_data_does_not_hide_current(hass, hourly):
-    data = coordinator(hass)._parse_response({**payload(), "hourly": hourly})
+    data = coordinator(hass).client.parse_response({**payload(), "hourly": hourly})
     assert data["temperature"] == 0
     assert data["hourly_forecast"] == []
 
 
 async def test_hourly_preview_never_falls_back_to_midnight_or_bad_numbers(hass):
     source = coordinator(hass)
-    data = source._parse_response(
+    data = source.client.parse_response(
         {
             **payload(),
             "hourly": {
@@ -322,7 +320,7 @@ async def test_hourly_preview_never_falls_back_to_midnight_or_bad_numbers(hass):
             "condition": "rainy",
         }
     ]
-    missing = source._parse_response(
+    missing = source.client.parse_response(
         {
             **payload(),
             "hourly": {
@@ -339,7 +337,7 @@ async def test_hourly_preview_never_falls_back_to_midnight_or_bad_numbers(hass):
 async def test_non_dict_fetch_cannot_be_cached(hass):
     source = coordinator(hass)
     with (
-        patch.object(source, "_async_fetch_data", return_value=None),
+        patch.object(source.client, "async_get_data", return_value=None),
         pytest.raises(UpdateFailed),
     ):
         await source._async_update_data()
@@ -373,10 +371,10 @@ async def test_registered_entities_fail_and_recover_without_duplicate_logs(
             )
         )
         for target, data in {
-            "forecast_coordinator.MeteoSwissForecastCoordinator": [],
-            "binary_sensor.MeteoSwissAlertsCoordinator": [],
-            "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
-            "pollen_meteoswiss.MeteoSwissPollenCoordinator": {},
+            "coordinator.MeteoSwissForecastCoordinator": [],
+            "coordinator.MeteoSwissAlertsCoordinator": [],
+            "coordinator.OpenMeteoPollenCoordinator": {},
+            "coordinator.MeteoSwissPollenCoordinator": {},
         }.items():
             stack.enter_context(
                 patch(
@@ -453,7 +451,7 @@ async def test_exact_freshness_limits_are_accepted(hass, aioclient_mock, age):
 
 @pytest.mark.parametrize("interval", [None, 0, -900, "nan"])
 async def test_missing_or_invalid_rain_duration_never_assumes_an_hour(hass, interval):
-    data = coordinator(hass)._parse_response(payload(interval=interval))
+    data = coordinator(hass).client.parse_response(payload(interval=interval))
     assert data["precipitation"] == 0.2
     assert data["precipitation_interval_seconds"] is None
 
@@ -462,7 +460,7 @@ async def test_both_autumn_dst_hours_remain_distinct(hass, freezer):
     autumn = datetime(2026, 10, 25, 0, 20, tzinfo=UTC)
     freezer.move_to(autumn)
     first = int(autumn.replace(minute=0).timestamp())
-    rows = coordinator(hass)._parse_response(
+    rows = coordinator(hass).client.parse_response(
         {
             **payload(time=autumn.timestamp()),
             "hourly": {"time": [first, first + 3600], "temperature_2m": [0, -1]},

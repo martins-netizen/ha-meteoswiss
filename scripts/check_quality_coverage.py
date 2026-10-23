@@ -1,7 +1,7 @@
-"""Report every module and enforce the first-stage coverage contract.
+"""Enforce >95% for every module and retain stricter source/flow contracts.
 
-No integration modules or error branches are excluded. This is deliberately
-not a Silver claim: Silver requires above 95% for all integration modules.
+No new module or error-branch exclusions are introduced. A passing coverage
+rule alone does not complete the other Bronze/Silver requirements.
 """
 
 from __future__ import annotations
@@ -11,8 +11,12 @@ import sys
 from pathlib import Path
 
 
-def validate(path: Path) -> None:
-    report = json.loads(path.read_text())
+def validate() -> None:
+    """Read only the standard report generated in this repository."""
+    path = Path(__file__).resolve().parents[1] / "coverage.json"
+    if path.is_symlink():
+        raise SystemExit("coverage.json must not be a symbolic link")
+    report = json.loads(path.read_text(encoding="utf-8"))
     files = report["files"]
     if not report["meta"].get("branch_coverage"):
         raise SystemExit("Branch coverage must be enabled")
@@ -24,9 +28,11 @@ def validate(path: Path) -> None:
             f"| `{Path(name).name}` | {summary['covered_lines']}/{summary['num_statements']} | "
             f"{summary['covered_branches']}/{summary['num_branches']} | {summary['percent_covered']:.2f}% |"
         )
+        if summary["percent_covered"] <= 95.0:
+            raise SystemExit(f"{name} must exceed 95% per-module coverage")
     total = report["totals"]["percent_covered"]
     print(
-        f"\nCombined integration coverage: **{total:.2f}%**. Silver (>95% in all modules) remains pending."
+        f"\nCombined integration coverage: **{total:.2f}%**. All modules exceed 95%; full Silver assessment remains pending."
     )
     flow = files["custom_components/meteoswiss/config_flow.py"]
     if flow["missing_lines"] or flow["missing_branches"]:
@@ -34,15 +40,19 @@ def validate(path: Path) -> None:
     for module in (
         "__init__.py",
         "retry.py",
+        "http.py",
         "coordinator.py",
-        "pollen_coordinator_openmeteo.py",
+        "pollen_openmeteo.py",
         "pollen_meteoswiss.py",
-        "forecast_coordinator.py",
-        "openmeteo_coordinator.py",
+        "forecast.py",
+        "forecast_summary.py",
+        "openmeteo.py",
         "weather.py",
         "weather_data.py",
         "cache.py",
         "diagnostics.py",
+        "entity.py",
+        "version.py",
         "stations_map.py",
         "alerts.py",
         "binary_sensor.py",
@@ -59,4 +69,6 @@ def validate(path: Path) -> None:
 
 
 if __name__ == "__main__":
-    validate(Path(sys.argv[1] if len(sys.argv) > 1 else "coverage.json"))
+    if len(sys.argv) != 1:
+        raise SystemExit("Usage: python scripts/check_quality_coverage.py (no arguments)")
+    validate()

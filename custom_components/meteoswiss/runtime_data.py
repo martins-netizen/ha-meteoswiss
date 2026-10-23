@@ -10,12 +10,14 @@ from homeassistant.config_entries import ConfigEntry
 if TYPE_CHECKING:
     from aiohttp import ClientSession
 
-    from .binary_sensor import MeteoSwissAlertsCoordinator
-    from .coordinator import MeteoSwissDataUpdateCoordinator
-    from .forecast_coordinator import MeteoSwissForecastCoordinator
-    from .openmeteo_coordinator import OpenMeteoDataUpdateCoordinator
-    from .pollen_coordinator_openmeteo import OpenMeteoPollenCoordinator
-    from .pollen_meteoswiss import MeteoSwissPollenCoordinator
+    from .coordinator import (
+        MeteoSwissAlertsCoordinator,
+        MeteoSwissDataUpdateCoordinator,
+        MeteoSwissForecastCoordinator,
+        MeteoSwissPollenCoordinator,
+        OpenMeteoDataUpdateCoordinator,
+        OpenMeteoPollenCoordinator,
+    )
     from .precipitation import MeteoSwissHourlyPrecipitationCoordinator
 
 

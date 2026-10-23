@@ -3,10 +3,14 @@
     "step": {
       "user": {
         "title": "Configurazione integrazione meteo",
-        "description": "Seleziona la fonte di dati meteo preferita.",
+        "description": "Scegli una fonte di dati meteo e una stazione di misurazione dei pollini. Sceglierai la località dei dati meteo nel passaggio successivo.",
         "data": {
           "data_source": "Fonte dati",
-          "update_interval": "Intervallo di aggiornamento (secondi)"
+          "pollen_station": "Stazione di misurazione dei pollini"
+        },
+        "data_description": {
+          "pollen_station": "Scegli la stazione di misurazione dei pollini indipendentemente dalla stazione meteo e dal codice postale degli avvisi. La scelta non modifica la località delle previsioni modellate dei pollini. Potrai cambiarla in Configura.",
+          "data_source": "Scegli le misure di una stazione MeteoSvizzera o i dati Open-Meteo per delle coordinate. Entrambi usano le previsioni MeteoSvizzera ICON Seamless tramite Open-Meteo."
         }
       },
       "meteoswiss": {
@@ -15,15 +19,24 @@
         "data": {
           "postal_code": "Codice postale",
           "station_id": "Stazione meteo"
+        },
+        "data_description": {
+          "postal_code": "Codice postale svizzero di quattro cifre, solo per gli avvisi di pericoli naturali. Non seleziona né la località delle previsioni meteo né la stazione di misurazione dei pollini.",
+          "station_id": "Fornisce temperatura, vento e precipitazioni misurati. Previsioni, pollini modellati, qualità dell’aria e UV usano le coordinate di casa di Home Assistant, indipendentemente da questa stazione e dal codice postale degli avvisi."
         }
       },
       "openmeteo": {
         "title": "Configurazione Open-Meteo",
-        "description": "Inserisci le tue coordinate per l'API Open-Meteo.",
+        "description": "Inserisci le coordinate per dati meteo attuali, previsioni meteo e di pollini modellati, qualità dell’aria e UV. Il codice postale degli avvisi è indipendente.",
         "data": {
           "postal_code": "Codice postale per le allerte meteo",
           "latitude": "Latitudine",
           "longitude": "Longitudine"
+        },
+        "data_description": {
+          "postal_code": "Codice postale svizzero di quattro cifre, solo per gli avvisi di pericoli naturali. Non seleziona né la località delle previsioni meteo né la stazione di misurazione dei pollini.",
+          "latitude": "Latitudine della località meteo in gradi decimali (WGS84, da -90 a 90). Insieme alla longitudine serve per dati meteo attuali, previsioni, pollini modellati, qualità dell’aria e UV.",
+          "longitude": "Longitudine della stessa località meteo in gradi decimali (WGS84, da -180 a 180). Queste coordinate non cambiano né il codice postale degli avvisi né la stazione di misurazione dei pollini."
         }
       }
     },
@@ -31,7 +44,8 @@
       "cannot_connect": "Impossibile connettersi all'API meteo",
       "station_not_found": "Stazione non trovata",
       "invalid_location": "Coordinate non valide",
-      "invalid_postal_code": "Inserisci un codice postale di quattro cifre, per esempio 8302, senza il suffisso 00 dell’app."
+      "invalid_postal_code": "Inserisci un codice postale svizzero di quattro cifre, ad esempio 8302.",
+      "invalid_pollen_station": "Scegli una stazione di misurazione dei pollini dall’elenco."
     },
     "abort": {
       "already_configured": "Questa fonte di dati e questa località sono già configurate."
@@ -41,11 +55,12 @@
     "step": {
       "init": {
         "title": "Impostazioni MeteoSwiss",
-        "description": "Modifica l’intervallo di aggiornamento e la stazione di misurazione del polline.",
+        "description": "Modifica la stazione di misurazione del polline. Le località delle osservazioni, delle previsioni e delle allerte restano invariate. I dati vengono aggiornati automaticamente.",
         "data": {
-          "update_interval": "Intervallo di aggiornamento (secondi, min. 600)",
-          "data_source": "Fonte dati",
-          "pollen_station": "Stazione pollen MeteoSwiss"
+          "pollen_station": "Stazione di misurazione dei pollini"
+        },
+        "data_description": {
+          "pollen_station": "Scegli la stazione di misurazione dei pollini indipendentemente dalla stazione meteo e dal codice postale degli avvisi. La scelta non modifica la località delle previsioni modellate dei pollini. Potrai cambiarla in Configura."
         }
       }
     }
@@ -157,6 +172,30 @@
       },
       "precipitation_modelled": {
         "name": "Precipitazioni (intervallo modellato)"
+      },
+      "forecast_maximum_temperature_today": {
+        "name": "Temperatura massima oggi (previsione)"
+      },
+      "forecast_minimum_temperature_today": {
+        "name": "Temperatura minima oggi (previsione)"
+      },
+      "forecast_precipitation_today": {
+        "name": "Precipitazioni oggi (previsione)"
+      },
+      "forecast_probability_today": {
+        "name": "Probabilità oraria massima di precipitazioni oggi"
+      },
+      "forecast_maximum_temperature_tomorrow": {
+        "name": "Temperatura massima domani (previsione)"
+      },
+      "forecast_minimum_temperature_tomorrow": {
+        "name": "Temperatura minima domani (previsione)"
+      },
+      "forecast_precipitation_tomorrow": {
+        "name": "Precipitazioni domani (previsione)"
+      },
+      "forecast_probability_tomorrow": {
+        "name": "Probabilità oraria massima di precipitazioni domani"
       }
     },
     "binary_sensor": {
@@ -218,6 +257,12 @@
         "unavailable": "Allerte meteo non disponibili",
         "unknown": "Nessun dato di allerta ricevuto",
         "no_alerts": "Nessuna allerta meteo"
+      }
+    },
+    "data_source": {
+      "options": {
+        "openmeteo": "Open-Meteo: meteo alle coordinate",
+        "meteoswiss": "MeteoSvizzera: misure di una stazione"
       }
     }
   }

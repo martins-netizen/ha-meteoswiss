@@ -19,6 +19,15 @@ location. The warning postcode does not move the forecast. Native units are °C,
 hPa, km/h and mm; HA converts weather attributes to the user's selected units.
 Forecast failure returns an empty forecast while valid observations remain usable.
 
+## Forecast summary sensors (unreleased)
+
+Development after 8.2.0 adds eight numeric entities: today's and tomorrow's
+maximum/minimum temperature, native full-day precipitation, and highest hourly
+precipitation probability with matching time windows. Today's probability covers
+current/upcoming hours; daily temperature/rain values describe the whole day.
+See the [forecast sensor guide](FORECAST_SENSORS.md) for examples, missing-data
+behaviour, attributes and the distinction from measured rainfall.
+
 ## Observation sensors
 
 The integration polls at the configured interval (default/minimum ten minutes).
@@ -193,8 +202,9 @@ station and can stay disabled. `meteoswiss_cache_stats` is the shared cache
 helper's unique ID. Existing entity names can differ. Integration diagnostics
 download a redacted technical summary.
 
-Camera/radar, standalone SLF and standalone BAFU modules are inactive placeholders;
-they do not create additional entities. This does not exclude avalanche or
-flood warnings supplied through the postcode feed. Standalone river-gauge
-measurements and full avalanche-bulletin products are not provided by those
-placeholders.
+Camera/radar, standalone SLF and standalone BAFU clients were inactive
+placeholders in 8.2.0 and created no additional entities. Unreleased development
+removes those unused files. Avalanche/flood warnings supplied through the
+postcode feed remain supported. Standalone river-gauge measurements and full
+avalanche-bulletin products remain outside this integration's supported scope;
+a separately installed radar integration is unaffected.

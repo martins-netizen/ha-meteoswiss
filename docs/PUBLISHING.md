@@ -1,4 +1,45 @@
-# First fork release: publication and remaining HACS acceptance
+# Fork releases: publication and HACS acceptance
+
+## Published stable release: 8.2.0
+
+**Published on 22 October 2026 at 08:52:40 Europe/Zurich** (06:52:40 UTC).
+The immutable tag resolves to **5a0bf684eb44fd54c4e91d7cbce9e90798b72fa5**;
+release ID **420392277**, draft=false, prerelease=false, immutable=true. The
+V1.2 receipt/log for run **20261022-085229-238** and independent release,
+latest-stable and tag reads confirm publication. No HA action was performed.
+See [readiness](RELEASE_READINESS.md) and [stable notes](RELEASE_8.2.0.md).
+
+Publication is complete. Check actual HACS visibility next; do not publish or
+retag again merely because documentation advances the development branch.
+The commands below record the completed procedure and its guard conditions.
+
+Stable packaging changed only the component manifest/module version. The other
+31 component files, HACS manifest and workflows must remain identical to Beta2.
+After the regular stable-package merge and successful post-merge checks, use
+the exact full merge SHA:
+
+```sh
+bash veroeffentliche_meteoswiss_stable_v1.2.sh --check APPROVED_MERGE_COMMIT
+# After reviewing that exact candidate and approving stable publication:
+bash veroeffentliche_meteoswiss_stable_v1.2.sh --publish APPROVED_MERGE_COMMIT
+```
+
+V1.2 is derived from Beta Publisher V1.1. `--check` makes no remote write.
+`--publish` can create only stable **8.2.0**, with `prerelease=false` and
+`make_latest=true`. It verifies the protected exact head, source identity,
+version-only edits, unchanged HACS/workflows, both immutable beta tags and
+successful checks from GitHub Actions on that commit. Repeating verifies an
+existing matching release; it never overwrites notes or retags. It uses the
+existing Mac gh login and performs no HA connection, restart or device action.
+Keep its JSON/log receipt. A timeout after a write requires rechecking, not
+deleting/recreating a release. Actual HACS availability is checked afterwards.
+
+The older procedures below are historical records. V1.0/V1.1 publish only their
+respective betas and must not be used to publish stable 8.2.0. They do not reopen
+completed acceptance. Security/quality and independent usability limits remain
+visible in the [bounded release review](RELEASE_REVIEW_2026-10-22.md).
+
+## Historical first-beta publication
 
 The first [GitHub prerelease 8.2.0b1](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.2.0b1)
 was published on **20 October 2026 at 15:56:24 UTC (17:56:24 Europe/Zurich)**.
@@ -10,14 +51,42 @@ Its 33 component, translation and brand files match the live-accepted runtime.
 The runtime acceptance is complete. On 20 October 2026 the operator additionally
 confirmed the HACS 2.0.5 source switch to this fork, downloaded version 8.2.0b1,
 HA restart and a positive initial visual check. A clean first HACS installation
-remains open; see the scoped [HACS acceptance record](HACS_ACCEPTANCE.md).
+and isolated backup restoration were operator-confirmed on 21 October; see the
+scoped [HACS acceptance record](HACS_ACCEPTANCE.md).
 HACS listing and the HA Quality Scale remain separate assessments. This document
 does not publish, retag or install anything.
 
 The [current acceptance and stable-release checklist](RELEASE_READINESS.md)
-is the consolidated next-step record. Publishing this beta did not complete the
-clean first-install test or publish a stable 8.2.0 release. The completed source
-switch is not an open task to repeat.
+is the consolidated next-step record. Stable 8.2.0 has not been published. The
+completed source switch, beta first install and isolated restore are not open
+tasks to repeat.
+
+## Second beta: explicit pollen setup
+
+**8.2.0b2 was published on 22 October 2026 at 07:12:40 Europe/Zurich.** Its
+[release notes](RELEASE_8.2.0b2.md) define the focused HA check of the new initial
+pollen picker. PR #37's CI-tested source is
+`a90ed05cd9d23ce1bee341bcc5a662678a7e9bcc`. The subsequent focused new-setup/data
+check was operator-confirmed on 22 October; see the current readiness record.
+
+The historical Beta2 publication command was:
+
+```sh
+bash veroeffentliche_meteoswiss_beta_v1.1.sh --publish APPROVED_MERGE_COMMIT
+```
+
+Pass the exact full merged packaging commit. V1.1 is derived from the first
+publisher and creates only **8.2.0b2** as a prerelease. It requires 31 component
+files to match that CI-tested source; the other two may change only the version
+from 8.2.0b1 to 8.2.0b2. It checks `hide_default_branch: true`, unchanged
+workflows, all required checks and the immutable 8.2.0b1 tag. Existing matching
+releases are verified without rewriting. It uses the existing Mac `gh` login,
+does not read credentials, and performs no HA action.
+
+This is distinct from the historical first-beta procedure below: V1.0 remains
+specific to immutable 8.2.0b1 and must not be used to publish the new candidate.
+Only an explicitly published prerelease is a HACS download target. After
+publication, follow the focused 8.2.0b2 checklist in the temporary instance.
 
 ## Repository settings to complete before publication
 
@@ -33,7 +102,7 @@ The default branch must contain the maintained README and HACS manifest when
 the repository is promoted. Do not direct users to the upstream mirror. These
 settings must be verified from GitHub; documentation does not change them.
 
-## Candidate and deployment evidence
+## First beta: candidate and deployment evidence
 
 Record the **exact merged candidate commit**, supported HA version, CI links
 and date. The live-accepted runtime is PR #31's merged commit
@@ -78,9 +147,10 @@ first checks whether the expected release already exists.
   The operator has since confirmed the HACS 2.0.5 source switch, exact repository
   and downloaded 8.2.0b1 version, restart and initial visual success. This is
   operator-reported evidence; no new independent post-switch registry/statistic
-  or file-hash comparison, executed rollback, or clean first install is claimed.
+  or file-hash comparison is claimed by that original switch report.
   The existing 24-hour runtime acceptance remains valid for the same code.
-  Follow [GETTING_STARTED.md](GETTING_STARTED.md) for the still-open first-install rehearsal;
+  The clean first installation and isolated backup restore were subsequently
+  operator-confirmed on 21 October. Follow [GETTING_STARTED.md](GETTING_STARTED.md) for setup;
   [MIGRATION.md](MIGRATION.md) remains the source-switch guide for other users.
   A disposable instance is sufficient; a second permanent HA installation is not
   required. A default-store listing or nontechnical usability approval is not claimed.
@@ -113,15 +183,15 @@ the version number alone or reinstall an identical runtime needlessly.
    expand **Need a different version?**, and select **8.2.0b1** under **Release**.
    Older HACS versions may additionally require beta visibility. Check the
    announced download version; do not accept a branch or commit fallback.
-3. Complete the still-open clean first-install rehearsal described in
+3. Retain the completed clean first-install and isolated restore evidence in
    [HACS_ACCEPTANCE.md](HACS_ACCEPTANCE.md). The operator-confirmed source switch
-   is complete; do not repeat it. A temporary isolated instance is sufficient;
+   is also complete; do not repeat it. A temporary isolated instance is sufficient;
    do not require a second permanent HA installation or use the production system
-   as an empty first-install test. Rehearse the documented recovery route there
+   as an empty first-install test. Use the new candidate's focused checklist
    and keep the runtime's completed 24-hour acceptance. A new independent read-only
    post-switch file/identity check is useful supplementary evidence, not a reason
    to redo the source switch.
-4. Include `"hide_default_branch": true` in the next reviewed release's
+4. The 8.2.0b2 candidate includes `"hide_default_branch": true` in
    `hacs.json`. HACS can read that manifest from the selected ref, so changing
    only `development` does not change the immutable `8.2.0b1` manifest or prove
    branch downloads are hidden when that beta is selected. Keep this limitation
@@ -135,8 +205,9 @@ the version number alone or reinstall an identical runtime needlessly.
 The beta-selection route was checked against the source of HACS 2.0.5 and its
 pinned frontend 20250128065759 on 20 October 2026. The operator subsequently
 confirmed that version selection, download, source switch and restart succeeded.
-Source inspection alone is not a practical test; the clean first-install path
-still needs its own run.
+Source inspection alone is not a practical test. The first-beta clean install
+was subsequently operator-confirmed, followed by Beta2 new setup/data on
+22 October. Practical branch hiding was not separately reported.
 
 ## Published beta scope
 

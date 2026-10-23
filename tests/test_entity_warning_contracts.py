@@ -25,9 +25,9 @@ from custom_components.meteoswiss.binary_sensor import (
     ALERT_SENSOR_DESCRIPTIONS,
     MeteoSwissAlertsBinarySensor,
     MeteoSwissAlertsBinarySensorDescription,
-    MeteoSwissAlertsCoordinator,
 )
 from custom_components.meteoswiss.const import DOMAIN
+from custom_components.meteoswiss.coordinator import MeteoSwissAlertsCoordinator
 from custom_components.meteoswiss.pollen_sensor import async_setup_entry as setup_pollen
 from custom_components.meteoswiss.sensor import (
     SENSOR_DESCRIPTIONS,
@@ -321,11 +321,11 @@ async def installed_entities(hass, enable_custom_integrations, aioclient_mock, c
                 "precipitation": 0.2,
                 "last_update": NOW.isoformat(),
             },
-            "forecast_coordinator.MeteoSwissForecastCoordinator": [
+            "coordinator.MeteoSwissForecastCoordinator": [
                 {"local_date": "2026-10-16", "daily_temperature_mean": 0}
             ],
-            "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
-            "pollen_meteoswiss.MeteoSwissPollenCoordinator": {},
+            "coordinator.OpenMeteoPollenCoordinator": {},
+            "coordinator.MeteoSwissPollenCoordinator": {},
         }.items():
             stack.enter_context(
                 patch(
@@ -523,23 +523,23 @@ async def test_failed_unload_preserves_shared_diagnostic_ownership(hass):
 @pytest.mark.parametrize("family", ["pollen", "measured"])
 async def test_optional_source_exception_chains_are_private(hass, caplog, family):
     from custom_components.meteoswiss.cache import clear_all_caches
-    from custom_components.meteoswiss.pollen_coordinator_openmeteo import (
-        OpenMeteoPollenCoordinator,
-    )
-    from custom_components.meteoswiss.pollen_meteoswiss import (
+    from custom_components.meteoswiss.coordinator import (
         MeteoSwissPollenCoordinator,
+        OpenMeteoPollenCoordinator,
     )
 
     clear_all_caches()
     if family == "pollen":
         source = OpenMeteoPollenCoordinator(hass, 47.451234, 8.561234)
         method = "_async_fetch_data"
+        request_source = source.client
     else:
         source = MeteoSwissPollenCoordinator(hass, "PLZ")
         method = "_async_fetch_csv"
+        request_source = source.client
     with (
         patch.object(
-            source,
+            request_source,
             method,
             side_effect=aiohttp.ClientConnectionError(
                 "private_source_marker latitude=47.451234"

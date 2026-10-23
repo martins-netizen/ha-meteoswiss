@@ -6,6 +6,7 @@ from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
+import voluptuous as vol
 from homeassistant.config_entries import SOURCE_USER
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
@@ -25,7 +26,9 @@ from custom_components.meteoswiss.const import (
     CONF_UPDATE_INTERVAL,
     DATA_SOURCE_METEOSWISS,
     DATA_SOURCE_OPENMETEO,
+    DEFAULT_POLLEN_STATION,
     DOMAIN,
+    POLLEN_STATIONS,
     STATIONS_METADATA_URL,
 )
 
@@ -90,16 +93,57 @@ def mock_entry_setup():
         yield
 
 
-async def start_flow(hass, source):
+async def start_flow(hass, source, pollen_station="PZH"):
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": SOURCE_USER}
     )
     assert result["step_id"] == "user"
     return await hass.config_entries.flow.async_configure(
-        result["flow_id"], {CONF_DATA_SOURCE: source}
+        result["flow_id"],
+        {CONF_DATA_SOURCE: source, CONF_POLLEN_STATION: pollen_station},
     )
 
 
+async def test_initial_form_requires_an_explicit_measured_pollen_station(
+    hass, enable_custom_integrations
+):
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN, context={"source": SOURCE_USER}
+    )
+    schema = result["data_schema"]
+    with pytest.raises(vol.Invalid):
+        schema({CONF_DATA_SOURCE: DATA_SOURCE_METEOSWISS})
+    with pytest.raises(vol.Invalid):
+        schema({CONF_DATA_SOURCE: DATA_SOURCE_METEOSWISS, CONF_POLLEN_STATION: "KLO"})
+    for station in POLLEN_STATIONS:
+        assert schema({CONF_POLLEN_STATION: station})[CONF_POLLEN_STATION] == station
+
+
+@pytest.mark.parametrize("station", [None, "", "KLO", "missing", []])
+async def test_invalid_pollen_station_can_be_corrected_before_network_access(
+    hass, enable_custom_integrations, station
+):
+    flow = MeteoSwissConfigFlow()
+    flow.hass = hass
+    user_input = {CONF_DATA_SOURCE: DATA_SOURCE_METEOSWISS}
+    if station is not None:
+        user_input[CONF_POLLEN_STATION] = station
+    with patch.object(
+        flow, "_load_stations", return_value=STATIONS
+    ) as load_stations:
+        result = await flow.async_step_user(user_input)
+        assert result["step_id"] == "user"
+        assert result["errors"] == {CONF_POLLEN_STATION: "invalid_pollen_station"}
+        assert not hass.config_entries.async_entries(DOMAIN)
+        load_stations.assert_not_called()
+        result = await flow.async_step_user(
+            {CONF_DATA_SOURCE: DATA_SOURCE_METEOSWISS, CONF_POLLEN_STATION: "PBE"},
+        )
+        assert result["step_id"] == "meteoswiss"
+        load_stations.assert_called_once()
+
+
+@pytest.mark.parametrize("pollen_station", ["PBE", "PZH"])
 @pytest.mark.parametrize(
     "source,inputs,unique_id",
     [
@@ -108,7 +152,7 @@ async def start_flow(hass, source):
     ],
 )
 async def test_user_flow_success_and_connection_recovery(
-    hass, enable_custom_integrations, source, inputs, unique_id
+    hass, enable_custom_integrations, source, inputs, unique_id, pollen_station
 ):
     with (
         patch.object(MeteoSwissConfigFlow, "_load_stations", return_value=STATIONS),
@@ -116,7 +160,7 @@ async def test_user_flow_success_and_connection_recovery(
             MeteoSwissConfigFlow, "_validate_source", side_effect=[False, True]
         ),
     ):
-        result = await start_flow(hass, source)
+        result = await start_flow(hass, source, pollen_station)
         assert result["step_id"] == source
         result = await hass.config_entries.flow.async_configure(
             result["flow_id"], inputs
@@ -128,8 +172,10 @@ async def test_user_flow_success_and_connection_recovery(
     assert result["type"] == "create_entry"
     assert result["result"].unique_id == unique_id
     assert result["data"][CONF_DATA_SOURCE] == source
-    assert result["data"][CONF_UPDATE_INTERVAL] == 600
+    assert CONF_UPDATE_INTERVAL not in result["data"]
+    assert result["result"].minor_version == 2
     assert result["data"][CONF_POSTAL_CODE] == "8302"
+    assert result["result"].options[CONF_POLLEN_STATION] == pollen_station
     await hass.async_block_till_done()
 
 
@@ -353,19 +399,32 @@ async def test_catalogue_http_and_decoding(hass, aioclient_mock, failure):
     assert bool(result) is (failure is None)
 
 
-async def test_options_flow_preserves_entry_identity(hass, enable_custom_integrations):
+@pytest.mark.parametrize("pollen_station", [None, "PBE"])
+async def test_options_flow_preserves_entry_identity(
+    hass, enable_custom_integrations, pollen_station
+):
     entry = MockConfigEntry(
         domain=DOMAIN,
         data={CONF_UPDATE_INTERVAL: 900},
-        options={CONF_UPDATE_INTERVAL: 1200},
+        options={
+            CONF_UPDATE_INTERVAL: 1200,
+            **({CONF_POLLEN_STATION: pollen_station} if pollen_station else {}),
+        },
+        unique_id="meteoswiss:klo:8302",
     )
     entry.add_to_hass(hass)
     result = await hass.config_entries.options.async_init(entry.entry_id)
     assert result["type"] == "form"
-    assert result["data_schema"]({})[CONF_UPDATE_INTERVAL] == 1200
+    assert CONF_UPDATE_INTERVAL not in result["data_schema"]({})
+    assert result["data_schema"]({})[CONF_POLLEN_STATION] == (
+        pollen_station or DEFAULT_POLLEN_STATION
+    )
     result = await hass.config_entries.options.async_configure(
-        result["flow_id"], {CONF_UPDATE_INTERVAL: 1800, CONF_POLLEN_STATION: "PLZ"}
+        result["flow_id"], {CONF_POLLEN_STATION: "PZH"}
     )
     assert result["type"] == "create_entry"
-    assert entry.options[CONF_UPDATE_INTERVAL] == 1800
+    assert entry.options[CONF_UPDATE_INTERVAL] == 1200
     assert entry.data[CONF_UPDATE_INTERVAL] == 900
+    assert entry.options[CONF_POLLEN_STATION] == "PZH"
+    assert hass.config_entries.async_get_entry(entry.entry_id) is entry
+    assert entry.unique_id == "meteoswiss:klo:8302"

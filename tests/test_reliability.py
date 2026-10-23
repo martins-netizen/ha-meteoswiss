@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import asyncio
-from datetime import UTC, datetime
+import io
+import json
+from datetime import UTC, datetime, timedelta
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
@@ -21,15 +23,15 @@ from custom_components.meteoswiss.alerts import MeteoSwissAlertsAPI, WeatherAler
 from custom_components.meteoswiss.binary_sensor import (
     ALERT_SENSOR_DESCRIPTIONS,
     MeteoSwissAlertsBinarySensor,
-    MeteoSwissAlertsCoordinator,
 )
 from custom_components.meteoswiss.const import (
     DOMAIN,
     SENSOR_PRECIPITATION,
     SENSOR_TEMPERATURE,
 )
-from custom_components.meteoswiss.coordinator import MeteoSwissDataUpdateCoordinator
-from custom_components.meteoswiss.forecast_coordinator import (
+from custom_components.meteoswiss.coordinator import (
+    MeteoSwissAlertsCoordinator,
+    MeteoSwissDataUpdateCoordinator,
     MeteoSwissForecastCoordinator,
 )
 from custom_components.meteoswiss.localization import async_load_warning_labels
@@ -46,6 +48,9 @@ class Response:
 
     def __init__(self, payload=None, status=200):
         self.payload, self.status = payload, status
+        self.headers = {}
+        self.content = AsyncMock()
+        self.content.read.side_effect = io.BytesIO(json.dumps(payload).encode()).read
 
     async def __aenter__(self):
         return self
@@ -225,7 +230,7 @@ async def test_forecast_contract_preserves_repeated_dst_hour_and_daylight(hass, 
     coordinator = MeteoSwissForecastCoordinator(
         hass, latitude=47.45, longitude=8.56, session=session
     )
-    rows = await coordinator._fetch_open_meteo_forecast()
+    rows = await coordinator.client.async_get_data()
     assert "timeformat=unixtime" in session.url
     assert len({row["datetime"] for row in rows}) == 2
     local = [
@@ -319,13 +324,13 @@ async def test_stale_observations_are_not_reported_as_current(hass, freezer):
 async def test_air_quality_uses_current_hour_and_preserves_missing_values(
     hass, freezer
 ):
-    from custom_components.meteoswiss.pollen_coordinator_openmeteo import (
+    from custom_components.meteoswiss.coordinator import (
         OpenMeteoPollenCoordinator,
     )
 
     freezer.move_to("2026-10-15T10:20:00+00:00")
     coordinator = OpenMeteoPollenCoordinator(hass, latitude=47.45, longitude=8.56)
-    data = coordinator._parse_response(
+    data = coordinator.client.parse_response(
         {
             "hourly": {
                 "time": ["2026-10-15T00:00", "2026-10-15T12:00", "2026-10-15T13:00"],
@@ -407,7 +412,14 @@ async def test_complete_entry_with_recorder_removes_all_polling_listeners(
     await _exercise_entry_lifecycle(hass, source, with_recorder=True)
 
 
-async def _exercise_entry_lifecycle(hass, source, *, with_recorder):
+@pytest.mark.parametrize("source", ["meteoswiss", "openmeteo"])
+async def test_new_entry_uses_developer_polling_after_options_reload(
+    hass, enable_custom_integrations, source
+):
+    await _exercise_entry_lifecycle(hass, source, with_recorder=False, legacy_interval=False)
+
+
+async def _exercise_entry_lifecycle(hass, source, *, with_recorder, legacy_interval=True):
     from contextlib import ExitStack
 
     from homeassistant.helpers.aiohttp_client import async_get_clientsession
@@ -422,7 +434,11 @@ async def _exercise_entry_lifecycle(hass, source, *, with_recorder):
             "data_source": source,
             "latitude": 0,
             "longitude": 0,
+            **({"update_interval": 900} if legacy_interval else {}),
         },
+        options={"pollen_station": "PZH", "unknown_option": "retain",
+                 **({"update_interval": 1200} if legacy_interval else {})},
+        version=1, minor_version=1 if legacy_interval else 2,
     )
     entry.add_to_hass(hass)
     targets = {
@@ -430,14 +446,14 @@ async def _exercise_entry_lifecycle(hass, source, *, with_recorder):
             SENSOR_TEMPERATURE: 12,
             "last_update": dt_util.utcnow().isoformat(),
         },
-        "openmeteo_coordinator.OpenMeteoDataUpdateCoordinator": {
+        "coordinator.OpenMeteoDataUpdateCoordinator": {
             SENSOR_TEMPERATURE: 12,
             "last_update": dt_util.utcnow().isoformat(),
         },
-        "forecast_coordinator.MeteoSwissForecastCoordinator": [],
-        "binary_sensor.MeteoSwissAlertsCoordinator": [],
-        "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
-        "pollen_meteoswiss.MeteoSwissPollenCoordinator": {},
+        "coordinator.MeteoSwissForecastCoordinator": [],
+        "coordinator.MeteoSwissAlertsCoordinator": [],
+        "coordinator.OpenMeteoPollenCoordinator": {},
+        "coordinator.MeteoSwissPollenCoordinator": {},
         "precipitation.MeteoSwissHourlyPrecipitationCoordinator": {},
     }
     with ExitStack() as stack:
@@ -469,6 +485,13 @@ async def _exercise_entry_lifecycle(hass, source, *, with_recorder):
             assert entry.runtime_data.forecast_coordinator._longitude == 0
         session = async_get_clientsession(hass)
         assert entry.runtime_data.session is session
+        assert entry.minor_version == 2
+        assert "update_interval" not in entry.data
+        expected_interval = timedelta(seconds=1200 if legacy_interval else 600)
+        assert entry.runtime_data.coordinator.update_interval == expected_interval
+        assert entry.runtime_data.meteoswiss_pollen_coordinator.client.station_id == "pzh"
+        assert entry.runtime_data.forecast_coordinator.update_interval == timedelta(hours=1)
+        assert entry.runtime_data.alerts_coordinator.update_interval == timedelta(minutes=10)
         assert not session.closed
         assert (
             entry.runtime_data.alerts_coordinator.warning_labels[
@@ -480,8 +503,17 @@ async def _exercise_entry_lifecycle(hass, source, *, with_recorder):
         assert previous_runtime.coordinator._listeners
         assert previous_runtime.forecast_coordinator._listeners
         registry_ids = {item.unique_id: item.entity_id for item in er.async_entries_for_config_entry(registry, entry.entry_id)}
-        assert await hass.config_entries.async_reload(entry.entry_id)
+        # Exercise the real options manager and registered reload listener.
+        form = await hass.config_entries.options.async_init(entry.entry_id)
+        result = await hass.config_entries.options.async_configure(
+            form["flow_id"], {"pollen_station": "PBE"}
+        )
+        assert result["type"] == "create_entry"
         await hass.async_block_till_done()
+        assert entry.options == {"pollen_station": "PBE", "unknown_option": "retain",
+                                 **({"update_interval": 1200} if legacy_interval else {})}
+        assert entry.runtime_data.coordinator.update_interval == expected_interval
+        assert entry.runtime_data.meteoswiss_pollen_coordinator.client.station_id == "pbe"
         assert entry.runtime_data is not previous_runtime
         assert not previous_runtime.coordinator._listeners
         assert not previous_runtime.forecast_coordinator._listeners

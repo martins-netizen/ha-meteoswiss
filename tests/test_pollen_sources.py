@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import asyncio
+import json
 import logging
 from contextlib import ExitStack
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
 import aiohttp
@@ -20,15 +22,21 @@ from custom_components.meteoswiss.cache import (
     clear_all_caches,
     get_current_weather_cache,
 )
-from custom_components.meteoswiss.const import DOMAIN, MIN_UPDATE_INTERVAL
-from custom_components.meteoswiss.pollen_coordinator_openmeteo import (
-    OPENMETEO_AQ_BASE_URL,
-    OPENMETEO_FORECAST_URL,
+from custom_components.meteoswiss.const import (
+    DOMAIN,
+    MIN_UPDATE_INTERVAL,
+    POLLEN_STATIONS,
+)
+from custom_components.meteoswiss.coordinator import (
+    MeteoSwissPollenCoordinator,
     OpenMeteoPollenCoordinator,
 )
 from custom_components.meteoswiss.pollen_meteoswiss import (
     POLLEN_DATA_BASE_URL,
-    MeteoSwissPollenCoordinator,
+)
+from custom_components.meteoswiss.pollen_openmeteo import (
+    OPENMETEO_AQ_BASE_URL,
+    OPENMETEO_FORECAST_URL,
 )
 from custom_components.meteoswiss.pollen_sensor import (
     POLLEN_SENSOR_DESCRIPTIONS,
@@ -46,6 +54,37 @@ CSV_HEADER = "station_abbr;reference_timestamp;kabetuh0;kaalnuh0;kacoryh0;kafagu
 CSV_ZERO = CSV_HEADER + "PLZ;15.10.2026 10:00;0;0;0;0;0;0\n"
 CSV_URL = f"{POLLEN_DATA_BASE_URL}/plz/ogd-pollen_plz_h_now.csv"
 CURRENT_TIME = int(datetime(2026, 10, 15, 10, tzinfo=UTC).timestamp())
+
+
+def _station_evidence():
+    """A dated, external provider snapshot; these tests make no live requests."""
+    return json.loads(
+        (Path(__file__).parent / "fixtures/pollen_stations_2026-10-21.json").read_text()
+    )
+
+
+def test_pollen_choices_match_verified_provider_metadata_and_hourly_assets():
+    evidence = _station_evidence()
+    assert set(POLLEN_STATIONS) == set(evidence["hourly_now_stations"])
+    assert POLLEN_STATIONS == {
+        code: f"{name} ({code})" for code, name in evidence["stations"].items()
+    }
+    assert set(POLLEN_STATIONS).isdisjoint(evidence["items_without_assets"])
+
+
+@pytest.mark.parametrize("station,expected_current", [("PZH", True), ("PLZ", False)])
+def test_real_current_zurich_and_stale_luzern_samples(
+    hass, freezer, station, expected_current
+):
+    evidence = _station_evidence()
+    freezer.move_to(evidence["retrieved_at_utc"])
+    coordinator = MeteoSwissPollenCoordinator(hass, station_id=station)
+    data = coordinator.client.parse_csv(evidence["sample_hourly_csv"][station]["csv"])
+    assert bool(data) is expected_current
+    if expected_current:
+        assert data["station_id"] == station
+        assert data["birch"]["current"] == 0
+        assert data["oak"]["current"] == 0
 
 
 @pytest.fixture(autouse=True)
@@ -67,7 +106,7 @@ def aq_payload(**series):
 )
 def test_invalid_current_values_are_not_success(hass, field, value):
     coordinator = OpenMeteoPollenCoordinator(hass, 47.45, 8.56)
-    assert coordinator._parse_response(aq_payload(**{field: [value]})) == {}
+    assert coordinator.client.parse_response(aq_payload(**{field: [value]})) == {}
 
 
 @pytest.mark.parametrize(
@@ -87,7 +126,7 @@ def test_invalid_current_values_are_not_success(hass, field, value):
     ],
 )
 def test_malformed_or_noncurrent_feed_is_not_success(hass, payload):
-    assert OpenMeteoPollenCoordinator(hass, 47.45, 8.56)._parse_response(payload) == {}
+    assert OpenMeteoPollenCoordinator(hass, 47.45, 8.56).client.parse_response(payload) == {}
 
 
 def test_partial_hour_preserves_zero_missing_and_forecast_alignment(hass):
@@ -104,7 +143,7 @@ def test_partial_hour_preserves_zero_missing_and_forecast_alignment(hass):
             "ozone": [90, 3.25, 40],
         }
     }
-    data = coordinator._parse_response(payload)
+    data = coordinator.client.parse_response(payload)
     assert data["last_update"] == "2026-10-15T10:00:00+00:00"
     assert data["birch_pollen"]["current"] is None
     assert data["birch_pollen"]["forecast"] == [None, 300]
@@ -122,7 +161,7 @@ def test_partial_hour_preserves_zero_missing_and_forecast_alignment(hass):
 def test_repeated_autumn_hour_is_unambiguous(hass, freezer, hour, index):
     freezer.move_to(f"2026-10-25T0{hour}:20:00+00:00")
     times = [int(datetime(2026, 10, 25, h, tzinfo=UTC).timestamp()) for h in (0, 1)]
-    data = OpenMeteoPollenCoordinator(hass, 47.45, 8.56)._parse_response(
+    data = OpenMeteoPollenCoordinator(hass, 47.45, 8.56).client.parse_response(
         {"hourly": {"time": times, "birch_pollen": [2, 8]}}
     )
     assert data["birch_pollen"]["current"] == [2, 8][index]
@@ -141,21 +180,21 @@ def test_repeated_autumn_hour_is_unambiguous(hass, freezer, hour, index):
     ],
 )
 def test_invalid_measured_pollen_is_not_success(hass, row):
-    assert MeteoSwissPollenCoordinator(hass, "PLZ")._parse_csv(CSV_HEADER + row) == {}
+    assert MeteoSwissPollenCoordinator(hass, "PLZ").client.parse_csv(CSV_HEADER + row) == {}
 
 
 @pytest.mark.parametrize(
     "content", ["", CSV_HEADER, "<html>Service unavailable</html>"]
 )
 def test_empty_or_wrong_csv_is_not_success(hass, content):
-    assert MeteoSwissPollenCoordinator(hass, "PLZ")._parse_csv(content) == {}
+    assert MeteoSwissPollenCoordinator(hass, "PLZ").client.parse_csv(content) == {}
 
 
 def test_measured_zero_and_partial_values_keep_provider_time_and_history(hass):
     coordinator = MeteoSwissPollenCoordinator(hass, "plz")
     rows = [f"PLZ;15.10.2026 09:00;{i};bad;;-1;0;2" for i in range(25)]
     rows.append(" plz ;15.10.2026 10:00;0; 5 ;;-1;0;2")
-    data = coordinator._parse_csv(CSV_HEADER + "\n".join(rows))
+    data = coordinator.client.parse_csv(CSV_HEADER + "\n".join(rows))
     assert data["station_id"] == "PLZ"
     assert data["last_update"] == "15.10.2026 10:00"
     assert data["birch"]["current"] == 0
@@ -168,7 +207,7 @@ def test_measured_zero_and_partial_values_keep_provider_time_and_history(hass):
 
 
 def test_missing_csv_columns_do_not_mask_a_valid_partial_measurement(hass):
-    data = MeteoSwissPollenCoordinator(hass, "PLZ")._parse_csv(
+    data = MeteoSwissPollenCoordinator(hass, "PLZ").client.parse_csv(
         "station_abbr;reference_timestamp;kabetuh0\nPLZ;15.10.2026 10:00;0"
     )
     assert data["birch"]["current"] == 0
@@ -218,7 +257,7 @@ async def test_measured_age_bounds_use_measurement_time_not_fetch_time(
 )
 def test_measured_provider_times_stay_utc_across_zurich_dst(hass, freezer, now, stamp):
     freezer.move_to(now)
-    data = MeteoSwissPollenCoordinator(hass, "PLZ")._parse_csv(
+    data = MeteoSwissPollenCoordinator(hass, "PLZ").client.parse_csv(
         CSV_HEADER + f"PLZ;{stamp};0;;;;;"
     )
     assert data["last_update"] == stamp
@@ -484,8 +523,8 @@ async def test_real_entities_start_failure_recovery_and_unload(
                 "temperature": 12,
                 "last_update": "2026-10-15T10:00:00+00:00",
             },
-            "forecast_coordinator.MeteoSwissForecastCoordinator": [],
-            "binary_sensor.MeteoSwissAlertsCoordinator": [],
+            "coordinator.MeteoSwissForecastCoordinator": [],
+            "coordinator.MeteoSwissAlertsCoordinator": [],
         }.items():
             stack.enter_context(
                 patch(
@@ -603,7 +642,7 @@ def test_pollen_entity_without_data_is_unknown_not_zero(hass):
 def test_aq_and_measured_entities_read_existing_data_on_initial_add(hass):
     entry = MockConfigEntry(domain=DOMAIN)
     aq = OpenMeteoPollenCoordinator(hass, 47.45, 8.56)
-    aq.data = aq._parse_response(aq_payload(pm10=[0]))
+    aq.data = aq.client.parse_response(aq_payload(pm10=[0]))
     description = next(
         d for d in AIR_QUALITY_SENSOR_DESCRIPTIONS if d.value_key == "pm10"
     )
@@ -612,7 +651,7 @@ def test_aq_and_measured_entities_read_existing_data_on_initial_add(hass):
     aq.data = None
     assert aq_entity.native_value is None
     measured = MeteoSwissPollenCoordinator(hass, "PLZ")
-    measured.data = measured._parse_csv(CSV_ZERO)
+    measured.data = measured.client.parse_csv(CSV_ZERO)
     measured_entity = MeteoSwissMeasuredPollenSensor(
         measured, entry, MS_POLLEN_SENSOR_DESCRIPTIONS[0], "Luzern"
     )
@@ -700,8 +739,8 @@ async def test_pollen_device_grouping_preserves_existing_entities_on_reload(
                 "temperature": 12,
                 "last_update": "2026-10-15T10:00:00+00:00",
             },
-            "forecast_coordinator.MeteoSwissForecastCoordinator": [],
-            "binary_sensor.MeteoSwissAlertsCoordinator": [],
+            "coordinator.MeteoSwissForecastCoordinator": [],
+            "coordinator.MeteoSwissAlertsCoordinator": [],
         }.items():
             stack.enter_context(
                 patch(

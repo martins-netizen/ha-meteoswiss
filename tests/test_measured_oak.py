@@ -11,7 +11,7 @@ from homeassistant.helpers.translation import async_get_translations
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.meteoswiss.const import DOMAIN
-from custom_components.meteoswiss.pollen_meteoswiss import MeteoSwissPollenCoordinator
+from custom_components.meteoswiss.coordinator import MeteoSwissPollenCoordinator
 
 # Actual column names/order from the public PZH _h_now.csv on 17 October 2026.
 HEADER = "station_abbr;reference_timestamp;kabetuh0;khpoach0;kaalnuh0;kacoryh0;kafaguh0;kafraxh0;kaquerh0\n"
@@ -27,7 +27,7 @@ def fixed_clock(freezer):
 @pytest.mark.parametrize("oak", ["0", "17"])
 def test_oak_only_is_a_valid_measured_source(hass, oak):
     coordinator = MeteoSwissPollenCoordinator(hass, "PZH")
-    data = coordinator._parse_csv(HEADER + f"PZH;{STAMP};;;;;;;{oak}\n")
+    data = coordinator.client.parse_csv(HEADER + f"PZH;{STAMP};;;;;;;{oak}\n")
     assert data["oak"]["current"] == int(oak)
     assert data["oak"]["history_24h"] == [int(oak)]
     assert data["oak"]["unit"] == "No/m³"
@@ -37,7 +37,7 @@ def test_oak_only_is_a_valid_measured_source(hass, oak):
 @pytest.mark.parametrize("oak", ["", "bad", "-1", "nan"])
 def test_missing_or_invalid_oak_is_not_zero(hass, oak):
     coordinator = MeteoSwissPollenCoordinator(hass, "PZH")
-    data = coordinator._parse_csv(HEADER + f"PZH;{STAMP};0;0;0;0;0;0;{oak}\n")
+    data = coordinator.client.parse_csv(HEADER + f"PZH;{STAMP};0;0;0;0;0;0;{oak}\n")
     assert data["oak"]["current"] is None
     assert data["birch"]["current"] == 0
 
@@ -58,9 +58,9 @@ async def test_registered_oak_missing_outage_recovery_and_reload_keep_identity(
         ))
         for target, data in {
             "coordinator.MeteoSwissDataUpdateCoordinator": {"temperature": 12},
-            "forecast_coordinator.MeteoSwissForecastCoordinator": [],
-            "binary_sensor.MeteoSwissAlertsCoordinator": [],
-            "pollen_coordinator_openmeteo.OpenMeteoPollenCoordinator": {},
+            "coordinator.MeteoSwissForecastCoordinator": [],
+            "coordinator.MeteoSwissAlertsCoordinator": [],
+            "coordinator.OpenMeteoPollenCoordinator": {},
         }.items():
             stack.enter_context(patch(
                 f"custom_components.meteoswiss.{target}._async_update_data",

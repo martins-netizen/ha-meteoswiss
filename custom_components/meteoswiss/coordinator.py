@@ -12,11 +12,12 @@ from typing import Any
 import aiohttp
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
+from homeassistant.util import dt as dt_util
 
-from .cache import get_current_weather_cache
+from .alerts import MeteoSwissAlertsAPI, WeatherAlert
+from .cache import get_current_weather_cache, get_forecast_cache
 from .const import (
     API_BASE,
-    DEFAULT_API_TIMEOUT,
     DOMAIN,
     MIN_UPDATE_INTERVAL,
     SENSOR_DEW_POINT,
@@ -33,7 +34,19 @@ from .const import (
     SENSOR_WIND_SPEED,
     STAC_COLLECTION,
 )
+from .forecast import IconForecastClient, IconForecastError
+from .http import MAX_CSV_BYTES, OGD_HOST, async_get_bytes, async_get_json
+from .openmeteo import OpenMeteoCurrentClient, OpenMeteoCurrentError
+from .pollen_meteoswiss import (
+    InvalidMeasuredPollenData,
+    MeasuredPollenUnavailable,
+    MeteoSwissPollenClient,
+)
+from .pollen_openmeteo import OpenMeteoPollenClient, OpenMeteoPollenError
+from .pollen_openmeteo import _has_current_values as _pollen_has_current_values
+from .pollen_openmeteo import _is_current_hour as _pollen_is_current_hour
 from .retry import async_retry_with_backoff
+from .weather_data import parse_reference_timestamp as _parse_reference_timestamp
 from .weather_data import validate_observation_time
 
 _LOGGER = logging.getLogger(__name__)
@@ -53,27 +66,6 @@ PARAM_GLOBAL_RAD = "gre000z0"  # Globalstrahlung; Zehnminutenmittel (W/m²)
 PARAM_SNOW_DEPTH = "htoauts0"  # Gesamtschneehöhe; Momentanwert (cm)
 PARAM_DEW_POINT = "tde200s0"  # Taupunkt 2m über Boden; Momentanwert (°C)
 PARAM_FOEHN_INDEX = "wcc006s0"  # Föhnindex; Momentanwert (Code)
-
-
-def _parse_reference_timestamp(value: str | None) -> datetime | None:
-    """Parse a MeteoSwiss reference timestamp as UTC."""
-    timestamp = (value or "").strip()
-    if not timestamp:
-        return None
-
-    try:
-        return datetime.strptime(timestamp, "%d.%m.%Y %H:%M").replace(tzinfo=UTC)
-    except ValueError:
-        pass
-
-    try:
-        parsed = datetime.fromisoformat(timestamp)
-    except ValueError:
-        return None
-
-    if parsed.tzinfo is None:
-        return parsed.replace(tzinfo=UTC)
-    return parsed.astimezone(UTC)
 
 
 class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -119,47 +111,44 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         try:
             url = f"{API_BASE}/collections/{STAC_COLLECTION}/items/{self.station_id}"
             _LOGGER.debug("Fetching station metadata")
-            async with self._session.get(url, timeout=DEFAULT_API_TIMEOUT) as response:
-                response.raise_for_status()
+            data = await async_get_json(self._session, url, host=OGD_HOST)
 
-                data = await response.json()
+            # Find the t_now.csv asset (most recent 10-min data)
+            if not isinstance(data, dict) or not isinstance(
+                data.get("assets", {}), dict
+            ):
+                raise TypeError("Invalid station metadata")
+            assets = data.get("assets", {})
+            asset_key = f"ogd-smn_{self.station_id}_t_now.csv"
 
-                # Find the t_now.csv asset (most recent 10-min data)
-                if not isinstance(data, dict) or not isinstance(
-                    data.get("assets", {}), dict
+            if asset_key in assets:
+                asset = assets[asset_key]
+                if (
+                    not isinstance(asset, dict)
+                    or not isinstance(asset.get("href"), str)
+                    or not asset["href"].strip()
                 ):
-                    raise TypeError("Invalid station metadata")
-                assets = data.get("assets", {})
-                asset_key = f"ogd-smn_{self.station_id}_t_now.csv"
+                    raise ValueError("Invalid station asset")
+                csv_url = asset["href"]
+                _LOGGER.debug("Selected station measurement asset")
+                return csv_url
 
-                if asset_key in assets:
-                    asset = assets[asset_key]
-                    if (
-                        not isinstance(asset, dict)
-                        or not isinstance(asset.get("href"), str)
-                        or not asset["href"].strip()
-                    ):
-                        raise ValueError("Invalid station asset")
-                    csv_url = asset["href"]
-                    _LOGGER.debug("Selected station measurement asset")
-                    return csv_url
+            # Fallback to t_recent.csv if t_now.csv not available
+            asset_key = f"ogd-smn_{self.station_id}_t_recent.csv"
+            if asset_key in assets:
+                asset = assets[asset_key]
+                if (
+                    not isinstance(asset, dict)
+                    or not isinstance(asset.get("href"), str)
+                    or not asset["href"].strip()
+                ):
+                    raise ValueError("Invalid station asset")
+                csv_url = asset["href"]
+                _LOGGER.debug("Selected station measurement asset")
+                return csv_url
 
-                # Fallback to t_recent.csv if t_now.csv not available
-                asset_key = f"ogd-smn_{self.station_id}_t_recent.csv"
-                if asset_key in assets:
-                    asset = assets[asset_key]
-                    if (
-                        not isinstance(asset, dict)
-                        or not isinstance(asset.get("href"), str)
-                        or not asset["href"].strip()
-                    ):
-                        raise ValueError("Invalid station asset")
-                    csv_url = asset["href"]
-                    _LOGGER.debug("Selected station measurement asset")
-                    return csv_url
-
-                _LOGGER.debug("Station metadata has no current or recent asset")
-                return None
+            _LOGGER.debug("Station metadata has no current or recent asset")
+            return None
 
         except (aiohttp.ClientError, TimeoutError):
             raise
@@ -177,12 +166,11 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         try:
             _LOGGER.debug("Fetching station measurements")
-            async with self._session.get(
-                csv_url, timeout=DEFAULT_API_TIMEOUT
-            ) as response:
-                response.raise_for_status()
-
-                content = await response.text(encoding="cp1252")
+            content = (
+                await async_get_bytes(
+                    self._session, csv_url, host=OGD_HOST, max_bytes=MAX_CSV_BYTES
+                )
+            ).decode("cp1252")
 
             _LOGGER.debug("CSV content length: %d chars", len(content))
 
@@ -563,3 +551,308 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     async def async_close(self) -> None:
         """Close is handled centrally by the integration setup."""
         # Home Assistant owns and closes the borrowed shared session.
+
+
+class MeteoSwissAlertsCoordinator(DataUpdateCoordinator[list[WeatherAlert]]):
+    """Class to manage fetching MeteoSwiss alerts."""
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        alerts_api: MeteoSwissAlertsAPI,
+        update_interval: int = 600,
+        warning_labels: dict | None = None,
+    ) -> None:
+        """Initialize."""
+        self._alerts_api = alerts_api
+        self.warning_labels = warning_labels or {}
+        self.last_successful_update: datetime | None = None
+
+        super().__init__(
+            hass,
+            _LOGGER,
+            name=f"{DOMAIN}_alerts",
+            update_interval=timedelta(seconds=update_interval),
+        )
+
+    async def _async_update_data(self) -> list[WeatherAlert]:
+        """Fetch alerts from MeteoSwiss App API."""
+        _LOGGER.debug("Fetching MeteoSwiss alerts")
+
+        try:
+            alerts = await self._alerts_api.get_alerts(self._alerts_api.postal_code)
+        except (aiohttp.ClientError, TimeoutError, ValueError, UnicodeError):
+            raise UpdateFailed("Weather warnings could not be updated") from None
+
+        self.last_successful_update = dt_util.utcnow()
+
+        _LOGGER.debug("Successfully fetched %d MeteoSwiss alerts", len(alerts))
+
+        return alerts
+
+    async def async_close(self) -> None:
+        """Close alerts API session."""
+        await self._alerts_api.close()
+
+
+class MeteoSwissPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
+    """Schedule measured pollen and translate source failures for HA."""
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        station_id: str = "PBE",
+        update_interval: int = 3600,
+        session: aiohttp.ClientSession | None = None,
+    ) -> None:
+        self.client = MeteoSwissPollenClient(station_id, session=session)
+        super().__init__(
+            hass,
+            _LOGGER,
+            name=f"{DOMAIN}_pollen_meteoswiss",
+            update_interval=timedelta(seconds=update_interval),
+        )
+
+    async def _async_update_data(self) -> dict[str, Any]:
+        """Preserve HA source failure versus missing-value semantics."""
+        try:
+            return await self.client.async_get_data()
+        except MeasuredPollenUnavailable:
+            raise UpdateFailed("Measured pollen source unavailable") from None
+        except InvalidMeasuredPollenData:
+            raise UpdateFailed("No valid measured pollen values") from None
+
+
+class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
+    """Schedule modelled current observations and preserve HA acceptance state."""
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        latitude: float,
+        longitude: float,
+        update_interval: int,
+        session: aiohttp.ClientSession | None = None,
+    ) -> None:
+        """Initialize."""
+        self.latitude = latitude
+        self.longitude = longitude
+        self._session = session
+        self.client = OpenMeteoCurrentClient(latitude, longitude, session)
+        self.weather_code = None
+
+        # Circuit breaker state
+        self._consecutive_failures = 0
+        self._circuit_open_until: datetime | None = None
+
+        # Ensure minimum update interval
+        if update_interval < MIN_UPDATE_INTERVAL:
+            _LOGGER.warning(
+                "Update interval %s is below minimum %s, using minimum",
+                update_interval,
+                MIN_UPDATE_INTERVAL,
+            )
+            update_interval = MIN_UPDATE_INTERVAL
+
+        super().__init__(
+            hass,
+            _LOGGER,
+            name=f"{DOMAIN}_openmeteo",
+            update_interval=timedelta(seconds=update_interval),
+        )
+
+    async def _async_update_data(self) -> dict[str, Any]:
+        """Commit only valid, current data; HA logs failure/recovery transitions."""
+        if self._circuit_open_until and datetime.now(UTC) < self._circuit_open_until:
+            raise UpdateFailed("Circuit breaker open — API temporarily unavailable")
+        try:
+            cache = get_current_weather_cache()
+            cache_key = f"openmeteo:v2:{self.latitude},{self.longitude}"
+            cached = cache.get(cache_key)
+            data = cached if cached is not None else await self.client.async_get_data()
+            if not isinstance(data, dict):
+                raise TypeError("Invalid current weather data")
+            validate_observation_time(data)
+            self._consecutive_failures = 0
+            self._circuit_open_until = None
+            self.weather_code = data.get("weather_code")
+            # Reusing a cache hit must not extend its original TTL.
+            if cached is None:
+                cache.set(cache_key, data)
+            return data
+        except (
+            OpenMeteoCurrentError,
+            aiohttp.ClientError,
+            TimeoutError,
+            ValueError,
+            TypeError,
+            UnicodeError,
+            RuntimeError,
+        ):
+            self._consecutive_failures += 1
+            if self._consecutive_failures >= 5:
+                self._circuit_open_until = datetime.now(UTC) + timedelta(minutes=5)
+            # Raw HTTP causes may contain coordinates, even in HA's debug log.
+            raise UpdateFailed("Failed to fetch Open-Meteo current weather") from None
+
+    async def async_close(self) -> None:
+        """The borrowed session is owned and closed by Home Assistant."""
+
+
+class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]]):
+    """Schedule ICON forecasts and retain HA cache/availability lifecycle."""
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        station_id: str | None = None,
+        latitude: float | None = None,
+        longitude: float | None = None,
+        post_code: str | None = None,
+        update_interval: int = 3600,
+        session: aiohttp.ClientSession | None = None,
+    ) -> None:
+        """Initialize."""
+        self._station_id = station_id.lower() if station_id else None
+        self._latitude = latitude
+        self._longitude = longitude
+        self._post_code = post_code
+        self._session = session
+        self.client = IconForecastClient(latitude, longitude, session)
+
+        # Circuit breaker state
+        self._consecutive_failures = 0
+        self._circuit_open_until: datetime | None = None
+
+        if latitude is None or longitude is None:
+            _LOGGER.warning(
+                "No coordinates provided for Open-Meteo forecast. "
+                "Forecast will not be available."
+            )
+
+        super().__init__(
+            hass,
+            _LOGGER,
+            name="meteoswiss_forecast",
+            update_interval=timedelta(seconds=update_interval),
+        )
+
+    async def _async_update_data(self) -> list[dict[str, Any]]:
+        """Fetch forecast data from Open-Meteo API with caching."""
+        # Circuit breaker check
+        if self._circuit_open_until and datetime.now(UTC) < self._circuit_open_until:
+            raise UpdateFailed("Circuit breaker open — API temporarily unavailable")
+
+        _LOGGER.debug("Fetching forecast from Open-Meteo API")
+
+        # Get cache
+        cache = get_forecast_cache()
+        cache_key = f"forecast:v3:icon-seamless:{self._latitude},{self._longitude}"
+
+        # Try cache first
+        cached_data = cache.get(cache_key)
+        if cached_data:
+            _LOGGER.debug("Using cached forecast data")
+            self._consecutive_failures = 0
+            self._circuit_open_until = None
+            return cached_data
+
+        try:
+            data = await self.client.async_get_data()
+
+            # Cache the result
+            cache.set(cache_key, data)
+
+            # Circuit breaker: reset on success
+            self._consecutive_failures = 0
+            self._circuit_open_until = None
+
+            _LOGGER.debug("Successfully updated forecast from Open-Meteo")
+            return data
+        except (
+            IconForecastError,
+            aiohttp.ClientError,
+            TimeoutError,
+            TypeError,
+            ValueError,
+            UpdateFailed,
+        ):
+            self._consecutive_failures += 1
+            if self._consecutive_failures >= 5:
+                self._circuit_open_until = datetime.now(UTC) + timedelta(minutes=5)
+            # HA logs availability transitions. Suppress raw HTTP exception chains,
+            # including coordinate URLs, even when coordinator debug logs are on.
+            raise UpdateFailed("Failed to fetch Open-Meteo forecast") from None
+
+    @property
+    def data_source(self) -> str:
+        """Return which API was used to fetch data."""
+        return "open-meteo"
+
+    async def async_close(self) -> None:
+        """Close is handled centrally by the integration setup."""
+
+
+class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
+    """Schedule modelled pollen/AQ and retain independent optional UV status."""
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        latitude: float,
+        longitude: float,
+        update_interval: int = 1800,  # 30 minutes default
+        session: aiohttp.ClientSession | None = None,
+    ) -> None:
+        """Initialize."""
+        self.latitude = latitude
+        self.longitude = longitude
+        self._session = session
+        self.client = OpenMeteoPollenClient(latitude, longitude, session)
+        self._uv_last_update_success: bool | None = None
+
+        # Ensure minimum update interval
+        if update_interval < MIN_UPDATE_INTERVAL:
+            _LOGGER.warning(
+                "Update interval %s is below minimum %s, using minimum",
+                update_interval,
+                MIN_UPDATE_INTERVAL,
+            )
+            update_interval = MIN_UPDATE_INTERVAL
+
+        super().__init__(
+            hass,
+            _LOGGER,
+            name=f"{DOMAIN}_pollen",
+            update_interval=timedelta(seconds=update_interval),
+        )
+
+    def _log_uv_availability(self, available: bool) -> None:
+        """Log each optional-source outage and recovery once, without URLs."""
+        if self._uv_last_update_success is available:
+            return
+        if not available:
+            _LOGGER.warning("Optional UV response unavailable")
+        elif self._uv_last_update_success is False:
+            _LOGGER.info("Optional UV response recovered")
+        self._uv_last_update_success = available
+
+    async def _async_update_data(self) -> dict[str, Any]:
+        """Share a validated current-hour cache and log only HA transitions."""
+        cache = get_current_weather_cache()
+        cache_key = f"pollen:{self.latitude},{self.longitude}"
+        data = cache.get(cache_key)
+        if data is not None:
+            if _pollen_is_current_hour(
+                data.get("last_update")
+            ) and _pollen_has_current_values(data):
+                self._log_uv_availability(data.get("uv_available", True))
+                return data
+            cache.invalidate(cache_key)
+        try:
+            data = await self.client.async_get_data()
+        except OpenMeteoPollenError:
+            raise UpdateFailed("Pollen and air quality source unavailable") from None
+        self._log_uv_availability(data["uv_available"])
+        cache.set(cache_key, data, ttl=1800.0)
+        return data
