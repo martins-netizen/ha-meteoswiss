@@ -22,11 +22,12 @@ ROOT = Path(__file__).resolve().parents[1]
     params=[
         ("v1.0", "8.2.0", "8.3.0b1", "4c8169206fdcb8688a438c16a93f867a633a344f"),
         ("v1.1", "8.3.0b1", "8.3.0b2", "781ba3a41fafc2e8dd5bc5f867f55c646c4a2412"),
+        ("v1.2", "8.3.0b2", "8.3.0b3", "97338f68038eab80c75c2028c9deb5e24ad552e6"),
     ],
-    ids=["beta1", "beta2"],
+    ids=["beta1", "beta2", "beta3"],
 )
 def publisher(request):
-    """Exercise both historical and follow-up boundaries independently."""
+    """Exercise each historical/follow-up boundary independently."""
     revision, source_version, tag, reviewed = request.param
     script = ROOT / f"scripts/publish_meteoswiss_830_beta_{revision}.sh"
     payload = (
@@ -502,12 +503,16 @@ def test_shell_guard_runs_before_any_external_command(publisher, args, status):
     assert "unbound variable" not in result.stderr
 
 
-def test_beta2_profile_preserves_the_published_first_beta(publisher):
-    if publisher.TAG == "8.3.0b2":
+def test_profiles_preserve_the_preceding_published_betas(publisher):
+    if publisher.TAG in {"8.3.0b2", "8.3.0b3"}:
         assert (
             publisher.PRESERVED_TAGS["8.3.0b1"]
             == "a6b9df9f57dec3e93c8f698133cdb0e7e4c3e937"
         )
     else:
         assert "8.3.0b1" not in publisher.PRESERVED_TAGS
+    if publisher.TAG == "8.3.0b3":
+        assert publisher.PRESERVED_TAGS["8.3.0b2"] == "50b5711213bd8a1706871718a283b9fcb4db257d"
+    else:
+        assert "8.3.0b2" not in publisher.PRESERVED_TAGS
     assert publisher.STABLE_RELEASE_ID == 420392277

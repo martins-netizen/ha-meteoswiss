@@ -1,12 +1,20 @@
 # Release readiness: current candidate and completed 8.2.0
 
-**Document version:** 2.2 · **Updated:** 24 October 2026
+**Document version:** 2.3 · **Updated:** 24 October 2026
 **Purpose:** One entry point for completed evidence, remaining publication steps
 and work deliberately deferred to later versions.
 
 ## Current next-feature release position
 
-**Unreleased correction review after published b2:** the operator confirmed the
+**Prepared 8.3.0b3 package:** PR #63 was approved and regularly squash-merged
+as **97338f68038eab80c75c2028c9deb5e24ad552e6**, preserving reviewed tree
+**22a20a95027c9aa45b108033908062fc8c1422c5**. The new package changes only the
+two component version fields relative to that source, and adds the guarded
+V1.2 publisher plus [release notes](RELEASE_8.3.0b3.md) and
+[acceptance checklist](ACCEPTANCE_8.3.0b3.md). B3 publication and its live HA checks
+remain separate; existing beta/stable tags are preserved.
+
+**Correction review after published b2:** the operator confirmed the
 separate Säntis/Kloten device groups and otherwise reports the beta working on
 HA **2026.10.3**. Three tomorrow values remained unknown for the 25 October
 clock-change day, and the gear exposed only pollen. The

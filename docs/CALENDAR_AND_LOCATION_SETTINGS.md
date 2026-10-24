@@ -1,9 +1,11 @@
 # Calendar-day forecasts and one location-settings dialog
 
-**Guide version:** 1.0 · **Updated:** 24 October 2026  
-**Availability:** unreleased development after published **8.3.0b2**. These
-corrections require a reviewed merge, a new announced package and focused HA
-acceptance. Do not reinstall published b2 expecting them to be included.
+**Guide version:** 1.1 · **Updated:** 24 October 2026
+
+**Availability:** reviewed correction source, prepared for **8.3.0b3** after
+published **8.3.0b2**. The b3 package still needs its approved merge, announced
+publication and focused HA acceptance. Do not reinstall published b2 expecting
+these changes to be included.
 
 ## What the corrections address
 
@@ -38,11 +40,13 @@ confirmation in the same flow. The last page lists the pending weather, pollen,
 forecast and warning choices. **Cancelling any unfinished step saves none of
 the pending changes.** A failed source check remains retryable.
 
-The HA home location remains a general HA setting, not another station to edit
-inside this integration. Modelled air quality, modelled pollen and optional UV
-keep that base location for SwissMetNet entries. For an Open-Meteo current-data
-entry, the dialog shows its base latitude/longitude instead of a measuring
-station. An explicitly selected ICON forecast point remains independent.
+The **HA home location is a general Home Assistant setting**, independent of
+MeteoSwiss/SwissMetNet and pollen measuring stations. This integration uses it
+as the default base for modelled air quality, modelled pollen, optional UV and
+a forecast without a separately chosen point. For the alternative Open-Meteo
+current-data entry, explicitly entered base coordinates take its place; that
+dialog shows latitude/longitude instead of a measuring station. An explicitly
+selected ICON forecast point remains independent.
 
 Existing entity IDs, user names, unknown saved settings and individual legacy
 polling intervals are retained. A loaded entry reloads once through its existing
