@@ -1,7 +1,7 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.25 · **Updated:** 24 October 2026
-**Status:** Approved catalogue-based location implementation; dated catalogue audit complete, selection and review corrections integrated; candidate publication and compatibility acceptance remain open.
+**Plan version:** 1.26 · **Updated:** 24 October 2026
+**Status:** Catalogue/location work and display correction #61 integrated; 8.3.0b1 publication completed; b2 packaging and focused compatibility/display acceptance remain open.
 This document does not approve a new feature, installation or release.
 
 ## Next feature release: agreed scope on 23 October 2026
@@ -21,12 +21,15 @@ catalogue-height requests and height-aware cache identity. The third package now
 PR #58 was approved and regularly merged at 5bed187 on 23 October UTC. Its
 exact tree and all seven post-merge checks are confirmed. The overall review
 identified corrections integrated through approved PR #59 at 4c81692, with
-all seven post-merge checks successful. The runtime scope is frozen there;
-the [8.3.0b1 packet](RELEASE_8.3.0b1.md) and
-[focused test protocol](ACCEPTANCE_8.3.0b1.md) are now prepared for their separate
-packaging/publication approval and candidate acceptance.
-Only then freeze features, reconcile release documentation, package a reviewed
-candidate and perform focused acceptance in the existing temporary HA.
+all seven post-merge checks successful. [8.3.0b1](RELEASE_8.3.0b1.md) was
+published on 24 October. Initial operator testing confirmed Säntis choices but
+exposed ambiguous station/forecast names. Approved PR #61 corrected that
+separation and is regularly merged at **781ba3a41fafc2e8dd5bc5f867f55c646c4a2412**,
+with matching tree and seven successful post-merge checks. Runtime is frozen
+there for the [8.3.0b2 packet](RELEASE_8.3.0b2.md) and
+[focused b2 protocol](ACCEPTANCE_8.3.0b2.md). Packaging review/merge and exact
+checks precede the announced follow-up publication and remaining temporary-HA
+acceptance. The README explicitly maps each place setting to its data role.
 
 Use the official MeteoSwiss forecast-point catalogue for postcode/town/POI
 selection, with explicit result choice and coordinate/altitude provenance.
@@ -34,7 +37,8 @@ Keep ICON Seamless as the forecast source and App v3 warnings at a separately
 confirmed warning postcode. Catalogue adoption is not permission to silently
 switch to processed OGD forecasts or infer warning coverage for a mountain POI.
 Existing entries retain their location meaning and identities until an explicit
-change. The proposed version is 8.3.0, initially 8.3.0b1; nothing is published.
+change. The target stable version is 8.3.0. Test prerelease 8.3.0b1 is published;
+8.3.0b2 is prepared but not yet published.
 The broader Silver/Gold matrix remains a separate evidence claim, not a new
 unbounded prerequisite for every release step. A next-day release estimate for
 the smaller forecast-only scope no longer applies.

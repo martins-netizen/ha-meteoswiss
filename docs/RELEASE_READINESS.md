@@ -1,6 +1,6 @@
 # Release readiness: current candidate and completed 8.2.0
 
-**Document version:** 2.0 · **Updated:** 24 October 2026
+**Document version:** 2.1 · **Updated:** 24 October 2026
 **Purpose:** One entry point for completed evidence, remaining publication steps
 and work deliberately deferred to later versions.
 
@@ -36,19 +36,28 @@ fixed-offset/25-hour limitation. Säntis station/POI choices and selection were
 also confirmed. The resulting screenshot exposed a new acceptance finding:
 Säntis forecasts were displayed under the Kloten device/combined weather name.
 
-**Before promotion:** review and integrate the unreleased [display correction](FORECAST_DISPLAY.md),
-then prepare a separately approved follow-up prerelease. It groups eight scalars,
-HGT and a new forecast-only weather entity by the selected point, retaining old
-IDs and personal names. Explicit catalogue selections remove forecast features
-from the original current-condition weather entity; update forecast card/action
-targets as documented. No extra coordinator/polling is introduced. Local verification: **1,352 tests plus 53 subtests** pass on each actual HA
-**2026.8.3 / 2026.10.2** environment, including twelve new display/registry cases.
-Combined coverage is **99.97545%** (3,197/3,198 lines; 876/876 branches), with
-all strict module gates and four existing exclusions retained. Four complete
-143-key catalogues, production/changed-test Ruff and local Markdown targets
-pass. Registered-HA cases cover four UI languages, b1 registry records, source
-independence, live forecast subscribers and reset/reload. Exact PR CI and a
-follow-up HA check remain.
+PR #61 is approved and regularly merged as **781ba3a41fafc2e8dd5bc5f867f55c646c4a2412**,
+with tree **1d956269953b0bea18fb70b042471f01ab584743** matching the approved
+head. Eight PR and seven post-merge checks passed. The source/runtime scope is
+frozen there for **8.3.0b2**: separate forecast device, eight scalars/HGT and
+forecast-only weather entity, preserving IDs and documenting card/action targets.
+
+**Prepared b2 package:** two component version fields, English
+[notes](RELEASE_8.3.0b2.md), [focused protocol](ACCEPTANCE_8.3.0b2.md) and
+[Publisher V1.1](../scripts/publish_meteoswiss_830_beta_v1.1.sh). Thirty-six other
+component files, HACS metadata and workflows are identical to the #61 merge.
+V1.1 derives from the successful b1 publisher and checks that b1's tag and
+latest stable 8.2.0 remain unchanged. This is not a published b2 or completed
+HA acceptance. Packaging PR review/merge, exact post-merge checks and approved
+prerelease publication are next.
+
+The display source's retained local evidence is 1,352 tests/53 subtests on
+HA 2026.8.3/2026.10.2, including twelve display/registry cases and 99.97545%
+combined coverage (3,197/3,198 lines; 876/876 branches). The b2 package passes **1,395 tests plus 53 subtests** in each environment,
+including **88 shared publisher-profile cases**. Full regressions and both
+historical/follow-up guard profiles run independently of root version, without
+lowering any gate. Four complete 143-key catalogues and all prior runtime
+exclusions remain. CI remains HA 2026.8.3 / 2026.10.1.
 
 After that candidate is installed, verify the changed display/card target and
 complete remaining point/pass/hut/language/new-entry checks. Keep the existing

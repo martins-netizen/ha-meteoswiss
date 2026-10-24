@@ -16,10 +16,30 @@ from unittest.mock import patch
 import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
-SCRIPT = ROOT / "scripts/publish_meteoswiss_830_beta_v1.0.sh"
-PAYLOAD = SCRIPT.read_text().split("<<'PY_PUBLISH'\n", 1)[1].split("\nPY_PUBLISH", 1)[0]
-publisher = types.ModuleType("release_830_publisher_under_test")
-exec(compile(PAYLOAD, str(SCRIPT), "exec"), publisher.__dict__)
+
+
+@pytest.fixture(
+    params=[
+        ("v1.0", "8.2.0", "8.3.0b1", "4c8169206fdcb8688a438c16a93f867a633a344f"),
+        ("v1.1", "8.3.0b1", "8.3.0b2", "781ba3a41fafc2e8dd5bc5f867f55c646c4a2412"),
+    ],
+    ids=["beta1", "beta2"],
+)
+def publisher(request):
+    """Exercise both historical and follow-up boundaries independently."""
+    revision, source_version, tag, reviewed = request.param
+    script = ROOT / f"scripts/publish_meteoswiss_830_beta_{revision}.sh"
+    payload = (
+        script.read_text().split("<<'PY_PUBLISH'\n", 1)[1].split("\nPY_PUBLISH", 1)[0]
+    )
+    module = types.ModuleType("release_830_publisher_under_test")
+    exec(compile(payload, str(script), "exec"), module.__dict__)
+    assert module.TAG == tag and module.REVIEWED_SOURCE == reviewed
+    module._script = script
+    module._source_version = source_version
+    return module
+
+
 COMMIT = "a" * 40
 OTHER = "b" * 40
 PREFIX = "custom_components/meteoswiss/"
@@ -35,7 +55,8 @@ def blob(text):
 class GitHub:
     """Public response fixtures; the only simulated write creates this beta."""
 
-    def __init__(self):
+    def __init__(self, publisher):
+        self.publisher = publisher
         files = [
             p
             for p in (ROOT / PREFIX).rglob("*")
@@ -45,13 +66,28 @@ class GitHub:
             str(p.relative_to(ROOT)): ("100644", blob(p.read_bytes())) for p in files
         }
         self.source = copy.deepcopy(self.candidate)
-        self.manifest = json.loads((ROOT / PREFIX / "manifest.json").read_text())
-        self.source_manifest = {**self.manifest, "version": "8.2.0"}
-        self.version = (ROOT / PREFIX / "version.py").read_text()
-        self.source_version = self.version.replace('"8.3.0b1"', '"8.2.0"')
+        self.manifest = {
+            **json.loads((ROOT / PREFIX / "manifest.json").read_text()),
+            "version": self.publisher.TAG,
+        }
+        self.source_manifest = {
+            **self.manifest,
+            "version": self.publisher._source_version,
+        }
+        root_version = json.loads((ROOT / PREFIX / "manifest.json").read_text())[
+            "version"
+        ]
+        self.version = (
+            (ROOT / PREFIX / "version.py")
+            .read_text()
+            .replace(f'"{root_version}"', f'"{self.publisher.TAG}"')
+        )
+        self.source_version = self.version.replace(
+            f'"{self.publisher.TAG}"', f'"{self.publisher._source_version}"'
+        )
         self.hacs = json.loads((ROOT / "hacs.json").read_text())
         self.source_hacs = dict(self.hacs)
-        self.notes = (ROOT / "docs/RELEASE_8.3.0b1.md").read_text()
+        self.notes = (ROOT / f"docs/RELEASE_{self.publisher.TAG}.md").read_text()
         self.rows = [
             dict(
                 id=i + 1,
@@ -61,7 +97,7 @@ class GitHub:
                 head_sha=COMMIT,
                 app={"id": 12526 if name.startswith("Sonar") else 15368},
             )
-            for i, name in enumerate(sorted(publisher.REQUIRED_CHECKS))
+            for i, name in enumerate(sorted(self.publisher.REQUIRED_CHECKS))
         ]
         self.calls = []
         self.branch = COMMIT
@@ -69,10 +105,10 @@ class GitHub:
         self.branch_reads = 0
         self.move = False
         self.tag = None
-        self.tags = dict(publisher.PRESERVED_TAGS)
+        self.tags = dict(self.publisher.PRESERVED_TAGS)
         self.release = None
         self.stable = dict(
-            id=publisher.STABLE_RELEASE_ID,
+            id=self.publisher.STABLE_RELEASE_ID,
             tag_name="8.2.0",
             draft=False,
             prerelease=False,
@@ -82,7 +118,7 @@ class GitHub:
         self.truncated = False
         self.extra_entry = None
         self.repo = dict(
-            full_name=publisher.REPOSITORY,
+            full_name=self.publisher.REPOSITORY,
             default_branch="development",
             private=False,
             archived=False,
@@ -93,20 +129,20 @@ class GitHub:
 
     def __call__(self, path, *, method="GET", body=None, missing_ok=False):
         self.calls.append((method, path, copy.deepcopy(body)))
-        suffix = path.removeprefix(publisher.API_PREFIX)
+        suffix = path.removeprefix(self.publisher.API_PREFIX)
         if method == "POST":
             assert suffix == "/releases"
-            assert body["tag_name"] == "8.3.0b1"
+            assert body["tag_name"] == self.publisher.TAG
             assert body["target_commitish"] == COMMIT
             assert body["prerelease"] is True and body["draft"] is False
             assert body["make_latest"] == "false"
             self.tag = COMMIT
             self.release = dict(
                 id=7,
-                tag_name="8.3.0b1",
+                tag_name=self.publisher.TAG,
                 draft=False,
                 prerelease=True,
-                html_url=publisher.RELEASE_URL,
+                html_url=self.publisher.RELEASE_URL,
                 body=body["body"],
                 published_at="2026-10-24T08:00:00Z",
             )
@@ -125,7 +161,7 @@ class GitHub:
         if suffix.startswith("/git/trees/"):
             files = (
                 self.source
-                if suffix.endswith(publisher.REVIEWED_SOURCE + "?recursive=1")
+                if suffix.endswith(self.publisher.REVIEWED_SOURCE + "?recursive=1")
                 else self.candidate
             )
             rows = [
@@ -143,14 +179,14 @@ class GitHub:
             return {"total_count": 0, "statuses": []}
         if suffix.startswith("/git/ref/tags/"):
             tag = suffix.rsplit("/", 1)[1]
-            sha = self.tag if tag == publisher.TAG else self.tags.get(tag)
+            sha = self.tag if tag == self.publisher.TAG else self.tags.get(tag)
             return {"object": {"type": "commit", "sha": sha}} if sha else None
         if suffix == "/releases/latest":
             return copy.deepcopy(self.stable)
-        if suffix == "/releases/tags/" + publisher.TAG:
+        if suffix == "/releases/tags/" + self.publisher.TAG:
             return copy.deepcopy(self.release)
         if suffix.startswith("/contents/"):
-            source = suffix.endswith("?ref=" + publisher.REVIEWED_SOURCE)
+            source = suffix.endswith("?ref=" + self.publisher.REVIEWED_SOURCE)
             if "manifest.json?" in suffix:
                 text = json.dumps(self.source_manifest if source else self.manifest)
             elif "version.py?" in suffix:
@@ -171,14 +207,14 @@ class GitHub:
 
 
 def run(fake, *, write=False):
-    with patch.object(publisher, "api", fake):
-        return publisher.publish(
+    with patch.object(fake.publisher, "api", fake):
+        return fake.publisher.publish(
             COMMIT, {"release_write_attempted": False}, allow_write=write
         )
 
 
-def test_default_preflight_is_read_only_and_preserves_stable():
-    fake = GitHub()
+def test_default_preflight_is_read_only_and_preserves_stable(publisher):
+    fake = GitHub(publisher)
     result = run(fake)
     assert result["status"] == "ready_to_publish"
     assert result["component_files_identical"] == 36
@@ -188,15 +224,15 @@ def test_default_preflight_is_read_only_and_preserves_stable():
     assert not fake.writes() and fake.tag is None
 
 
-def test_publish_creates_exact_beta_once_and_resolves_note_links():
-    fake = GitHub()
+def test_publish_creates_exact_beta_once_and_resolves_note_links(publisher):
+    fake = GitHub(publisher)
     result = run(fake, write=True)
     assert result["status"] == "published_and_verified"
     assert result["release_id"] == 7
     assert len(fake.writes()) == 1
     body = fake.writes()[0][2]["body"]
     assert "Prepared candidate" not in body
-    assert f"/blob/{COMMIT}/docs/ACCEPTANCE_8.3.0b1.md" in body
+    assert f"/blob/{COMMIT}/docs/ACCEPTANCE_{publisher.TAG}.md" in body
     fake.calls.clear()
     assert run(fake, write=True)["status"] == "already_published_and_verified"
     assert fake.writes() == []
@@ -212,8 +248,8 @@ def test_publish_creates_exact_beta_once_and_resolves_note_links():
         (PREFIX + "version.py", ("120000", OTHER)),
     ],
 )
-def test_unreviewed_file_changes_stop_before_write(path, value):
-    fake = GitHub()
+def test_unreviewed_file_changes_stop_before_write(publisher, path, value):
+    fake = GitHub(publisher)
     if value is None:
         fake.candidate.pop(path)
     else:
@@ -234,8 +270,8 @@ def test_unreviewed_file_changes_stop_before_write(path, value):
         ("stable", "id", 1),
     ],
 )
-def test_unreviewed_metadata_stops_before_write(area, key, value):
-    fake = GitHub()
+def test_unreviewed_metadata_stops_before_write(publisher, area, key, value):
+    fake = GitHub(publisher)
     getattr(fake, area)[key] = value
     with pytest.raises(publisher.PublicationError):
         run(fake, write=True)
@@ -256,36 +292,36 @@ def test_unreviewed_metadata_stops_before_write(area, key, value):
         ("tag", OTHER),
     ],
 )
-def test_invalid_provenance_stops_before_write(attribute, value):
-    fake = GitHub()
+def test_invalid_provenance_stops_before_write(publisher, attribute, value):
+    fake = GitHub(publisher)
     setattr(fake, attribute, value)
     with pytest.raises(publisher.PublicationError):
         run(fake, write=True)
     assert not fake.writes()
 
 
-def test_added_code_in_version_module_stops_before_write():
-    fake = GitHub()
+def test_added_code_in_version_module_stops_before_write(publisher):
+    fake = GitHub(publisher)
     fake.version += "unreviewed = True\n"
     with pytest.raises(publisher.PublicationError):
         run(fake, write=True)
     assert not fake.writes()
 
 
-@pytest.mark.parametrize("tag", sorted(publisher.PRESERVED_TAGS))
-def test_all_immutable_old_tags_are_checked(tag):
-    fake = GitHub()
-    fake.tags[tag] = OTHER
-    with pytest.raises(publisher.PublicationError):
-        run(fake, write=True)
-    assert not fake.writes()
+def test_all_immutable_old_tags_are_checked(publisher):
+    for tag in publisher.PRESERVED_TAGS:
+        fake = GitHub(publisher)
+        fake.tags[tag] = OTHER
+        with pytest.raises(publisher.PublicationError):
+            run(fake, write=True)
+        assert not fake.writes(), tag
 
 
 @pytest.mark.parametrize(
     "change", ["missing", "pending", "failure", "wrong_app", "wrong_head", "sonar_app"]
 )
-def test_checks_require_successful_exact_head_and_expected_apps(change):
-    fake = GitHub()
+def test_checks_require_successful_exact_head_and_expected_apps(publisher, change):
+    fake = GitHub(publisher)
     if change == "missing":
         fake.rows.pop()
     elif change == "pending":
@@ -309,8 +345,8 @@ def test_checks_require_successful_exact_head_and_expected_apps(change):
     "field,value",
     [("draft", True), ("prerelease", False), ("body", "different"), ("id", None)],
 )
-def test_conflicting_existing_release_is_never_rewritten(field, value):
-    fake = GitHub()
+def test_conflicting_existing_release_is_never_rewritten(publisher, field, value):
+    fake = GitHub(publisher)
     run(fake, write=True)
     fake.calls.clear()
     fake.release[field] = value
@@ -319,8 +355,10 @@ def test_conflicting_existing_release_is_never_rewritten(field, value):
     assert not fake.writes()
 
 
-def test_uncertain_write_records_receipt_and_retry_does_not_post_again(tmp_path):
-    fake = GitHub()
+def test_uncertain_write_records_receipt_and_retry_does_not_post_again(
+    publisher, tmp_path
+):
+    fake = GitHub(publisher)
     fake.fail_after_post = True
     path = tmp_path / "receipt.json"
     with patch.object(publisher, "api", fake):
@@ -329,15 +367,17 @@ def test_uncertain_write_records_receipt_and_retry_does_not_post_again(tmp_path)
     assert receipt["status"] == "publication_result_unconfirmed"
     assert receipt["release_write_attempted"] is True
     assert receipt["ha_writes_performed"] is False
-    assert receipt["focused_ha_ui_acceptance"] == "pending_8.3.0b1"
+    assert receipt["focused_ha_ui_acceptance"] == f"pending_{publisher.TAG}"
     fake.fail_after_post = False
     fake.calls.clear()
     assert run(fake, write=True)["status"] == "already_published_and_verified"
     assert not fake.writes()
 
 
-def test_changed_latest_stable_after_post_is_not_reported_as_success(tmp_path):
-    fake = GitHub()
+def test_changed_latest_stable_after_post_is_not_reported_as_success(
+    publisher, tmp_path
+):
+    fake = GitHub(publisher)
     fake.change_stable_after_post = True
     path = tmp_path / "receipt.json"
     with patch.object(publisher, "api", fake):
@@ -345,15 +385,15 @@ def test_changed_latest_stable_after_post_is_not_reported_as_success(tmp_path):
     assert json.loads(path.read_text())["status"] == "publication_result_unconfirmed"
 
 
-def test_unusable_receipt_path_stops_before_any_api_access(tmp_path):
+def test_unusable_receipt_path_stops_before_any_api_access(publisher, tmp_path):
     with patch.object(publisher, "api") as api:
         with pytest.raises(OSError):
             publisher.main(COMMIT, tmp_path / "missing" / "receipt.json", "--publish")
     api.assert_not_called()
 
 
-def test_check_receipt_is_explicitly_read_only(tmp_path):
-    fake = GitHub()
+def test_check_receipt_is_explicitly_read_only(publisher, tmp_path):
+    fake = GitHub(publisher)
     path = tmp_path / "receipt.json"
     with patch.object(publisher, "api", fake):
         assert publisher.main(COMMIT, path) == 0
@@ -363,7 +403,7 @@ def test_check_receipt_is_explicitly_read_only(tmp_path):
     assert not fake.writes()
 
 
-def test_api_boundary_rejects_other_writes_and_hides_gh_stderr():
+def test_api_boundary_rejects_other_writes_and_hides_gh_stderr(publisher):
     for path, method in [
         (publisher.API_PREFIX + "/git/refs", "POST"),
         ("repos/other/repo", "GET"),
@@ -385,9 +425,9 @@ def test_api_boundary_rejects_other_writes_and_hides_gh_stderr():
     assert process.call_args.args[0][2:4] == ["--hostname", "github.com"]
 
 
-def test_standalone_read_only_shell_works_without_a_checkout(tmp_path):
+def test_standalone_read_only_shell_works_without_a_checkout(publisher, tmp_path):
     """Run the whole shell/Python/log chain with an executable fake gh."""
-    fake = GitHub()
+    fake = GitHub(publisher)
     run(fake)
     responses = {
         path: fake(path) for method, path, _ in list(fake.calls) if method == "GET"
@@ -412,9 +452,9 @@ def test_standalone_read_only_shell_works_without_a_checkout(tmp_path):
     )
     gh.chmod(0o700)
     diagnostics = tmp_path / "diagnostics"
-    script = tmp_path / SCRIPT.name
+    script = tmp_path / publisher._script.name
     # Redirect only the diagnostic directory; do not repurpose HOME.
-    source = SCRIPT.read_text()
+    source = publisher._script.read_text()
     line = 'DIAG_DIR="${HOME}/Downloads/HA/05_Diagnose"'
     assert source.count(line) == 1
     script.write_text(source.replace(line, f'DIAG_DIR="{diagnostics}"'))
@@ -449,9 +489,9 @@ def test_standalone_read_only_shell_works_without_a_checkout(tmp_path):
         (["--unknown", "a" * 40], 2),
     ],
 )
-def test_shell_guard_runs_before_any_external_command(args, status):
+def test_shell_guard_runs_before_any_external_command(publisher, args, status):
     result = subprocess.run(
-        ["/bin/bash", str(SCRIPT), *args],
+        ["/bin/bash", str(publisher._script), *args],
         env={"PATH": "/nonexistent"},
         text=True,
         capture_output=True,
@@ -460,3 +500,14 @@ def test_shell_guard_runs_before_any_external_command(args, status):
     )
     assert result.returncode == status
     assert "unbound variable" not in result.stderr
+
+
+def test_beta2_profile_preserves_the_published_first_beta(publisher):
+    if publisher.TAG == "8.3.0b2":
+        assert (
+            publisher.PRESERVED_TAGS["8.3.0b1"]
+            == "a6b9df9f57dec3e93c8f698133cdb0e7e4c3e937"
+        )
+    else:
+        assert "8.3.0b1" not in publisher.PRESERVED_TAGS
+    assert publisher.STABLE_RELEASE_ID == 420392277

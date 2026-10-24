@@ -1,9 +1,10 @@
 # Keep current conditions and a selected forecast location distinct
 
-**Guide version:** 1.0 · **Updated:** 24 October 2026.
-**Availability:** development after the published **8.3.0b1**. This correction
-is not included in that immutable prerelease or stable 8.2.0. Wait for an
-announced reviewed follow-up; do not download a branch to try it.
+**Guide version:** 1.1 · **Updated:** 24 October 2026.
+**Availability:** the prepared **8.3.0b2** candidate, based on reviewed PR #61.
+This correction is not included in immutable 8.3.0b1 or stable 8.2.0. Follow the
+[b2 notes](RELEASE_8.3.0b2.md) and [focused protocol](ACCEPTANCE_8.3.0b2.md);
+wait for an announced release rather than downloading a branch.
 
 ## What changes on screen
 
