@@ -22,7 +22,7 @@ refer to four different places.** Each has a specific purpose:
 
 | Place | What it is used for | Example |
 |---|---|---|
-| **1. HA home location** | For a SwissMetNet entry, the base coordinates for **modelled air quality, modelled pollen and optional UV**. Also the weather-forecast location when you keep or explicitly return to the original base coordinates. | Your configured home position in **Kloten**. |
+| **1. HA home location** | The HA base coordinates are used for **modelled air quality, modelled pollen and optional UV via Open-Meteo**. They also define the **MeteoSwiss weather-forecast location** when you keep or explicitly return to the original base coordinates. | Your configured home position in **Kloten**. |
 | **2. Pollen measurement station** | **Measured pollen concentrations** from the selected MeteoSwiss pollen station. Independent of weather measurements and weather forecasts. | **Zürich (PZH)**. |
 | **3. Weather measurement station** | **Measured current temperature, wind, rain and other observations**, shown on the station device and its original weather entity. | **Zürich/Kloten**. |
 | **4. Weather forecast location** | **ICON predictions:** hourly/daily forecasts, eight today/tomorrow sensors and calculated heating degree days. In b2, the separate forecast weather entity also shows the chosen point's **current model hour**, which is a prediction rather than a station measurement. | A selected town/postcode point or **Säntis** POI. |
@@ -51,7 +51,7 @@ These entered coordinates also become that entry's base location for
 AQ/pollen/UV and its default weather forecast. An explicit forecast selection
 still changes only the ICON forecast role.
 
-**Unreleased corrections after b2:** the existing entry’s **Configure (gear)**
+**Prepared b3 correction package:** the existing entry’s **Configure (gear)**
 now brings the **weather measuring station, measured-pollen station and forecast
 location into one dialog**, alongside the independent warning postcode. A
 postcode/town/POI search continues inside the same flow; cancelling preserves
@@ -120,8 +120,14 @@ It keeps current conditions and selected-place predictions distinct and includes
 [one card/action target change](docs/FORECAST_DISPLAY.md#update-an-existing-card-or-forecast-action-once).
 See [b2 notes](docs/RELEASE_8.3.0b2.md) and its [focused protocol](docs/ACCEPTANCE_8.3.0b2.md).
 This correction is not in 8.3.0b1. The calendar-day and unified-settings corrections described above are **not
-in published b2**. They need a reviewed merge, a new announced package and
+in published b2**. They need a reviewed packaging merge, a new announced package and
 focused HA acceptance before a stable 8.3.0 release.
+**Prepared follow-up candidate: 8.3.0b3** includes those reviewed corrections:
+[release notes](docs/RELEASE_8.3.0b3.md) and
+[focused acceptance](docs/ACCEPTANCE_8.3.0b3.md). It brings all three location
+choices into the same Configure dialog and validates whole Swiss calendar days
+through clock changes. Wait for its explicitly announced publication; this
+source version alone does not make it available in HACS.
 Stable 8.2.0 remains the normal installation route. Neither a branch nor an
 open PR is an installation target.
 The [overall review](docs/RELEASE_REVIEW_2026-10-24.md) and
