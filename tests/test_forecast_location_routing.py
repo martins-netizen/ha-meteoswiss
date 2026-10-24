@@ -236,16 +236,20 @@ async def test_real_entry_routes_forecast_only_and_reload_preserves_ids(
                 state.attributes[CONF_FORECAST_LOCATION]["status"]
                 == runtime.forecast_target.status
             )
-        forecast_result = await hass.services.async_call(
-            "weather",
-            "get_forecasts",
-            {"entity_id": weather_id, "type": "hourly"},
-            blocking=True,
-            return_response=True,
+        forecast_weather_id = registry.async_get_entity_id(
+            "weather", DOMAIN, f"{DOMAIN}_{entry.entry_id}_forecast_weather"
         )
-        assert bool(forecast_result[weather_id]["forecast"]) == (selection != "invalid")
-        if selection != "invalid":
-            assert forecast_result[weather_id]["forecast"][0]["temperature"] == -10
+        assert forecast_weather_id != weather_id
+        if selection == "invalid":
+            assert hass.states.get(forecast_weather_id).state == "unavailable"
+        else:
+            forecast_result = await hass.services.async_call(
+                "weather", "get_forecasts",
+                {"entity_id": forecast_weather_id, "type": "hourly"},
+                blocking=True, return_response=True,
+            )
+            assert forecast_result[forecast_weather_id]["forecast"][0]["temperature"] == -10
+        assert bool(state.attributes["supported_features"]) == (selection == "legacy")
         for entity_id in ids:
             if (
                 "maximum_temperature_today_forecast" in entity_id

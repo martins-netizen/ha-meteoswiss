@@ -51,6 +51,29 @@ midnight and three-hour retrieval-age boundaries and are cancelled on unload.
 Forecast sensors have no measurement/total state class and retain numeric states
 with bounded peak-window attributes. See [the forecast guide](FORECAST_SENSORS.md).
 
+## Distinct forecast display (development after 8.3.0b1)
+
+The [display contract](FORECAST_DISPLAY.md) separates the existing observation
+weather/device from a location-labelled forecast group. DeviceInfo translation
+keys render the selected catalogue name or an explicit base/invalid-location
+label in all four UI languages. The group reuses the existing calculated/HGT
+device identifier; eight scalar registry records move to it without changing
+unique/entity IDs. HGT remains on that same device. HA retains user names,
+areas and entity options; no registry purge or location-specific device is added.
+
+A new stable `_forecast_weather` unique ID projects only the existing ICON
+snapshot, including its current model hour. It does not borrow any observation
+coordinator fields and adds no polling/request/cache. Shared native forecast
+projection/subscriber methods live in MeteoSwissForecastWeatherBase. Missing
+fields/current hours remain absent/unknown, failed/stale data unavailable.
+The original weather entity keeps its ID and current source. Once a catalogue
+point is selected (or invalid), it advertises no forecast features; without a
+selection its legacy combined interface remains for compatibility. Forecast
+cards/actions for a selected point therefore need the new entity target.
+Source requests, coordinates, warnings, AQ/pollen/UV and Recorder contracts are
+unchanged. Tests cover a real HA registry with old IDs, translated names,
+independent source failures and reset/reload, not just constructed metadata.
+
 ## Sources and time
 
 | Data | Source and location | Time semantics |
@@ -171,7 +194,7 @@ Only validated forecasts enter the versioned 30-minute cache. Transient
 transport failures retry at most three times; malformed data is not retried.
 Five failed refreshes retain the existing five-minute circuit-breaker pause.
 The weather entity continues exposing valid observations during a forecast
-failure, while its hourly/daily forecast services return empty lists. A valid
+failure. Supported hourly/daily forecast projections return empty lists. A valid
 refresh restores forecasts automatically. Coordinator transition logs replace
 duplicate client errors; the client logs neither the coordinate URL nor raw
 HTTP exception chains, including at debug level. Tests exercise the registered

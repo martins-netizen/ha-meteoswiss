@@ -35,8 +35,13 @@ from .coordinator import (
     MeteoSwissForecastCoordinator,
     OpenMeteoDataUpdateCoordinator,
 )
-from .entity import MeteoSwissCoordinatorEntity, weather_device_info
+from .entity import (
+    MeteoSwissCoordinatorEntity,
+    forecast_device_info,
+    weather_device_info,
+)
 from .forecast_location_config import resolve_forecast_target
+from .forecast_summary import FORECAST_ATTRIBUTION
 from .runtime_data import MeteoSwissConfigEntry
 from .weather_data import (
     FORECAST_TIME_ZONE,
@@ -126,78 +131,18 @@ def _forecast(timestamp: datetime, entry: dict) -> Forecast:
     )
 
 
-async def async_setup_entry(
-    hass: HomeAssistant,
-    entry: MeteoSwissConfigEntry,
-    async_add_entities,
-) -> None:
-    """Set up weather platform without changing existing entity identity."""
-    async_add_entities(
-        [
-            MeteoSwissWeather(
-                entry.runtime_data.coordinator,
-                entry.runtime_data.forecast_coordinator,
-                entry,
-                entry.data.get(CONF_STATION_NAME, "Unknown"),
-            )
-        ]
-    )
+class MeteoSwissForecastWeatherBase(WeatherEntity):
+    """Project one existing ICON snapshot into HA weather forecasts."""
 
-
-class MeteoSwissWeather(
-    MeteoSwissCoordinatorEntity[
-        MeteoSwissDataUpdateCoordinator | OpenMeteoDataUpdateCoordinator
-    ],
-    WeatherEntity,
-):
-    """Observations and independent ICON forecasts for one existing entry."""
-
-    METEOSWISS_CONDITION_MAP: Final[dict[str, str]] = {
-        "clear": "sunny",
-        "sunny": "sunny",
-        "partly-cloudy": "partlycloudy",
-        "cloudy": "cloudy",
-        "overcast": "cloudy",
-        "rain": "rainy",
-        "rainy": "rainy",
-        "snow": "snowy",
-        "snowy": "snowy",
-        "fog": "fog",
-        "mist": "fog",
-        "thunderstorm": "lightning",
-    }
+    _entry: MeteoSwissConfigEntry
+    _forecast_coordinator: MeteoSwissForecastCoordinator | None
     _attr_supported_features = (
         WeatherEntityFeature.FORECAST_HOURLY | WeatherEntityFeature.FORECAST_DAILY
     )
-
-    def __init__(
-        self,
-        coordinator: MeteoSwissDataUpdateCoordinator | OpenMeteoDataUpdateCoordinator,
-        forecast_coordinator: MeteoSwissForecastCoordinator | None,
-        entry: MeteoSwissConfigEntry,
-        station_name: str,
-    ) -> None:
-        super().__init__(coordinator)
-        self._entry = entry
-        self._forecast_coordinator = forecast_coordinator
-        self._forecast_target = resolve_forecast_target(entry.data, None, None)
-        self._attr_device_info = weather_device_info(entry.entry_id, station_name)
-        self._attr_name = None
-        self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_weather"
-        self._attr_native_temperature_unit = UnitOfTemperature.CELSIUS
-        self._attr_native_pressure_unit = UnitOfPressure.HPA
-        self._attr_native_wind_speed_unit = UnitOfSpeed.KILOMETERS_PER_HOUR
-        self._attr_native_precipitation_unit = UnitOfPrecipitationDepth.MILLIMETERS
-
-    async def async_added_to_hass(self) -> None:
-        """Own both coordinator subscriptions for the entity's lifetime."""
-        await super().async_added_to_hass()
-        if self._forecast_coordinator:
-            self.async_on_remove(
-                self._forecast_coordinator.async_add_listener(
-                    self._handle_forecast_update
-                )
-            )
+    _attr_native_temperature_unit = UnitOfTemperature.CELSIUS
+    _attr_native_pressure_unit = UnitOfPressure.HPA
+    _attr_native_wind_speed_unit = UnitOfSpeed.KILOMETERS_PER_HOUR
+    _attr_native_precipitation_unit = UnitOfPrecipitationDepth.MILLIMETERS
 
     @callback
     def _handle_forecast_update(self) -> None:
@@ -210,19 +155,12 @@ class MeteoSwissWeather(
         )
 
     @property
-    def coordinator_data(self) -> dict:
-        """Only a successful observation source supplies current attributes."""
-        if not self.coordinator or not self.coordinator.last_update_success:
-            return {}
-        data = self.coordinator.data
-        return data if isinstance(data, dict) else {}
-
-    @property
     def forecast_coordinator_data(self) -> list:
         """Retained failed/stale forecasts must not appear current."""
         source = self._forecast_coordinator
         if (
-            not source
+            not self.supported_features
+            or not source
             or not source.last_update_success
             or not isinstance(source.data, list)
         ):
@@ -254,6 +192,160 @@ class MeteoSwissWeather(
                 continue
             if (timestamp := forecast_datetime(entry.get("datetime"))) is not None:
                 yield timestamp, entry
+
+    async def async_forecast_hourly(self) -> list[Forecast]:
+        """At most 24 valid temperatures in the current rolling 24-hour window."""
+        now = dt_util.utcnow()
+        end = now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=24)
+        return [
+            _forecast(timestamp, entry)
+            for timestamp, entry in self._forecast_entries()
+            if timestamp + timedelta(hours=1) > now
+            and timestamp < end
+            and weather_number(entry.get("temperature")) is not None
+        ][:24]
+
+    async def async_forecast_daily(self) -> list[Forecast]:
+        """Prefer provider calendar aggregates; never call missing rain zero."""
+        today = dt_util.utcnow().astimezone(FORECAST_TIME_ZONE).date()
+        days: dict[str, list[tuple[datetime, dict]]] = {}
+        all_entries = list(self._forecast_entries())
+        for timestamp, entry in all_entries:
+            day = timestamp.astimezone(FORECAST_TIME_ZONE).date()
+            if day >= today:
+                days.setdefault(day.isoformat(), []).append((timestamp, entry))
+        result = []
+        for entries in list(days.values())[:5]:
+            timestamp, representative = next(
+                (
+                    (stamp, item)
+                    for stamp, item in entries
+                    if 12 <= stamp.astimezone(FORECAST_TIME_ZONE).hour <= 14
+                ),
+                entries[0],
+            )
+            hourly = [item for _, item in entries]
+            projected = _forecast(timestamp, representative)
+            day = timestamp.astimezone(FORECAST_TIME_ZONE).date()
+            temperatures = _whole_day_values(all_entries, day, "temperature")
+            maxima = _known(hourly, "daily_temperature_max")
+            minima = _known(hourly, "daily_temperature_min")
+            projected["native_temperature"] = (
+                maxima[0] if maxima else max(temperatures, default=None)
+            )
+            projected["native_templow"] = (
+                minima[0] if minima else min(temperatures, default=None)
+            )
+            rain = _known(hourly, "daily_precipitation", 0)
+            known_hourly_rain = _whole_day_values(
+                all_entries, day, "precipitation", 0, interval_end=True
+            )
+            projected["native_precipitation"] = (
+                rain[0]
+                if rain
+                else (sum(known_hourly_rain) if known_hourly_rain else None)
+            )
+            probabilities = _known(hourly, "daily_precipitation_probability", 0, 100)
+            projected["precipitation_probability"] = (
+                probabilities[0]
+                if probabilities
+                else max(
+                    _whole_day_values(
+                        all_entries,
+                        day,
+                        "precipitation_probability",
+                        0,
+                        100,
+                        interval_end=True,
+                    ),
+                    default=None,
+                )
+            )
+            result.append(projected)
+        return result
+
+
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: MeteoSwissConfigEntry,
+    async_add_entities,
+) -> None:
+    """Set up weather platform without changing existing entity identity."""
+    entities: list[WeatherEntity] = [
+        MeteoSwissWeather(
+            entry.runtime_data.coordinator,
+            entry.runtime_data.forecast_coordinator,
+            entry,
+            entry.data.get(CONF_STATION_NAME, "Unknown"),
+        )
+    ]
+    if forecast := entry.runtime_data.forecast_coordinator:
+        entities.append(MeteoSwissForecastWeather(forecast, entry))
+    async_add_entities(entities)
+
+
+class MeteoSwissWeather(
+    MeteoSwissCoordinatorEntity[
+        MeteoSwissDataUpdateCoordinator | OpenMeteoDataUpdateCoordinator
+    ],
+    MeteoSwissForecastWeatherBase,
+):
+    """Observations and independent ICON forecasts for one existing entry."""
+
+    METEOSWISS_CONDITION_MAP: Final[dict[str, str]] = {
+        "clear": "sunny",
+        "sunny": "sunny",
+        "partly-cloudy": "partlycloudy",
+        "cloudy": "cloudy",
+        "overcast": "cloudy",
+        "rain": "rainy",
+        "rainy": "rainy",
+        "snow": "snowy",
+        "snowy": "snowy",
+        "fog": "fog",
+        "mist": "fog",
+        "thunderstorm": "lightning",
+    }
+
+    def __init__(
+        self,
+        coordinator: MeteoSwissDataUpdateCoordinator | OpenMeteoDataUpdateCoordinator,
+        forecast_coordinator: MeteoSwissForecastCoordinator | None,
+        entry: MeteoSwissConfigEntry,
+        station_name: str,
+    ) -> None:
+        super().__init__(coordinator)
+        self._entry = entry
+        self._forecast_coordinator = forecast_coordinator
+        self._forecast_target = resolve_forecast_target(entry.data, None, None)
+        self._attr_device_info = weather_device_info(entry.entry_id, station_name)
+        self._attr_name = None
+        self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_weather"
+
+    @property
+    def supported_features(self) -> WeatherEntityFeature:
+        """Only legacy/base entries retain the combined forecast interface."""
+        if self._forecast_target.status != "legacy":
+            return WeatherEntityFeature(0)
+        return super().supported_features
+
+    async def async_added_to_hass(self) -> None:
+        """Own both coordinator subscriptions for the entity's lifetime."""
+        await super().async_added_to_hass()
+        if self._forecast_coordinator:
+            self.async_on_remove(
+                self._forecast_coordinator.async_add_listener(
+                    self._handle_forecast_update
+                )
+            )
+
+    @property
+    def coordinator_data(self) -> dict:
+        """Only a successful observation source supplies current attributes."""
+        if not self.coordinator or not self.coordinator.last_update_success:
+            return {}
+        data = self.coordinator.data
+        return data if isinstance(data, dict) else {}
 
     def _map_open_meteo_condition(self, weather_code: int | None) -> str | None:
         """Compatibility mapping; unknown input stays unknown."""
@@ -326,73 +418,74 @@ class MeteoSwissWeather(
         """Compatibility value; not a fabricated hourly total or rate."""
         return weather_number(self.coordinator_data.get(SENSOR_PRECIPITATION), 0)
 
-    async def async_forecast_hourly(self) -> list[Forecast]:
-        """At most 24 valid temperatures in the current rolling 24-hour window."""
-        now = dt_util.utcnow()
-        end = now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=24)
-        return [
-            _forecast(timestamp, entry)
-            for timestamp, entry in self._forecast_entries()
-            if timestamp + timedelta(hours=1) > now
-            and timestamp < end
-            and weather_number(entry.get("temperature")) is not None
-        ][:24]
 
-    async def async_forecast_daily(self) -> list[Forecast]:
-        """Prefer provider calendar aggregates; never call missing rain zero."""
-        today = dt_util.utcnow().astimezone(FORECAST_TIME_ZONE).date()
-        days: dict[str, list[tuple[datetime, dict]]] = {}
-        all_entries = list(self._forecast_entries())
-        for timestamp, entry in all_entries:
-            day = timestamp.astimezone(FORECAST_TIME_ZONE).date()
-            if day >= today:
-                days.setdefault(day.isoformat(), []).append((timestamp, entry))
-        result = []
-        for entries in list(days.values())[:5]:
-            timestamp, representative = next(
-                (
-                    (stamp, item)
-                    for stamp, item in entries
-                    if 12 <= stamp.astimezone(FORECAST_TIME_ZONE).hour <= 14
-                ),
-                entries[0],
-            )
-            hourly = [item for _, item in entries]
-            projected = _forecast(timestamp, representative)
-            day = timestamp.astimezone(FORECAST_TIME_ZONE).date()
-            temperatures = _whole_day_values(all_entries, day, "temperature")
-            maxima = _known(hourly, "daily_temperature_max")
-            minima = _known(hourly, "daily_temperature_min")
-            projected["native_temperature"] = (
-                maxima[0] if maxima else max(temperatures, default=None)
-            )
-            projected["native_templow"] = (
-                minima[0] if minima else min(temperatures, default=None)
-            )
-            rain = _known(hourly, "daily_precipitation", 0)
-            known_hourly_rain = _whole_day_values(
-                all_entries, day, "precipitation", 0, interval_end=True
-            )
-            projected["native_precipitation"] = (
-                rain[0]
-                if rain
-                else (
-                    sum(known_hourly_rain)
-                    if known_hourly_rain
-                    else None
-                )
-            )
-            probabilities = _known(hourly, "daily_precipitation_probability", 0, 100)
-            projected["precipitation_probability"] = (
-                probabilities[0]
-                if probabilities
-                else max(
-                    _whole_day_values(
-                        all_entries, day, "precipitation_probability", 0, 100,
-                        interval_end=True,
-                    ),
-                    default=None,
-                )
-            )
-            result.append(projected)
-        return result
+class MeteoSwissForecastWeather(
+    MeteoSwissCoordinatorEntity[MeteoSwissForecastCoordinator],
+    MeteoSwissForecastWeatherBase,
+):
+    """Modelled conditions and forecasts for the named forecast point only."""
+
+    _attr_attribution = FORECAST_ATTRIBUTION
+
+    def __init__(
+        self,
+        coordinator: MeteoSwissForecastCoordinator,
+        entry: MeteoSwissConfigEntry,
+    ) -> None:
+        super().__init__(coordinator)
+        self._entry = entry
+        self._forecast_coordinator = coordinator
+        self._forecast_target = resolve_forecast_target(entry.data, None, None)
+        self._attr_device_info = forecast_device_info(
+            entry.entry_id, self._forecast_target
+        )
+        self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_forecast_weather"
+        self._attr_name = None
+
+    @property
+    def available(self) -> bool:
+        return super().available and bool(self.forecast_coordinator_data)
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        return {"value_type": "forecast", **self._forecast_target.state_attributes()}
+
+    @property
+    def _current_forecast(self) -> dict[str, Any]:
+        """A missing current model hour never falls back to station readings."""
+        now = dt_util.utcnow()
+        return next(
+            (
+                item
+                for stamp, item in self._forecast_entries()
+                if stamp <= now < stamp + timedelta(hours=1)
+            ),
+            {},
+        )
+
+    @property
+    def condition(self) -> str | None:
+        data = self._current_forecast
+        return _condition(data.get("condition")) or weather_condition(
+            data.get("weather_code"), data.get("is_day")
+        )
+
+    @property
+    def native_temperature(self) -> float | None:
+        return weather_number(self._current_forecast.get("temperature"))
+
+    @property
+    def humidity(self) -> float | None:
+        return weather_number(self._current_forecast.get("humidity"), 0, 100)
+
+    @property
+    def native_wind_speed(self) -> float | None:
+        return weather_number(self._current_forecast.get("wind_speed"), 0)
+
+    @property
+    def wind_bearing(self) -> float | None:
+        return weather_number(self._current_forecast.get("wind_direction"), 0, 360)
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        self._handle_forecast_update()

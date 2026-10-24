@@ -124,7 +124,10 @@ async def test_existing_entity_metadata_and_identity_contract(hass, family):
             "heating_degree_days",
             {
                 "identifiers": {(DOMAIN, f"calculated_{entry.entry_id}")},
-                "name": "Calculated Weather Metrics",
+                "manufacturer": "MeteoSwiss",
+                "model": "ICON Seamless via Open-Meteo",
+                "translation_key": "forecast_base",
+                "translation_placeholders": {},
             },
             HGT_ATTRIBUTION,
         )

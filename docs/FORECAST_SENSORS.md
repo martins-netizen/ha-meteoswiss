@@ -1,6 +1,6 @@
 # Forecast sensors: today and tomorrow
 
-**Guide version:** 1.3 · **Updated:** 24 October 2026
+**Guide version:** 1.4 · **Updated:** 24 October 2026
 **Availability:** the 8.3.0b1 candidate track. Stable 8.2.0 does not include
 these sensors. Follow the [candidate notes](RELEASE_8.3.0b1.md) and exact announced
 release; a source version alone does not establish publication or acceptance.
@@ -8,7 +8,10 @@ release; a source version alone does not establish publication or acceptance.
 ## What you get
 
 Eight numeric sensors make the existing location forecast available to ordinary
-HA cards and automations. They join the existing weather device. Names ship in
+HA cards and automations. In published 8.3.0b1 they join the existing weather
+device. The unreleased [display correction](FORECAST_DISPLAY.md) moves them to
+the named forecast device alongside HGT and a separate forecast weather entity,
+retaining IDs and personal names. Names ship in
 English, German, French and Italian. No extra integration, API key or second
 forecast request is needed.
 
@@ -108,4 +111,7 @@ at midnight and predictions change during the day; they must not become measured
 daily totals or long-term rainfall statistics. Normal Recorder history can show
 how a prediction changed. For measured rainfall use the
 [official hourly statistics](SENSORS.md#completed-hourly-precipitation-statistics).
-The existing weather forecast services and cards continue to work.
+In the unreleased display correction, forecast cards/actions for an explicit
+catalogue selection use the new forecast weather entity. The original weather
+entity retains current conditions and its ID. Without a catalogue selection,
+its legacy forecast interface remains available; see [migration](FORECAST_DISPLAY.md).

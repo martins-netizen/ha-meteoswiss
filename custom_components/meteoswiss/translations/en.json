@@ -328,5 +328,16 @@
         "base": "Return to the original base coordinates"
       }
     }
+  },
+  "device": {
+    "forecast_catalogue": {
+      "name": "MeteoSwiss {location} (Forecast)"
+    },
+    "forecast_base": {
+      "name": "MeteoSwiss Forecast (base location)"
+    },
+    "forecast_invalid": {
+      "name": "MeteoSwiss Forecast (invalid location)"
+    }
   }
 }

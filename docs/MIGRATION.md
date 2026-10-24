@@ -181,3 +181,15 @@ change. Use the entry's **three-dot menu → Reconfigure**, not pollen Configure
 and not deletion/recreation. The [forecast-location guide](FORECAST_LOCATION_SETUP.md)
 explains search, confirmation, cancel/keep/reset and unchanged location roles.
 Candidate checks for this feature remain separate from completed 8.2.0 acceptance.
+
+
+## Separate forecast display after 8.3.0b1 (unreleased)
+
+The [display migration guide](FORECAST_DISPLAY.md) explains the new named
+forecast device and weather entity. Existing scalar/HGT IDs, personal names,
+options and station entities remain. With an explicit catalogue point, switch
+forecast cards and weather.get_forecasts targets to the new forecast weather
+entity; the original station weather entity then advertises current conditions
+only. Entries without a catalogue choice retain their legacy combined interface.
+No card/automation is rewritten, no retained entity is deleted and no separate
+history per selected place is created. Wait for an announced follow-up release.

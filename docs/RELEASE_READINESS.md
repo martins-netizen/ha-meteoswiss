@@ -1,6 +1,6 @@
 # Release readiness: current candidate and completed 8.2.0
 
-**Document version:** 1.9 · **Updated:** 24 October 2026
+**Document version:** 2.0 · **Updated:** 24 October 2026
 **Purpose:** One entry point for completed evidence, remaining publication steps
 and work deliberately deferred to later versions.
 
@@ -20,30 +20,44 @@ corrections are integrated. PR #59 was approved and regularly squash-merged at
 matches the approved 5686a7b source tree, and all eight PR/seven post-merge
 checks passed. The agreed runtime scope is frozen at that source.
 
-The **8.3.0b1** packaging PR changes only manifest.json/version.py inside the
-integration; all other **36 component files**, CH/HACS manifest and workflows
-match PR #59. It includes English [candidate notes](RELEASE_8.3.0b1.md), the
-[candidate-only publisher](../scripts/publish_meteoswiss_830_beta_v1.0.sh) and
-[focused acceptance protocol](ACCEPTANCE_8.3.0b1.md). This prepared packet is
-not publication or a completed HA test.
+PR #60 was approved and regularly merged at
+**a6b9df9f57dec3e93c8f698133cdb0e7e4c3e937**, tree
+**187f3d3e8a847b934786d3b80f7df3a8cd14a3ab**, with eight PR and seven
+post-merge checks successful. **8.3.0b1 was published on 24 October 2026 at
+06:26 UTC / 08:26 Europe/Zurich**, prerelease ID **422558946**. The operator's
+publisher JSON/log and independent GitHub reads confirm its exact tag/notes
+and unchanged latest stable **8.2.0 / ID 420392277**. The original publisher,
+[notes](RELEASE_8.3.0b1.md) and [baseline protocol](ACCEPTANCE_8.3.0b1.md)
+remain unchanged; do not repeat that successful publication.
 
-Next: review the packaging PR, merge normally and verify its exact tree/checks;
-run the publisher's read-only --check against that full approved merge SHA.
-Only after the concrete candidate/publication approval use --publish, creating
-this prerelease with latest stable 8.2.0 unchanged. Then update only the existing
-temporary HA through HACS and perform the focused checks. Keep the existing
-entry, source roles, personal settings and retained IDs. Completed 8.2.0
-installation/restore/update are not reopened and no new blanket 24-hour wait
-is imposed. A specific new failure is investigated before stable promotion.
+The operator reports a positive initial view with tomorrow's native daily
+values unknown around the 25 October clock change, consistent with the known
+fixed-offset/25-hour limitation. Säntis station/POI choices and selection were
+also confirmed. The resulting screenshot exposed a new acceptance finding:
+Säntis forecasts were displayed under the Kloten device/combined weather name.
 
-Local package verification: **1,340 tests plus 53 subtests** pass on each actual
-HA 2026.8.3/2026.10.2 environment, including **45 candidate-publisher cases**.
-Combined line/branch coverage remains **99.97506%** (3,138/3,139 statements;
-870/870 branches); every existing gate/exclusion is retained. The added
-standalone-shell check exercises read-only publication preflight, report/log
-creation and the gh command boundary with executable fixtures and no checkout.
-It is not a real GitHub release or a manual HA acceptance. CI still tests HA
-2026.8.3 and 2026.10.1. Exact packaging PR/post-merge checks remain required.
+**Before promotion:** review and integrate the unreleased [display correction](FORECAST_DISPLAY.md),
+then prepare a separately approved follow-up prerelease. It groups eight scalars,
+HGT and a new forecast-only weather entity by the selected point, retaining old
+IDs and personal names. Explicit catalogue selections remove forecast features
+from the original current-condition weather entity; update forecast card/action
+targets as documented. No extra coordinator/polling is introduced. Local verification: **1,352 tests plus 53 subtests** pass on each actual HA
+**2026.8.3 / 2026.10.2** environment, including twelve new display/registry cases.
+Combined coverage is **99.97545%** (3,197/3,198 lines; 876/876 branches), with
+all strict module gates and four existing exclusions retained. Four complete
+143-key catalogues, production/changed-test Ruff and local Markdown targets
+pass. Registered-HA cases cover four UI languages, b1 registry records, source
+independence, live forecast subscribers and reset/reload. Exact PR CI and a
+follow-up HA check remain.
+
+After that candidate is installed, verify the changed display/card target and
+complete remaining point/pass/hut/language/new-entry checks. Keep the existing
+entry and completed 8.2.0 clean-install/restore/update evidence. Do not restart a
+blanket 24-hour period or equate publication with practical candidate acceptance.
+Local 8.3.0b1 package evidence remains historical: 1,340 tests/53 subtests on
+HA 2026.8.3/2026.10.2 and 99.97506% combined coverage. The display follow-up has
+its own regression results and must preserve the existing strict gates.
+CI still tests HA 2026.8.3 and 2026.10.1; no official quality tier is claimed.
 
 A reviewed implementation is not candidate acceptance, stable publication,
 HACS default-list inclusion or a complete Silver/Gold assessment.

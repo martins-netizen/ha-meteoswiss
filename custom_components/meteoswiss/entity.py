@@ -10,6 +10,8 @@ from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
 )
 
+from .forecast_location_config import ForecastTarget
+
 from .const import (
     ATTRIBUTION,
     DOMAIN,
@@ -49,4 +51,21 @@ def air_quality_device_info(entry_id: str) -> DeviceInfo:
         name=OPENMETEO_AIR_QUALITY_DEVICE_NAME,
         manufacturer=OPENMETEO_AIR_QUALITY_MANUFACTURER,
         model=OPENMETEO_AIR_QUALITY_MODEL,
+    )
+
+
+def forecast_device_info(entry_id: str, target: ForecastTarget) -> DeviceInfo:
+    """Reuse the HGT device identity for one explicitly labelled forecast group."""
+    if target.location is not None:
+        key = "forecast_catalogue"
+        placeholders = {"location": target.location.point.name}
+    else:
+        key = "forecast_base" if target.status == "legacy" else "forecast_invalid"
+        placeholders = {}
+    return DeviceInfo(
+        identifiers={(DOMAIN, f"calculated_{entry_id}")},
+        manufacturer="MeteoSwiss",
+        model="ICON Seamless via Open-Meteo",
+        translation_key=key,
+        translation_placeholders=placeholders,
     )
