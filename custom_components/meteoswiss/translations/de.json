@@ -100,15 +100,72 @@
   "options": {
     "step": {
       "init": {
-        "title": "MeteoSwiss Einstellungen",
-        "description": "Ändere die Messstation für Pollen. Wetter-, Prognose- und Warnungsstandorte bleiben erhalten. Aktualisierungen erfolgen automatisch.",
+        "title": "MeteoSwiss – Standorte und Messstationen",
+        "description": "Wähle Wetter-Messstation, Pollenmessstation und Prognoseort gemeinsam. Bisheriger Prognoseort: {current_location}. Die Warnungs-PLZ ist unabhängig davon. Bei einer Suche folgen weitere Schritte; gespeichert wird erst mit der abschliessenden Bestätigung. Aktualisierungen erfolgen automatisch.",
         "data": {
-          "pollen_station": "Station für Pollenmessungen"
+          "station_id": "MeteoSchweiz-Messstation",
+          "pollen_station": "Station für Pollenmessungen",
+          "postal_code": "Postleitzahl für Warnungen",
+          "forecast_action": "Prognoseort",
+          "latitude": "Breitengrad für aktuelle Modelldaten",
+          "longitude": "Längengrad für aktuelle Modelldaten"
         },
         "data_description": {
-          "pollen_station": "Wähle die Pollenmessstation unabhängig von Wetterstation und Warnungs-Postleitzahl. Die Auswahl ändert den Standort der modellierten Pollenprognose nicht. Du kannst sie später unter Konfigurieren ändern."
+          "station_id": "Liefert gemessene Wetterwerte. Die bestehenden Entitäten bleiben bei einem Wechsel erhalten; ihre Messwerte stammen ab dann von der neuen Station.",
+          "pollen_station": "Ändert nur gemessene Pollen. Modellierte Pollen und Luftqualität behalten ihren Basisstandort.",
+          "postal_code": "Vierstellige Schweizer PLZ für Warnungen. Sie wählt weder Wetterstation noch Prognosepunkt aus.",
+          "forecast_action": "Angezeigten Prognoseort beibehalten, nach PLZ/Ort/POI suchen oder zu den ursprünglichen Basiskoordinaten zurückkehren. Eine PLZ in der Prognosesuche ändert die Warnungs-PLZ nicht.",
+          "latitude": "Basiskoordinaten für aktuelle Open-Meteo-Daten, modellierte Luftqualität/Pollen/UV und Prognosen ohne bewusst gewählten Ort. Ein ausdrücklich gewählter Prognosepunkt bleibt unabhängig.",
+          "longitude": "Basiskoordinaten für aktuelle Open-Meteo-Daten, modellierte Luftqualität/Pollen/UV und Prognosen ohne bewusst gewählten Ort. Ein ausdrücklich gewählter Prognosepunkt bleibt unabhängig."
+        }
+      },
+      "forecast_search": {
+        "title": "Prognoseort suchen",
+        "description": "Suche mit vierstelliger Schweizer PLZ oder Orts-/POI-Namen, z. B. 8302, Säntis oder Gotthardpass. Die Suche erfolgt lokal im amtlichen MeteoSchweiz-Katalog. Damit wählst du Wetterprognosen, keine Warnabdeckung.",
+        "data": {
+          "query": "Postleitzahl oder Ort/POI"
+        },
+        "data_description": {
+          "query": "2–128 Zeichen eingeben. Akzente und ae/oe/ue-Schreibweisen werden unterstützt. Breite Suche verfeinern, bis höchstens 20 Treffer vorliegen."
+        }
+      },
+      "forecast_select": {
+        "title": "Prognosepunkt auswählen",
+        "description": "Wähle den gewünschten Punkt bewusst. Die Beschriftung zeigt Name, Punktkategorie, Kataloghöhe über Meer und Koordinaten. Station und gleichnamiger POI sind unterschiedliche Prognosepunkte.",
+        "data": {
+          "point": "Prognosepunkt"
+        },
+        "data_description": {
+          "point": "Kategorie und Höhe prüfen. Ein PLZ-Punkt ist eine zugeordnete Prognosekoordinate, keine Postfiliale oder genaue Wohnadresse. Kein Treffer ist vorausgewählt."
+        }
+      },
+      "forecast_confirm": {
+        "title": "Prognoseort bestätigen",
+        "description": "Diese Auswahl gemeinsam übernehmen: Wetter-/Aktuellquelle {station}; Pollenmessung {pollen_station}; Prognose {location}; Warnungs-PLZ {postal_code}. Ein Prognose-POI legt keine Warnabdeckung für diesen POI fest. Absenden speichert alle vorgemerkten Änderungen; Abbrechen behält die bisherigen Einstellungen.",
+        "data": {
+          "search_again": "Anderen Ort suchen"
+        },
+        "data_description": {
+          "search_again": "Aktivieren, um ohne Speichern zur Suche zurückzukehren. Andernfalls mit Absenden den angezeigten Ort bestätigen."
         }
       }
+    },
+    "error": {
+      "cannot_connect": "Konnte nicht zur Wetter-API verbinden",
+      "station_not_found": "Station nicht gefunden",
+      "invalid_location": "Ungültige Koordinaten",
+      "invalid_postal_code": "Gib eine vierstellige Schweizer Postleitzahl ein, z. B. 8302.",
+      "invalid_pollen_station": "Wähle eine Pollenmessstation aus der Liste.",
+      "invalid_forecast_selection": "Eine gültige Auswahl aus diesem Dialog wählen. Eine ungültig gespeicherte Auswahl muss ersetzt oder auf Basiskoordinaten zurückgesetzt werden.",
+      "invalid_forecast_query": "2–128 Zeichen eingeben: vierstellige PLZ oder Orts-/POI-Name.",
+      "forecast_catalogue_unavailable": "Der Ortskatalog ist vorübergehend nicht verfügbar. Später erneut versuchen oder abbrechen; der gespeicherte Ort bleibt erhalten.",
+      "forecast_no_matches": "Kein passender Prognosepunkt. Schreibweise prüfen oder eine andere PLZ/einen anderen Namen versuchen.",
+      "forecast_too_many_matches": "Mehr als 20 Treffer. Einen genaueren Namen oder eine Postleitzahl eingeben.",
+      "already_configured": "Ein anderer Eintrag verwendet bereits diesen Messort und diese Warnungs-PLZ."
+    },
+    "abort": {
+      "already_configured": "Ein anderer Eintrag verwendet bereits diesen Messort und diese Warnungs-PLZ.",
+      "configuration_changed": "Während dieses Dialogs wurden andere Einstellungen gespeichert. Aus diesem Dialog wurde nichts übernommen. Öffne die Einstellungen erneut und versuche es nochmals."
     }
   },
   "title": "MeteoSwiss",

@@ -47,6 +47,7 @@ async def test_icon_client_preserves_model_partial_values_and_session(aioclient_
     url = str(aioclient_mock.mock_calls[0][1])
     assert "models=meteoswiss_icon_seamless" in url
     assert "forecast_hours=120" in url
+    assert "past_hours=25" in url
     assert "timezone=Europe/Zurich" in url
     assert "timeformat=unixtime" in url
 

@@ -47,7 +47,7 @@ candidate in the existing temporary HA remains separate from these assessments.
 |---|---|---|
 | `action-exceptions` | Exempt | No custom actions; reassess if added. |
 | `config-entry-unloading` | Evidence | Native platform unload/reload; entry-managed tasks/listeners, Recorder import listeners, stable IDs and borrowed session ownership tested for both providers. |
-| `docs-configuration-parameters` | Evidence | Configure edits measured pollen. Hidden legacy intervals and independent forecast Reconfigure are explained without promising changes to weather station or warning postcode. |
+| `docs-configuration-parameters` | Evidence | Unreleased after b2, one Configure dialog stages measured pollen, weather station/base coordinates, forecast point and warning postcode; forecast-only Reconfigure remains compatible. Source checks, atomic cancel/confirm, hidden legacy intervals and station-specific archives are documented. |
 | `docs-installation-parameters` | Evidence | GETTING_STARTED.md and FORECAST_LOCATION_SETUP.md cover released setup versus development fields, point purposes, height, ambiguity and confirmation. |
 | `entity-unavailable` | Evidence | Registered HA states cover observation, forecast, warnings, pollen/AQ, optional UV and catalogue failure/recovery. Valid zero, missing field and failed source remain distinct. The review adds UV timestamp rejection and honest incomplete/DST daily values. |
 | `integration-owner` | Evidence | @martins-netizen is manifest codeowner; active repository, Issues, issue forms and SECURITY.md provide support/reporting routes. Private-reporting activation was operator-confirmed; no independent settings audit is inferred. |

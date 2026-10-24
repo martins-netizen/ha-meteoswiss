@@ -159,10 +159,15 @@ aggregates. Producer and consumer use `weather_data.py` for time/condition
 normalisation and finite-number validation. The two hours repeated at autumn DST remain distinct. Daily
 labels respect Open-Meteo's returned fixed UTC offset. Its native daily bucket
 is used only when its actual start and end match both Swiss midnights. Otherwise
-all five native aggregates stay missing while the usable hourly feed survives.
-The weather entity may reconstruct a missing daily field only from a complete,
-correctly aligned Swiss day; it never labels remaining hours as a full day.
-Scalar temperature/rain and daily HGT require an accepted native daily field.
+unreleased development after b2 derives that mismatched day from complete
+Swiss hourly coverage in the same response. Temperature samples cover local
+midnight inclusive to the next midnight exclusive; precipitation/probability
+buckets end after the first midnight and include the next one. UTC instants
+keep both repeated autumn hours. Native aligned aggregates remain preferred;
+no fallback fills a missing aligned native field. Scalars, HGT and weather share
+the normalized result and its aggregation provenance. The one request adds
+25 past hours, validates at most 145 rows and projects only the current/future
+120 hours; no new coordinator, cache or polling schedule is introduced.
 
 IconForecastClient in forecast.py separates transport retries from response
 validation; the genuine MeteoSwissForecastCoordinator in coordinator.py composes
@@ -414,11 +419,19 @@ and newer minor schemas are left intact. Stable 8.2.0 already reads interval
 options before data, so it can still read migrated entries. Its older Configure
 form can still edit that value; a later upgrade keeps the options value.
 
-The new Configure form changes the measured-pollen station only and merges that
-field into existing options, preserving the compatibility interval and other
-saved options. HA's registered listener reloads the existing entry. Regression
-tests exercise this through the real flow manager, entity registry and optional
-Recorder, verifying effective intervals, station changes, IDs and cleanup.
+Unreleased after b2, Configure stages all three location choices and the warning
+postcode in one form. A shared location-flow mixin reuses the existing catalogue,
+search/selection and ICON validation for setup, forecast Reconfigure and unified
+options; there is no second geocoder or duplicate search implementation.
+Data/options are updated together only after confirmation. Source failure,
+cancel, a duplicate observation identity or a concurrent edit cannot partially
+apply the pending choices. Existing unknown data/options and legacy intervals
+are retained. HA’s registered listener owns one reload. A station/coordinate or
+warning-postcode change refreshes a present config-entry unique ID for duplicate
+guards, while keeping the entry_id, entity IDs and user names. External hourly
+precipitation archive IDs stay station-specific: an old station’s archive is
+never relabelled as the new station. Retained observation entities’ histories
+continue across a deliberate source-station change; the UI explains this.
 
 ## Shared HTTP boundary (unreleased after 8.2.0)
 

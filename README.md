@@ -51,12 +51,18 @@ These entered coordinates also become that entry's base location for
 AQ/pollen/UV and its default weather forecast. An explicit forecast selection
 still changes only the ICON forecast role.
 
-In an existing entry, **Configure** changes the measured-pollen station;
-**three-dot menu → Reconfigure** changes the weather forecast location.
-See [the selection guide](docs/FORECAST_LOCATION_SETUP.md) and
-[data/settings reference](docs/USAGE.md) for the setup fields. The b2 named
-forecast device/card change is explained in [display and migration](docs/FORECAST_DISPLAY.md);
-use it only after the follow-up prerelease is announced and installed.
+**Unreleased corrections after b2:** the existing entry’s **Configure (gear)**
+now brings the **weather measuring station, measured-pollen station and forecast
+location into one dialog**, alongside the independent warning postcode. A
+postcode/town/POI search continues inside the same flow; cancelling preserves
+all previous choices. The HA home location remains a general HA setting.
+See [the unified settings and clock-change guide](docs/CALENDAR_AND_LOCATION_SETTINGS.md)
+for availability and the focused checks. Published b1/b2 still use Configure for
+pollen and **three-dot menu → Reconfigure** for forecasts.
+
+The [selection guide](docs/FORECAST_LOCATION_SETUP.md) and
+[data/settings reference](docs/USAGE.md) explain the roles. The b2 named
+forecast device/card change is covered in [display and migration](docs/FORECAST_DISPLAY.md).
 
 ## Why choose this fork?
 
@@ -108,20 +114,23 @@ and [focused test checklist](docs/ACCEPTANCE_8.3.0b1.md) define the published
 scope. Initial operator testing confirmed the separate Säntis station/POI
 choices and exposed ambiguous forecast values under a Kloten heading.
 
-**Prepared follow-up candidate: 8.3.0b2**, with a
+**Published follow-up prerelease: [8.3.0b2](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.0b2)**, with a
 [separate named forecast device and weather entity](docs/FORECAST_DISPLAY.md).
 It keeps current conditions and selected-place predictions distinct and includes
 [one card/action target change](docs/FORECAST_DISPLAY.md#update-an-existing-card-or-forecast-action-once).
 See [b2 notes](docs/RELEASE_8.3.0b2.md) and its [focused protocol](docs/ACCEPTANCE_8.3.0b2.md).
-This correction is not in 8.3.0b1. The b2 source version alone does not prove a
-published release; wait for the explicitly announced prerelease before testing.
+This correction is not in 8.3.0b1. The calendar-day and unified-settings corrections described above are **not
+in published b2**. They need a reviewed merge, a new announced package and
+focused HA acceptance before a stable 8.3.0 release.
 Stable 8.2.0 remains the normal installation route. Neither a branch nor an
 open PR is an installation target.
 The [overall review](docs/RELEASE_REVIEW_2026-10-24.md) and
 [readiness record](docs/RELEASE_READINESS.md) retain evidence.
 
 Minimum supported/tested HA is **2026.8.3**, with CI on **2026.10.1** and
-additional local/practical evidence on **2026.10.2**. HACS default-catalogue
+additional local/practical evidence on **2026.10.2**. The operator also reports
+a successful existing-beta test on **2026.10.3**; that is separate from
+automated testing and from acceptance of the new corrections. HACS default-catalogue
 inclusion and an official HA quality tier have not been granted.
 
 ## Data and compatibility

@@ -1,6 +1,6 @@
 # Forecast sensors: today and tomorrow
 
-**Guide version:** 1.5 · **Updated:** 24 October 2026
+**Guide version:** 1.6 · **Updated:** 24 October 2026
 **Availability:** the 8.3.0b1 candidate track. Stable 8.2.0 does not include
 these sensors. Follow the [candidate notes](RELEASE_8.3.0b1.md) and exact announced
 release; a source version alone does not establish publication or acceptance.
@@ -25,16 +25,20 @@ forecast request is needed.
 These are **predictions**, not measured daily records. Today's temperature
 extremes may already have occurred. Today's rainfall prediction includes the
 elapsed part of the day; it is not the amount still expected or already measured.
-Native daily fields supply those three full-day values. Missing daily fields
-are not reconstructed from only the remaining rolling hours.
+Native aligned daily fields supply those three full-day values. They are never
+reconstructed from only the remaining rolling hours.
 
-Open-Meteo's native daily buckets use one fixed UTC offset per response. Around
-a clock change, a bucket can differ from the Swiss midnight-to-midnight period.
-Development withholds that mismatched bucket; these three scalar values and
-daily HGT may then be `unknown`. Hourly forecasts and complete-hour probability
-windows remain usable. This is explicit missing data, not a zero, an outage or
-a reassignment to another date. The weather service has a separate fallback
-requiring every valid hour of its 23-/24-/25-hour Swiss day.
+**Unreleased correction after b2:** Open-Meteo’s native daily buckets use one
+fixed UTC offset per response. If such a bucket does not match the Swiss
+midnight-to-midnight period, the source derives the affected day from complete
+hourly coverage of the **23, 24 or 25 physical hours** of that Swiss day. The
+same request includes the elapsed part of today. Daily scalar values, HGT and
+the weather entity share the validated result. Missing/invalid/gapped fields
+remain unknown independently, and zero remains zero. Attributes `aggregation`
+(`provider_daily` or `hourly_calendar_day`) and `day_hours` distinguish the basis.
+These are hourly-sampled model aggregates; no finer-resolution extrema are
+claimed. Published b1/b2 still withhold mismatched native daily values; see the
+[correction and focused checks](CALENDAR_AND_LOCATION_SETTINGS.md).
 
 The source remains **MeteoSwiss ICON Seamless via Open-Meteo**, at the existing
 forecast location. Development can route these and calculated HGT to an
