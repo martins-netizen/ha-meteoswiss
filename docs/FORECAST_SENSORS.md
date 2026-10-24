@@ -1,8 +1,9 @@
 # Forecast sensors: today and tomorrow
 
-**Guide version:** 1.2 · **Updated:** 24 October 2026
-**Availability:** unreleased development after 8.2.0. Stable 8.2.0 does not
-include these sensors.
+**Guide version:** 1.3 · **Updated:** 24 October 2026
+**Availability:** the 8.3.0b1 candidate track. Stable 8.2.0 does not include
+these sensors. Follow the [candidate notes](RELEASE_8.3.0b1.md) and exact announced
+release; a source version alone does not establish publication or acceptance.
 
 ## What you get
 

@@ -1,7 +1,7 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.24 · **Updated:** 24 October 2026
-**Status:** Approved catalogue-based location implementation; dated catalogue audit complete, selection integrated; overall review corrections and compatibility acceptance remain open.
+**Plan version:** 1.25 · **Updated:** 24 October 2026
+**Status:** Approved catalogue-based location implementation; dated catalogue audit complete, selection and review corrections integrated; candidate publication and compatibility acceptance remain open.
 This document does not approve a new feature, installation or release.
 
 ## Next feature release: agreed scope on 23 October 2026
@@ -20,8 +20,11 @@ adds [offline saved-selection routing](SAVED_FORECAST_LOCATION.md), explicit
 catalogue-height requests and height-aware cache identity. The third package now supplies [translated HA selection and reconfiguration](FORECAST_LOCATION_SETUP.md).
 PR #58 was approved and regularly merged at 5bed187 on 23 October UTC. Its
 exact tree and all seven post-merge checks are confirmed. The overall review
-identified corrections now prepared in a separate review PR; merge/validate
-those before candidate packaging and focused acceptance.
+identified corrections integrated through approved PR #59 at 4c81692, with
+all seven post-merge checks successful. The runtime scope is frozen there;
+the [8.3.0b1 packet](RELEASE_8.3.0b1.md) and
+[focused test protocol](ACCEPTANCE_8.3.0b1.md) are now prepared for their separate
+packaging/publication approval and candidate acceptance.
 Only then freeze features, reconcile release documentation, package a reviewed
 candidate and perform focused acceptance in the existing temporary HA.
 

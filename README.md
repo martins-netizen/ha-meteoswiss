@@ -58,13 +58,16 @@ Read the [plain-language overview](docs/GETTING_STARTED.md#what-this-fork-provid
 migration. HACS installation, update and recovery were confirmed within the
 [recorded acceptance scope](docs/HACS_ACCEPTANCE.md).
 
-**Development after 8.2.0 is unreleased.** It adds explicit postcode/town/POI
-forecast selection, eight today/tomorrow forecast sensors and the reviewed
-source/lifecycle improvements. Its code still declares 8.2.0 until a separately
-reviewed version packet; matching version strings do not prove matching files.
+**Next candidate: 8.3.0b1**, for focused testing of postcode/town/POI forecast
+selection, eight forecast sensors and the reviewed source/lifecycle improvements.
+The [candidate notes](docs/RELEASE_8.3.0b1.md) and
+[focused test checklist](docs/ACCEPTANCE_8.3.0b1.md) define its scope. A candidate
+version in source is not proof of publication: use only the explicitly approved
+release offered by HACS after its [GitHub release](https://github.com/martins-netizen/ha-meteoswiss/releases)
+is announced. Stable 8.2.0 remains the normal installation route below.
 The [overall review](docs/RELEASE_REVIEW_2026-10-24.md) and
-[next-release checklist](docs/RELEASE_READINESS.md) govern candidate preparation.
-Neither the development branch nor an open PR is an installation target.
+[readiness record](docs/RELEASE_READINESS.md) retain evidence. Neither a branch
+nor an open PR is an installation target.
 
 Minimum supported/tested HA is **2026.8.3**, with CI on **2026.10.1** and
 additional local/practical evidence on **2026.10.2**. HACS default-catalogue

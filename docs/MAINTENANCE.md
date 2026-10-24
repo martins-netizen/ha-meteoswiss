@@ -53,7 +53,13 @@ file with the documented pytest coverage command before each gate run; a
 different report pathname is no longer a supported argument. The per-module,
 strict source/flow, branch-coverage and aggregate requirements are unchanged.
 
-All three versioned release helpers use Bash `[[ ... ]]` conditions, including
+The candidate-specific [8.3.0b1 publisher](PUBLISHING.md#next-candidate-830b1)
+adds read-only preflight and one prerelease-only creation path; its tests exercise
+source equality, check provenance, old tags, stable preservation and uncertain
+writes. It performs no HA deployment. Keep it separate from the historical
+8.2.0 tools below.
+
+All three historical versioned release helpers use Bash `[[ ... ]]` conditions, including
 their help and argument guards. Their embedded Python publication code, fixed
 release targets, commit/check validation and immutable-tag protections remain
 unchanged. These are historical package-specific recipes, not publishers for
