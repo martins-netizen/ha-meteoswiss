@@ -1,8 +1,10 @@
 # Quality evidence and remaining work
 
-**Assessment date:** 24 October 2026. **Scope:** the reviewed development tree
-based on merged PR #58, including the corrections in the associated review PR.
-These changes are unreleased; stable 8.2.0 is unchanged.
+**Assessment date:** 24 October 2026. **Scope:** the **8.3.0b3 test track**,
+including the approved calendar-day and unified-settings correction from PR #63
+(merge `97338f68038eab80c75c2028c9deb5e24ad552e6`) and the version-only component
+packaging in PR #64 (merge `17fd7a702986e6b6437ee12d97b54faee1acb767`).
+B3 publication and focused HA acceptance remain separate; stable 8.2.0 is unchanged.
 
 This is an engineering self-assessment using the
 [Home Assistant rules](https://contributors.home-assistant.io/core/quality-scale/rules/),
@@ -15,6 +17,13 @@ one green percentage or a working reconfiguration flow does not establish it.
 within the stated scope. **Open/partial** identifies a remaining requirement.
 **Exempt** gives its applicability reason. Focused acceptance of the eventual
 candidate in the existing temporary HA remains separate from these assessments.
+
+**Reading the result:** all applicable technical Bronze rules and applicable
+Silver rules have recorded evidence below, with the external Core branding rule
+still unverified. This is not a complete Bronze/Silver tier claim. Gold has
+explicit open/partial rules and proposed exemptions requiring review. The
+[README summary](../README.md#quality-goals-bronze-silver-and-gold) is intentionally
+short; these tables retain the qualifications and release scope.
 
 ## Bronze: twenty rules
 
@@ -54,7 +63,7 @@ candidate in the existing temporary HA remains separate from these assessments.
 | `log-when-unavailable` | Evidence | Coordinator transition logs avoid repeated outages, raw coordinate/postcode URLs and payloads; separate cached UV status has its own outage/recovery transition. Tests inspect formatted error chains too. |
 | `parallel-updates` | Evidence | sensor.py uses 1 for diagnostic polling; coordinator-driven weather/binary/pollen platforms use 0. These values do not assert zero network requests. |
 | `reauthentication-flow` | Exempt | No provider accounts or credentials. |
-| `test-coverage` | Evidence | 1,295 tests plus 53 subtests pass locally on each HA 2026.8.3/2026.10.2. Combined line/branch coverage 99.97506%: 3,138/3,139 statements and 870/870 branches. Every module exceeds 95%; existing strict source/flow gates remain 100%. Four prior exclusion lines and the aggregate floor are unchanged. CI's second version is 2026.10.1. |
+| `test-coverage` | Evidence | The b3 package passes 1,484 tests plus 53 subtests locally on each HA 2026.8.3/2026.10.3, including 132 publisher-profile cases. Combined line/branch coverage is 99.97671%: 3,355/3,356 statements and 938/938 branches. Every module exceeds 95%; existing strict source/flow gates remain 100%. Four prior exclusion lines and the aggregate floor are unchanged. CI's second version remains 2026.10.1. These coverage results come from local pytest, not a SonarCloud coverage import. |
 
 The original audit's interval, field-help, common-layout, UV/catalogue and
 per-module coverage findings are implemented in the reviewed tree. Their old
@@ -80,10 +89,10 @@ candidate acceptance still prevent a blanket complete-tier assertion.
 | `entity-category` | Evidence | Diagnostic helpers stay diagnostic; measured/modelled pollen and AQ stay ordinary sensors, with registry tests. |
 | `entity-device-class` | Partial | Numeric metadata and HA conversion tests exist; review legacy Foehn/code and derived HGT metadata before a complete Gold assertion. |
 | `entity-disabled-by-default` | Open | Legacy diagnostic defaults are retained. Decide new-install defaults separately without changing existing user registry choices. |
-| `entity-translations` | Partial | Four 140-key UI catalogues and ordinary entity translations exist. Legacy diagnostic/device/attribute compatibility names remain; provider place-name aliases are a separate unsolved feature. |
+| `entity-translations` | Partial | Four complete 178-key UI catalogues and ordinary entity translations exist; strings.json matches English. Legacy diagnostic/device/attribute compatibility names remain; provider place-name aliases are a separate unsolved feature. |
 | `exception-translations` | Partial | Setup/selection errors are translated; remaining fixed HA update-error messages have not all moved to translated exceptions. |
 | `icon-translations` | Open | Active icons exist, but no complete icons.json migration. |
-| `reconfiguration-flow` | Partial | Forecast-only reconfiguration is implemented/tested; this does not imply editing observation source/station or warning postcode without recreating an entry. |
+| `reconfiguration-flow` | Partial | Forecast-only Reconfigure is implemented/tested. B3 also edits weather station/base coordinates, measured-pollen station, forecast point and warning postcode together through Configure, without recreating the entry; tests cover validation, atomic cancellation and retained IDs. The official rule prescribes a reconfigure step for setup fields. Review that route mapping separately: the existing Reconfigure shortcut still changes only forecasts. |
 | `repair-issues` | Open | Invalid saved selection has explicit unavailable state, private log and recovery flow, but no HA Repair issue yet. |
 | `stale-devices` | Open | Review removal of obsolete grouping after measured-pollen station changes without deleting wanted registry/history data. |
 

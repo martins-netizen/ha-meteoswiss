@@ -91,6 +91,24 @@ Forecasts and warning availability still depend on the external data providers.
 
 Read the [plain-language overview](docs/GETTING_STARTED.md#what-this-fork-provides).
 
+## Quality goals: Bronze, Silver and Gold
+
+We use the [Home Assistant Integration Quality Scale](https://contributors.home-assistant.io/core/quality-scale/)
+as an engineering checklist. **This fork has no officially awarded tier.**
+The following is our documented self-assessment of the **8.3.0b3 test track**;
+it does not describe every feature of stable 8.2.0.
+
+| Goal | What it means for you | Current evidence and remaining work |
+|---|---|---|
+| **Bronze: a sound foundation** | Setup in HA, stable entity identities, tested setup and clear instructions. | The applicable technical rules have evidence in our checklist. The Core branding requirement remains unverified; local HACS images do not establish it. |
+| **Silver: reliable operation** | Clear unavailable states, recovery from source failures, clean unloading and a maintained support route. | All applicable Silver rules have recorded evidence, including more than 95% coverage per module. A complete tier also needs its Bronze prerequisites; focused b3 HA acceptance is still pending. |
+| **Gold: a more complete user experience** | Easier configuration, useful diagnostics, translations and actionable help. | Several features already exist, including the unified location dialog. Remaining work includes HA Repairs, icon/error translations, diagnostic defaults, metadata and stale-device handling; the full checklist also records the reconfiguration-route review and proposed exemptions. |
+
+The [rule-by-rule assessment](docs/QUALITY_SCALE.md) links the scope, test evidence
+and remaining boundaries. HACS validation and default-catalogue inclusion are
+separate from these HA quality tiers. We do not add an awarded-tier badge or
+manifest claim on the strength of this self-assessment.
+
 ## Start here
 
 | Your situation | Guide |
