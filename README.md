@@ -51,7 +51,7 @@ These entered coordinates also become that entry's base location for
 AQ/pollen/UV and its default weather forecast. An explicit forecast selection
 still changes only the ICON forecast role.
 
-**Prepared b3 correction package:** the existing entry’s **Configure (gear)**
+**B3 test track:** the existing entry’s **Configure (gear)**
 now brings the **weather measuring station, measured-pollen station and forecast
 location into one dialog**, alongside the independent warning postcode. A
 postcode/town/POI search continues inside the same flow; cancelling preserves
@@ -81,7 +81,7 @@ forecast device/card change is covered in [display and migration](docs/FORECAST_
   explains the retired seasonal heating-degree entity, warning-filter changes,
   backup and recovery.
 - **See how changes are checked.** Public review history, automated HA tests,
-  CodeQL and HACS validation accompany changes. The [overall review](docs/RELEASE_REVIEW_2026-10-24.md)
+  CodeQL, SonarCloud and HACS validation accompany changes. The [overall review](docs/RELEASE_REVIEW_2026-10-24.md)
   records evidence and remaining work; the fork has its own support and private
   security-reporting routes.
 
@@ -120,14 +120,16 @@ It keeps current conditions and selected-place predictions distinct and includes
 [one card/action target change](docs/FORECAST_DISPLAY.md#update-an-existing-card-or-forecast-action-once).
 See [b2 notes](docs/RELEASE_8.3.0b2.md) and its [focused protocol](docs/ACCEPTANCE_8.3.0b2.md).
 This correction is not in 8.3.0b1. The calendar-day and unified-settings corrections described above are **not
-in published b2**. They need a reviewed packaging merge, a new announced package and
-focused HA acceptance before a stable 8.3.0 release.
-**Prepared follow-up candidate: 8.3.0b3** includes those reviewed corrections:
+in published b2**. Publication of the exact b3 package and focused HA acceptance remain separate
+steps before a stable 8.3.0 release.
+**8.3.0b3 test track** includes those reviewed corrections:
 [release notes](docs/RELEASE_8.3.0b3.md) and
 [focused acceptance](docs/ACCEPTANCE_8.3.0b3.md). It brings all three location
 choices into the same Configure dialog and validates whole Swiss calendar days
-through clock changes. Wait for its explicitly announced publication; this
-source version alone does not make it available in HACS.
+through clock changes (e.g. from summer time to winter time). Check the
+[announced GitHub release](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.0b3)
+for availability and install that exact release through HACS; a source version
+alone does not establish publication.
 Stable 8.2.0 remains the normal installation route. Neither a branch nor an
 open PR is an installation target.
 The [overall review](docs/RELEASE_REVIEW_2026-10-24.md) and
