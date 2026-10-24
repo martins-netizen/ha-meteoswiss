@@ -1,6 +1,6 @@
 # Choose or change a weather forecast location
 
-**Guide version:** 1.2 · **Updated:** 24 October 2026
+**Guide version:** 1.3 · **Updated:** 24 October 2026
 **Availability:** the 8.3.0b1 candidate track; published stable 8.2.0 does not
 show these dialogs. The [candidate notes](RELEASE_8.3.0b1.md) and
 [focused temporary-HA protocol](ACCEPTANCE_8.3.0b1.md) separate package review,
@@ -23,11 +23,11 @@ measurements remain available.
 ## Display follow-up after 8.3.0b1
 
 The initial beta displayed Säntis forecasts under the Kloten device heading.
-The unreleased [display correction](FORECAST_DISPLAY.md) separates them into a
+The prepared 8.3.0b2 [display correction](FORECAST_DISPLAY.md) separates them into a
 named forecast device, including all eight scalars, HGT and a forecast-only
 weather entity. It preserves the station entity/IDs and personal names, while
 forecast cards/actions for a selected catalogue point use the new forecast
-weather entity. That correction needs its own reviewed follow-up installation;
+weather entity. That correction needs its announced b2 installation;
 it is not included in the original 8.3.0b1 package.
 
 ## New setup

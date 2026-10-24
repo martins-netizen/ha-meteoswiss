@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+No additional feature changes beyond the prepared 8.3.0b2 candidate below.
+
+## [8.3.0b2] — forecast display test candidate
+
+Prepared 24 October 2026 from regularly merged PR #61,
+**781ba3a41fafc2e8dd5bc5f867f55c646c4a2412**. Only the two component version
+fields differ from that reviewed source; 36 other component files, HACS metadata
+and workflows match. Publication and practical acceptance remain separate.
+See [release notes](docs/RELEASE_8.3.0b2.md) and [focused acceptance](docs/ACCEPTANCE_8.3.0b2.md).
+
+- Prepare Publisher V1.1 from the successfully used V1.0. It creates only b2 as
+  a prerelease, preserves the published b1 tag and latest stable 8.2.0, and keeps
+  the exact-source/check/receipt/no-rewrite guards. Reuse failure cases for both
+  publisher profiles independently of the current root version.
+
 - Separate selected-place forecasts from the existing current-condition device.
   Reuse the HGT device identity for a translated, location-labelled forecast
   group containing the eight existing scalars, HGT and a new forecast-only

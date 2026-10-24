@@ -15,6 +15,49 @@ This is an independent community project, not an official MeteoSwiss product.
 is published.** It includes explicit pollen-station selection during setup and
 the reviewed Beta2 component code. Follow the setup or migration guide below.
 
+## Four places: what each one is used for
+
+**HA home, pollen measurements, weather measurements and weather forecasts can
+refer to four different places.** Each has a specific purpose:
+
+| Place | What it is used for | Example |
+|---|---|---|
+| **1. HA home location** | For a SwissMetNet entry, the base coordinates for **modelled air quality, modelled pollen and optional UV**. Also the weather-forecast location when you keep or explicitly return to the original base coordinates. | Your configured home position in **Kloten**. |
+| **2. Pollen measurement station** | **Measured pollen concentrations** from the selected MeteoSwiss pollen station. Independent of weather measurements and weather forecasts. | **Zürich (PZH)**. |
+| **3. Weather measurement station** | **Measured current temperature, wind, rain and other observations**, shown on the station device and its original weather entity. | **Zürich/Kloten**. |
+| **4. Weather forecast location** | **ICON predictions:** hourly/daily forecasts, eight today/tomorrow sensors and calculated heating degree days. In b2, the separate forecast weather entity also shows the chosen point's **current model hour**, which is a prediction rather than a station measurement. | A selected town/postcode point or **Säntis** POI. |
+
+For example: **HA home in Kloten, pollen measurements from Zürich, weather
+measurements from Zürich/Kloten and weather forecasts for Säntis.** Changing
+the forecast to Säntis changes its ICON predictions and calculated HGT. The
+Kloten observations, selected pollen measurement station and modelled
+AQ/pollen/UV at the base location retain their own places.
+
+**Measured pollen and modelled pollen are different:** the pollen station
+supplies measurements; modelled pollen uses the base coordinates. If you choose
+an explicit forecast point, that point replaces the base location **only for
+the ICON weather forecast role**.
+
+**Warnings use a separate warning postcode**, for example **8302** for Kloten.
+A postcode entered in the forecast search selects a forecast point; the warning
+postcode selects the warning area. Enter them independently, even when both
+are 8302. Choosing Säntis for the forecast does not move the warning postcode
+or establish warnings for that mountain. A town/postcode forecast point is a
+provider-assigned point, not the exact coordinates of your home.
+
+The alternative **Open-Meteo current-weather source** uses modelled current
+conditions at its entered coordinates in place of a weather measurement station.
+These entered coordinates also become that entry's base location for
+AQ/pollen/UV and its default weather forecast. An explicit forecast selection
+still changes only the ICON forecast role.
+
+In an existing entry, **Configure** changes the measured-pollen station;
+**three-dot menu → Reconfigure** changes the weather forecast location.
+See [the selection guide](docs/FORECAST_LOCATION_SETUP.md) and
+[data/settings reference](docs/USAGE.md) for the setup fields. The b2 named
+forecast device/card change is explained in [display and migration](docs/FORECAST_DISPLAY.md);
+use it only after the follow-up prerelease is announced and installed.
+
 ## Why choose this fork?
 
 - **Less manual patching.** Reviewed fixes and German, English, French and Italian
@@ -65,11 +108,15 @@ and [focused test checklist](docs/ACCEPTANCE_8.3.0b1.md) define the published
 scope. Initial operator testing confirmed the separate Säntis station/POI
 choices and exposed ambiguous forecast values under a Kloten heading.
 
-**Unreleased follow-up:** [separate named forecast device and weather entity](docs/FORECAST_DISPLAY.md),
-keeping current conditions and selected-place predictions distinct. This
-correction is not in 8.3.0b1; its review and a published follow-up precede the
-remaining targeted HA acceptance. Stable 8.2.0 remains the normal installation
-route. Neither a branch nor an open PR is an installation target.
+**Prepared follow-up candidate: 8.3.0b2**, with a
+[separate named forecast device and weather entity](docs/FORECAST_DISPLAY.md).
+It keeps current conditions and selected-place predictions distinct and includes
+[one card/action target change](docs/FORECAST_DISPLAY.md#update-an-existing-card-or-forecast-action-once).
+See [b2 notes](docs/RELEASE_8.3.0b2.md) and its [focused protocol](docs/ACCEPTANCE_8.3.0b2.md).
+This correction is not in 8.3.0b1. The b2 source version alone does not prove a
+published release; wait for the explicitly announced prerelease before testing.
+Stable 8.2.0 remains the normal installation route. Neither a branch nor an
+open PR is an installation target.
 The [overall review](docs/RELEASE_REVIEW_2026-10-24.md) and
 [readiness record](docs/RELEASE_READINESS.md) retain evidence.
 

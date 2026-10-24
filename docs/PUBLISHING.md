@@ -1,43 +1,60 @@
 # Fork releases: publication and HACS acceptance
 
-## Next candidate: 8.3.0b1
+## Next candidate: 8.3.0b2
 
-The candidate packet is based on reviewed PR #59 at
-**4c8169206fdcb8688a438c16a93f867a633a344f**. Only the two component versions
-change; **36 component files**, hacs.json (including country CH/branch hiding)
-and workflows match that source. [Release notes](RELEASE_8.3.0b1.md) and
-[focused acceptance](ACCEPTANCE_8.3.0b1.md) are prepared. The old 8.2.0 helpers
-below cannot publish this candidate.
+The candidate packet is based on reviewed, regularly merged PR #61 at
+**781ba3a41fafc2e8dd5bc5f867f55c646c4a2412**. Only manifest.json/version.py
+change inside the component; **36 other component files**, hacs.json with
+country CH/branch hiding, and workflows match that source. The
+[b2 notes](RELEASE_8.3.0b2.md) and [focused protocol](ACCEPTANCE_8.3.0b2.md)
+include the named forecast group and card/action migration. A source version
+is not proof that this prerelease has been published.
 
-After the packaging PR is approved, regularly merged and all exact post-merge
-checks pass, use its full approved merge SHA. Commands assume repository root;
-a downloaded standalone helper works from any directory with the same arguments.
+After the packaging PR is approved and regularly merged, verify the exact
+merge tree and all post-merge checks. Use that full approved forty-character
+lowercase merge SHA, not a PR head, branch name or the source commit above.
+Commands assume repository root; the standalone downloaded helper also works
+from any directory with the same arguments.
 
 ```sh
-bash scripts/publish_meteoswiss_830_beta_v1.0.sh --check APPROVED_MERGE_COMMIT
-# Only after reviewing the exact preflight and approving prerelease publication:
-bash scripts/publish_meteoswiss_830_beta_v1.0.sh --publish APPROVED_MERGE_COMMIT
+bash scripts/publish_meteoswiss_830_beta_v1.1.sh --check APPROVED_MERGE_COMMIT
+# After the concrete candidate/publication approval:
+bash scripts/publish_meteoswiss_830_beta_v1.1.sh --publish APPROVED_MERGE_COMMIT
 ```
 
-Replace APPROVED_MERGE_COMMIT with that exact forty-character lowercase SHA;
-it is not a branch name or PR head. --check performs only GitHub reads and
-writes its local receipt/log. --publish can only create **8.3.0b1**, draft=false,
-prerelease=true, make_latest=false. Its default internal mode is read-only.
-The helper checks GitHub Actions and Sonar app/head provenance, all latest
-check results, component versions/equality, CH/HACS/workflows, old immutable
-beta/stable tags and latest stable release 8.2.0. Source 4c81692 is reviewed CI
-code, not a claim of new live HA acceptance.
+V1.1 is derived from the successfully executed b1 V1.0 and creates only
+**8.3.0b2**, draft=false, prerelease=true, make_latest=false. The publisher checks
+protected exact Development head, the full version-only component boundary,
+CH/HACS/workflow equality, latest successful check provenance and unchanged
+old tags, now including published **8.3.0b1 → a6b9df9f57dec3e93c8f698133cdb0e7e4c3e937**.
+Latest stable must remain **8.2.0 / ID 420392277**. Reviewed source 781ba3a means
+CI-reviewed code, not completed b2 practical acceptance.
 
-The helper reserves a writable local receipt before API access, uses the Mac's
-existing gh authentication and a fixed github.com repository, and permits just
-one remote write type: creating this release. It cannot change refs, merge,
-rewrite notes or contact HA. A timeout after a release write is an uncertain
-result; rerun the same exact commit to verify an existing matching release
-before considering any further action. Do not delete/recreate or retag.
-The receipt records publication status separately from pending HA acceptance.
-After publication independently confirm the release/tag and then follow the
-focused temporary-HA checklist. Stable promotion/default-list submission remain
-separate decisions.
+--check is read-only on GitHub; --publish performs the same preflight before
+its only allowed remote write: creating this prerelease. Both reserve a local
+JSON receipt before any API call and write a log under Downloads/HA/05_Diagnose.
+The helper uses the Mac's existing gh authentication, never reads a token from
+the user, and performs no HA connection, installation, restart or device call.
+An existing identical release is verified without another POST; different
+notes/attributes/tags are not overwritten. An uncertain POST outcome is recorded
+and requires rereading with the same exact commit, not deleting or retagging.
+After creation verify tag/notes/ID, preserved tags and unchanged latest stable.
+
+After independent release confirmation, perform only the focused temporary-HA
+b2 update/display checks and remaining feature checks. Stable promotion and
+HACS default-list submission remain separate. Do not repeat a completed clean
+install or restore, and do not add a blanket new 24-hour wait.
+
+## Completed 8.3.0b1 publication
+
+**8.3.0b1** was published on **24 October 2026 at 06:26 UTC / 08:26 Europe/Zurich**,
+prerelease ID **422558946**, tag **a6b9df9f57dec3e93c8f698133cdb0e7e4c3e937**.
+The successful Mac V1.0 receipt/log and independent release/tag/notes/latest
+checks confirm it. Its original [notes](RELEASE_8.3.0b1.md),
+[protocol](ACCEPTANCE_8.3.0b1.md) and
+[historical helper](../scripts/publish_meteoswiss_830_beta_v1.0.sh) remain unchanged.
+Do not republish b1. Initial operator testing exposed the display issue addressed
+by PR #61; full b2 acceptance remains. The 8.2.0 helpers below are historical.
 
 ## Published stable release: 8.2.0
 
