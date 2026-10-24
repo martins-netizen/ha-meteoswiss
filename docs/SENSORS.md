@@ -7,26 +7,26 @@ For setup use [GETTING_STARTED.md](GETTING_STARTED.md); existing users use [MIGR
 
 ## Weather entity
 
-Current temperature, humidity, pressure and wind follow the selected observation
-source: measured SwissMetNet station or explicitly selected Open-Meteo modelled
-current weather. For legacy entries without an explicit catalogue selection, the weather symbol
-can use a valid location forecast when no
-direct station condition exists.
+Current temperature, humidity, pressure, wind and precipitation follow the
+chosen observation source: SwissMetNet measurements or explicitly selected
+Open-Meteo modelled current weather. The Swiss station's qualitative condition
+is independently modelled at its own catalogue coordinates/height; it never
+borrows a different POI's forecast condition. Numeric observations remain
+available if only that optional condition fails. See [source details](STATION_WEATHER_CONDITION.md).
 
 Hourly/daily forecasts use **MeteoSwiss ICON Seamless via Open-Meteo**, refreshed
 hourly, projected to up to 24 hours/five Swiss calendar days. For station entries
 the legacy forecast point is HA's home location; for Open-Meteo entries it is the
-existing configured base location. In unreleased development, a deliberately
-saved catalogue point overrides the weather forecast only; the translated
-selection dialog is implemented in unreleased development; see
+existing configured base location. A deliberately
+saved catalogue point overrides the weather forecast only; see
 [the selection guide](FORECAST_LOCATION_SETUP.md). Weather/forecast scalars/HGT expose the
-selected name, category and height locally. Current weather and AQ/pollen/UV
-keep the base location, and a selected point cannot supply the current-weather
+selected name, category and height locally. Measured current weather keeps the selected station; modelled AQ/pollen/UV
+keep their base location, and a selected point cannot supply the current-weather
 forecast fallback. See [the saved-location contract](SAVED_FORECAST_LOCATION.md). The warning postcode does not move the forecast. Native units are °C,
 hPa, km/h and mm; HA converts weather attributes to the user's selected units.
 Forecast failure returns an empty forecast while valid observations remain usable.
 
-## Distinct forecast device (development after 8.3.0b1)
+## Distinct forecast device
 
 A [display correction](FORECAST_DISPLAY.md) places the eight scalars, HGT and a
 new forecast weather entity on a named forecast device. Its current-hour values
@@ -37,9 +37,9 @@ that interface for compatibility; forecast cards/actions can use the new entity
 for an explicit source role. Existing IDs/options are preserved. This correction
 is not included in published 8.3.0b1.
 
-## Forecast summary sensors (unreleased)
+## Forecast summary sensors
 
-Development after 8.2.0 adds eight numeric entities: today's and tomorrow's
+Eight numeric entities expose today's and tomorrow's
 maximum/minimum temperature, native full-day precipitation, and highest hourly
 precipitation probability with matching time windows. Today's probability covers
 current/upcoming hours; daily temperature/rain values describe the whole day.
@@ -223,7 +223,7 @@ The [Cache Statistics guide](USAGE.md#cache-statistics-what-the-numbers-mean)
 explains hit rate, lookups, expiry and why these are not API-request counters.
 
 Camera/radar, standalone SLF and standalone BAFU clients were inactive
-placeholders in 8.2.0 and created no additional entities. Unreleased development
+placeholders in 8.2.0 and created no additional entities. The 8.3 runtime
 removes those unused files. Avalanche/flood warnings supplied through the
 postcode feed remain supported. Standalone river-gauge measurements and full
 avalanche-bulletin products remain outside this integration's supported scope;

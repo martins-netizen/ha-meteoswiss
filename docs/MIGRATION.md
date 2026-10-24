@@ -157,7 +157,7 @@ history but replaces component files; resolve local code/translation patches fir
 - Consumer mapping is correct; re-enable only previously enabled automations.
 
 Missing individual values are not automatically installation failures.
-See [initial values](GETTING_STARTED.md#4-check-pollen-station-and-initial-values).
+See [initial values](GETTING_STARTED.md#5-check-pollen-station-and-initial-values).
 A visual check is not ordinary-operation observation, and acceptance of older
 runtime code does not automatically accept a later changed runtime.
 
@@ -174,22 +174,41 @@ full backups or credentials.
 Bundled UI languages update with the software. Do not overwrite them with old
 translation files. Personal dashboard labels remain separately maintained.
 
-## Forecast-location selection in unreleased development
+## Location and forecast changes in 8.3
 
-Existing entries retain their original forecast location until a deliberate
-change. Use the entry's **three-dot menu → Reconfigure**, not pollen Configure
-and not deletion/recreation. The [forecast-location guide](FORECAST_LOCATION_SETUP.md)
-explains search, confirmation, cancel/keep/reset and unchanged location roles.
-Candidate checks for this feature remain separate from completed 8.2.0 acceptance.
+Upgrades retain the existing observation/pollen/warning choices and original
+forecast base until a deliberate change. The entry's **Configure (gear)** now
+edits weather station/base coordinates, measured-pollen station, forecast choice
+and warning postcode together. The HA home location remains a general HA setting.
+The older **three-dot menu → Reconfigure** path remains a forecast-only shortcut.
+See [selection](FORECAST_LOCATION_SETUP.md) and [unified settings](CALENDAR_AND_LOCATION_SETTINGS.md).
 
+The observation interval field is no longer shown. New entries use 600 seconds;
+existing stored individual intervals remain. Cancelling any unfinished location
+change saves none of it. A successful confirmed change reloads once.
 
-## Separate forecast display after 8.3.0b1 (unreleased)
+### Separate forecast device and card targets
 
-The [display migration guide](FORECAST_DISPLAY.md) explains the new named
-forecast device and weather entity. Existing scalar/HGT IDs, personal names,
-options and station entities remain. With an explicit catalogue point, switch
-forecast cards and weather.get_forecasts targets to the new forecast weather
-entity; the original station weather entity then advertises current conditions
-only. Entries without a catalogue choice retain their legacy combined interface.
-No card/automation is rewritten, no retained entity is deleted and no separate
-history per selected place is created. Wait for an announced follow-up release.
+The [display guide](FORECAST_DISPLAY.md) explains the named forecast device and
+weather entity. Existing scalar/HGT IDs, personal names, options and station
+entities remain. With an explicit catalogue point, switch forecast cards and
+`weather.get_forecasts` targets to the **new forecast weather entity**; the
+original station entity then supplies current conditions only. Entries without
+a catalogue selection retain their legacy combined interface. No card or
+automation is automatically rewritten and no separate history per chosen point
+is created. Retained history continues after a deliberate station/point change;
+personal names and technical IDs may still mention the previous place.
+
+The station's qualitative weather state is modelled at its own coordinates;
+numeric observations remain measurements. It does not borrow the selected
+POI's condition. [Source and failure limits](STATION_WEATHER_CONDITION.md).
+
+### Upgrading an accepted 8.3 beta
+
+B4 is the accepted runtime for stable 8.3.0; only its two component version files
+change. Keep the existing entry and intended locations. After the stable release
+is published, refresh HACS information, actually download it, restart once and
+confirm the version, availability and current card targets. Do not repeat a
+completed first-install/restore rehearsal or invent a new 24-hour window for
+the identical runtime. Redownloading older software does not undo user settings
+changed during testing; restore those deliberately or use the matching backup.

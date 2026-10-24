@@ -1,10 +1,10 @@
 # Saved forecast location and ICON routing
 
-**Guide version:** 1.1 · **Updated:** 23 October 2026
-**Status:** Second POI development package, unreleased after 8.2.0. The translated
-search, confirmation and reconfiguration package now supplies the
-[HA user path](FORECAST_LOCATION_SETUP.md); practical candidate acceptance remains. Users
-should not edit HA storage manually to try this internal contract.
+**Guide version:** 1.2 · **Updated:** 24 October 2026
+**Status:** included in the 8.3 runtime accepted as b4. Source clients,
+saved identities/height routing and the four-language setup/Configure flow
+are integrated. See [selection](FORECAST_LOCATION_SETUP.md) and
+[current release evidence](RELEASE_READINESS.md). Do not edit HA storage manually.
 
 ## What a selected location means
 

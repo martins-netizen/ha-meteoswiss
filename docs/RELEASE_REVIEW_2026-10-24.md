@@ -1,5 +1,31 @@
 # Overall release review — 24 October 2026
 
+## Review addendum 1.1: stable 8.3.0 promotion
+
+The original review below is a dated source audit; its then-open runtime,
+dialog and acceptance findings were corrected in the subsequent PRs recorded
+in [readiness](RELEASE_READINESS.md). The operator accepted published b4 and
+requested stable promotion on 24 October. Screenshots confirm the version and
+separate measurement/forecast devices with symbols and values. They do not
+independently expose every provenance attribute or registry ID.
+
+The stable package retains all 37 non-version component files from accepted
+b4 at a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5. Only manifest/module versions
+become 8.3.0; HACS/CH, workflows, all previous tags and old publishers remain.
+Current setup, migration, location, source and quality guides are aligned.
+Publisher V1.3 adds stable/latest selection with prior stable/beta publication
+checks, read-only retries and refusal of changed source/checks/tags/notes.
+Full local suite: 1,653 tests +63 subtests on each HA 2026.8.3 and
+2026.10.3; coverage remains 99.97753% with unchanged strict gates/exclusions.
+Exact PR and post-merge checks are still required. Publication and a subsequent
+stable HACS update remain separate results; see [stable notes](RELEASE_8.3.0.md).
+No official HA tier, HACS catalogue approval or diagnosed UTM restart cause is
+inferred. The [quality matrix](QUALITY_SCALE.md) retains open Gold/Core-brand
+boundaries. No new feature or blanket observation window is added.
+
+## Original source review 1.0 — historical findings
+
+
 **Review version:** 1.0. **Baseline:** approved PR #58, regularly squash-merged
 as **5bed187e8a680b8d194f9f3ee171fe89671c3fae**. Its tree is
 fc441608bebc5d8f20519f897150ea47b0dc601c, identical to the approved PR tree.

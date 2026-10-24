@@ -1,10 +1,9 @@
 # Keep current conditions and a selected forecast location distinct
 
-**Guide version:** 1.1 · **Updated:** 24 October 2026.
-**Availability:** the prepared **8.3.0b2** candidate, based on reviewed PR #61.
-This correction is not included in immutable 8.3.0b1 or stable 8.2.0. Follow the
-[b2 notes](RELEASE_8.3.0b2.md) and [focused protocol](ACCEPTANCE_8.3.0b2.md);
-wait for an announced release rather than downloading a branch.
+**Guide version:** 1.2 · **Updated:** 24 October 2026.
+**Availability:** included in the **8.3.0** runtime accepted as b4.
+Use the [announced release](RELEASE_8.3.0.md); earlier beta notes describe their
+historical scopes, not instructions to reinstall an older beta.
 
 ## What changes on screen
 
