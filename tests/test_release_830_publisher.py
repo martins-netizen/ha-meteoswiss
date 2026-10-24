@@ -58,13 +58,13 @@ class GitHub:
 
     def __init__(self, publisher):
         self.publisher = publisher
-        files = [
-            p
-            for p in (ROOT / PREFIX).rglob("*")
-            if p.is_file() and "__pycache__" not in p.parts
-        ]
+        # Keep the historical publisher's 38-file footprint independent of
+        # later source additions. The fixture inventory is pinned to b3.
+        files = json.loads(
+            (ROOT / "tests/fixtures/release_830_component_paths.json").read_text()
+        )
         self.candidate = {
-            str(p.relative_to(ROOT)): ("100644", blob(p.read_bytes())) for p in files
+            path: ("100644", blob((ROOT / path).read_bytes())) for path in files
         }
         self.source = copy.deepcopy(self.candidate)
         self.manifest = {

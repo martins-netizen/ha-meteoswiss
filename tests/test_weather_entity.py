@@ -101,6 +101,13 @@ async def installed_weather(hass, enable_custom_integrations):
                 "last_update": NOW.isoformat(),
             },
             "coordinator.MeteoSwissForecastCoordinator": [row()],
+            "coordinator.MeteoSwissStationConditionCoordinator": {
+                "time": HOUR.isoformat(),
+                "valid_until": (HOUR + timedelta(hours=1)).isoformat(),
+                "fetched_at": NOW.isoformat(),
+                "weather_code": 3,
+                "is_day": True,
+            },
             "coordinator.MeteoSwissAlertsCoordinator": [],
             "coordinator.OpenMeteoPollenCoordinator": {},
             "coordinator.MeteoSwissPollenCoordinator": {},

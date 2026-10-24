@@ -13,7 +13,7 @@ local changes. A release is an explicitly tested snapshot of `development`.
 
 ## Responsibilities
 
-See the [coordinator examples](COORDINATOR_EXAMPLES.md) for the seven concrete
+See the [coordinator examples](COORDINATOR_EXAMPLES.md) for the eight concrete
 classes, entry-owned instances, polling and practical consumer/failure examples.
 
 - API clients download and validate payloads. A transport or decoding failure
@@ -76,6 +76,23 @@ independent source failures and reset/reload, not just constructed metadata.
 
 ## Sources and time
 
+### Station-local weather condition (development after b3)
+
+`station_condition.py` owns the small ICON current-code/daylight HTTP request,
+mapping and interval validation. The eighth canonical class,
+`MeteoSwissStationConditionCoordinator` in `coordinator.py`, resolves station
+catalogue coordinates/height, caches by that point, schedules ten-minute/end-of-
+interval refreshes and owns source failure/recovery. The role is optional in
+typed runtime data; setup registers its weather listener before a background
+initial refresh, and entry unload cancels pending work and listeners.
+
+The existing station weather entity keeps numeric observations and its IDs.
+Only the qualitative condition can come from this model role, with explicit
+provenance attributes and provider attribution. Observation availability remains
+independent. A condition outage does not borrow POI forecasts or invoke the
+old rain heuristic. Open-Meteo current entries retain their existing source and
+have no extra condition coordinator. See the [user/source contract](STATION_WEATHER_CONDITION.md).
+
 | Data | Source and location | Time semantics |
 |---|---|---|
 | Observations | Selected SwissMetNet station, or configured Open-Meteo location | `last_update` is measurement time, aware UTC. Missing timestamps, age over one hour or more than ten minutes in the future fail the update. |
@@ -96,7 +113,7 @@ Station CSVs use the provider's Windows-1252 encoding and must identify the
 selected station on every row. Their decode, row selection and numeric parsing
 run in HA's executor after the bounded download, rather than blocking its event
 loop. The observation adapter remains in the legacy coordinator class; the
-seven-class canonical placement does not claim every source is fully extracted. Non-finite individual measurements stay missing;
+canonical placement does not claim every source is fully extracted. Non-finite individual measurements stay missing;
 an all-invalid measured row fails the update. Sparse snow/foehn fallback keeps
 its existing limited scope and skips invalid older values. The retained rain
 sensor exposes one latest measured ten-minute amount, its end time and a
@@ -466,9 +483,9 @@ still imports that same class, preserving its old import path without a second
 implementation. Its complete class AST is unchanged. Logging now uses the
 coordinator module namespace; warning parsing, labels, timing, once-per-outage
 logging, session ownership and cleanup remain covered by source/lifecycle tests.
-The [placement review](COORDINATOR_LAYOUT_REVIEW.md) inventories all seven actual
-coordinators; the current seven-class placement inventory is complete after
-the subsequent source/Recorder extractions. No
+The [placement review](COORDINATOR_LAYOUT_REVIEW.md) records the original seven-
+coordinator placement milestone after the source/Recorder extractions. The
+station-condition follow-up adds the eighth canonical class. No
 blanket common-modules/Silver completion follows from this move.
 
 ## Measured pollen client boundary (unreleased)
@@ -498,7 +515,7 @@ semantics, units and 24-row history stay unchanged. Direct-client tests verify
 borrowed-session ownership, message-free source errors and cancellation without passing
 an HA runtime/coordinator to the client. This is not a separately packaged library.
 The [placement review](COORDINATOR_LAYOUT_REVIEW.md) records the subsequent
-source extractions; all seven coordinator definitions are now canonical. Full
+source extractions; the original seven coordinator definitions became canonical at that milestone. Full
 common-modules/Silver evidence remains open.
 
 ## Modelled pollen/AQ and UV source boundary (unreleased)
@@ -518,7 +535,7 @@ with AQ: the old code did not have a separate UV cache. Cache hits cannot renew
 the TTL. Setup/runtime imports and registered lifecycle mocks use the canonical
 class. Existing entity IDs, grouping, options, source parameters and startup/
 unload/reload contracts remain unchanged. The precipitation boundary below
-completes the seven-class coordinator placement inventory.
+completed the original seven-class coordinator placement inventory.
 
 ## Hourly/archive precipitation source and Recorder boundary (unreleased)
 
@@ -536,7 +553,8 @@ never queues data; invalid or absent data never becomes a zero statistic.
 MeteoSwissHourlyPrecipitationCoordinator in coordinator.py composes both layers
 and translates the same four failure messages. Entry-owned hourly/weekly polling,
 optional Recorder startup, keepalive listener and unload behaviour are retained.
-All seven genuine coordinators now live in the canonical module. This is an
+The original seven coordinators became canonical at that milestone; the station-
+condition follow-up adds the eighth. This is an
 inventory result, not a complete quality-tier or live acceptance claim.
 
 ## Verification and remaining limits

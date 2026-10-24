@@ -8,7 +8,8 @@ from unittest.mock import patch
 
 import pytest
 from homeassistant.components.weather.const import DATA_COMPONENT
-from homeassistant.helpers import device_registry as dr, entity_registry as er
+from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.translation import async_get_translations
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 from test_forecast_summary import NOW, forecast_rows
@@ -273,7 +274,9 @@ async def test_weather_setup_without_optional_forecast_keeps_current_conditions(
         hass, station_id="KLO", update_interval=600
     )
     current.data = {"temperature": 12}
-    entry.runtime_data = SimpleNamespace(coordinator=current, forecast_coordinator=None)
+    entry.runtime_data = SimpleNamespace(
+        coordinator=current, forecast_coordinator=None, station_condition_coordinator=None
+    )
     captured = []
     await async_setup_entry(hass, entry, captured.extend)
     assert len(captured) == 1

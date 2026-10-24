@@ -12,6 +12,7 @@ availability or permission for every use. Check the providers' current terms.
 | Station observations | MeteoSwiss SwissMetNet via `data.geo.admin.ch/api/stac/v1` | Selected weather station | Configured interval, minimum/default 600 seconds |
 | Alternative current conditions | Open-Meteo `api.open-meteo.com/v1/forecast` | Explicit coordinates | Configured interval, minimum/default 600 seconds |
 | Weather forecasts | MeteoSwiss ICON Seamless through the same Open-Meteo forecast endpoint | Explicit saved catalogue point in unreleased development; otherwise the original HA/configured base coordinates | 1 hour |
+| Station weather condition (development after b3) | Small Open-Meteo request pinned to MeteoSwiss ICON Seamless; only current weather code/daylight | Actual weather-station catalogue coordinates and available height | Normally 10 minutes, or at the model interval's end; optional, independently failing |
 | Weather/hazard warnings | MeteoSwiss App `app-prod-ws.meteoswiss-app.ch/v3/plzDetail` | Warning postcode with the internal `00` suffix added by the client | 10 minutes |
 | Measured pollen | MeteoSwiss `data.geo.admin.ch/ch.meteoschweiz.ogd-pollen` | Independently selected pollen station | 1 hour |
 | Pollen/AQ model values | Open-Meteo `air-quality-api.open-meteo.com/v1/air-quality` | Original HA/configured base coordinates, independent of a saved weather-forecast POI | 30 minutes |
@@ -81,6 +82,17 @@ retains the provider's backwards-looking `current.interval` duration.
 Default forecast cache lifetime is 30 minutes; current-weather cache lifetime
 is ten minutes. These are cache limits, not promises about model issuance or
 provider publication. See [the general API contract](https://open-meteo.com/en/docs).
+
+### Station-local model condition (development after b3)
+
+The [station-condition follow-up](STATION_WEATHER_CONDITION.md) keeps the
+numeric SwissMetNet readings but fills their weather entity's qualitative
+condition from a separate model request at that station. It uses the same
+MeteoSwiss Seamless model choice as forecasts, without downloading another
+forecast series. Open-Meteo derives this code from ICON fields; it is not a
+measured or native MeteoSwiss WMO symbol. Validity is limited to the provider's
+current interval and a bounded cache. A condition failure affects no measured
+quantity and never borrows the selected forecast POI's condition.
 
 ## Warning source
 

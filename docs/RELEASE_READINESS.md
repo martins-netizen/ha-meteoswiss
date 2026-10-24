@@ -1,10 +1,49 @@
 # Release readiness: current candidate and completed 8.2.0
 
-**Document version:** 2.3 · **Updated:** 24 October 2026
+**Document version:** 2.4 · **Updated:** 24 October 2026
 **Purpose:** One entry point for completed evidence, remaining publication steps
 and work deliberately deferred to later versions.
 
 ## Current next-feature release position
+
+
+**Published b3 and focused operator evidence:** **8.3.0b3** was published on
+24 October 2026 at **13:19:44 UTC / 15:19:44 Europe/Zurich**, release ID
+**422744751**, at the reviewed #65 merge
+**9d75aa8673c417f24caaa1f83181b5ef811d56fc**. The operator confirms successful
+station changes; screenshots show Säntis/Bowil today/tomorrow forecasts with
+values. Earlier installation/restore evidence remains valid.
+
+**Station-condition follow-up:** the Altdorf weather row's `unknown` condition
+is explained: a selected POI must not supply another station's condition.
+Development now adds a small optional ICON code/daylight request at the actual
+measurement station, with catalogue coordinates/height, separate validity and
+failure handling, and unchanged numeric measurements/IDs. See the
+[station-condition guide](STATION_WEATHER_CONDITION.md). This is new source after
+published b3, not a change to that immutable tag. README station-proximity advice
+and Cache Statistics help are included; the compact forecast row's icon/text
+layout is explained without adding a redundant entity.
+
+The follow-up passes **1,559 tests plus 53 subtests** on each local
+**HA 2026.8.3/2026.10.3**, with **99.97753%** combined coverage and unchanged
+strict gates/four exclusions. The 132 b1/b2/b3 publisher cases still pass with a
+frozen historical 38-file fixture inventory; their published helpers are
+unchanged and must not be reused for the new 39-file component. Current CI
+remains HA 2026.8.3/2026.10.1. Direct live probing was unconfirmed because this
+preparation host could not resolve the API hostname; this does not diagnose the
+operator's provider connection or replace candidate-specific HA acceptance.
+
+Next: regular review/merge and exact post-merge checks for the follow-up, then
+an explicitly announced follow-up test package with updated source/version and
+publication guards. Check station-local model condition, retained measurements,
+and an independent forecast point in the existing temporary HA before stable
+8.3.0 promotion. No repeat clean install/restore or blanket 24-hour wait is
+required. The separately reported UTM restart problem has no diagnosed cause;
+do not attribute or dismiss it on the basis of these automated tests.
+
+**Earlier b3 packaging record:** the following source boundary describes the
+already published b3; it is retained as history, not an instruction to publish
+or install b3 again.
 
 **Prepared 8.3.0b3 package:** PR #63 was approved and regularly squash-merged
 as **97338f68038eab80c75c2028c9deb5e24ad552e6**, preserving reviewed tree

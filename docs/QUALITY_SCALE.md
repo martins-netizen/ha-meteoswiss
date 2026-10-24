@@ -1,10 +1,10 @@
 # Quality evidence and remaining work
 
-**Assessment date:** 24 October 2026. **Scope:** the **8.3.0b3 test track**,
+**Assessment date:** 24 October 2026. **Scope:** development after the **8.3.0b3 test track**,
 including the approved calendar-day and unified-settings correction from PR #63
 (merge `97338f68038eab80c75c2028c9deb5e24ad552e6`) and the version-only component
 packaging in PR #64 (merge `17fd7a702986e6b6437ee12d97b54faee1acb767`).
-B3 publication and focused HA acceptance remain separate; stable 8.2.0 is unchanged.
+B3 is published at approved PR #65 merge `9d75aa8673c417f24caaa1f83181b5ef811d56fc`. The operator confirms successful station changes and visible today/tomorrow values. This assessment also includes the station-condition follow-up described in STATION_WEATHER_CONDITION.md; its new candidate publication/live acceptance remain separate. Stable 8.2.0 is unchanged.
 
 This is an engineering self-assessment using the
 [Home Assistant rules](https://contributors.home-assistant.io/core/quality-scale/rules/),
@@ -32,7 +32,7 @@ short; these tables retain the qualifications and release scope.
 | `action-setup` | Exempt | No custom integration actions. `weather.get_forecasts` belongs to HA's weather platform. |
 | `appropriate-polling` | Evidence | Developer-selected 600-second observation default/minimum; source-specific forecast, warning, pollen and archive schedules. New setup/options no longer expose an interval. Legacy intervals survive without a new UI knob. See API_SOURCES.md and options migration tests. |
 | `brands` | Open for a full Core-tier claim | Valid local HACS PNGs exist. They do not establish accepted home-assistant/brands assets for the Core rule; that external evidence remains separate. HACS accepts the local brand route. |
-| `common-modules` | Evidence | All seven real coordinator classes are in coordinator.py; shared bases are in entity.py and runtime ownership is typed. Source separation is substantive for ICON/current/AQ/pollen/precipitation, not alias-only placement. The legacy station adapter remains in its coordinator, with executor CSV parsing. |
+| `common-modules` | Evidence | All eight real coordinator classes are in coordinator.py; shared bases are in entity.py and runtime ownership is typed. Source separation is substantive for ICON/current/AQ/pollen/precipitation, not alias-only placement. The legacy station adapter remains in its coordinator, with executor CSV parsing. |
 | `config-flow` | Evidence | Native setup/options and forecast Reconfigure. Four-language fields/help; source selector; explicit pollen choice and point search/selection/confirmation. Current source and warning/forecast/pollen purposes stay distinct. |
 | `config-flow-test-coverage` | Evidence | Full line/branch gate. Real flow-manager tests cover both providers, errors, retries, duplicate guards, translations, cancel/keep/reset and loaded-entry reconfiguration. |
 | `dependency-transparency` | Exempt | Manifest requirements are empty; there is no separately distributed extra runtime library. HA-provided dependencies and public data/service dependencies are documented. |
@@ -63,7 +63,7 @@ short; these tables retain the qualifications and release scope.
 | `log-when-unavailable` | Evidence | Coordinator transition logs avoid repeated outages, raw coordinate/postcode URLs and payloads; separate cached UV status has its own outage/recovery transition. Tests inspect formatted error chains too. |
 | `parallel-updates` | Evidence | sensor.py uses 1 for diagnostic polling; coordinator-driven weather/binary/pollen platforms use 0. These values do not assert zero network requests. |
 | `reauthentication-flow` | Exempt | No provider accounts or credentials. |
-| `test-coverage` | Evidence | The b3 package passes 1,484 tests plus 53 subtests locally on each HA 2026.8.3/2026.10.3, including 132 publisher-profile cases. Combined line/branch coverage is 99.97671%: 3,355/3,356 statements and 938/938 branches. Every module exceeds 95%; existing strict source/flow gates remain 100%. Four prior exclusion lines and the aggregate floor are unchanged. CI's second version remains 2026.10.1. These coverage results come from local pytest, not a SonarCloud coverage import. |
+| `test-coverage` | Evidence | The station-condition follow-up passes 1,559 tests plus 53 subtests locally on each HA 2026.8.3/2026.10.3, including 132 historical publisher-profile cases. Combined line/branch coverage is 99.97753%: 3,474/3,475 statements and 976/976 branches. Every module exceeds 95%; existing strict source/flow gates remain 100%. Four prior exclusion lines and the aggregate floor are unchanged. CI's second version remains 2026.10.1. These coverage results come from local pytest, not a SonarCloud coverage import. |
 
 The original audit's interval, field-help, common-layout, UV/catalogue and
 per-module coverage findings are implemented in the reviewed tree. Their old

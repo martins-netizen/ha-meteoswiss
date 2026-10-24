@@ -54,8 +54,15 @@ from .precipitation_recorder import (
     MeteoSwissPrecipitationImporter,
 )
 from .retry import async_retry_with_backoff
+from .station_condition import (
+    STATION_CONDITION_INTERVAL,
+    StationConditionClient,
+    StationConditionError,
+    current_station_condition,
+)
+from .stations_map import get_stations_map
+from .weather_data import forecast_datetime, validate_observation_time
 from .weather_data import parse_reference_timestamp as _parse_reference_timestamp
-from .weather_data import validate_observation_time
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -707,6 +714,81 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     async def async_close(self) -> None:
         """The borrowed session is owned and closed by Home Assistant."""
+
+
+class MeteoSwissStationConditionCoordinator(DataUpdateCoordinator[dict[str, Any]]):
+    """Optional model condition at the observation station, never at the POI."""
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        station_id: str,
+        session: aiohttp.ClientSession,
+    ) -> None:
+        self._station_id = station_id
+        self._session = session
+        super().__init__(
+            hass,
+            _LOGGER,
+            name="meteoswiss_station_condition",
+            update_interval=timedelta(seconds=STATION_CONDITION_INTERVAL),
+        )
+
+    async def _async_update_data(self) -> dict[str, Any]:
+        """Resolve authoritative station metadata; an outage affects no readings."""
+        try:
+            stations = await get_stations_map(session=self._session)
+            station = stations.get_station(self._station_id)
+            if station is None or not station.has_coordinates:
+                raise ValueError("Station coordinates unavailable")
+            client = StationConditionClient(
+                station.latitude,
+                station.longitude,
+                self._session,
+                elevation=station.altitude,
+            )
+            cache = get_current_weather_cache()
+            key = cache.make_key(
+                "station-condition:v1:meteoswiss-icon-seamless",
+                station.latitude,
+                station.longitude,
+                station.altitude,
+            )
+            data = cache.get(key)
+            if current_station_condition(data) is None:
+                data = await client.async_get_data()
+                if current_station_condition(data) is None:
+                    raise ValueError("Invalid station condition snapshot")
+                until = forecast_datetime(data["valid_until"])
+                cache.set(
+                    key,
+                    data,
+                    ttl=min(
+                        STATION_CONDITION_INTERVAL,
+                        (until - datetime.now(UTC)).total_seconds(),
+                    ),
+                )
+            until = forecast_datetime(data["valid_until"])
+            # Refresh at the end of the valid interval, even when setup was at
+            # xx:55 and the regular ten-minute schedule would otherwise lag.
+            self.update_interval = timedelta(
+                seconds=min(
+                    STATION_CONDITION_INTERVAL,
+                    max(1, (until - datetime.now(UTC)).total_seconds()),
+                )
+            )
+            return data
+        except (
+            StationConditionError,
+            aiohttp.ClientError,
+            TimeoutError,
+            TypeError,
+            ValueError,
+            UnicodeError,
+            RuntimeError,
+        ):
+            self.update_interval = timedelta(seconds=STATION_CONDITION_INTERVAL)
+            raise UpdateFailed("Station model condition unavailable") from None
 
 
 class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]]):

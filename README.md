@@ -23,9 +23,14 @@ refer to four different places.** Each has a specific purpose:
 | Place | What it is used for | Example |
 |---|---|---|
 | **1. HA home location** | The HA base coordinates are used for **modelled air quality, modelled pollen and optional UV via Open-Meteo**. They also define the **MeteoSwiss weather-forecast location** when you keep or explicitly return to the original base coordinates. | Your configured home position in **Kloten**. |
-| **2. Pollen measurement station** | **Measured pollen concentrations** from the selected MeteoSwiss pollen station. Independent of weather measurements and weather forecasts. | **Zürich (PZH)**. |
-| **3. Weather measurement station** | **Measured current temperature, wind, rain and other observations**, shown on the station device and its original weather entity. | **Zürich/Kloten**. |
+| **2. Pollen measurement station** | **Measured pollen concentrations** from the selected MeteoSwiss pollen station. Independent of weather measurements and weather forecasts. You might want to choose a station near your HA home location. | **Zürich (PZH)**. |
+| **3. Weather measurement station** | **Measured current temperature, wind, rain and other observations**, shown on the station device and its original weather entity. You might want to choose a station near your HA home location. | **Zürich/Kloten**. |
 | **4. Weather forecast location** | **ICON predictions:** hourly/daily forecasts, eight today/tomorrow sensors and calculated heating degree days. In b2, the separate forecast weather entity also shows the chosen point's **current model hour**, which is a prediction rather than a station measurement. | A selected town/postcode point or **Säntis** POI. |
+
+**Station-condition follow-up (development after b3):** the station weather
+row also gains a **modelled condition for the measuring station's own location**.
+Its numeric values remain measurements; the condition is identified separately
+as modelled. See [the source and failure behaviour](docs/STATION_WEATHER_CONDITION.md).
 
 For example: **HA home in Kloten, pollen measurements from Zürich, weather
 measurements from Zürich/Kloten and weather forecasts for Säntis.** Changing
@@ -183,6 +188,13 @@ Before updating an existing installation, review warning filters: **0 is Wind,
 4 is Slippery Roads**; wind/thunderstorm/rain uses `[0, 1, 2]`. Detailed messages
 distinguish storm/heavy-rain/snowfall events. Thaw (6) is recognized if supplied.
 Dashboard and automation migration is a separate deployment step.
+
+## Cache Statistics
+
+The optional **Cache Statistics** diagnostic shows how often a local lookup
+reuses data still within its cache lifetime. A higher hit rate can mean fewer
+repeated downloads; it does not measure forecast accuracy or service health.
+There is no target percentage to achieve. See [what the counters mean](docs/USAGE.md#cache-statistics-what-the-numbers-mean).
 
 ## Installation and updates
 
