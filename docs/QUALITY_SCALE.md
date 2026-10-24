@@ -1,230 +1,113 @@
-# Quality roadmap and evidence
+# Quality evidence and remaining work
 
-## Current follow-up — 23 October 2026
+**Assessment date:** 24 October 2026. **Scope:** the reviewed development tree
+based on merged PR #58, including the corrections in the associated review PR.
+These changes are unreleased; stable 8.2.0 is unchanged.
 
-Stable 8.2.0 is published, and its HACS update is operator-confirmed. The clean
-first installation/isolated restore and Beta2 setup are complete within their
-[recorded scope](HACS_ACCEPTANCE.md); no new independent runtime comparison
-is inferred from the update confirmation. The dated account below remains
-historical.
+This is an engineering self-assessment using the
+[Home Assistant rules](https://contributors.home-assistant.io/core/quality-scale/rules/),
+not an awarded tier. HACS eligibility is assessed separately in the
+[overall review](RELEASE_REVIEW_2026-10-24.md). `quality_scale` is deliberately
+absent from the manifest. A full tier needs the applicable preceding rules too;
+one green percentage or a working reconfiguration flow does not establish it.
 
-Unreleased [shared HTTP hardening](HTTP_SOURCE_HARDENING.md) adds fixed
-per-source destinations and bounded wire/decompressed reads, with preserved
-archive budgets and failure semantics. The transport joins the existing strict
-100% line/branch gates. A focused next-package HA acceptance remains separate;
-this change alone does not close all Bronze/Silver rules. Placeholder cleanup,
-translated field help and shared entity metadata are now documented separately.
-The version metadata's real diagnostic consumer closes its coverage gap; every
-module exceeds 95%, enforced alongside existing stricter gates. Polling/UI
-defaults and the legacy options bridge are now implemented with real
-reload/registry tests. Remaining coordinator placement and the
-location/reconfiguration contract remain on the plan.
+**Evidence** below means code, automated tests or current documentation exists
+within the stated scope. **Open/partial** identifies a remaining requirement.
+**Exempt** gives its applicability reason. Focused acceptance of the eventual
+candidate in the existing temporary HA remains separate from these assessments.
 
-## Historical acceptance update — 20 October 2026
+## Bronze: twenty rules
 
-The live candidate is `8.2.0b1` at
-`0086b956d44b7144b242c5d5c1881d0b0650e524`. Local verification recorded 786
-passing tests on both HA 2026.8.3 and 2026.10.2, with 99.051% combined
-line/branch coverage. The exact accepted commit also passed its six post-merge
-checks (including HA 2026.10.1, HACS validation, Hassfest and CodeQL).
+| Rule | Assessment | Repository evidence or remaining boundary |
+|---|---|---|
+| `action-setup` | Exempt | No custom integration actions. `weather.get_forecasts` belongs to HA's weather platform. |
+| `appropriate-polling` | Evidence | Developer-selected 600-second observation default/minimum; source-specific forecast, warning, pollen and archive schedules. New setup/options no longer expose an interval. Legacy intervals survive without a new UI knob. See API_SOURCES.md and options migration tests. |
+| `brands` | Open for a full Core-tier claim | Valid local HACS PNGs exist. They do not establish accepted home-assistant/brands assets for the Core rule; that external evidence remains separate. HACS accepts the local brand route. |
+| `common-modules` | Evidence | All seven real coordinator classes are in coordinator.py; shared bases are in entity.py and runtime ownership is typed. Source separation is substantive for ICON/current/AQ/pollen/precipitation, not alias-only placement. The legacy station adapter remains in its coordinator, with executor CSV parsing. |
+| `config-flow` | Evidence | Native setup/options and forecast Reconfigure. Four-language fields/help; source selector; explicit pollen choice and point search/selection/confirmation. Current source and warning/forecast/pollen purposes stay distinct. |
+| `config-flow-test-coverage` | Evidence | Full line/branch gate. Real flow-manager tests cover both providers, errors, retries, duplicate guards, translations, cancel/keep/reset and loaded-entry reconfiguration. |
+| `dependency-transparency` | Exempt | Manifest requirements are empty; there is no separately distributed extra runtime library. HA-provided dependencies and public data/service dependencies are documented. |
+| `docs-actions` | Exempt | No custom actions. USAGE.md explains the standard HA forecast service. |
+| `docs-conditions` | Exempt | No integration/device-specific conditions; ordinary state/numeric conditions remain available. |
+| `docs-high-level-description` | Evidence | README and GETTING_STARTED.md explain benefits, source provenance, independent project status and limits. |
+| `docs-installation-instructions` | Evidence | Separate new-install and migration/update paths; explicit released target, HACS refresh, backup, restart and retained HA entry. Practical 8.2.0 acceptance is recorded, not reopened. |
+| `docs-removal-instructions` | Evidence | USAGE.md covers entry and HACS removal, dependent consumers and Recorder retention. |
+| `docs-triggers` | Exempt | No integration/device-specific triggers; normal HA triggers are documented. |
+| `entity-event-setup` | Evidence | Coordinator listeners and forecast clocks attach on addition and unsubscribe on removal. Loaded HA/Recorder and WebSocket tests cover cleanup, optional-task cancellation and refreshes. |
+| `entity-unique-id` | Evidence | Stable entry/family IDs and intentional shared diagnostic IDs; registry/Recorder reload tests. Retired current-hour and seasonal HGT entities are documented exceptions. |
+| `has-entity-name` | Evidence | Common entity bases provide contextual naming to all active classes; metadata tests cover grouping and retained identities. |
+| `runtime-data` | Evidence | MeteoSwissRuntimeData and typed ConfigEntry own coordinators/session/target; domain globals only coordinate shared diagnostics. |
+| `test-before-configure` | Evidence | Actual current-source validation before entry creation; selected catalogue point checked using IconForecastClient before commit, with bounded failure/retry/cancellation. |
+| `test-before-setup` | Evidence | Initial current-source refresh before platforms. Optional sources cannot block valid observations; required failure remains retryable with the HA-owned session intact. |
+| `unique-config-entry` | Evidence | Provider/station/base-coordinate/warning-postcode guards include old entries without IDs and concurrent flows. A forecast-only change is deliberately not a new entry identity. |
 
-Its deployed 24-hour observation completed on 20 October 2026. Registry
-identity, personal settings, warning consumers and hourly rain statistics
-matched expectations. One isolated optional UV failure recovered on the next
-scheduled refresh; the failure remained local to UV. Forecast pollen's Sensors
-grouping is visually confirmed, and all twelve pollen categories were checked
-in the registry. Earlier dated entries below describe their earlier baselines.
+## Silver: ten rules
 
-The first GitHub beta was published on 20 October 2026. The operator then
-confirmed the HACS 2.0.5 source switch, downloaded 8.2.0b1 version, restart and
-positive initial visual check. A clean first HACS installation remains open;
-no new independent post-switch file/registry/statistic comparison or executed
-rollback is claimed. See the [HACS evidence record](HACS_ACCEPTANCE.md).
+| Rule | Assessment | Repository evidence or remaining boundary |
+|---|---|---|
+| `action-exceptions` | Exempt | No custom actions; reassess if added. |
+| `config-entry-unloading` | Evidence | Native platform unload/reload; entry-managed tasks/listeners, Recorder import listeners, stable IDs and borrowed session ownership tested for both providers. |
+| `docs-configuration-parameters` | Evidence | Configure edits measured pollen. Hidden legacy intervals and independent forecast Reconfigure are explained without promising changes to weather station or warning postcode. |
+| `docs-installation-parameters` | Evidence | GETTING_STARTED.md and FORECAST_LOCATION_SETUP.md cover released setup versus development fields, point purposes, height, ambiguity and confirmation. |
+| `entity-unavailable` | Evidence | Registered HA states cover observation, forecast, warnings, pollen/AQ, optional UV and catalogue failure/recovery. Valid zero, missing field and failed source remain distinct. The review adds UV timestamp rejection and honest incomplete/DST daily values. |
+| `integration-owner` | Evidence | @martins-netizen is manifest codeowner; active repository, Issues, issue forms and SECURITY.md provide support/reporting routes. Private-reporting activation was operator-confirmed; no independent settings audit is inferred. |
+| `log-when-unavailable` | Evidence | Coordinator transition logs avoid repeated outages, raw coordinate/postcode URLs and payloads; separate cached UV status has its own outage/recovery transition. Tests inspect formatted error chains too. |
+| `parallel-updates` | Evidence | sensor.py uses 1 for diagnostic polling; coordinator-driven weather/binary/pollen platforms use 0. These values do not assert zero network requests. |
+| `reauthentication-flow` | Exempt | No provider accounts or credentials. |
+| `test-coverage` | Evidence | 1,295 tests plus 53 subtests pass locally on each HA 2026.8.3/2026.10.2. Combined line/branch coverage 99.97506%: 3,138/3,139 statements and 870/870 branches. Every module exceeds 95%; existing strict source/flow gates remain 100%. Four prior exclusion lines and the aggregate floor are unchanged. CI's second version is 2026.10.1. |
 
-These findings do not close unrelated Bronze/Silver gaps or award an official
-HA quality tier. The [beta notes](RELEASE_8.2.0b1.md) state those limits; no new
-runtime or HA deployment is required for documentation-only changes whose
-component files match the accepted commit. The [current release checklist](RELEASE_READINESS.md)
-separates stable-release gates from the later Silver/Gold and location backlog.
+The original audit's interval, field-help, common-layout, UV/catalogue and
+per-module coverage findings are implemented in the reviewed tree. Their old
+wording must not be read as new work to repeat. External Core branding and
+candidate acceptance still prevent a blanket complete-tier assertion.
 
-This is a self-assessment against the current
-[Home Assistant Integration Quality Scale](https://developers.home-assistant.io/docs/core/integration-quality-scale/rules/).
-It is not an official HA rating, HACS certification or release approval. HACS
-installability/default listing is a separate assessment. The manifest deliberately
-contains no `quality_scale` claim. Live acceptance and a tested fork release
-remain separate gates after code review and CI.
+## Gold: bounded assessment of all twenty-one rules
 
-The [next-release plan](NEXT_RELEASE_PLAN.md) coordinates the remaining
-Bronze/Silver work, a separately validated POI/location feature and the Gold
-backlog. It is planning, not a completed tier assessment. The HA project treats
-[custom integrations separately](https://contributors.home-assistant.io/core/quality-scale/tiers/#custom);
-following its rules does not award this HACS fork an official Silver/Gold tier.
+| Rule | Assessment | Current evidence or next decision |
+|---|---|---|
+| `devices` | Partial | Stable weather, warning, measured pollen, AQ and diagnostic grouping is tested; audit completeness of legacy manufacturer/model metadata separately. |
+| `diagnostics` | Evidence | Safe unloaded-entry exports, status/timestamps, aggregate cache counts and whole saved-location redaction; no raw payload or network load. |
+| `discovery` | Exemption candidate | This is a manually selected public cloud service, not a discoverable local device. Record the rule-specific exemption in any formal tier proposal. |
+| `discovery-update-info` | Exemption candidate | No discovered network address; assess with discovery above. |
+| `docs-data-update` | Evidence | API_SOURCES.md distinguishes polling, cache, publication and measurement intervals; documents time/freshness and failure limits. |
+| `docs-examples` | Evidence | COORDINATOR_EXAMPLES.md, standard forecast usage and escaped warning-card example. Examples do not actuate devices. |
+| `docs-known-limitations` | Evidence | Provider availability, fixed-offset daily fields, interval completeness, separate warning postcode, name aliases and unimplemented feeds are explicit. |
+| `docs-supported-devices` | Evidence | Public station metadata, the verified pollen list and source/geography limits replace an invented fixed hardware list. |
+| `docs-supported-functions` | Evidence | SENSORS.md, FORECAST_SENSORS.md and source guide describe active families and retired entities. |
+| `docs-troubleshooting` | Evidence | USAGE.md covers missing data, outages, metadata refresh and retained-entry recovery. |
+| `docs-use-cases` | Evidence | README/getting-started plus ordinary forecast sensors/cards/automations and independent source examples. |
+| `dynamic-devices` | Exemption candidate | The selected sources expose a fixed entity set; no newly discovered physical devices are enumerated. |
+| `entity-category` | Evidence | Diagnostic helpers stay diagnostic; measured/modelled pollen and AQ stay ordinary sensors, with registry tests. |
+| `entity-device-class` | Partial | Numeric metadata and HA conversion tests exist; review legacy Foehn/code and derived HGT metadata before a complete Gold assertion. |
+| `entity-disabled-by-default` | Open | Legacy diagnostic defaults are retained. Decide new-install defaults separately without changing existing user registry choices. |
+| `entity-translations` | Partial | Four 140-key UI catalogues and ordinary entity translations exist. Legacy diagnostic/device/attribute compatibility names remain; provider place-name aliases are a separate unsolved feature. |
+| `exception-translations` | Partial | Setup/selection errors are translated; remaining fixed HA update-error messages have not all moved to translated exceptions. |
+| `icon-translations` | Open | Active icons exist, but no complete icons.json migration. |
+| `reconfiguration-flow` | Partial | Forecast-only reconfiguration is implemented/tested; this does not imply editing observation source/station or warning postcode without recreating an entry. |
+| `repair-issues` | Open | Invalid saved selection has explicit unavailable state, private log and recovery flow, but no HA Repair issue yet. |
+| `stale-devices` | Open | Review removal of obsolete grouping after measured-pollen station changes without deleting wanted registry/history data. |
 
-The [complete dated Bronze/Silver audit](QUALITY_AUDIT_2026-10-17.md) evaluates
-all 30 rules individually and records the exact code/test baseline. It is the
-current detailed finding; the tables below remain a concise overview. The
-[bounded POI probe](POI_FEASIBILITY.md) records successful public location/ICON
-requests and the remaining warning/height requirements.
+Gold is therefore not complete. Platinum's strict typing and all async/source
+library requirements are not awarded by this review either. These tier goals
+are not an unbounded prerequisite for packaging the agreed next feature release.
 
-## First-stage Bronze assessment
-
-| Rule | Evidence / applicability |
-|---|---|
-| `action-setup` | Exempt: no integration-specific actions are registered. |
-| `appropriate-polling` | Unreleased setup/Configure no longer exposes polling; new observations use a developer-selected 600 seconds. Schema 1.2 preserves installed intervals as a documented compatibility bridge, with options precedence and existing coordinator minimum guards. Source-specific schedules remain unchanged. This bridge is not a blanket exemption or complete Bronze claim; provider-wide interval review and eventual legacy policy remain explicit. |
-| `brands` | Local `custom_components/meteoswiss/brand/icon.png` (256 px) and `icon@2x.png` (512 px), with reproducible original artwork. Domain retained; no HA/provider logo or official-product claim. See [publication requirements](PUBLISHING.md). Partial for the separate Core rule: the expected `home-assistant/brands/core_integrations/meteoswiss` path returned 404 on 17 October 2026. |
-| `common-modules` | Unreleased entity.py centralizes entity/coordinator metadata and the genuinely duplicated weather/AQ device definitions across all nine families. Primary observations retain coordinator.py; typed runtime/source boundaries remain intact. Fixed identity/metadata contracts pass before and after the refactor; Warning coordinator now also lives in coordinator.py, removing setup/runtime dependence on binary_sensor.py. Measured pollen now has a source client and canonical coordinator with the shared UTC parser in weather_data.py. Alternative current conditions and ICON forecasts also have separate source clients and canonical coordinators. Modelled pollen/AQ/UV now also has a source-only client and real canonical coordinator. Hourly/archive precipitation now has a pure source client/parser, explicit Recorder adapter and real canonical coordinator. The seven-class placement inventory is complete; see the [placement review](COORDINATOR_LAYOUT_REVIEW.md). The full common-modules rule remains partial. |
-| `config-flow-test-coverage` | 100% lines and branches in `config_flow.py`, including options, errors/recovery and legacy/current duplicates; CI enforces it. |
-| `config-flow` | Native user/options flow; no YAML setup. Unreleased development adds DE/EN/FR/IT help for all remaining actual field occurrences, a native translated source selector and canonical English strings.json. HA translation-loader regressions and full flow coverage pass. Schema 1.2 moves only legacy polling data to options without value/identity changes; Configure merges its pollen choice into existing options. Real reload/registry/Recorder regressions cover this. Final selector/UX and remaining prerequisites stay separate; see the dated follow-up. |
-| `dependency-transparency` | Exempt for the current integration: `manifest.json` has no extra Python `requirements`. Public provider/location dependencies are separately documented; that is not the criterion of this rule. |
-| `docs-actions`, `docs-triggers`, `docs-conditions` | Exempt: no integration-specific actions, triggers or conditions. Usage still explains standard HA entity automations and forecast functions. |
-| `docs-high-level-description` | README lists data families, scope and fork provenance. |
-| `docs-installation-instructions` | README routes new/existing users to separate English step-by-step guides; usage is the technical reference. First beta publication and the operator-confirmed HACS 2.0.5 source switch are complete. A clean first install and an independent newcomer usability walkthrough remain open; see HACS_ACCEPTANCE.md. |
-| `docs-removal-instructions` | Usage documents entry/component removal and effects on consumers/history. |
-| `entity-event-setup` | CoordinatorEntity manages observations and forecast pollen; weather forecast subscription belongs to entity add/remove lifecycle. Tests verify pollen listeners are removed on unload. |
-| `entity-unique-id` | Existing entry-based and shared diagnostic IDs retained; reload test checks registry mapping stability. |
-| `has-entity-name` | Enabled on active entities, including the main weather entity with its device name. |
-| `runtime-data` | Typed `MeteoSwissConfigEntry` and dataclass; shared diagnostic ownership flags alone remain domain-global. |
-| `test-before-configure` | Both providers validate the observation coordinator before saving, within a 30-second total timeout. |
-| `test-before-setup` | Required observation first refresh precedes platform setup; optional families refresh separately. |
-| `unique-config-entry` | Source/location/postcode guards cover old entries without unique IDs and HA unique-ID checks. |
-
-These are code/documentation findings to be confirmed in PR checks and the live
-acceptance of the reviewed commit. They do not mark the existing installed
-snapshot as having acquired these changes.
-
-## Silver gaps and next implementation order
-
-| Rule | Current assessment / next action |
-|---|---|
-| `action-exceptions` | Exempt: no integration-specific service actions. |
-| `config-entry-unloading` | Native unload/reload; tests verify HA session ownership, replaced runtime state, stable entity IDs and removed observation/forecast listeners. Real-Recorder entry lifecycles cover both providers and remove the listener-backed hourly/archive importers on reload/unload; cancelling optional startup cancels every inflight child refresh. |
-| `docs-configuration-parameters`, `docs-installation-parameters` | Usage includes provider selection, intervals, coordinates, warning postcode and measured pollen station. |
-| `entity-unavailable` | Observations/warnings and both pollen/AQ clients have failure/recovery tests, including registered pollen/AQ entity states. All-empty current pollen/AQ payloads fail; partial responses retain unknown fields. Measured pollen rejects age over four hours or future skew over ten minutes on refresh. Both weather forecast services return empty lists on forecast failure and recover, while valid observations remain available. Alternative Open-Meteo current conditions have registered weather/temperature entity outage and recovery tests; invalid individual measurements stay unknown and an all-empty source fails. Registered weather attributes use native HA properties and unit conversion; forecast subscribers receive fresh/empty/recovered payloads, including through HA WebSocket. The optional UV gap is now fixed: a failed request/shape makes only UV unavailable, a successful response with no valid value stays unknown. Registered failure/cache/recovery tests keep AQ/pollen healthy and preserve UV identity. Unreleased catalogue diagnostic now becomes unavailable on expiry/failure while retaining last-good metadata; no-snapshot state is not a healthy zero. Registered HA-state and recovery tests verify it, and safe diagnostic count/status remains accessible without IO. Cache counters remain available as local metrics. This closes the identified catalogue gap; whole-rule and later package acceptance remain separate. |
-| `integration-owner` | `@martins-netizen` in manifest. Repository Issues and private vulnerability reporting are verified enabled on 17 October 2026. Bundled issue forms provide a fork-specific support route. |
-| `log-when-unavailable` | Pollen/AQ, measured pollen and the ICON forecast client use coordinator transition logs. Forecast failures suppress raw coordinate URLs/HTTP exception chains even in debug logs; repeated failure and recovery are tested. The alternative Open-Meteo current client also suppresses coordinate URLs/raw error chains and tests repeated failure and recovery. The station observation client now uses the same once-per-transition logging; selected station IDs, CSV values, asset URLs and expected HTTP error chains stay absent even in debug logs. The separate UV request now has a cached source flag and once-per-outage/recovery logs. Registered tests cover transport, timeout, invalid JSON/shape, cache reuse and private error chains. No complete Silver claim follows from this individual fix. |
-| `parallel-updates` | Explicit platform limits: sensor 1 for diagnostic polling, coordinator-driven weather/binary sensor 0; no device actions. |
-| `reauthentication-flow` | Exempt: the public APIs require no credentials. |
-| `test-coverage` | Evidenced for unreleased development: every module exceeds 95%; entity.py/version.py have real consumers and full coverage, const.py is 98.51%, all others 100%. CI enforces the per-module floor plus stricter existing gates; a synthetic low module cannot hide behind the aggregate. Local supported-HA runs pass 967 tests/14 subtests, 99.968% combined. This single rule does not establish full Silver. |
-
-The starting snapshot had 68 passing tests and 54.78% combined line/branch
-coverage (58.50% lines, 40.42% branches). Config flow was 33.79% combined.
-CI now measures **all** integration modules, prints per-module coverage and
-requires full config-flow, both pollen-client, ICON forecast-client, alternative
-Open-Meteo current-client, weather-entity, shared weather-data, hourly
-precipitation, HGT utility, cache, diagnostics, station-catalogue, warning-parser,
-warning-entity, numeric-sensor, pollen-sensor, config-entry setup, retry and station
-coordinator line/branch coverage. The combined integration floor is 99.0%
-(raised from 98.5%, previously 98%, 95%, 89%, 86%, 80%, 71%, 67% and initially 60%). This
-floor prevents regressions at this stage; it is not a substitute for Silver.
-Unreleased development explicitly removes unused camera/SLF/hydrology
-placeholders after a reference/platform review; it does not exclude their
-uncovered lines from an otherwise retained feature. The version module now has a meaningful diagnostic consumer and full coverage.
-All modules exceed 95%; no coverage exclusion or lowered gate is added.
-See [current follow-up evidence](QUALITY_PROGRESS_2026-10-22.md). Current exact results are in the
-PR and each CI job's summary.
-
-Station CSV parsing, zero/non-finite values, sparse fallback, source failures and
-recovery are covered. Hourly imports include a real Recorder roundtrip proving
-stable statistic identity, repeat-import upserts and corrected hour values;
-archive failures preserve valid subsets and never queue all-invalid data.
-HGT tests cover 12/20 thresholds, season boundaries and missing/invalid entries.
-
-The alternative current-weather client now has full line/branch coverage: valid
-zero/negative temperatures, invalid individual numbers, optional preview isolation,
-observation freshness, bounded retries, cache TTL, circuit recovery, private logs
-and registered HA entity states are tested on both supported HA versions. The
-source client now lives in openmeteo.py, composed by the actual coordinator in
-coordinator.py. Request/parser logic is retained; HA still owns cache age/TTL,
-circuit recovery, current-data acceptance and session lifecycle. The independent
-ICON source client is now separated in forecast.py, with its genuine coordinator
-also in coordinator.py. Modelled pollen/AQ/UV now follows the same client/coordinator boundary, preserving the shared AQ/UV cache and independent UV success state. Hourly/archive precipitation now has the same genuine canonical coordinator plus an explicit source/Recorder boundary. The seven-class placement inventory is complete; the wider rule/tier evidence still needs assessment.
-
-The weather entity and shared number/time contract have full line/branch
-coverage. Native observations, HA unit conversion, service responses and actual
-WebSocket forecast subscriptions are tested. Aggregation covers full native
-daily extrema, missing/gapped rain, Swiss midnight and 23/25-hour DST days.
-Original regression tests reproduce missing weather attributes and a forecast
-subscriber receiving no refresh before the fix.
-
-Cache, diagnostics and the shared station catalogue have full line/branch
-coverage. Tests reproduce the exact TTL boundary, the provider-column parser
-failure and diagnostics on an unloaded entry before the fixes. Catalogue tests
-cover cache expiry, concurrent loads, stale/failure/recovery, total timeout,
-manual retry, cancellation, session ownership and geographic exports. Diagnostics
-omit raw dictionary keys/names/cache values and expose only safe status/time
-metadata. The parser was additionally checked against the live public catalogue
-on 16 October 2026 (159 stations, including KLO).
-
-Warning parser and all active sensor platforms have full line/branch coverage.
-Registered binary sensors preserve identity across active/upcoming, malformed-feed
-failure and empty-feed recovery. HGT reads preloaded forecasts immediately and
-uses the Swiss calendar day; optional missing families and empty observations
-remain unknown. Invalid levels, boolean/fractional codes, epoch-zero bounds,
-total timeout, cancellation and private error chains have regression coverage.
-Only compatibility shims below the declared minimum HA are removed; existing
-air-quality unit spelling and effective diagnostic entity categories are kept.
-
-Config-entry setup and transport retries also have full line/branch coverage.
-Real-Recorder setup/reload/unload exercises both current-weather providers,
-station hourly/archive polling without entity listeners, stable registry IDs,
-HA-owned sessions, optional-task cancellation and independent legacy-coordinate
-fallbacks (including valid zero coordinates). Regression tests reproduce ignored
-HTTP-date Retry-After values, non-finite delays and repeated permanent URL/TLS
-errors before the fix. RFC 9110 seconds and HTTP-date pauses are now respected
-within the retry sequence. A pause longer than the configured maximum stops
-that sequence; the next coordinator refresh still follows its normal schedule.
-This is not a persistent cross-refresh provider cooldown. Attempt counts,
-delay caps, outer total timeouts and cancellation are preserved. Header/error
-contents are never logged by the retry helper.
-
-Station observation logs also have regression coverage for private source URLs,
-selected station identifiers, invalid numeric fields and once-per-transition
-failure/recovery. Malformed metadata/row shapes are handled explicitly;
-unexpected programming errors are no longer swallowed as an empty source.
-Existing measurement selection, missing/zero values and timestamps are retained.
-The complete station coordinator has full line/branch coverage on both supported
-HA versions, with the same full-module CI gate and a 99.0% overall floor.
-
-The warning catalogue is now verified against the signed Android app 3.6.0,
-including the direct raw-code indexing path. Captured v3/v5 drought data also
-explains a missing v1 warning. See [source evidence and migration](WARNING_CODES.md).
-Tests cover the actual v3 capture, all thirteen labels, prepared Thaw handling,
-unknown future codes, event details and absence of a silent v1 fallback.
-Existing HA consumers still require review of the legacy `4 = Wind` conflict
-before deployment. Source/privacy review of station observations is covered by
-failure/recovery and malformed-source regressions. Inactive placeholders and
-the remaining per-module gaps remain open.
-
-Continue with the remaining flow, catalogue-diagnostic, module-layout, branding and per-module gaps
-from the dated audit. Public support,
-warning-consumer migration, live acceptance and release/HACS
-validation remain separate gates. Raise coverage as these changes land.
-Gold/Platinum work follows this measured baseline, rather than adding labels.
-
-## Targeted follow-ups after the dated audit
-
-Warning state labels in DE/EN/FR/IT and the hazel icon are corrected. The
-optional UV source has isolated availability and private transition logs.
-Measured oak uses the verified `kaquerh0` hourly column, with partial/legacy CSV
-handling and stable existing identities. The combined local candidate passes
-779 tests on HA 2026.8.3, 2026.10.1 and 2026.10.2; combined coverage is 99.0572 %.
-All three changed runtime modules retain 100 % line/branch coverage. These
-results do not close the remaining individual-module and Bronze/Silver gaps.
-Actual installation/visual checks and the candidate's own 24-hour observation
-remain pending.
-
-## Reproduce
+## Reproduce and distinguish history
 
 ```sh
 python -m pip install -r requirements_test.txt
-pytest -q --cov=custom_components.meteoswiss --cov-branch --cov-report=term-missing --cov-report=json:coverage.json
-python scripts/check_quality_coverage.py
 python scripts/check_translations.py
+python -m pytest -q --cov=custom_components.meteoswiss --cov-branch --cov-report=json:coverage.json
+python scripts/check_quality_coverage.py
 ```
 
-Repeat in an isolated environment with `requirements_test_min.txt`. The first
-fork prerelease and its runtime acceptance are now complete; publication
-requirements and the still-open clean first install are tracked in PUBLISHING.md
-and RELEASE_READINESS.md. Default-list submission remains separate. Historical
-entries above do not reopen completed acceptance work.
+Repeat in an isolated environment with requirements_test_min.txt. The
+[overall review](RELEASE_REVIEW_2026-10-24.md) records the additional component-only
+installation simulation, link checks, regressions and exact scope. Required PR
+and post-merge checks must pass on the exact commit; local results do not prove
+an unrun hosted check or a manual HACS installation.
+
+The [17 October audit](QUALITY_AUDIT_2026-10-17.md) and
+[dated implementation record](QUALITY_PROGRESS_2026-10-22.md) retain the previous
+baselines. The original 68-test/54.78% snapshot and later 762-/786-/967-test
+numbers are history, not the current suite or a demand to repeat completed
+acceptance. See RELEASE_READINESS.md for the remaining candidate steps.

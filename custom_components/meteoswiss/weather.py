@@ -3,8 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Iterator
-from datetime import datetime, timedelta
-from itertools import pairwise
+from datetime import UTC, date, datetime, time, timedelta
 from typing import Any, Final
 
 from homeassistant.components.weather import (
@@ -81,6 +80,33 @@ def _known(entries: list[dict], key: str, minimum=None, maximum=None) -> list[fl
         for entry in entries
         if (value := weather_number(entry.get(key), minimum, maximum)) is not None
     ]
+
+
+def _whole_day_values(
+    entries: list[tuple[datetime, dict]],
+    day: date,
+    key: str,
+    minimum=None,
+    maximum=None,
+    *,
+    interval_end: bool = False,
+) -> list[float]:
+    """Require every Swiss calendar hour, respecting preceding-hour buckets."""
+    first = datetime.combine(day, time.min, FORECAST_TIME_ZONE).astimezone(UTC)
+    last = datetime.combine(
+        day + timedelta(days=1), time.min, FORECAST_TIME_ZONE
+    ).astimezone(UTC)
+    expected = {
+        first + timedelta(hours=i + int(interval_end))
+        for i in range(int((last - first).total_seconds() // 3600))
+    }
+    values = {
+        stamp: value
+        for stamp, row in entries
+        if stamp in expected
+        and (value := weather_number(row.get(key), minimum, maximum)) is not None
+    }
+    return list(values.values()) if values.keys() == expected else []
 
 
 def _forecast(timestamp: datetime, entry: dict) -> Forecast:
@@ -316,7 +342,8 @@ class MeteoSwissWeather(
         """Prefer provider calendar aggregates; never call missing rain zero."""
         today = dt_util.utcnow().astimezone(FORECAST_TIME_ZONE).date()
         days: dict[str, list[tuple[datetime, dict]]] = {}
-        for timestamp, entry in self._forecast_entries():
+        all_entries = list(self._forecast_entries())
+        for timestamp, entry in all_entries:
             day = timestamp.astimezone(FORECAST_TIME_ZONE).date()
             if day >= today:
                 days.setdefault(day.isoformat(), []).append((timestamp, entry))
@@ -332,7 +359,8 @@ class MeteoSwissWeather(
             )
             hourly = [item for _, item in entries]
             projected = _forecast(timestamp, representative)
-            temperatures = _known(hourly, "temperature")
+            day = timestamp.astimezone(FORECAST_TIME_ZONE).date()
+            temperatures = _whole_day_values(all_entries, day, "temperature")
             maxima = _known(hourly, "daily_temperature_max")
             minima = _known(hourly, "daily_temperature_min")
             projected["native_temperature"] = (
@@ -342,17 +370,15 @@ class MeteoSwissWeather(
                 minima[0] if minima else min(temperatures, default=None)
             )
             rain = _known(hourly, "daily_precipitation", 0)
-            known_hourly_rain = _known(hourly, "precipitation", 0)
-            contiguous = all(
-                right[0] - left[0] == timedelta(hours=1)
-                for left, right in pairwise(entries)
+            known_hourly_rain = _whole_day_values(
+                all_entries, day, "precipitation", 0, interval_end=True
             )
             projected["native_precipitation"] = (
                 rain[0]
                 if rain
                 else (
                     sum(known_hourly_rain)
-                    if len(known_hourly_rain) == len(hourly) and contiguous
+                    if known_hourly_rain
                     else None
                 )
             )
@@ -361,7 +387,11 @@ class MeteoSwissWeather(
                 probabilities[0]
                 if probabilities
                 else max(
-                    _known(hourly, "precipitation_probability", 0, 100), default=None
+                    _whole_day_values(
+                        all_entries, day, "precipitation_probability", 0, 100,
+                        interval_end=True,
+                    ),
+                    default=None,
                 )
             )
             result.append(projected)

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import csv
+from threading import get_ident
 from unittest.mock import patch
 
 import pytest
@@ -34,6 +36,29 @@ def coordinator(hass):
 async def download(hass, aioclient_mock, content):
     aioclient_mock.get(CSV_URL, text=content)
     return await coordinator(hass)._async_download_and_parse_csv(CSV_URL)
+
+
+async def test_station_csv_decoding_does_not_block_the_ha_event_loop(
+    hass, aioclient_mock
+):
+    loop_thread = get_ident()
+    parser_threads = []
+    reader = csv.DictReader
+
+    def observe_parse(*args, **kwargs):
+        parser_threads.append(get_ident())
+        return reader(*args, **kwargs)
+
+    with patch(
+        "custom_components.meteoswiss.coordinator.csv.DictReader",
+        side_effect=observe_parse,
+    ):
+        data = await download(
+            hass, aioclient_mock,
+            HEADER + "KLO;15.10.2026 17:40;12;92;6;0;0;\n",
+        )
+    assert data["temperature"] == 12
+    assert parser_threads and loop_thread not in parser_threads
 
 
 @pytest.mark.parametrize(

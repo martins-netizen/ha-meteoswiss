@@ -70,7 +70,10 @@ parameters in a measured row stay missing. Sensors expose `measurement_time`,
 fabricated to fill observation gaps.
 
 Station CSVs use the provider's Windows-1252 encoding and must identify the
-selected station on every row. Non-finite individual measurements stay missing;
+selected station on every row. Their decode, row selection and numeric parsing
+run in HA's executor after the bounded download, rather than blocking its event
+loop. The observation adapter remains in the legacy coordinator class; the
+seven-class canonical placement does not claim every source is fully extracted. Non-finite individual measurements stay missing;
 an all-invalid measured row fails the update. Sparse snow/foehn fallback keeps
 its existing limited scope and skips invalid older values. The retained rain
 sensor exposes one latest measured ten-minute amount, its end time and a
@@ -120,19 +123,23 @@ Forecast pollen, AQ/UV and measured-pollen sensors use CoordinatorEntity for
 subscription, unavailability and removal. Values are read directly from current
 coordinator data, including initial addition; a source failure retains prior
 data internally while exposing unavailable states. A valid later response
-recovers automatically. UV is a separate optional request: a failure makes UV
-unknown without discarding valid pollen/AQ. UV alone cannot rescue an invalid
-primary feed. Coordinator transition logs replace repeated client error logs;
-optional UV logs contain only the exception class, never a coordinate URL.
+recovers automatically. UV is a separate optional request: a failed response
+makes only UV unavailable. A current, structurally valid response with a missing
+number makes UV unknown. Its Unix timestamp must be no later than now and less
+than one hour old. UV alone cannot rescue an invalid primary feed. Private
+coordinator transition logs replace repeated raw source errors and never include
+a coordinate URL. UV data/status remain atomic in the existing AQ cache.
 
 Forecast rows contain `datetime`, `local_date`, `fetched_at`, `source`,
 `weather_code`, `is_day`, `condition`, measurements and optional native daily
 aggregates. Producer and consumer use `weather_data.py` for time/condition
 normalisation and finite-number validation. The two hours repeated at autumn DST remain distinct. Daily
-labels respect Open-Meteo's returned fixed UTC offset; native daily aggregates
-are provider buckets and are not claimed to be recalculated 23/25-hour local
-measurement days. Missing aggregates can fall back to available hourly values;
-for today these may cover only the remaining hours.
+labels respect Open-Meteo's returned fixed UTC offset. Its native daily bucket
+is used only when its actual start and end match both Swiss midnights. Otherwise
+all five native aggregates stay missing while the usable hourly feed survives.
+The weather entity may reconstruct a missing daily field only from a complete,
+correctly aligned Swiss day; it never labels remaining hours as a full day.
+Scalar temperature/rain and daily HGT require an accepted native daily field.
 
 IconForecastClient in forecast.py separates transport retries from response
 validation; the genuine MeteoSwissForecastCoordinator in coordinator.py composes
@@ -198,13 +205,14 @@ Daily buckets follow Europe/Zurich dates, recomputed from aware UTC timestamps,
 with at most five current/future calendar days. The first 12:00-14:00 local
 entry represents the day's condition/wind, or the first available hour if that
 window is absent. Native provider maxima/minima and precipitation/probability
-aggregates take priority, including valid zeros. Fallback extrema use available
-finite hourly values and can describe only part of today. A precipitation sum
-requires every represented hour to have valid rain and consecutive UTC times;
-missing values or an internal time gap leave the fallback sum unknown. This
-continuity check does not turn a partial-day window into a full-day estimate.
-The 23/25-hour local DST days remain continuous in UTC. Native provider daily
-buckets retain their documented fixed-offset meaning.
+aggregates take priority, including valid zeros. Fallback extrema require
+all instantaneous temperatures in [local midnight, next midnight). Rain and
+probability require every preceding-hour bucket in (midnight, next midnight],
+including the next day's 00:00 row and excluding the previous day's last bucket.
+Missing, invalid or gapped hours leave only the affected aggregate unknown.
+Physical UTC-hour sets handle 23/25-hour days and repeated local times. The
+source withholds fixed-offset native buckets that cover a different period;
+it does not silently relabel or rescale them.
 
 Failed/malformed or older-than-three-hour fetched forecasts are suppressed;
 metadata more than ten minutes in the future is rejected. Legacy rows without

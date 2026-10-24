@@ -174,110 +174,112 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
         try:
             _LOGGER.debug("Fetching station measurements")
-            content = (
-                await async_get_bytes(
-                    self._session, csv_url, host=OGD_HOST, max_bytes=MAX_CSV_BYTES
-                )
-            ).decode("cp1252")
-
-            _LOGGER.debug("CSV content length: %d chars", len(content))
-
-            # Select the latest complete observation from all published rows;
-            # sparse optional values can still use the bounded recent history.
-            all_rows = list(csv.DictReader(io.StringIO(content), delimiter=";"))
-
-            if not all_rows:
-                _LOGGER.debug("CSV has no data rows")
-                return None
-
-            if any(
-                (row.get("station_abbr") or "").strip().lower() != self.station_id
-                for row in all_rows
-            ):
-                raise UpdateFailed("CSV contains a different or missing station")
-
-            # The provider may publish a final partial row (often rain=0
-            # with all instantaneous observations still blank).
-            # Select the newest *measured* row as a whole: never mix current
-            # and older individual values to conceal a real missing field.
-            measured_parameters = (
-                PARAM_TEMPERATURE,
-                PARAM_HUMIDITY,
-                PARAM_WIND_SPEED,
-                PARAM_WIND_DIR,
-                PARAM_PRESSURE,
-                PARAM_PRECIPITATION,
-                PARAM_GUST_1S,
-                PARAM_GUST_3S,
-                PARAM_SUNSHINE,
-                PARAM_GLOBAL_RAD,
-                PARAM_SNOW_DEPTH,
-                PARAM_DEW_POINT,
-                PARAM_FOEHN_INDEX,
+            content = await async_get_bytes(
+                self._session, csv_url, host=OGD_HOST, max_bytes=MAX_CSV_BYTES
             )
-            instantaneous_parameters = (
-                PARAM_TEMPERATURE,
-                PARAM_HUMIDITY,
-                PARAM_WIND_SPEED,
-                PARAM_WIND_DIR,
-                PARAM_PRESSURE,
-                PARAM_GUST_1S,
-                PARAM_GUST_3S,
-                PARAM_GLOBAL_RAD,
-                PARAM_DEW_POINT,
-            )
-            # Rain-only stations must still work. Prefer instantaneous
-            # columns only if this file actually reports any of them.
-            anchor_parameters = (
-                instantaneous_parameters
-                if any(
-                    (row.get(key) or "").strip()
-                    for row in all_rows
-                    for key in instantaneous_parameters
-                )
-                else measured_parameters
-            )
-            newest_first = list(reversed(all_rows))
-            observation_index = next(
-                (
-                    index
-                    for index, row in enumerate(newest_first)
-                    if any((row.get(key) or "").strip() for key in anchor_parameters)
-                ),
-                None,
-            )
-            if observation_index is None:
-                raise UpdateFailed("CSV contains no measured observations")
-            recent_rows = newest_first[observation_index : observation_index + 5]
-            result = self._parse_csv_row_with_fallback(recent_rows)
-            measured_keys = (
-                SENSOR_TEMPERATURE,
-                SENSOR_HUMIDITY,
-                SENSOR_WIND_SPEED,
-                SENSOR_WIND_DIRECTION,
-                SENSOR_PRESSURE,
-                SENSOR_PRECIPITATION,
-                SENSOR_WIND_GUST,
-                SENSOR_SUNSHINE,
-                SENSOR_GLOBAL_RADIATION,
-                SENSOR_SNOW_DEPTH,
-                SENSOR_DEW_POINT,
-                SENSOR_FOEHN_INDEX,
-            )
-            if not any(result.get(key) is not None for key in measured_keys):
-                raise UpdateFailed("CSV contains no valid measured observations")
-            result["source_status"] = (
-                "partial_update" if observation_index else "current"
-            )
-            result["pending_rows"] = observation_index
-            _LOGGER.debug("Decoded %d station CSV rows", len(all_rows))
-            return result
+            return await self.hass.async_add_executor_job(self._parse_station_csv, content)
 
         except (UpdateFailed, aiohttp.ClientError, TimeoutError):
             raise
         except (ValueError, TypeError, csv.Error):
             _LOGGER.debug("Station source decoding failed")
             return None
+
+    def _parse_station_csv(self, content: bytes) -> dict[str, Any] | None:
+        """Decode and select bounded station rows outside HA's event loop."""
+        content = content.decode("cp1252")
+        _LOGGER.debug("CSV content length: %d chars", len(content))
+
+        # Select the latest complete observation from all published rows;
+        # sparse optional values can still use the bounded recent history.
+        all_rows = list(csv.DictReader(io.StringIO(content), delimiter=";"))
+
+        if not all_rows:
+            _LOGGER.debug("CSV has no data rows")
+            return None
+
+        if any(
+            (row.get("station_abbr") or "").strip().lower() != self.station_id
+            for row in all_rows
+        ):
+            raise UpdateFailed("CSV contains a different or missing station")
+
+        # The provider may publish a final partial row (often rain=0
+        # with all instantaneous observations still blank).
+        # Select the newest *measured* row as a whole: never mix current
+        # and older individual values to conceal a real missing field.
+        measured_parameters = (
+            PARAM_TEMPERATURE,
+            PARAM_HUMIDITY,
+            PARAM_WIND_SPEED,
+            PARAM_WIND_DIR,
+            PARAM_PRESSURE,
+            PARAM_PRECIPITATION,
+            PARAM_GUST_1S,
+            PARAM_GUST_3S,
+            PARAM_SUNSHINE,
+            PARAM_GLOBAL_RAD,
+            PARAM_SNOW_DEPTH,
+            PARAM_DEW_POINT,
+            PARAM_FOEHN_INDEX,
+        )
+        instantaneous_parameters = (
+            PARAM_TEMPERATURE,
+            PARAM_HUMIDITY,
+            PARAM_WIND_SPEED,
+            PARAM_WIND_DIR,
+            PARAM_PRESSURE,
+            PARAM_GUST_1S,
+            PARAM_GUST_3S,
+            PARAM_GLOBAL_RAD,
+            PARAM_DEW_POINT,
+        )
+        # Rain-only stations must still work. Prefer instantaneous
+        # columns only if this file actually reports any of them.
+        anchor_parameters = (
+            instantaneous_parameters
+            if any(
+                (row.get(key) or "").strip()
+                for row in all_rows
+                for key in instantaneous_parameters
+            )
+            else measured_parameters
+        )
+        newest_first = list(reversed(all_rows))
+        observation_index = next(
+            (
+                index
+                for index, row in enumerate(newest_first)
+                if any((row.get(key) or "").strip() for key in anchor_parameters)
+            ),
+            None,
+        )
+        if observation_index is None:
+            raise UpdateFailed("CSV contains no measured observations")
+        recent_rows = newest_first[observation_index : observation_index + 5]
+        result = self._parse_csv_row_with_fallback(recent_rows)
+        measured_keys = (
+            SENSOR_TEMPERATURE,
+            SENSOR_HUMIDITY,
+            SENSOR_WIND_SPEED,
+            SENSOR_WIND_DIRECTION,
+            SENSOR_PRESSURE,
+            SENSOR_PRECIPITATION,
+            SENSOR_WIND_GUST,
+            SENSOR_SUNSHINE,
+            SENSOR_GLOBAL_RADIATION,
+            SENSOR_SNOW_DEPTH,
+            SENSOR_DEW_POINT,
+            SENSOR_FOEHN_INDEX,
+        )
+        if not any(result.get(key) is not None for key in measured_keys):
+            raise UpdateFailed("CSV contains no valid measured observations")
+        result["source_status"] = (
+            "partial_update" if observation_index else "current"
+        )
+        result["pending_rows"] = observation_index
+        _LOGGER.debug("Decoded %d station CSV rows", len(all_rows))
+        return result
 
     def _parse_csv_row_with_fallback(
         self, row_dicts: list[dict[str, str]]

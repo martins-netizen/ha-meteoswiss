@@ -2,6 +2,21 @@
 
 ## [Unreleased]
 
+- Correct daily forecast fallback: require every expected Swiss calendar hour,
+  with rain/probability assigned to the preceding hour and next-midnight bucket.
+  Do not publish partial hours as whole-day extrema, totals or probability.
+- Withhold native daily aggregates whose fixed-offset provider bucket does not
+  match both Swiss midnights around DST. Preserve usable hourly forecasts;
+  missing scalar daily values and HGT remain unknown rather than shifted.
+- Request optional UV timestamps as Unix seconds; reject missing, future or
+  stale timestamps without taking valid AQ/pollen down. Keep real zero and a
+  valid response with a missing individual UV value distinct from outage.
+- Move bounded observation CSV decoding/selection into HA's executor, preserving
+  measurement selection, freshness, private failures and entity/statistic IDs.
+- Reconcile release/setup/source/quality documentation with merged POI dialogs,
+  completed HACS acceptance and the overall release review. Add a public
+  private-reporting policy; keep 8.2.0 and historical release tags unchanged.
+
 - Add explicit forecast-location setup and reconfiguration in DE/EN/FR/IT:
   search the official catalogue locally by postcode or town/POI, choose a
   labelled point without preselection, then confirm after an ICON check.

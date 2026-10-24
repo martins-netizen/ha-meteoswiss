@@ -9,8 +9,9 @@ V1.2 receipt/log for run **20261022-085229-238** and independent release,
 latest-stable and tag reads confirm publication. No HA action was performed.
 See [readiness](RELEASE_READINESS.md) and [stable notes](RELEASE_8.2.0.md).
 
-Publication is complete. Check actual HACS visibility next; do not publish or
-retag again merely because documentation advances the development branch.
+Publication is complete. The operator also confirmed the stable HACS update
+on 22 October. Do not publish, retag or repeat that installation merely because
+documentation advances the development branch.
 The commands below record the completed procedure and its guard conditions.
 
 Stable packaging changed only the component manifest/module version. The other
@@ -19,9 +20,9 @@ After the regular stable-package merge and successful post-merge checks, use
 the exact full merge SHA:
 
 ```sh
-bash veroeffentliche_meteoswiss_stable_v1.2.sh --check APPROVED_MERGE_COMMIT
+bash scripts/veroeffentliche_meteoswiss_stable_v1.2.sh --check APPROVED_MERGE_COMMIT
 # After reviewing that exact candidate and approving stable publication:
-bash veroeffentliche_meteoswiss_stable_v1.2.sh --publish APPROVED_MERGE_COMMIT
+bash scripts/veroeffentliche_meteoswiss_stable_v1.2.sh --publish APPROVED_MERGE_COMMIT
 ```
 
 V1.2 is derived from Beta Publisher V1.1. `--check` makes no remote write.
@@ -57,7 +58,8 @@ HACS listing and the HA Quality Scale remain separate assessments. This document
 does not publish, retag or install anything.
 
 The [current acceptance and stable-release checklist](RELEASE_READINESS.md)
-is the consolidated next-step record. Stable 8.2.0 has not been published. The
+is the consolidated next-step record. Stable 8.2.0 was subsequently published
+and its HACS update confirmed. The
 completed source switch, beta first install and isolated restore are not open
 tasks to repeat.
 
@@ -72,7 +74,7 @@ check was operator-confirmed on 22 October; see the current readiness record.
 The historical Beta2 publication command was:
 
 ```sh
-bash veroeffentliche_meteoswiss_beta_v1.1.sh --publish APPROVED_MERGE_COMMIT
+bash scripts/veroeffentliche_meteoswiss_beta_v1.1.sh --publish APPROVED_MERGE_COMMIT
 ```
 
 Pass the exact full merged packaging commit. V1.1 is derived from the first

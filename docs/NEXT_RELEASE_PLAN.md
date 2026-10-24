@@ -1,7 +1,7 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.23 · **Updated:** 23 October 2026
-**Status:** Approved catalogue-based location implementation; dated catalogue audit complete, selection and compatibility acceptance remain open.
+**Plan version:** 1.24 · **Updated:** 24 October 2026
+**Status:** Approved catalogue-based location implementation; dated catalogue audit complete, selection integrated; overall review corrections and compatibility acceptance remain open.
 This document does not approve a new feature, installation or release.
 
 ## Next feature release: agreed scope on 23 October 2026
@@ -12,14 +12,16 @@ forecast sensors alone. The sequence is modelled pollen/AQ/UV separation,
 hourly/archive precipitation separation, then official-catalogue location search
 and compatible selection/reconfiguration. Both architecture boundaries are now
 integrated through PRs #54 and #55. This planning branch is reconciled with that
-development baseline. POI implementation remains open before the candidate.
+development baseline. POI implementation is integrated through PRs #56–#58; candidate acceptance remains.
 The first implementation package now provides the bounded official catalogue
 client, immutable point/selection provenance and deterministic local search;
 see the [catalogue contract](FORECAST_LOCATION_CATALOGUE.md). The second package
 adds [offline saved-selection routing](SAVED_FORECAST_LOCATION.md), explicit
 catalogue-height requests and height-aware cache identity. The third package now supplies [translated HA selection and reconfiguration](FORECAST_LOCATION_SETUP.md).
-Review/integration, the final scope/quality review and focused candidate
-acceptance remain open.
+PR #58 was approved and regularly merged at 5bed187 on 23 October UTC. Its
+exact tree and all seven post-merge checks are confirmed. The overall review
+identified corrections now prepared in a separate review PR; merge/validate
+those before candidate packaging and focused acceptance.
 Only then freeze features, reconcile release documentation, package a reviewed
 candidate and perform focused acceptance in the existing temporary HA.
 

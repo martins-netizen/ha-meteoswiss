@@ -239,25 +239,15 @@ async def test_daily_forecast_uses_maximum_and_minimum_temperature(hass, freezer
         latitude=47.45,
         longitude=8.56,
     )
+    # A complete Swiss day is required when no native extrema are supplied.
     forecast.data = [
         {
-            "datetime": "2026-08-20T07:00",
-            "temperature": 19.2,
+            "datetime": f"2026-08-20T{hour:02d}:00",
+            "temperature": 19.2 if hour == 7 else (28.8 if hour == 15 else 24.7),
             "precipitation": 0,
             "precipitation_probability": 0,
-        },
-        {
-            "datetime": "2026-08-20T12:00",
-            "temperature": 24.7,
-            "precipitation": 0,
-            "precipitation_probability": 18,
-        },
-        {
-            "datetime": "2026-08-20T15:00",
-            "temperature": 28.8,
-            "precipitation": 0,
-            "precipitation_probability": 0,
-        },
+        }
+        for hour in range(24)
     ]
 
     entry = MockConfigEntry(

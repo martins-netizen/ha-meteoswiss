@@ -1,9 +1,9 @@
 # Coordinator examples for contributors
 
-**Guide version:** 1.1 · **Updated:** 23 October 2026
+**Guide version:** 1.2 · **Updated:** 24 October 2026
 **Scope:** development including saved forecast-location routing, unreleased after stable 8.2.0.
-This guide explains development behaviour; it does not implement the HA
-selection dialog or change polling. Use the [architecture](ARCHITECTURE.md) for the
+This guide explains the implemented development behaviour and ownership;
+it does not itself change HA configuration or polling. Use the [architecture](ARCHITECTURE.md) for the
 full contracts and [sensor guide](SENSORS.md) for end-user features.
 
 ## Choose the existing data family
@@ -31,7 +31,7 @@ measurement time, retrieval time, cache lifetime and polling interval are
 different concepts. Current setup obtains forecast coordinates from HA home
 for station entries, or the configured coordinates for Open-Meteo entries;
 the saved-selection backend now independently routes ICON to a confirmed
-catalogue point; the selection UI remains planned. See
+catalogue point through the implemented setup/Reconfigure flow. See
 [source/time contracts](ARCHITECTURE.md#sources-and-time) and
 [polling/options migration](ARCHITECTURE.md#polling-and-options-migration-unreleased-after-820).
 
@@ -153,4 +153,5 @@ The caller supplies a deliberate selection from the catalogue; never take the
 first search result automatically. This probe creates no HA entry or session.
 Known height is sent explicitly; absent height leaves automatic DEM active.
 Warnings, observations and modelled AQ/pollen are not rerouted by this helper.
-The upcoming HA flows own confirmed persistence and user-visible reconfiguration.
+The implemented HA flows own confirmed persistence and user-visible reconfiguration;
+see [the selection guide](FORECAST_LOCATION_SETUP.md).

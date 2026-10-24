@@ -32,7 +32,7 @@ async def uv_entry(hass, aioclient_mock, enable_custom_integrations, freezer):
     # An AQ zero is valid and must survive a separate UV outage.
     aioclient_mock.get(OPENMETEO_AQ_BASE_URL, json={"hourly": {
         "time": [1792231200], "pm10": [0], "birch_pollen": [0]}})
-    aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {"uv_index": 0}})
+    aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {"time": 1792231200, "uv_index": 0}})
     with ExitStack() as stack:
         stack.enter_context(patch(
             "custom_components.meteoswiss.stations_map.MeteoSwissStationsMap.load_stations",
@@ -71,6 +71,8 @@ async def uv_entry(hass, aioclient_mock, enable_custom_integrations, freezer):
     {"text": "private_uv_marker is not JSON"},
     {"json": {"current": []}},
     {"json": []},
+    {"json": {"current": {"time": 1792227600, "uv_index": 7}}},
+    {"json": {"current": {"uv_index": 7}}},
 ])
 async def test_uv_outage_is_local_private_once_and_recovers(
     hass, aioclient_mock, uv_entry, caplog, failed_response
@@ -100,14 +102,14 @@ async def test_uv_outage_is_local_private_once_and_recovers(
         aioclient_mock.clear_requests()
         aioclient_mock.get(OPENMETEO_AQ_BASE_URL, json={"hourly": {
             "time": [1792231200], "pm10": [0]}})
-        aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {}})
+        aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {"time": 1792231200}})
         await coordinator.async_refresh()
         assert hass.states.get(ids["uv"]).state == "unknown"
         clear_all_caches()
         aioclient_mock.clear_requests()
         aioclient_mock.get(OPENMETEO_AQ_BASE_URL, json={"hourly": {
             "time": [1792231200], "pm10": [0]}})
-        aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {"uv_index": 2.5}})
+        aioclient_mock.get(OPENMETEO_FORECAST_URL, json={"current": {"time": 1792231200, "uv_index": 2.5}})
         await coordinator.async_refresh()
         assert hass.states.get(ids["uv"]).state == "2.5"
         messages = [r.getMessage() for r in caplog.records

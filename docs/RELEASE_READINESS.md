@@ -1,6 +1,6 @@
-# Release readiness: beta and first stable version
+# Release readiness: current candidate and completed 8.2.0
 
-**Document version:** 1.7 · **Updated:** 23 October 2026
+**Document version:** 1.8 · **Updated:** 24 October 2026
 **Purpose:** One entry point for completed evidence, remaining publication steps
 and work deliberately deferred to later versions.
 
@@ -14,12 +14,21 @@ sequence below remains historical evidence for 8.2.0.
 The agreed next scope includes the architecture boundaries (PRs #54/#55),
 forecast scalars (#53), official catalogue (#56), saved-location/height-aware
 ICON routing (#57) and translated postcode/town/POI setup/reconfiguration.
-The dialog package is prepared with tests, not yet an operator-approved
-candidate. Its [guide](FORECAST_LOCATION_SETUP.md) records the remaining focused
-UI checks and the known locality-name alias limit. Next: review/integrate that
-package, perform the final scope/quality/documentation review, freeze and build
-the exact reviewed 8.3.0b1 candidate, then check it in the existing temporary HA.
-Feature implementation alone is not candidate acceptance, stable publication,
+PR #58's dialog package was approved and regularly merged at **5bed187**;
+its tree and all seven post-merge checks are confirmed. The
+[overall review](RELEASE_REVIEW_2026-10-24.md) adds four regression-backed
+corrections plus reconciled source/install/quality documentation. Review and
+merge that correction PR before freezing the exact **8.3.0b1** packet.
+
+Then prepare matching versions, release notes and a candidate-specific guarded
+publisher; the historical 8.2.0 helpers cannot publish 8.3.0b1. Pass exact PR and
+post-merge checks, publish only the approved prerelease, and perform the
+[focused postcode/town/POI and existing-entry checks](FORECAST_LOCATION_SETUP.md#focused-candidate-checks-in-the-existing-temporary-ha)
+in the existing temporary HA. Check missing daily values/UV, source roles,
+retained IDs and reset/cancel/keep. Do not reopen completed 8.2.0 installation,
+restore or require a new blanket 24-hour wait.
+
+A reviewed implementation is not candidate acceptance, stable publication,
 HACS default-list inclusion or a complete Silver/Gold assessment.
 
 ## Completed evidence
@@ -45,7 +54,7 @@ completed source switch, clean install, restore or Beta2 walkthrough without a
 concrete new failure. No new blanket 24-hour window is required for promotion
 of identical component code.
 
-## Stable publication complete; local HACS confirmation next
+## Completed stable publication and HACS update
 
 **8.2.0 is published.** Publication is not a download or installation on HA.
 
@@ -54,7 +63,7 @@ of identical component code.
 | 1 | Stable package review | Complete: only component versions differ from Beta2; HACS/workflows and both beta tags are unchanged. See [bounded review](RELEASE_REVIEW_2026-10-22.md). |
 | 2 | Exact checks and merge | Complete: PR #39, seven successful PR checks, regular protected squash merge 5a0bf684eb44fd54c4e91d7cbce9e90798b72fa5 and six successful post-merge checks. |
 | 3 | Stable publication | Complete: guarded publisher V1.2 run 20261022-085229-238 reports published_and_verified; independent release/latest/tag reads confirm the exact approved commit. No HA write, restart or device call. |
-| 4 | Local HACS visibility/update | Refresh information for this fork; confirm Release 8.2.0 is offered. The operator may then back up, download and restart the intended instance, retaining its HA entry. Not yet reported for stable 8.2.0; no repeated clean install/restore is required. |
+| 4 | Local HACS visibility/update | Refresh information for this fork; confirm Release 8.2.0 is offered. The operator may then back up, download and restart the intended instance, retaining its HA entry. Operator-confirmed on 22 October after refreshing repository information; no new independent file/ID comparison or repeated clean install/restore is inferred. |
 
 The component version/module both read 8.2.0. The other 31 component files
 and HACS manifest match Beta2 exactly. No new functionality or dependency is
@@ -78,11 +87,11 @@ in unreleased development and needs focused HA acceptance before release.
 The [CodeQL follow-up](CODEQL_FORK_REVIEW.md) removes the foreign-fork skip on
 development; the first actual external run still needs its own evidence.
 
-Other Bronze/Silver gaps include interval/field design, common module layout,
-external Core-brand evidence and per-module coverage. The unused-placeholder
-cleanup and its evidence are tracked in the [dated follow-up](QUALITY_PROGRESS_2026-10-22.md).
-They remain in the [quality matrix](QUALITY_SCALE.md). High aggregate coverage,
-HACS validation and successful operation do not close them collectively.
+The interval/field, seven-coordinator layout, unused-placeholder, UV/catalogue
+and per-module coverage findings are now implemented in development. The
+[current rule matrix](QUALITY_SCALE.md) records evidence and the separate
+external Core-brand boundary. High aggregate coverage, HACS validation and
+successful operation do not themselves establish a complete tier.
 Independent beginner usability review remains separate. Neither it nor complete
 Silver/Gold work is a reason to invent repeated acceptance windows for the
 same release code.
@@ -92,7 +101,8 @@ same release code.
 - **Location/POI selection and local forecasts:** the official OGD point
   catalogue is prioritised; selection and adopting processed forecasts are
   distinct decisions. [PR #35](https://github.com/martins-netizen/ha-meteoswiss/pull/35)
-  remains separate from stable packaging.
+  is integrated through the planning/implementation PRs and remains separate
+  from the immutable 8.2.0 package.
 - **Warnings:** retain the MeteoSwiss App v3 source until further notice.
 - **Silver, then Gold:** rule-by-rule evidence, without an official tier claim.
 - **HACS default catalogue:** separate submission under its then-current rules;

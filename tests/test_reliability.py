@@ -241,7 +241,9 @@ async def test_forecast_contract_preserves_repeated_dst_hour_and_daylight(hass, 
     assert [value.fold for value in local] == [0, 1]
     assert all(row["condition"] == "clear-night" for row in rows)
     assert all(row["weather_code"] == 0 for row in rows)
-    assert all(row["daily_temperature_min"] == 3 for row in rows)
+    # Its fixed 24-hour provider bucket does not cover this 25-hour Swiss day.
+    assert all(row["daily_temperature_min"] is None for row in rows)
+    assert all(row["local_date"] == "2026-10-25" for row in rows)
     assert all(forecast_datetime(row["fetched_at"]).tzinfo is not None for row in rows)
 
 

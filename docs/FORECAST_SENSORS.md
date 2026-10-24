@@ -1,6 +1,6 @@
 # Forecast sensors: today and tomorrow
 
-**Guide version:** 1.1 · **Updated:** 23 October 2026
+**Guide version:** 1.2 · **Updated:** 24 October 2026
 **Availability:** unreleased development after 8.2.0. Stable 8.2.0 does not
 include these sensors.
 
@@ -24,11 +24,20 @@ elapsed part of the day; it is not the amount still expected or already measured
 Native daily fields supply those three full-day values. Missing daily fields
 are not reconstructed from only the remaining rolling hours.
 
+Open-Meteo's native daily buckets use one fixed UTC offset per response. Around
+a clock change, a bucket can differ from the Swiss midnight-to-midnight period.
+Development withholds that mismatched bucket; these three scalar values and
+daily HGT may then be `unknown`. Hourly forecasts and complete-hour probability
+windows remain usable. This is explicit missing data, not a zero, an outage or
+a reassignment to another date. The weather service has a separate fallback
+requiring every valid hour of its 23-/24-/25-hour Swiss day.
+
 The source remains **MeteoSwiss ICON Seamless via Open-Meteo**, at the existing
 forecast location. Development can route these and calculated HGT to an
 explicitly saved catalogue point; local forecast_location attributes identify
-its name, category and height. The translated selection dialog remains pending;
-see [the saved-location contract](SAVED_FORECAST_LOCATION.md). Warning postcode,
+its name, category and height. The translated setup/Reconfigure dialog is
+implemented in development; see [the selection guide](FORECAST_LOCATION_SETUP.md)
+and [saved-location contract](SAVED_FORECAST_LOCATION.md). Warning postcode,
 forecast location and observation station
 have distinct purposes; see [getting started](GETTING_STARTED.md).
 

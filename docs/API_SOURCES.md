@@ -11,10 +11,10 @@ availability or permission for every use. Check the providers' current terms.
 |---|---|---|---|
 | Station observations | MeteoSwiss SwissMetNet via `data.geo.admin.ch/api/stac/v1` | Selected weather station | Configured interval, minimum/default 600 seconds |
 | Alternative current conditions | Open-Meteo `api.open-meteo.com/v1/forecast` | Explicit coordinates | Configured interval, minimum/default 600 seconds |
-| Weather forecasts | MeteoSwiss ICON Seamless through the same Open-Meteo forecast endpoint | HA home location for station entries; explicit coordinates otherwise | 1 hour |
+| Weather forecasts | MeteoSwiss ICON Seamless through the same Open-Meteo forecast endpoint | Explicit saved catalogue point in unreleased development; otherwise the original HA/configured base coordinates | 1 hour |
 | Weather/hazard warnings | MeteoSwiss App `app-prod-ws.meteoswiss-app.ch/v3/plzDetail` | Warning postcode with the internal `00` suffix added by the client | 10 minutes |
 | Measured pollen | MeteoSwiss `data.geo.admin.ch/ch.meteoschweiz.ogd-pollen` | Independently selected pollen station | 1 hour |
-| Pollen/AQ model values | Open-Meteo `air-quality-api.open-meteo.com/v1/air-quality` | Same point as weather forecasts | 30 minutes |
+| Pollen/AQ model values | Open-Meteo `air-quality-api.open-meteo.com/v1/air-quality` | Original HA/configured base coordinates, independent of a saved weather-forecast POI | 30 minutes |
 | Optional current UV | Separate Open-Meteo forecast request, `current=uv_index` | Same point as pollen/AQ | As part of that family's 30-minute refresh |
 | Official hourly rain statistics | SwissMetNet station hourly assets | Selected weather station | Now file hourly; recent/historical archive initially and normally weekly |
 | Station catalogue | `data.geo.admin.ch/ch.meteoschweiz.ogd-smn/ogd-smn_meta_stations.csv` | Public station metadata | Shared 24-hour cache with guarded retry |
@@ -62,7 +62,11 @@ The weather forecast explicitly requests `models=meteoswiss_icon_seamless`,
 selection within Seamless is not a local benchmark deciding which of all
 weather models is most accurate. The integration records retrieval time, not
 a verified model-issuance time. It exposes up to 24 hours/five local days through
-HA. See [Open-Meteo's MeteoSwiss model documentation](https://open-meteo.com/en/docs/meteoswiss-api).
+HA. In unreleased development a native daily bucket is accepted only if both
+its boundaries match the stated Swiss calendar day. Open-Meteo fixes its daily
+UTC offset at request time; around DST, a mismatched bucket is withheld instead
+of being called a whole local day. Hourly forecasts remain usable. See the
+[forecast guide](FORECAST_SENSORS.md) and [Open-Meteo's MeteoSwiss model documentation](https://open-meteo.com/en/docs/meteoswiss-api).
 
 The alternative current-weather provider requests temperature, humidity,
 pressure, wind, precipitation, code/daylight and optional UV with explicit
@@ -89,15 +93,19 @@ automation contract. An integration update does not rewrite users' consumers.
 
 ## Pollen, AQ and UV
 
-Measured pollen uses `ogd-pollen_<station>_h_now.csv` and exposes six tracked
-types: birch, alder, hazel, beech, ash and grass. Other possible provider columns
-do not imply more sensor entities. The station defaults to Luzern (PLZ) and
-can be changed independently of the weather station.
+Measured pollen uses `ogd-pollen_<station>_h_now.csv` and exposes seven tracked
+types: birch, alder, hazel, beech, ash, grass and oak. Other provider columns do
+not imply extra sensors. New setup requires an explicit pollen-station choice;
+older entries without a choice retain the Luzern (PLZ) fallback. Configure
+changes it independently of the weather station and forecast location.
 
 The AQ request supplies modelled birch/alder/grass/mugwort/ragweed pollen and
 PM2.5, PM10, NO₂, O₃. It selects the actual current hour using Unix seconds;
 availability depends on provider/parameter/geography, not a claimed uniform
 global resolution. UV is a separate optional current value, not daily maximum.
+Unreleased development requests its timestamp as Unix seconds and rejects a
+missing, future or at-least-one-hour-old timestamp without discarding valid AQ.
+A valid timestamp with no usable UV number is a missing value, not a source outage.
 
 See [Open-Meteo AQ documentation](https://open-meteo.com/en/docs/air-quality-api)
 and [MeteoSwiss pollen](https://opendatadocs.meteoswiss.ch/a-data-groundbased/a7-pollen-stations).

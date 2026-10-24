@@ -1,6 +1,6 @@
 # HACS acceptance of the maintained fork
 
-**Updated: 22 October 2026 · Plan and evidence V1.7**
+**Updated: 24 October 2026 · Plan and evidence V1.8**
 
 Both betas are public. Beta1's deployed runtime, the HACS 2.0.5 source switch,
 temporary clean first installation and isolated backup restore are complete.
@@ -8,7 +8,9 @@ Beta2 added the explicit initial pollen choice; on 22 October the operator
 completed new setup with other geographic locations and reported values.
 This closes the focused practical setup/data check, with the evidence limits
 below. Stable **8.2.0** was published on 22 October at **08:52:40 Europe/Zurich**.
-Its actual HACS visibility/download on the operator's instances is still to be confirmed.
+The operator subsequently confirmed its HACS update after refreshing repository
+information on 22 October. This is reported update evidence, not a new independent
+component-file/registry/statistic comparison.
 
 [Release readiness](RELEASE_READINESS.md) tracks the exact stable candidate.
 The protocols below describe acceptance methods, not requests to repeat
@@ -77,7 +79,7 @@ software and its corresponding warning filters together.
 | Evidence | State |
 |---|---|
 | Stable release and resolved tag | Independently confirmed: 8.2.0 → 5a0bf684eb44fd54c4e91d7cbce9e90798b72fa5, published 22 October at 08:52:40 Europe/Zurich; GitHub latest-stable endpoint agrees. |
-| Stable 8.2.0 visible/downloaded in local HACS | Not yet reported. Refresh this fork's metadata and check the offered release; do not infer download or HA installation from GitHub publication. |
+| Stable 8.2.0 visible/downloaded in local HACS | Operator-confirmed on 22 October after Update information made the target available. No new independent file/ID/statistics comparison is inferred. |
 | Public prerelease and resolved tag | Confirmed: 8.2.0b1 → abbb6b7701134ac2573f35b425ab3f0697a80540. |
 | HA 2026.10.2 runtime, 24 hours and visual acceptance | Complete; publication contains the same 33 component/translation/brand files. |
 | HACS version and original source | Operator confirmed HACS 2.0.5 and LNKtwo/ha-meteoswiss. |

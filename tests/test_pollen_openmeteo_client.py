@@ -2,7 +2,7 @@
 
 import asyncio
 import traceback
-from datetime import UTC, datetime
+from datetime import UTC, datetime, timedelta
 from unittest.mock import AsyncMock, Mock, patch
 
 import aiohttp
@@ -43,7 +43,7 @@ async def test_direct_client_preserves_request_parameters_partial_values_and_uv(
     client, payload, session = aq_source
     with patch(
         "custom_components.meteoswiss.pollen_openmeteo.async_get_json",
-        side_effect=[payload, {"current": {"uv_index": 0}}],
+        side_effect=[payload, {"current": {"time": int(datetime.now(UTC).timestamp()), "uv_index": 0}}],
     ) as request:
         result = await client.async_get_data()
     aq, uv = request.await_args_list
@@ -65,6 +65,7 @@ async def test_direct_client_preserves_request_parameters_partial_values_and_uv(
             "longitude": 8.561234,
             "current": "uv_index",
             "timezone": "Europe/Zurich",
+            "timeformat": "unixtime",
         },
     }
     assert result["pm10"] == result["uv_index"] == 0
@@ -143,6 +144,22 @@ async def test_direct_uv_failure_keeps_valid_zero_aq(aq_source):
     assert result["uv_index"] is None
     assert result["uv_available"] is False
     assert request.await_count == 2
+
+
+@pytest.mark.parametrize("age_minutes", [None, 60, 120, -1])
+async def test_uv_timestamp_must_establish_a_current_value(aq_source, age_minutes):
+    client, payload, _ = aq_source
+    current = {"uv_index": 7}
+    if age_minutes is not None:
+        current["time"] = int((datetime.now(UTC) - timedelta(minutes=age_minutes)).timestamp())
+    with patch(
+        "custom_components.meteoswiss.pollen_openmeteo.async_get_json",
+        side_effect=[payload, {"current": current}],
+    ):
+        result = await client.async_get_data()
+    assert result["uv_index"] is None
+    assert result["uv_available"] is False
+    assert result["pm10"] == 0
 
 
 async def test_direct_missing_session_is_a_setup_error():
