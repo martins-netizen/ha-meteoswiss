@@ -27,7 +27,7 @@ refer to four different places.** Each has a specific purpose:
 | **3. Weather measurement station** | **Measured current temperature, wind, rain and other observations**, shown on the station device and its original weather entity. You might want to choose a station near your HA home location. | **Zürich/Kloten**. |
 | **4. Weather forecast location** | **ICON predictions:** hourly/daily forecasts, eight today/tomorrow sensors and calculated heating degree days. In b2, the separate forecast weather entity also shows the chosen point's **current model hour**, which is a prediction rather than a station measurement. | A selected town/postcode point or **Säntis** POI. |
 
-**Station-condition follow-up (development after b3):** the station weather
+**B4 station-condition test track:** the station weather
 row also gains a **modelled condition for the measuring station's own location**.
 Its numeric values remain measurements; the condition is identified separately
 as modelled. See [the source and failure behaviour](docs/STATION_WEATHER_CONDITION.md).
@@ -153,6 +153,12 @@ through clock changes (e.g. from summer time to winter time). Check the
 [announced GitHub release](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.0b3)
 for availability and install that exact release through HACS; a source version
 alone does not establish publication.
+**8.3.0b4 test track** adds the [station-local modelled condition](docs/STATION_WEATHER_CONDITION.md),
+retains measured values and independent forecasts, and includes the station-choice
+and Cache Statistics guidance. See [b4 notes](docs/RELEASE_8.3.0b4.md) and the
+[focused checklist](docs/ACCEPTANCE_8.3.0b4.md). Check the
+[announced b4 release](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.0b4)
+for availability; source version alone does not establish publication.
 Stable 8.2.0 remains the normal installation route. Neither a branch nor an
 open PR is an installation target.
 The [overall review](docs/RELEASE_REVIEW_2026-10-24.md) and

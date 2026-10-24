@@ -1,10 +1,23 @@
 # Release readiness: current candidate and completed 8.2.0
 
-**Document version:** 2.4 · **Updated:** 24 October 2026
+**Document version:** 2.5 · **Updated:** 24 October 2026
 **Purpose:** One entry point for completed evidence, remaining publication steps
 and work deliberately deferred to later versions.
 
 ## Current next-feature release position
+
+
+**B4 package:** approved PR #66 was regularly squash-merged as
+**95890788c12bfc675d41f81052c2143522434924**, preserving reviewed tree
+**bf14f7f9adad561eb6e43a1b5854c29d792d767a**. The new 8.3.0b4 package keeps
+37 non-version component files byte-identical and changes only the two version
+fields. It adds the V1.3 guarded publisher, notes and a focused acceptance guide.
+Old b1/b2/b3 publishers and immutable releases are retained. The complete
+package passes **1,603 tests plus 53 subtests** on each local HA 2026.8.3/2026.10.3,
+including **176 publisher-profile cases**, with unchanged 99.97753% coverage
+and all strict gates/four exclusions retained. Publication and new
+live condition acceptance remain separate from source review and prior b3 tests.
+See [b4 notes](RELEASE_8.3.0b4.md) and [the b4 protocol](ACCEPTANCE_8.3.0b4.md).
 
 
 **Published b3 and focused operator evidence:** **8.3.0b3** was published on
@@ -33,8 +46,8 @@ remains HA 2026.8.3/2026.10.1. Direct live probing was unconfirmed because this
 preparation host could not resolve the API hostname; this does not diagnose the
 operator's provider connection or replace candidate-specific HA acceptance.
 
-Next: regular review/merge and exact post-merge checks for the follow-up, then
-an explicitly announced follow-up test package with updated source/version and
+The functional follow-up is merged. Next: reviewed b4 packaging, exact post-merge
+checks and explicit test-release publication with the new source/version and
 publication guards. Check station-local model condition, retained measurements,
 and an independent forecast point in the existing temporary HA before stable
 8.3.0 promotion. No repeat clean install/restore or blanket 24-hour wait is
