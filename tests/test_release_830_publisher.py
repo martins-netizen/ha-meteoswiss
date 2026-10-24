@@ -23,8 +23,9 @@ ROOT = Path(__file__).resolve().parents[1]
         ("v1.0", "8.2.0", "8.3.0b1", "4c8169206fdcb8688a438c16a93f867a633a344f"),
         ("v1.1", "8.3.0b1", "8.3.0b2", "781ba3a41fafc2e8dd5bc5f867f55c646c4a2412"),
         ("v1.2", "8.3.0b2", "8.3.0b3", "97338f68038eab80c75c2028c9deb5e24ad552e6"),
+        ("v1.3", "8.3.0b3", "8.3.0b4", "95890788c12bfc675d41f81052c2143522434924"),
     ],
-    ids=["beta1", "beta2", "beta3"],
+    ids=["beta1", "beta2", "beta3", "beta4"],
 )
 def publisher(request):
     """Exercise each historical/follow-up boundary independently."""
@@ -38,6 +39,7 @@ def publisher(request):
     assert module.TAG == tag and module.REVIEWED_SOURCE == reviewed
     module._script = script
     module._source_version = source_version
+    module._identical_files = 37 if tag == "8.3.0b4" else 36
     return module
 
 
@@ -63,6 +65,8 @@ class GitHub:
         files = json.loads(
             (ROOT / "tests/fixtures/release_830_component_paths.json").read_text()
         )
+        if publisher.TAG == "8.3.0b4":
+            files.append(PREFIX + "station_condition.py")
         self.candidate = {
             path: ("100644", blob((ROOT / path).read_bytes())) for path in files
         }
@@ -218,7 +222,7 @@ def test_default_preflight_is_read_only_and_preserves_stable(publisher):
     fake = GitHub(publisher)
     result = run(fake)
     assert result["status"] == "ready_to_publish"
-    assert result["component_files_identical"] == 36
+    assert result["component_files_identical"] == publisher._identical_files
     assert result["version_files_checked"] == 2
     assert result["country"] == "CH" and result["existing_tags_unchanged"]
     assert result["stable_release_id"] == publisher.STABLE_RELEASE_ID
@@ -474,7 +478,7 @@ def test_standalone_read_only_shell_works_without_a_checkout(publisher, tmp_path
     receipt = json.loads(receipts[0].read_text())
     assert receipt["status"] == "ready_to_publish"
     assert receipt["release_write_attempted"] is False
-    assert receipt["component_files_identical"] == 36
+    assert receipt["component_files_identical"] == publisher._identical_files
     assert len(list(diagnostics.glob("*.log"))) == 1
     assert calls.read_text().splitlines()
 
@@ -504,15 +508,19 @@ def test_shell_guard_runs_before_any_external_command(publisher, args, status):
 
 
 def test_profiles_preserve_the_preceding_published_betas(publisher):
-    if publisher.TAG in {"8.3.0b2", "8.3.0b3"}:
+    if publisher.TAG in {"8.3.0b2", "8.3.0b3", "8.3.0b4"}:
         assert (
             publisher.PRESERVED_TAGS["8.3.0b1"]
             == "a6b9df9f57dec3e93c8f698133cdb0e7e4c3e937"
         )
     else:
         assert "8.3.0b1" not in publisher.PRESERVED_TAGS
-    if publisher.TAG == "8.3.0b3":
+    if publisher.TAG in {"8.3.0b3", "8.3.0b4"}:
         assert publisher.PRESERVED_TAGS["8.3.0b2"] == "50b5711213bd8a1706871718a283b9fcb4db257d"
     else:
         assert "8.3.0b2" not in publisher.PRESERVED_TAGS
+    if publisher.TAG == "8.3.0b4":
+        assert publisher.PRESERVED_TAGS["8.3.0b3"] == "9d75aa8673c417f24caaa1f83181b5ef811d56fc"
+    else:
+        assert "8.3.0b3" not in publisher.PRESERVED_TAGS
     assert publisher.STABLE_RELEASE_ID == 420392277

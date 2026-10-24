@@ -1,8 +1,9 @@
 # A weather condition for the observation station
 
-**Guide version:** 1.0 · **Updated:** 24 October 2026.
-**Availability:** development after published 8.3.0b3; not in that immutable tag.
-Use a subsequently announced test release before checking this change in HA.
+**Guide version:** 1.1 · **Updated:** 24 October 2026.
+**Availability:** the **8.3.0b4 test track**, based on approved PR #66. It is not
+in immutable 8.3.0b3. Follow the [b4 release notes](RELEASE_8.3.0b4.md) and
+[focused checklist](ACCEPTANCE_8.3.0b4.md), after that release is announced.
 
 ## What you see and where it comes from
 
