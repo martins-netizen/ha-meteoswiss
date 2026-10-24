@@ -11,9 +11,9 @@ and brings reviewed corrections together in one maintained version. The original
 project provides the foundation; its MIT licence and attribution are retained.
 This is an independent community project, not an official MeteoSwiss product.
 
-**Stable [8.2.0](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.2.0)
-is published.** It includes explicit pollen-station selection during setup and
-the reviewed Beta2 component code. Follow the setup or migration guide below.
+**Start with the [latest published stable release](https://github.com/martins-netizen/ha-meteoswiss/releases/latest).**
+This guide describes the **8.3 series**; [8.3.0 release notes](docs/RELEASE_8.3.0.md)
+explain the changes from 8.2.0. Use a published HACS release, not a branch.
 
 ## Four places: what each one is used for
 
@@ -25,10 +25,9 @@ refer to four different places.** Each has a specific purpose:
 | **1. HA home location** | The HA base coordinates are used for **modelled air quality, modelled pollen and optional UV via Open-Meteo**. They also define the **MeteoSwiss weather-forecast location** when you keep or explicitly return to the original base coordinates. | Your configured home position in **Kloten**. |
 | **2. Pollen measurement station** | **Measured pollen concentrations** from the selected MeteoSwiss pollen station. Independent of weather measurements and weather forecasts. You might want to choose a station near your HA home location. | **Zürich (PZH)**. |
 | **3. Weather measurement station** | **Measured current temperature, wind, rain and other observations**, shown on the station device and its original weather entity. You might want to choose a station near your HA home location. | **Zürich/Kloten**. |
-| **4. Weather forecast location** | **ICON predictions:** hourly/daily forecasts, eight today/tomorrow sensors and calculated heating degree days. In b2, the separate forecast weather entity also shows the chosen point's **current model hour**, which is a prediction rather than a station measurement. | A selected town/postcode point or **Säntis** POI. |
+| **4. Weather forecast location** | **ICON predictions:** hourly/daily forecasts, eight today/tomorrow sensors and calculated heating degree days. The separate forecast weather entity also shows the chosen point's **current model hour**, which is a prediction rather than a station measurement. | A selected town/postcode point or **Säntis** POI. |
 
-**B4 station-condition test track:** the station weather
-row also gains a **modelled condition for the measuring station's own location**.
+The station weather row can also show a **modelled condition for the measuring station's own location**.
 Its numeric values remain measurements; the condition is identified separately
 as modelled. See [the source and failure behaviour](docs/STATION_WEATHER_CONDITION.md).
 
@@ -56,17 +55,14 @@ These entered coordinates also become that entry's base location for
 AQ/pollen/UV and its default weather forecast. An explicit forecast selection
 still changes only the ICON forecast role.
 
-**B3 test track:** the existing entry’s **Configure (gear)**
-now brings the **weather measuring station, measured-pollen station and forecast
-location into one dialog**, alongside the independent warning postcode. A
-postcode/town/POI search continues inside the same flow; cancelling preserves
-all previous choices. The HA home location remains a general HA setting.
-See [the unified settings and clock-change guide](docs/CALENDAR_AND_LOCATION_SETTINGS.md)
-for availability and the focused checks. Published b1/b2 still use Configure for
-pollen and **three-dot menu → Reconfigure** for forecasts.
+The existing entry's **Configure (gear)** brings the **weather measuring
+station, measured-pollen station and forecast location into one dialog**,
+alongside the independent warning postcode. A postcode/town/POI search continues
+inside that flow; cancelling preserves previous choices. The HA home location
+remains a general HA setting. See the [unified settings and clock-change guide](docs/CALENDAR_AND_LOCATION_SETTINGS.md).
 
 The [selection guide](docs/FORECAST_LOCATION_SETUP.md) and
-[data/settings reference](docs/USAGE.md) explain the roles. The b2 named
+[data/settings reference](docs/USAGE.md) explain the roles. The named
 forecast device/card change is covered in [display and migration](docs/FORECAST_DISPLAY.md).
 
 ## Why choose this fork?
@@ -100,13 +96,13 @@ Read the [plain-language overview](docs/GETTING_STARTED.md#what-this-fork-provid
 
 We use the [Home Assistant Integration Quality Scale](https://contributors.home-assistant.io/core/quality-scale/)
 as an engineering checklist. **This fork has no officially awarded tier.**
-The following is our documented self-assessment of the **8.3.0b3 test track**;
-it does not describe every feature of stable 8.2.0.
+The following is our documented self-assessment of the **8.3 runtime**,
+operator-tested in b4. It is not an official assessment or catalogue approval.
 
 | Goal | What it means for you | Current evidence and remaining work |
 |---|---|---|
 | **Bronze: a sound foundation** | Setup in HA, stable entity identities, tested setup and clear instructions. | The applicable technical rules have evidence in our checklist. The Core branding requirement remains unverified; local HACS images do not establish it. |
-| **Silver: reliable operation** | Clear unavailable states, recovery from source failures, clean unloading and a maintained support route. | All applicable Silver rules have recorded evidence, including more than 95% coverage per module. A complete tier also needs its Bronze prerequisites; focused b3 HA acceptance is still pending. |
+| **Silver: reliable operation** | Clear unavailable states, recovery from source failures, clean unloading and a maintained support route. | All applicable Silver rules have recorded evidence, including more than 95% coverage per module. A complete tier also needs its Bronze prerequisites; focused b4 HA acceptance is operator-confirmed. |
 | **Gold: a more complete user experience** | Easier configuration, useful diagnostics, translations and actionable help. | Several features already exist, including the unified location dialog. Remaining work includes HA Repairs, icon/error translations, diagnostic defaults, metadata and stale-device handling; the full checklist also records the reconfiguration-route review and proposed exemptions. |
 
 The [rule-by-rule assessment](docs/QUALITY_SCALE.md) links the scope, test evidence
@@ -125,56 +121,29 @@ manifest claim on the strength of this self-assessment.
 
 ## Release status
 
-**Published stable: [8.2.0](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.2.0)**,
-22 October 2026. [Release notes](docs/RELEASE_8.2.0.md) describe its scope and
-migration. HACS installation, update and recovery were confirmed within the
-[recorded acceptance scope](docs/HACS_ACCEPTANCE.md).
+The [latest stable release page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
+is authoritative for normal installation. The [8.3.0 notes](docs/RELEASE_8.3.0.md)
+describe the version-only promotion of accepted **8.3.0b4** and the changes since
+8.2.0. A prepared source version or a merged PR alone does not mean that the
+release is published. Select only an announced release offered by HACS.
 
-**Published test prerelease: [8.3.0b1](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.0b1)**,
-24 October 2026. It adds postcode/town/POI forecast selection, eight forecast
-sensors and reviewed source/lifecycle improvements. Its [notes](docs/RELEASE_8.3.0b1.md)
-and [focused test checklist](docs/ACCEPTANCE_8.3.0b1.md) define the published
-scope. Initial operator testing confirmed the separate Säntis station/POI
-choices and exposed ambiguous forecast values under a Kloten heading.
+The operator accepted b4 on 24 October: the measuring station and a different
+forecast place have separate weather displays and values. Prior clean-install,
+restore, calendar-day and shared-settings evidence is retained in the
+[readiness record](docs/RELEASE_READINESS.md). Earlier beta notes remain historical:
+[b1](docs/RELEASE_8.3.0b1.md), [b2](docs/RELEASE_8.3.0b2.md),
+[b3](docs/RELEASE_8.3.0b3.md), [b4](docs/RELEASE_8.3.0b4.md).
 
-**Published follow-up prerelease: [8.3.0b2](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.0b2)**, with a
-[separate named forecast device and weather entity](docs/FORECAST_DISPLAY.md).
-It keeps current conditions and selected-place predictions distinct and includes
-[one card/action target change](docs/FORECAST_DISPLAY.md#update-an-existing-card-or-forecast-action-once).
-See [b2 notes](docs/RELEASE_8.3.0b2.md) and its [focused protocol](docs/ACCEPTANCE_8.3.0b2.md).
-This correction is not in 8.3.0b1. The calendar-day and unified-settings corrections described above are **not
-in published b2**. Publication of the exact b3 package and focused HA acceptance remain separate
-steps before a stable 8.3.0 release.
-**8.3.0b3 test track** includes those reviewed corrections:
-[release notes](docs/RELEASE_8.3.0b3.md) and
-[focused acceptance](docs/ACCEPTANCE_8.3.0b3.md). It brings all three location
-choices into the same Configure dialog and validates whole Swiss calendar days
-through clock changes (e.g. from summer time to winter time). Check the
-[announced GitHub release](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.0b3)
-for availability and install that exact release through HACS; a source version
-alone does not establish publication.
-**8.3.0b4 test track** adds the [station-local modelled condition](docs/STATION_WEATHER_CONDITION.md),
-retains measured values and independent forecasts, and includes the station-choice
-and Cache Statistics guidance. See [b4 notes](docs/RELEASE_8.3.0b4.md) and the
-[focused checklist](docs/ACCEPTANCE_8.3.0b4.md). Check the
-[announced b4 release](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.0b4)
-for availability; source version alone does not establish publication.
-Stable 8.2.0 remains the normal installation route. Neither a branch nor an
-open PR is an installation target.
-The [overall review](docs/RELEASE_REVIEW_2026-10-24.md) and
-[readiness record](docs/RELEASE_READINESS.md) retain evidence.
-
-Minimum supported/tested HA is **2026.8.3**, with CI on **2026.10.1** and
-additional local/practical evidence on **2026.10.2**. The operator also reports
-a successful existing-beta test on **2026.10.3**; that is separate from
-automated testing and from acceptance of the new corrections. HACS default-catalogue
-inclusion and an official HA quality tier have not been granted.
+Minimum supported HA is **2026.8.3**. CI also covers **2026.10.1**; additional
+local automated tests cover **2026.10.3**, with operator evidence on
+2026.10.2/2026.10.3 within its recorded scope. HACS default-catalogue inclusion
+and an official HA quality tier have not been granted.
 
 ## Data and compatibility
 
 - SwissMetNet observations and hourly precipitation statistics.
 - MeteoSwiss ICON Seamless forecasts via Open-Meteo.
-- Unreleased development after 8.2.0: [eight forecast sensors](docs/FORECAST_SENSORS.md)
+- [Eight forecast sensors](docs/FORECAST_SENSORS.md)
   for today/tomorrow, including matching maximum-probability rain windows.
 - Active/upcoming weather and natural-hazard warnings through the MeteoSwiss
   postcode feed, with explicit feed availability. This includes flood (BAFU)
@@ -206,39 +175,30 @@ There is no target percentage to achieve. See [what the counters mean](docs/USAG
 
 An existing installation must first be checked for its source and installed
 commit/version. Do not remove or recreate the integration/config entry.
-Stable 8.2.0 is published. For installation or update:
+For installation or update:
 
-1. Back up Home Assistant and keep the recovery key. Existing users first follow
+1. Back up Home Assistant and keep the recovery key. Existing users first read
    the [migration and warning-consumer checks](docs/MIGRATION.md).
-2. In **HACS → menu → Custom repositories**, add
-   `https://github.com/martins-netizen/ha-meteoswiss` as **Integration**.
-   Skip this step if that repository is already present.
-3. Open Download/Redownload, expand **Need a different version?**, and explicitly
-   select **8.2.0** in **Release**. Check the announced version before confirming
-   the download, then restart Home Assistant. Do not substitute a branch or commit.
-   Do not keep two HACS repositories managing the same `meteoswiss` directory.
-4. **New users only:** add **MeteoSwiss** under **Settings → Devices & services**.
-   In the first dialog choose **MeteoSwiss STAC API (Swiss Stations)** and a
-   **measured-pollen station**. Keep 600 seconds initially. Continue to the next
-   dialog to select the weather station and four-digit warning postcode.
-5. Check the HA home location for forecasts/AQ. **Configure** later changes the
-   interval and measured-pollen station, not the weather station or postcode.
+2. If the fork is absent, add `https://github.com/martins-netizen/ha-meteoswiss`
+   under **HACS → menu → Custom repositories**, type **Integration**.
+3. Open **Download/Redownload → Need a different version? → Release** and select
+   the announced stable release. Refresh repository information if needed;
+   then actually download it and restart HA. Do not keep two HACS repositories
+   managing the same `meteoswiss` directory.
+4. **New users only:** add **MeteoSwiss** in **Settings → Devices & services**.
+   Choose the current-weather source and a measured-pollen station, then the
+   observation station/base coordinates and the independent warning postcode.
+   Choose whether to keep the base forecast location or search for a town/POI.
+5. Existing users retain their HA entry. **Configure** edits the three MeteoSwiss
+   location choices together; the HA home location remains in HA's own settings.
 
-**Unreleased development:** the next setup/Configure flow removes the polling
-field and schedules new observation entries automatically at 600 seconds.
-Existing individual intervals remain effective when upgrading or changing the
-pollen station. The [forecast-location dialog](docs/FORECAST_LOCATION_SETUP.md)
-adds a separate, explicit weather forecast choice; **Reconfigure** later changes
-that choice. It leaves observations, warning postcode and AQ/pollen/UV locations
-intact. These are not yet part of the published 8.2.0 instructions above.
-
-Existing Beta1 entries retain their settings and can select a pollen station
-under Configure. Update through HACS while keeping the existing HA entry.
-
-Existing users keep their existing HA entry; they do not add it a second time.
-`development` is the maintained default branch and `main` is an upstream mirror.
-Neither branch name is a release approval. API keys or terminal commands are
-not needed for the normal released installation.
+New observation entries refresh automatically every **600 seconds**; existing
+individual intervals remain effective. No polling field is shown. The
+[forecast selection guide](docs/FORECAST_LOCATION_SETUP.md) explains search,
+confirmation and reset. With an explicit catalogue forecast, update an existing
+forecast card/action target once as described in [display migration](docs/FORECAST_DISPLAY.md).
+UI languages ship with the software; no API key or terminal command is required.
+`development` is the maintained default branch; `main` tracks upstream.
 
 The optional [shared warning template](examples/button-card-warnings.yaml) uses
 labels supplied by the integration. It can replace duplicated dashboard warning
@@ -248,7 +208,7 @@ See [setup, all parameters, removal and troubleshooting](docs/USAGE.md).
 
 ## Development and operation
 
-- [Next-release plan: location/POIs, Silver and Gold](docs/NEXT_RELEASE_PLAN.md)
+- [Location/POI implementation plan and later quality work](docs/NEXT_RELEASE_PLAN.md)
 - [Overall release review of 24 October 2026](docs/RELEASE_REVIEW_2026-10-24.md)
 - [Historical review of 17 October 2026](docs/REVIEW_2026-10-17.md)
 - [Quality roadmap and measured gaps](docs/QUALITY_SCALE.md)

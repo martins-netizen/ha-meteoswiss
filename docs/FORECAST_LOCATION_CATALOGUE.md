@@ -1,11 +1,10 @@
 # Official forecast-location catalogue foundation
 
-**Guide version:** 1.3 · **Updated:** 24 October 2026
-**Status:** Tested development foundation, unreleased after 8.2.0. This package
-is the source foundation; the integrated successors supply
-[saved-selection routing](SAVED_FORECAST_LOCATION.md) and
-[translated HA selection/Reconfigure](FORECAST_LOCATION_SETUP.md).
-The [location plan](LOCAL_FORECAST_PLAN.md) records candidate acceptance.
+**Guide version:** 1.4 · **Updated:** 24 October 2026
+**Status:** included in the 8.3 runtime accepted as b4. Source clients,
+saved identities/height routing and the four-language setup/Configure flow
+are integrated. See [selection](FORECAST_LOCATION_SETUP.md) and
+[current release evidence](RELEASE_READINESS.md). Do not edit HA storage manually.
 
 ## What this package supplies
 

@@ -34,7 +34,7 @@ for station entries, or the configured coordinates for Open-Meteo entries;
 the saved-selection backend now independently routes ICON to a confirmed
 catalogue point through the implemented setup/Reconfigure flow. See
 [source/time contracts](ARCHITECTURE.md#sources-and-time) and
-[polling/options migration](ARCHITECTURE.md#polling-and-options-migration-unreleased-after-820).
+[polling/options migration](ARCHITECTURE.md#polling-and-options-migration).
 
 ## Example: consume one existing forecast, without another request
 

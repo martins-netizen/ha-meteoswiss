@@ -53,7 +53,7 @@ file with the documented pytest coverage command before each gate run; a
 different report pathname is no longer a supported argument. The per-module,
 strict source/flow, branch-coverage and aggregate requirements are unchanged.
 
-The candidate-specific [8.3.0b2 publisher V1.1](PUBLISHING.md#next-candidate-830b2)
+The candidate-specific [8.3.0b2 publisher V1.1](PUBLISHING.md#stable-830)
 adds read-only preflight and one prerelease-only creation path; its tests exercise
 source equality, check provenance, old tags, stable preservation and uncertain
 writes. It performs no HA deployment. Keep it separate from the historical

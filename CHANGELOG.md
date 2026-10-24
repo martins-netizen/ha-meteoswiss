@@ -2,7 +2,24 @@
 
 ## [Unreleased]
 
-No additional feature changes beyond the prepared 8.3.0b2 candidate below.
+No additional runtime changes beyond the accepted 8.3.0 package below.
+
+## [8.3.0] — promotion of accepted b4
+
+Prepared24 October 2026 from published/accepted b4 at
+**a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5**. Only two component version files
+change;37 other component files, HACS and workflows match. [Release notes](docs/RELEASE_8.3.0.md)
+cover the complete changes since 8.2.0 and the [stable update](docs/ACCEPTANCE_8.3.0.md).
+Publication is established by the actual GitHub release, not this heading.
+
+- Ship postcode/town/POI selection, named forecast devices, eight forecast
+  sensors, complete Swiss calendar-day handling and a shared location dialog.
+- Retain the station-local model condition, measured numeric values, source
+  boundaries, lifecycle/privacy/HTTP corrections and four languages accepted in b4.
+- Update current setup/migration/roles/quality documentation; preserve historical
+  beta notes and all prior publication scripts.
+- Add stable Publisher V1.3 with accepted-source, prior-publication, immutable-tag,
+  exact-check, latest-stable and read-only retry guards.
 
 ## [8.3.0b2] — forecast display test candidate
 

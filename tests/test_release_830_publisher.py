@@ -24,13 +24,15 @@ ROOT = Path(__file__).resolve().parents[1]
         ("v1.1", "8.3.0b1", "8.3.0b2", "781ba3a41fafc2e8dd5bc5f867f55c646c4a2412"),
         ("v1.2", "8.3.0b2", "8.3.0b3", "97338f68038eab80c75c2028c9deb5e24ad552e6"),
         ("v1.3", "8.3.0b3", "8.3.0b4", "95890788c12bfc675d41f81052c2143522434924"),
+        ("stable-v1.3", "8.3.0b4", "8.3.0", "a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5"),
     ],
-    ids=["beta1", "beta2", "beta3", "beta4"],
+    ids=["beta1", "beta2", "beta3", "beta4", "stable"],
 )
 def publisher(request):
     """Exercise each historical/follow-up boundary independently."""
     revision, source_version, tag, reviewed = request.param
-    script = ROOT / f"scripts/publish_meteoswiss_830_beta_{revision}.sh"
+    script = ROOT / ("scripts/veroeffentliche_meteoswiss_stable_v1.3.sh" if tag == "8.3.0"
+                     else f"scripts/publish_meteoswiss_830_beta_{revision}.sh")
     payload = (
         script.read_text().split("<<'PY_PUBLISH'\n", 1)[1].split("\nPY_PUBLISH", 1)[0]
     )
@@ -39,8 +41,12 @@ def publisher(request):
     assert module.TAG == tag and module.REVIEWED_SOURCE == reviewed
     module._script = script
     module._source_version = source_version
-    module._identical_files = 37 if tag == "8.3.0b4" else 36
+    module._is_stable = tag == "8.3.0"
+    module._identical_files = 37 if tag in {"8.3.0b4", "8.3.0"} else 36
     return module
+
+
+STABLE_PROFILE = ("stable-v1.3", "8.3.0b4", "8.3.0", "a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5")
 
 
 COMMIT = "a" * 40
@@ -65,7 +71,7 @@ class GitHub:
         files = json.loads(
             (ROOT / "tests/fixtures/release_830_component_paths.json").read_text()
         )
-        if publisher.TAG == "8.3.0b4":
+        if publisher.TAG in {"8.3.0b4", "8.3.0"}:
             files.append(PREFIX + "station_condition.py")
         self.candidate = {
             path: ("100644", blob((ROOT / path).read_bytes())) for path in files
@@ -118,6 +124,8 @@ class GitHub:
             draft=False,
             prerelease=False,
         )
+        self.previous_stable = copy.deepcopy(self.stable)
+        self.source_release = {"id": 422790421, "tag_name": "8.3.0b4", "draft": False, "prerelease": True}
         self.fail_after_post = False
         self.change_stable_after_post = False
         self.truncated = False
@@ -139,18 +147,21 @@ class GitHub:
             assert suffix == "/releases"
             assert body["tag_name"] == self.publisher.TAG
             assert body["target_commitish"] == COMMIT
-            assert body["prerelease"] is True and body["draft"] is False
-            assert body["make_latest"] == "false"
+            is_stable = self.publisher._is_stable
+            assert body["prerelease"] is (not is_stable) and body["draft"] is False
+            assert body["make_latest"] == ("true" if is_stable else "false")
             self.tag = COMMIT
             self.release = dict(
                 id=7,
                 tag_name=self.publisher.TAG,
                 draft=False,
-                prerelease=True,
+                prerelease=not is_stable,
                 html_url=self.publisher.RELEASE_URL,
                 body=body["body"],
                 published_at="2026-10-24T08:00:00Z",
             )
+            if is_stable:
+                self.stable = copy.deepcopy(self.release)
             if self.change_stable_after_post:
                 self.stable["id"] = 1
             if self.fail_after_post:
@@ -190,6 +201,10 @@ class GitHub:
             return copy.deepcopy(self.stable)
         if suffix == "/releases/tags/" + self.publisher.TAG:
             return copy.deepcopy(self.release)
+        if suffix == "/releases/tags/8.2.0":
+            return copy.deepcopy(self.previous_stable)
+        if suffix == "/releases/tags/8.3.0b4" and self.publisher._is_stable:
+            return copy.deepcopy(self.source_release)
         if suffix.startswith("/contents/"):
             source = suffix.endswith("?ref=" + self.publisher.REVIEWED_SOURCE)
             if "manifest.json?" in suffix:
@@ -348,13 +363,13 @@ def test_checks_require_successful_exact_head_and_expected_apps(publisher, chang
 
 @pytest.mark.parametrize(
     "field,value",
-    [("draft", True), ("prerelease", False), ("body", "different"), ("id", None)],
+    [("draft", True), ("prerelease", "toggle"), ("body", "different"), ("id", None)],
 )
 def test_conflicting_existing_release_is_never_rewritten(publisher, field, value):
     fake = GitHub(publisher)
     run(fake, write=True)
     fake.calls.clear()
-    fake.release[field] = value
+    fake.release[field] = not fake.release[field] if value == "toggle" else value
     with pytest.raises(publisher.PublicationError):
         run(fake, write=True)
     assert not fake.writes()
@@ -372,7 +387,8 @@ def test_uncertain_write_records_receipt_and_retry_does_not_post_again(
     assert receipt["status"] == "publication_result_unconfirmed"
     assert receipt["release_write_attempted"] is True
     assert receipt["ha_writes_performed"] is False
-    assert receipt["focused_ha_ui_acceptance"] == f"pending_{publisher.TAG}"
+    assert receipt["focused_ha_ui_acceptance"] == ("operator_confirmed_8.3.0b4" if publisher._is_stable
+                                                    else f"pending_{publisher.TAG}")
     fake.fail_after_post = False
     fake.calls.clear()
     assert run(fake, write=True)["status"] == "already_published_and_verified"
@@ -508,19 +524,64 @@ def test_shell_guard_runs_before_any_external_command(publisher, args, status):
 
 
 def test_profiles_preserve_the_preceding_published_betas(publisher):
-    if publisher.TAG in {"8.3.0b2", "8.3.0b3", "8.3.0b4"}:
+    if publisher.TAG in {"8.3.0b2", "8.3.0b3", "8.3.0b4", "8.3.0"}:
         assert (
             publisher.PRESERVED_TAGS["8.3.0b1"]
             == "a6b9df9f57dec3e93c8f698133cdb0e7e4c3e937"
         )
     else:
         assert "8.3.0b1" not in publisher.PRESERVED_TAGS
-    if publisher.TAG in {"8.3.0b3", "8.3.0b4"}:
+    if publisher.TAG in {"8.3.0b3", "8.3.0b4", "8.3.0"}:
         assert publisher.PRESERVED_TAGS["8.3.0b2"] == "50b5711213bd8a1706871718a283b9fcb4db257d"
     else:
         assert "8.3.0b2" not in publisher.PRESERVED_TAGS
-    if publisher.TAG == "8.3.0b4":
+    if publisher.TAG in {"8.3.0b4", "8.3.0"}:
         assert publisher.PRESERVED_TAGS["8.3.0b3"] == "9d75aa8673c417f24caaa1f83181b5ef811d56fc"
     else:
         assert "8.3.0b3" not in publisher.PRESERVED_TAGS
     assert publisher.STABLE_RELEASE_ID == 420392277
+
+
+@pytest.mark.parametrize("publisher", [STABLE_PROFILE], indirect=True)
+def test_stable_profile_retains_accepted_b4_and_marks_the_latest_release(publisher):
+    assert publisher.PRESERVED_TAGS["8.3.0b4"] == publisher.REVIEWED_SOURCE
+    fake = GitHub(publisher)
+    result = run(fake, write=True)
+    assert result["prerelease"] is False
+    assert result["stable_release_id"] == fake.release["id"]
+    assert result["latest_stable_verified"] is True
+    fake.calls.clear()
+    assert run(fake)["status"] == "already_published_and_verified"
+    assert not fake.writes()
+
+
+@pytest.mark.parametrize("area,key,value", [
+    ("previous_stable", "id", 1),
+    ("source_release", "id", 1),
+    ("source_release", "draft", True),
+    ("source_release", "prerelease", False),
+])
+@pytest.mark.parametrize("publisher", [STABLE_PROFILE], indirect=True)
+def test_stable_profile_requires_actual_unchanged_accepted_publications(publisher, area, key, value):
+    fake = GitHub(publisher)
+    getattr(fake, area)[key] = value
+    with pytest.raises(publisher.PublicationError):
+        run(fake, write=True)
+    assert not fake.writes()
+
+
+@pytest.mark.parametrize("publisher", [STABLE_PROFILE], indirect=True)
+def test_stable_profile_rechecks_latest_immediately_before_creation(publisher):
+    fake = GitHub(publisher)
+    latest_reads = 0
+    def changing_api(path, **kwargs):
+        nonlocal latest_reads
+        if path.endswith("/releases/latest"):
+            latest_reads += 1
+            if latest_reads == 2:
+                fake.stable["id"] = 1
+        return fake(path, **kwargs)
+    with patch.object(publisher, "api", changing_api), pytest.raises(publisher.PublicationError):
+        publisher.publish(COMMIT, {"release_write_attempted": False}, allow_write=True)
+    assert latest_reads == 2
+    assert not fake.writes()

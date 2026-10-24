@@ -1,15 +1,14 @@
 # Forecast sensors: today and tomorrow
 
-**Guide version:** 1.6 · **Updated:** 24 October 2026
-**Availability:** the 8.3.0b1 candidate track. Stable 8.2.0 does not include
-these sensors. Follow the [candidate notes](RELEASE_8.3.0b1.md) and exact announced
-release; a source version alone does not establish publication or acceptance.
+**Guide version:** 1.7 · **Updated:** 24 October 2026
+**Availability:** included in the **8.3.0** runtime accepted as b4.
+Use the [announced release](RELEASE_8.3.0.md); earlier beta notes describe their
+historical scopes, not instructions to reinstall an older beta.
 
 ## What you get
 
 Eight numeric sensors make the existing location forecast available to ordinary
-HA cards and automations. In published 8.3.0b1 they join the existing weather
-device. The prepared 8.3.0b2 [display correction](FORECAST_DISPLAY.md) moves them to
+HA cards and automations. They belong to
 the named forecast device alongside HGT and a separate forecast weather entity,
 retaining IDs and personal names. Names ship in
 English, German, French and Italian. No extra integration, API key or second
@@ -28,7 +27,7 @@ elapsed part of the day; it is not the amount still expected or already measured
 Native aligned daily fields supply those three full-day values. They are never
 reconstructed from only the remaining rolling hours.
 
-**Unreleased correction after b2:** Open-Meteo’s native daily buckets use one
+**Complete Swiss calendar days:** Open-Meteo’s native daily buckets use one
 fixed UTC offset per response. If such a bucket does not match the Swiss
 midnight-to-midnight period, the source derives the affected day from complete
 hourly coverage of the **23, 24 or 25 physical hours** of that Swiss day. The
@@ -37,14 +36,12 @@ the weather entity share the validated result. Missing/invalid/gapped fields
 remain unknown independently, and zero remains zero. Attributes `aggregation`
 (`provider_daily` or `hourly_calendar_day`) and `day_hours` distinguish the basis.
 These are hourly-sampled model aggregates; no finer-resolution extrema are
-claimed. Published b1/b2 still withhold mismatched native daily values; see the
-[correction and focused checks](CALENDAR_AND_LOCATION_SETTINGS.md).
+claimed. For the original b1/b2 limitation and its correction see
+[calendar-day behaviour](CALENDAR_AND_LOCATION_SETTINGS.md).
 
 The source remains **MeteoSwiss ICON Seamless via Open-Meteo**, at the existing
-forecast location. Development can route these and calculated HGT to an
-explicitly saved catalogue point; local forecast_location attributes identify
-its name, category and height. The translated setup/Reconfigure dialog is
-implemented in development; see [the selection guide](FORECAST_LOCATION_SETUP.md)
+forecast location. An explicitly saved catalogue point routes these sensors and calculated HGT; local forecast_location attributes identify
+its name, category and height. The translated setup/Configure dialog selects it; see [the selection guide](FORECAST_LOCATION_SETUP.md)
 and [saved-location contract](SAVED_FORECAST_LOCATION.md). Warning postcode,
 forecast location and observation station
 have distinct purposes; see [getting started](GETTING_STARTED.md).

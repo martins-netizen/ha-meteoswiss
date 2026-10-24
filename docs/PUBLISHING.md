@@ -1,315 +1,67 @@
-# Fork releases: publication and HACS acceptance
+# Publish the maintained fork
 
-## Next candidate: 8.3.0b2
+**Procedure version:** 1.3 · **Updated:** 24 October 2026
 
-The candidate packet is based on reviewed, regularly merged PR #61 at
-**781ba3a41fafc2e8dd5bc5f867f55c646c4a2412**. Only manifest.json/version.py
-change inside the component; **36 other component files**, hacs.json with
-country CH/branch hiding, and workflows match that source. The
-[b2 notes](RELEASE_8.3.0b2.md) and [focused protocol](ACCEPTANCE_8.3.0b2.md)
-include the named forecast group and card/action migration. A source version
-is not proof that this prerelease has been published.
+## Stable 8.3.0
 
-After the packaging PR is approved and regularly merged, verify the exact
-merge tree and all post-merge checks. Use that full approved forty-character
-lowercase merge SHA, not a PR head, branch name or the source commit above.
-Commands assume repository root; the standalone downloaded helper also works
-from any directory with the same arguments.
+The operator accepted published b4 and requested stable promotion. Component
+code must match b4 **a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5**:37 non-version
+files identical, with only manifest.json/version.py becoming 8.3.0. Read
+[notes](RELEASE_8.3.0.md) and [readiness](RELEASE_READINESS.md).
 
-```sh
-bash scripts/publish_meteoswiss_830_beta_v1.1.sh --check APPROVED_MERGE_COMMIT
-# After the concrete candidate/publication approval:
-bash scripts/publish_meteoswiss_830_beta_v1.1.sh --publish APPROVED_MERGE_COMMIT
-```
+1. Prepare only the version/docs/publisher package in a PR. Preserve HACS/CH,
+   workflows, translations and all previous tags.
+2. Pass exact-head checks and merge regularly. Verify the expected tree and
+   successful merge checks: tests, HA 2026.8.3, HA 2026.10.1, hassfest,
+   Analyze Python, HACS validation and SonarCloud Code Analysis.
+3. Download **scripts/veroeffentliche_meteoswiss_stable_v1.3.sh** to the Mac.
+   It uses existing `gh` authentication, requires Python3/gh, and needs no
+   checkout. Supply the full approved merge SHA:
 
-V1.1 is derived from the successfully executed b1 V1.0 and creates only
-**8.3.0b2**, draft=false, prerelease=true, make_latest=false. The publisher checks
-protected exact Development head, the full version-only component boundary,
-CH/HACS/workflow equality, latest successful check provenance and unchanged
-old tags, now including published **8.3.0b1 → a6b9df9f57dec3e93c8f698133cdb0e7e4c3e937**.
-Latest stable must remain **8.2.0 / ID 420392277**. Reviewed source 781ba3a means
-CI-reviewed code, not completed b2 practical acceptance.
+   ```bash
+   bash veroeffentliche_meteoswiss_stable_v1.3.sh --check FULL_APPROVED_MERGE_SHA
+   bash veroeffentliche_meteoswiss_stable_v1.3.sh --publish FULL_APPROVED_MERGE_SHA
+   ```
 
---check is read-only on GitHub; --publish performs the same preflight before
-its only allowed remote write: creating this prerelease. Both reserve a local
-JSON receipt before any API call and write a log under Downloads/HA/05_Diagnose.
-The helper uses the Mac's existing gh authentication, never reads a token from
-the user, and performs no HA connection, installation, restart or device call.
-An existing identical release is verified without another POST; different
-notes/attributes/tags are not overwritten. An uncertain POST outcome is recorded
-and requires rereading with the same exact commit, not deleting or retagging.
-After creation verify tag/notes/ID, preserved tags and unchanged latest stable.
+   The first command is read-only and optional; publish repeats the checks.
+   The only allowed write is creation of release 8.3.0 with draft=false,
+   prerelease=false and make_latest=true. It verifies latest-stable selection
+   afterwards. Notes use immutable commit URLs.
+4. Retain the JSON/log under **Downloads/HA/05_Diagnose**. Independently verify
+   tag/release/notes/latest and record ID/time in the operational master.
+5. Follow the [HACS stable update check](ACCEPTANCE_8.3.0.md). Publication does
+   not install in HA or establish HACS default-catalogue inclusion.
 
-After independent release confirmation, perform only the focused temporary-HA
-b2 update/display checks and remaining feature checks. Stable promotion and
-HACS default-list submission remain separate. Do not repeat a completed clean
-install or restore, and do not add a blanket new 24-hour wait.
+The helper requires the exact protected development head and expected check
+apps. It compares all component paths/modes/blobs, version-only changes and
+unchanged HACS/workflows. The previous stable release 8.2.0/ID 420392277 and
+accepted b4/ID 422790421 must still exist with their expected flags. Seven
+immutable tags are checked before and after publication. Latest must be8.2.0
+immediately before creation and the exact new 8.3.0 afterwards. A matching
+existing release is verified read-only; conflicting notes/tags stop. A timeout
+after the write records an uncertain result: rerun to verify before doing
+anything else, never delete or retag to force success.
 
-## Completed 8.3.0b1 publication
+The publisher makes no HA call, restart or device action. A branch name, source
+version or green CI alone is not a published release.
 
-**8.3.0b1** was published on **24 October 2026 at 06:26 UTC / 08:26 Europe/Zurich**,
-prerelease ID **422558946**, tag **a6b9df9f57dec3e93c8f698133cdb0e7e4c3e937**.
-The successful Mac V1.0 receipt/log and independent release/tag/notes/latest
-checks confirm it. Its original [notes](RELEASE_8.3.0b1.md),
-[protocol](ACCEPTANCE_8.3.0b1.md) and
-[historical helper](../scripts/publish_meteoswiss_830_beta_v1.0.sh) remain unchanged.
-Do not republish b1. Initial operator testing exposed the display issue addressed
-by PR #61; full b2 acceptance remains. The 8.2.0 helpers below are historical.
+## Historical publication routes
 
-## Published stable release: 8.2.0
+- Stable **8.2.0** used **veroeffentliche_meteoswiss_stable_v1.2.sh** and remains
+  at 5a0bf684eb44fd54c4e91d7cbce9e90798b72fa5. Its33-file contract is historical.
+- **8.3.0b1/b2/b3/b4** used beta publishersV1.0/V1.1/V1.2/V1.3. The first three
+  retain38-file contracts; b4 has39. They create only their own prereleases
+  and preserve the prior latest stable. Do not repurpose those files.
+- Earlier8.2 beta helpers and all published tags remain unchanged. Successful
+  HACS source-switch, clean-install and restore evidence is recorded in
+  [HACS acceptance](HACS_ACCEPTANCE.md); it is not reopened by this promotion.
 
-**Published on 22 October 2026 at 08:52:40 Europe/Zurich** (06:52:40 UTC).
-The immutable tag resolves to **5a0bf684eb44fd54c4e91d7cbce9e90798b72fa5**;
-release ID **420392277**, draft=false, prerelease=false, immutable=true. The
-V1.2 receipt/log for run **20261022-085229-238** and independent release,
-latest-stable and tag reads confirm publication. No HA action was performed.
-See [readiness](RELEASE_READINESS.md) and [stable notes](RELEASE_8.2.0.md).
+## HACS and quality boundaries
 
-Publication is complete. The operator also confirmed the stable HACS update
-on 22 October. Do not publish, retag or repeat that installation merely because
-documentation advances the development branch.
-The commands below record the completed procedure and its guard conditions.
-
-Stable packaging changed only the component manifest/module version. The other
-31 component files, HACS manifest and workflows must remain identical to Beta2.
-After the regular stable-package merge and successful post-merge checks, use
-the exact full merge SHA:
-
-```sh
-bash scripts/veroeffentliche_meteoswiss_stable_v1.2.sh --check APPROVED_MERGE_COMMIT
-# After reviewing that exact candidate and approving stable publication:
-bash scripts/veroeffentliche_meteoswiss_stable_v1.2.sh --publish APPROVED_MERGE_COMMIT
-```
-
-V1.2 is derived from Beta Publisher V1.1. `--check` makes no remote write.
-`--publish` can create only stable **8.2.0**, with `prerelease=false` and
-`make_latest=true`. It verifies the protected exact head, source identity,
-version-only edits, unchanged HACS/workflows, both immutable beta tags and
-successful checks from GitHub Actions on that commit. Repeating verifies an
-existing matching release; it never overwrites notes or retags. It uses the
-existing Mac gh login and performs no HA connection, restart or device action.
-Keep its JSON/log receipt. A timeout after a write requires rechecking, not
-deleting/recreating a release. Actual HACS availability is checked afterwards.
-
-The older procedures below are historical records. V1.0/V1.1 publish only their
-respective betas and must not be used to publish stable 8.2.0. They do not reopen
-completed acceptance. Security/quality and independent usability limits remain
-visible in the [bounded release review](RELEASE_REVIEW_2026-10-22.md).
-
-## Historical first-beta publication
-
-The first [GitHub prerelease 8.2.0b1](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.2.0b1)
-was published on **20 October 2026 at 15:56:24 UTC (17:56:24 Europe/Zurich)**.
-The published tag resolves to `abbb6b7701134ac2573f35b425ab3f0697a80540`;
-release ID `418588999`, `prerelease=true`, `draft=false`, `immutable=true`.
-The publication receipt and an independent release/tag read confirmed this.
-Its 33 component, translation and brand files match the live-accepted runtime.
-
-The runtime acceptance is complete. On 20 October 2026 the operator additionally
-confirmed the HACS 2.0.5 source switch to this fork, downloaded version 8.2.0b1,
-HA restart and a positive initial visual check. A clean first HACS installation
-and isolated backup restoration were operator-confirmed on 21 October; see the
-scoped [HACS acceptance record](HACS_ACCEPTANCE.md).
-HACS listing and the HA Quality Scale remain separate assessments. This document
-does not publish, retag or install anything.
-
-The [current acceptance and stable-release checklist](RELEASE_READINESS.md)
-is the consolidated next-step record. Stable 8.2.0 was subsequently published
-and its HACS update confirmed. The
-completed source switch, beta first install and isolated restore are not open
-tasks to repeat.
-
-## Second beta: explicit pollen setup
-
-**8.2.0b2 was published on 22 October 2026 at 07:12:40 Europe/Zurich.** Its
-[release notes](RELEASE_8.2.0b2.md) define the focused HA check of the new initial
-pollen picker. PR #37's CI-tested source is
-`a90ed05cd9d23ce1bee341bcc5a662678a7e9bcc`. The subsequent focused new-setup/data
-check was operator-confirmed on 22 October; see the current readiness record.
-
-The historical Beta2 publication command was:
-
-```sh
-bash scripts/veroeffentliche_meteoswiss_beta_v1.1.sh --publish APPROVED_MERGE_COMMIT
-```
-
-Pass the exact full merged packaging commit. V1.1 is derived from the first
-publisher and creates only **8.2.0b2** as a prerelease. It requires 31 component
-files to match that CI-tested source; the other two may change only the version
-from 8.2.0b1 to 8.2.0b2. It checks `hide_default_branch: true`, unchanged
-workflows, all required checks and the immutable 8.2.0b1 tag. Existing matching
-releases are verified without rewriting. It uses the existing Mac `gh` login,
-does not read credentials, and performs no HA action.
-
-This is distinct from the historical first-beta procedure below: V1.0 remains
-specific to immutable 8.2.0b1 and must not be used to publish the new candidate.
-Only an explicitly published prerelease is a HACS download target. After
-publication, follow the focused 8.2.0b2 checklist in the temporary instance.
-
-## Repository settings to complete before publication
-
-| Setting | Required result |
-|---|---|
-| Default branch | `development`, the protected maintained branch. Retain `main` as the upstream mirror. Verify that existing development protection still applies. |
-| Issues | Enabled, so the manifest's fork-specific issue tracker is usable. The bundled issue forms collect versions, relevant states and redacted evidence. |
-| Description | `Maintained MeteoSwiss integration for Home Assistant: observations, ICON forecasts, warnings, pollen and air quality.` |
-| Topics | `home-assistant`, `home-assistant-integration`, `hacs`, `meteoswiss`, `switzerland`, `weather`, `pollen`, `air-quality`, `open-meteo` |
-| Actions and permissions | Keep the existing restricted action policy, full-SHA requirement and read-only default token. The HACS workflow uses the official image by digest, with no additional action allowlist entry or repository write permission. |
-
-The default branch must contain the maintained README and HACS manifest when
-the repository is promoted. Do not direct users to the upstream mirror. These
-settings must be verified from GitHub; documentation does not change them.
-
-## First beta: candidate and deployment evidence
-
-Record the **exact merged candidate commit**, supported HA version, CI links
-and date. The live-accepted runtime is PR #31's merged commit
-`0086b956d44b7144b242c5d5c1881d0b0650e524`, version `8.2.0b1`.
-It was installed on HA 2026.10.2 on 19 October 2026 and completed its exact
-24-hour observation period on 20 October 2026. The original protected
-candidate commit passed all six post-merge checks. Manifest and module versions
-both read `8.2.0b1`; DE/EN/FR/IT ship together.
-
-The review found one isolated optional UV failure. It was reported as
-unavailable and recovered on the next scheduled refresh; other checked data
-remained available. The device-page visual check confirms forecast pollen
-under Sensors. Registry checks confirm all twelve pollen categories, retained
-identities, settings, consumers and hourly rain statistics. These are scoped
-acceptance findings, not a guarantee of future provider availability.
-
-Publication changes cover documentation and the guarded publication tool, not
-integration runtime or workflow changes. Verify every file below
-`custom_components/meteoswiss/` against the accepted commit before merging or
-tagging. Use the resulting merged publication commit for the tag; do not tag
-an unmerged PR or reinstall byte-identical runtime files.
-[Release notes](RELEASE_8.2.0b1.md) record the scope and remaining limits.
-
-The repository includes `scripts/veroeffentliche_meteoswiss_beta_v1.0.sh` for
-the final publication when a connector cannot create releases. Pass `--publish`
-and the exact approved merged publication commit. The tool rechecks that head,
-all 33 accepted component blobs, unchanged workflows, versions and successful
-post-merge checks; it creates only a GitHub prerelease, never changes HA, and
-verifies an existing identical release without overwriting or retagging it.
-Keep the resulting JSON/log receipt; a network failure after the write is an
-uncertain outcome, not proof that publication failed. Re-running the same tool
-first checks whether the expected release already exists.
-
-- All CI compatibility jobs, Hassfest and CodeQL must pass for the candidate.
-  Run the official **HACS validation** with no ignored checks; missing Issues,
-  topics or other repository requirements must be fixed, not suppressed.
-- Compare manifest and module versions and the complete DE/EN/FR/IT catalogues.
-  Retain the integration domain, config entries, and IDs of retained entities
-  and statistics. State the deliberately retired legacy season-HGT exception
-  in the migration/release notes; do not promise that every old entity survives.
-- The deployed runtime was originally installed with a reviewed installer.
-  The operator has since confirmed the HACS 2.0.5 source switch, exact repository
-  and downloaded 8.2.0b1 version, restart and initial visual success. This is
-  operator-reported evidence; no new independent post-switch registry/statistic
-  or file-hash comparison is claimed by that original switch report.
-  The existing 24-hour runtime acceptance remains valid for the same code.
-  The clean first installation and isolated backup restore were subsequently
-  operator-confirmed on 21 October. Follow [GETTING_STARTED.md](GETTING_STARTED.md) for setup;
-  [MIGRATION.md](MIGRATION.md) remains the source-switch guide for other users.
-  A disposable instance is sufficient; a second permanent HA installation is not
-  required. A default-store listing or nontechnical usability approval is not claimed.
-- Before updating an existing installation, migrate the actual warning
-  consumers as described in [WARNING_CODES.md](WARNING_CODES.md). Wind is 0,
-  thunderstorm 1, rain 2 and slippery roads 4. Category 5 is Frost; preserve
-  the concrete provider message. Include Thaw 6 and Drought 12 where intended.
-- Back up the installed component and affected consumers and verify a working
-  restore route. Test source failures with mocks, without actuating devices.
-- After installation, verify observations, native forecasts, both warning lists,
-  precipitation precision/statistics and pollen/AQ. A legitimate missing optional
-  value must remain distinguishable from a failed whole source. Confirm the
-  intended dashboards and automations against the new catalogue.
-- Record a completed observation period for the **actual deployed code and
-  consumers**. A successful earlier version or a read-only precheck is not a
-  completed deployment acceptance of a later version.
-
-Documentation, issue forms and brand-only changes can be reviewed separately.
-If a publication commit adds only those assets, compare all previously accepted
-runtime files byte for byte and run its PR checks; do not infer acceptance from
-the version number alone or reinstall an identical runtime needlessly.
-
-## Release selection and subsequent promotion
-
-1. Preserve the protected maintained default branch `development`; `main`
-   remains the upstream mirror. The immutable `8.2.0b1` tag must not move.
-2. First inspect the installed HACS version, current software owner and available
-   release without downloading, removing software or changing the HA config entry.
-   Refresh repository metadata if needed. In current HACS, open Download/Redownload,
-   expand **Need a different version?**, and select **8.2.0b1** under **Release**.
-   Older HACS versions may additionally require beta visibility. Check the
-   announced download version; do not accept a branch or commit fallback.
-3. Retain the completed clean first-install and isolated restore evidence in
-   [HACS_ACCEPTANCE.md](HACS_ACCEPTANCE.md). The operator-confirmed source switch
-   is also complete; do not repeat it. A temporary isolated instance is sufficient;
-   do not require a second permanent HA installation or use the production system
-   as an empty first-install test. Use the new candidate's focused checklist
-   and keep the runtime's completed 24-hour acceptance. A new independent read-only
-   post-switch file/identity check is useful supplementary evidence, not a reason
-   to redo the source switch.
-4. The 8.2.0b2 candidate includes `"hide_default_branch": true` in
-   `hacs.json`. HACS can read that manifest from the selected ref, so changing
-   only `development` does not change the immutable `8.2.0b1` manifest or prove
-   branch downloads are hidden when that beta is selected. Keep this limitation
-   visible; do not retag an existing release or create a runtime update merely
-   to avoid explicitly selecting this beta.
-5. Before a later default-store submission, add the appropriate `country`
-   metadata to its released manifest, recheck the then-current inclusion rules,
-   and retain successful HACS/Hassfest checks and a usable support route.
-   Neither this prerelease nor its rehearsal is a default-store approval.
-
-The beta-selection route was checked against the source of HACS 2.0.5 and its
-pinned frontend 20250128065759 on 20 October 2026. The operator subsequently
-confirmed that version selection, download, source switch and restart succeeded.
-Source inspection alone is not a practical test. The first-beta clean install
-was subsequently operator-confirmed, followed by Beta2 new setup/data on
-22 October. Practical branch hiding was not separately reported.
-
-## Published beta scope
-
-`8.2.0b1 — first maintained-fork prerelease`:
-
-- Continued maintenance of LNKtwo/ha-meteoswiss; MIT licence and attribution retained.
-- Station observations, hourly rain statistics and native ICON Seamless forecasts.
-- Source freshness, bounded retries and explicit failure/recovery behaviour.
-- App v3 warning source, verified thirteen-family catalogue and complete
-  German/English/French/Italian labels, including prepared Thaw handling.
-- Measured/forecast pollen, air quality and isolated optional UV availability.
-- Required minimum HA 2026.8.3; CI also covers HA 2026.10.1. Local tests and
-  deployed 24-hour acceptance additionally cover HA 2026.10.2.
-- Migration warning: review numeric warning filters and dashboard labels before
-  updating; existing config entries and retained entity/statistic IDs remain.
-  The obsolete forecast-only season-HGT and derived current-hour rain entities
-  are deliberately removed. The measured 10-minute rain entity and official
-  hourly rain statistics remain; independent user helpers are not deleted.
-- Not an official MeteoSwiss product. Data and alerts can be delayed or incomplete;
-  this integration does not replace the providers' official warning channels.
-
-The [published beta notes](RELEASE_8.2.0b1.md) and immutable GitHub release record
-contain the approved changes and acceptance evidence. This recap does not alter
-that release. Standalone SLF, BAFU or radar modules are not promised: the
-corresponding placeholders are not active integrations in this fork.
-
-## Local icon and validator maintenance
-
-`custom_components/meteoswiss/brand/icon.png` and `icon@2x.png` are the fork's
-original weather drawing, covered by this repository's MIT licence. They use
-neither the Home Assistant logo nor an official MeteoSwiss logo. Rebuild them
-with `python scripts/build_brand_assets.py` in an environment with Pillow;
-Pillow is a development-only requirement, not an integration dependency.
-
-The HACS workflow pins `ghcr.io/hacs/action` by immutable image digest. Its
-source revision is recorded in the workflow. Review and update the digest
-periodically alongside other tooling; changing a source action SHA alone would
-not pin its mutable container tag. The validator reads the exact public PR/push
-commit with a read-only token, has no ignored checks and posts no comments.
-
-Publication requirements rechecked 20 October 2026:
-
-- [HACS general requirements and releases](https://www.hacs.xyz/docs/publish/start/)
-- [HACS integration requirements](https://www.hacs.xyz/docs/publish/integration/)
-- [Official HACS validator](https://www.hacs.xyz/docs/publish/action/)
-- [HA custom integration images](https://contributors.home-assistant.io/core/integrations/brands/)
-
+Use one software owner for `meteoswiss`; do not delete the configured HA entry
+to switch versions. `hide_default_branch:true`, country CH and minimumHA 2026.8.3
+remain. HACS validation is required, but passing it or creating a stable GitHub
+release does not grant default-catalogue inclusion. A submission and an
+official HA quality-tier assessment are distinct later processes. See
+[quality](QUALITY_SCALE.md), [installation](GETTING_STARTED.md),
+[migration/recovery](MIGRATION.md) and the [bounded review](RELEASE_REVIEW_2026-10-24.md).

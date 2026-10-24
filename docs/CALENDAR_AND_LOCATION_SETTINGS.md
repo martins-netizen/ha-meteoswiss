@@ -1,11 +1,10 @@
 # Calendar-day forecasts and one location-settings dialog
 
-**Guide version:** 1.1 · **Updated:** 24 October 2026
+**Guide version:** 1.2 · **Updated:** 24 October 2026
 
-**Availability:** reviewed correction source, prepared for **8.3.0b3** after
-published **8.3.0b2**. The b3 package still needs its approved merge, announced
-publication and focused HA acceptance. Do not reinstall published b2 expecting
-these changes to be included.
+**Availability:** included in the **8.3.0** runtime accepted as b4.
+Use the [announced release](RELEASE_8.3.0.md); earlier beta notes describe their
+historical scopes, not instructions to reinstall an older beta.
 
 ## What the corrections address
 
@@ -150,10 +149,11 @@ user names while changing station readings. Calendar fixtures cover 23/25-hour
 spring/autumn days, a post-transition 24-hour day still misaligned with the
 response offset, complete elapsed-today coverage, both repeated autumn hours,
 midnight rain attribution, independent missing fields and genuine zero values.
-Actual rendering and fresh provider availability after the next announced
-package remain operator acceptance, not a result of the local test suite.
+The operator subsequently confirmed the b3 calendar-day values and shared
+station changes, followed by positive b4 acceptance. Those reports are separate
+from the original local test counts above; see [readiness](RELEASE_READINESS.md).
 
-A fresh provider request from the preparation environment could not be verified:
+During original correction preparation, a fresh provider request could not be verified:
 the API hostname failed to resolve for both the existing request and the
 history-enabled request. This is not evidence that the operator’s provider is
-down. Fresh-provider confirmation remains part of the focused HA checks above.
+down. This old preparation-host limitation is not a current diagnosis of the operator connection.

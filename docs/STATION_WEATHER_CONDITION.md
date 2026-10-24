@@ -1,9 +1,9 @@
 # A weather condition for the observation station
 
-**Guide version:** 1.1 · **Updated:** 24 October 2026.
-**Availability:** the **8.3.0b4 test track**, based on approved PR #66. It is not
-in immutable 8.3.0b3. Follow the [b4 release notes](RELEASE_8.3.0b4.md) and
-[focused checklist](ACCEPTANCE_8.3.0b4.md), after that release is announced.
+**Guide version:** 1.2 · **Updated:** 24 October 2026.
+**Availability:** included in the **8.3.0** runtime accepted as b4.
+Use the [announced release](RELEASE_8.3.0.md); earlier beta notes describe their
+historical scopes, not instructions to reinstall an older beta.
 
 ## What you see and where it comes from
 
@@ -75,7 +75,7 @@ modelled condition and does not gain this additional request. Missing catalogue
 coordinates do not trigger an arbitrary geographic fallback. Logs and downloaded
 diagnostics omit location URLs, cache keys and raw provider payloads.
 
-## Focused check after the announced follow-up is installed
+## Focused verification after installation
 
 Keep the existing entry and select different measurement and forecast places.
 Confirm a station-local condition plus unchanged measured values, and a
@@ -86,3 +86,8 @@ change HA's clock or repeat a clean install/restore to test this correction.
 An actual provider failure should leave measured values usable and affect only
 the condition. Automated lifecycle/error/interval regressions complement this
 focused operator check; they do not establish a successful user installation.
+
+The operator accepted b4 and requested stable promotion on 24 October. The
+[readiness record](RELEASE_READINESS.md) distinguishes the visible screenshots,
+operator report and automated coverage. Do not repeat the completed check just
+for the stable version-only promotion.

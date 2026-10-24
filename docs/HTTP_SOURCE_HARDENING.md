@@ -1,6 +1,6 @@
 # Bounded HTTP source reads
 
-**Status:** unreleased development change after stable 8.2.0.
+**Status:** included in the 8.3 runtime; accepted b4 is the stable promotion source.
 **Review date:** 22 October 2026. This is scoped hardening, not a penetration test.
 
 ## Contract
@@ -81,7 +81,9 @@ missing/dishonest lengths, exact limits, chunked reads, split compressed streams
 compression expansion, corrupt/truncated content, cancellation, session ownership,
 archive budgets/encoding, warning failure and measured-pollen failure.
 
-Before the next runtime release, test a reviewed package in the existing
+## Historical preparation checklist
+
+Before the then-next runtime release, the agreed check was a reviewed package in the existing
 temporary HA: current observations, ICON forecast, active/upcoming warnings,
 measured pollen, AQ/UV and official hourly/archive statistics. Confirm retained
 IDs/settings and recovery after a real ordinary refresh. This is a focused
@@ -89,3 +91,8 @@ transport acceptance, not a requirement to repeat clean installation, restore
 or a blanket 24-hour test. Stable 8.2.0 and the running HA are not changed by
 this development PR. POI selection, CodeQL fork analysis and Silver/Gold
 assessment are separate work.
+
+**24 October update:** b4 operator acceptance and the stable version-only
+promotion are recorded in [readiness](RELEASE_READINESS.md). The older preparation
+checks above remain bounded transport evidence, not a new demand to repeat
+completed installation/restore or a diagnosis of every provider failure.

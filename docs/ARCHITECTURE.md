@@ -39,7 +39,7 @@ when the entity is added and removed with that entity. Configuration validates
 the chosen observation provider with the same coordinator contract, without
 listeners/polling, using HA's shared session and a 30-second total timeout.
 
-## Scalar forecast projections (unreleased)
+## Scalar forecast projections
 
 The eight forecast sensors reuse the existing ICON coordinator; they add no
 HTTP request, cache or independent poller. Pure calculations in
@@ -51,7 +51,7 @@ midnight and three-hour retrieval-age boundaries and are cancelled on unload.
 Forecast sensors have no measurement/total state class and retain numeric states
 with bounded peak-window attributes. See [the forecast guide](FORECAST_SENSORS.md).
 
-## Distinct forecast display (development after 8.3.0b1)
+## Distinct forecast display
 
 The [display contract](FORECAST_DISPLAY.md) separates the existing observation
 weather/device from a location-labelled forecast group. DeviceInfo translation
@@ -176,7 +176,7 @@ aggregates. Producer and consumer use `weather_data.py` for time/condition
 normalisation and finite-number validation. The two hours repeated at autumn DST remain distinct. Daily
 labels respect Open-Meteo's returned fixed UTC offset. Its native daily bucket
 is used only when its actual start and end match both Swiss midnights. Otherwise
-unreleased development after b2 derives that mismatched day from complete
+the 8.3 source derives that mismatched day from complete
 Swiss hourly coverage in the same response. Temperature samples cover local
 midnight inclusive to the next midnight exclusive; precipitation/probability
 buckets end after the first midnight and include the next one. UTC instants
@@ -387,7 +387,7 @@ See `examples/button-card-warnings.yaml`. Existing local dashboard translations
 stay in place until a separately verified adoption of the common template.
 Do not rename established entities during this change.
 
-## Shared entity metadata (unreleased after 8.2.0)
+## Shared entity metadata
 
 `entity.py` owns common naming/default attribution and the two repeated weather/
 AQ device definitions. Coordinator entities use the typed shared coordinator
@@ -404,7 +404,7 @@ module is now exercised by a real consumer. Every integration module must exceed
 95% coverage; existing stricter per-module/flow and aggregate gates remain.
 See the [dated review and remaining boundaries](QUALITY_PROGRESS_2026-10-22.md).
 
-## Setup text and source choices (unreleased after 8.2.0)
+## Setup text and source choices
 
 Canonical English `strings.json` matches translations/en.json. All DE/EN/FR/IT
 form fields carry their own purpose text; the translation checker enforces
@@ -413,7 +413,7 @@ the saved source keys. This introduces no data migration, interval change or
 new Configure field. Field-help/source-choice delivery is exercised through
 HA's real translation loader. See the [quality follow-up](QUALITY_PROGRESS_2026-10-22.md).
 
-## Polling and options migration (unreleased after 8.2.0)
+## Polling and options migration
 
 New entries use a developer-selected observation refresh of 600 seconds; no
 polling field is exposed by setup or Configure. MeteoSwiss station data is
@@ -436,7 +436,7 @@ and newer minor schemas are left intact. Stable 8.2.0 already reads interval
 options before data, so it can still read migrated entries. Its older Configure
 form can still edit that value; a later upgrade keeps the options value.
 
-Unreleased after b2, Configure stages all three location choices and the warning
+Configure stages all three location choices and the warning
 postcode in one form. A shared location-flow mixin reuses the existing catalogue,
 search/selection and ICON validation for setup, forecast Reconfigure and unified
 options; there is no second geocoder or duplicate search implementation.
@@ -450,7 +450,7 @@ precipitation archive IDs stay station-specific: an old station’s archive is
 never relabelled as the new station. Retained observation entities’ histories
 continue across a deliberate source-station change; the UI explains this.
 
-## Shared HTTP boundary (unreleased after 8.2.0)
+## Shared HTTP boundary
 
 `http.py` owns destination validation and bounded reads for every active client;
 source adapters retain parsing and their existing retry decorators. It disables
@@ -459,7 +459,7 @@ The [HTTP contract](HTTP_SOURCE_HARDENING.md) records per-class budgets,
 encoding support, real archive samples and focused HA acceptance still required.
 No source, coordinator lifecycle, entity identity or HA-owned session changes.
 
-## Catalogue diagnostic availability and coordinator placement (unreleased)
+## Catalogue diagnostic availability and coordinator placement
 
 The station metadata service keeps its existing 24-hour monotonic deadline,
 five-minute retry suppression, single-flight lock and last-good snapshot. The
@@ -488,7 +488,7 @@ coordinator placement milestone after the source/Recorder extractions. The
 station-condition follow-up adds the eighth canonical class. No
 blanket common-modules/Silver completion follows from this move.
 
-## Measured pollen client boundary (unreleased)
+## Measured pollen client boundary
 
 pollen_meteoswiss.py now contains MeteoSwissPollenClient, its pure CSV parser and
 two payload-free source exceptions, with no HA coordinator/runtime dependency.
@@ -518,7 +518,7 @@ The [placement review](COORDINATOR_LAYOUT_REVIEW.md) records the subsequent
 source extractions; the original seven coordinator definitions became canonical at that milestone. Full
 common-modules/Silver evidence remains open.
 
-## Modelled pollen/AQ and UV source boundary (unreleased)
+## Modelled pollen/AQ and UV source boundary
 
 pollen_openmeteo.py defines OpenMeteoPollenClient, pure current-hour/value
 helpers and an empty source error. coordinator.py defines the actual
@@ -537,7 +537,7 @@ class. Existing entity IDs, grouping, options, source parameters and startup/
 unload/reload contracts remain unchanged. The precipitation boundary below
 completed the original seven-class coordinator placement inventory.
 
-## Hourly/archive precipitation source and Recorder boundary (unreleased)
+## Hourly/archive precipitation source and Recorder boundary
 
 precipitation.py contains the borrowed-session source client, station/asset
 selection and pure completed-hour amount parser, with no HA or Recorder imports.
@@ -563,8 +563,10 @@ The [official forecast-location catalogue foundation](FORECAST_LOCATION_CATALOGU
 adds a source-only client, immutable composite identities/provenance and pure
 local candidate search. Strict snapshots, borrowed-session HTTP limits,
 off-loop parsing, coalescing, original cache expiry and explicit stale fallback
-are tested. It is not yet called by setup or entities; saved selections,
-altitude semantics and translated HA flows remain separate implementation work.
+are tested. Setup and the unified Configure flow use this source through the
+shared location-flow mixin. Saved selections preserve provenance and height;
+translated dialogs and named forecast entities are implemented. See
+[selection](FORECAST_LOCATION_SETUP.md) and [saved roles](SAVED_FORECAST_LOCATION.md).
 
 Tests cover warning failure/recovery, invalid payloads, bounded retries,
 cancellation, HA-owned sessions, stale observations, current-hour AQ data,
@@ -583,7 +585,7 @@ HA test environments plus Hassfest and CodeQL. Passing CI is not a live-house
 acceptance test. The `quality_scale: platinum` claim inherited from upstream is
 removed; no HA quality certification is asserted.
 
-Unreleased development after 8.2.0 removes the unused camera/SLF/hydrology
+The 8.3 runtime removes the unused camera/SLF/hydrology
 placeholders after checking imports, platform registration and repository
 references. No active platform, entity or provider is removed. Flood/avalanche
 warnings remain part of the existing App v3 feed; a separate radar integration

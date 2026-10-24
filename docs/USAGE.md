@@ -32,40 +32,37 @@ Use the approved release and the installation/update procedure in the README.
 A prepared development PR is not a tested HACS release. Existing installations
 must retain their config entry, domain, entity unique IDs and statistic IDs.
 
-## Unreleased polling/options follow-up
+## Refresh interval and shared location settings
 
-The setup/options instructions below describe published **8.2.0**. The next
-development flow removes the observation polling field from both dialogs.
-New entries use **600 seconds automatically**. Existing individual intervals
-remain effective after upgrade and after a measured-pollen change. Configure
-now edits weather station, measured-pollen station, forecast selection and
-warning postcode together. A forecast search continues within that settings
-flow, and the final submission applies all pending choices together. See the
-[unreleased unified-settings guide](CALENDAR_AND_LOCATION_SETTINGS.md).
-The dialog explains automatic refreshes in DE/EN/FR/IT.
+In **8.3.0**, new observation entries use **600 seconds automatically**; no
+polling field is shown. Existing stored individual intervals remain effective.
+**Configure** edits weather station/base coordinates, measured-pollen station,
+forecast selection and warning postcode together. A search continues within
+that flow and final confirmation applies all pending choices together.
+Cancelling an unfinished step saves none. See [unified settings](CALENDAR_AND_LOCATION_SETTINGS.md).
 
-Config schema 1.2 retains a stored legacy interval in options, preserving its
-previous precedence over data. Missing values retain the 600-second default;
-other options and IDs remain unchanged. Diagnostics retain config-format and
-active coordinator-interval metadata for troubleshooting. No manual editing of
-HA storage is needed. Stable 8.2.0 can read the migrated interval. This source
-change is not yet a released HACS update or an installed HA change.
+Schema 1.2 retains a legacy interval in options, with its previous precedence
+over data. Unknown options, IDs and the 600-second default remain. Diagnostics
+show configuration-format/coordinator-interval metadata; do not edit HA storage.
+Older 8.2.0 can read that stored interval, but downgrading software does not undo
+deliberately changed settings.
 
 ## Add a new entry
 
 1. In **Settings → Devices & services → Add integration**, choose **MeteoSwiss**.
 2. Choose **MeteoSwiss STAC API** for measured Swiss station weather, or
-   **Open-Meteo API** for weather at explicit coordinates. Select an update
-   interval of at least 600 seconds (default 600).
-   Published Beta2 and stable 8.2.0 require an explicit **Station for
-   measured pollen** from the supported list, independently of the weather
-   location. In the published **8.2.0b1**, choose this later in **Configure**.
+   **Open-Meteo API** for modelled weather at explicit coordinates. Explicitly
+   select a **Station for measured pollen**, independently of the weather location.
+   New observations refresh automatically every 600 seconds.
 3. For MeteoSwiss, select a weather station and enter the postcode for warnings.
    The postcode does not automatically select or filter the station.
    For Open-Meteo, enter latitude, longitude and the warning postcode.
 4. The integration checks the observation source before saving. A connection
    error leaves the form open for a retry. Optional forecast/pollen/warning
    outages do not block otherwise valid observations.
+5. Keep the original forecast base or search/select/confirm a catalogue point.
+   An explicitly selected point is checked before final saving; a failed check
+   remains retryable. It does not change warnings, measurements or modelled AQ/pollen/UV.
 
 MeteoSwiss entries are unique by station and postcode. Open-Meteo entries are
 unique by coordinates and postcode. Legacy entries without unique IDs are also
@@ -79,19 +76,13 @@ checked. Separate warning postcodes intentionally allow separate entries.
 | Weather station | SwissMetNet observation station | Required for MeteoSwiss |
 | Postal code | MeteoSwiss weather-warning area, independent of observation station | Required by the setup form |
 | Latitude / longitude | Open-Meteo weather and forecast location | 47.05 / 8.31; finite values in −90…90 / −180…180 |
-| Update interval | Observation polling interval in seconds | 600; minimum 600 |
-| Pollen station | Measured MeteoSwiss pollen station, independently of weather station and forecast location | Explicit choice during Beta2/stable setup; 8.2.0b1 and existing entries without a saved choice fall back to Luzern (PLZ). |
+| Update interval | Observation refresh, not a displayed form field | New entries 600 seconds; stored legacy values retained. |
+| Pollen station | Measured MeteoSwiss pollen station, independently of weather station and forecast location | Explicit setup choice; older 8.2.0b1 and existing entries without a saved choice fall back to Luzern (PLZ). |
 
-Change the update interval and measured pollen station using the entry's
-**Configure** button. Saving options reloads the entry without recreating it.
-Changing source/location is not offered by this options form. For MeteoSwiss
-entries, weather and pollen forecasts use the HA installation location; station
-coordinates describe observations. For Open-Meteo they use the explicit location.
-
-See the [verified measured-pollen catalogue and availability evidence](POLLEN_STATIONS.md).
-The 15 supported stations have official metadata and hourly assets. A reachable
-but stale measurement file remains unavailable; a temporary data gap does not
-remove a real station or automatically substitute another one.
+Change weather station/base coordinates, measured pollen, forecast point and
+warning postcode with **Configure**; the HA home setting remains separate.
+Saving confirmed changes reloads the entry once. The current-weather provider
+type is not changed by that dialog. See [four location roles](../README.md#four-places-what-each-one-is-used-for).
 
 ## Reading values and using automations
 
@@ -136,7 +127,7 @@ The requested rolling forecast must have ordered, valid times extending beyond
 now, start no more than one hour ahead and contain a valid temperature in an
 unexpired hour. This checks the returned horizon, not the model's issuance time.
 Individual missing/invalid values stay missing; valid zero and negative
-temperature values remain valid. In unreleased development, missing daily fields
+temperature values remain valid. Missing daily fields
 can use hourly fallback only for a complete, correctly aligned Swiss day. The
 existing 30-minute cache and three-hour age guard in weather forecasts remain.
 
@@ -156,12 +147,11 @@ still belongs to the separate live acceptance.
 Hourly forecasts omit completed intervals and show up to 24 hours from the
 current hour. Daily forecasts show at most five Swiss calendar days, retaining
 provider full-day highs/lows even when the hourly window begins in the afternoon.
-In unreleased development, missing native daily fields are reconstructed only
+Missing native daily fields are reconstructed only
 from every expected Swiss calendar hour. Rain and probability include the
 next midnight's preceding-hour bucket. Partial/gapped/invalid series leave the
-affected daily field unknown; valid zero stays zero. Native provider buckets
-whose fixed UTC offset does not match both Swiss day boundaries are withheld.
-Unreleased after b2, the source instead derives those mismatched days from
+affected daily field unknown; valid zero stays zero. Native provider buckets are used only when both boundaries align with the
+Swiss day; otherwise the source derives the day from
 complete 23-/24-/25-hour Swiss calendar coverage in the same ICON response.
 It includes 25 past hours for today, while retaining the 120-hour rolling
 forecast and existing refresh schedule. Each metric has its own completeness
@@ -180,7 +170,7 @@ forecast pollen has `level_name: No data`, while a real zero retains `None`.
 These existing English attributes are compatibility values, not UI translations.
 
 UV is optional and fetched separately. A transport/JSON/response-shape failure
-makes only UV `unavailable`. Unreleased development also rejects missing, future
+makes only UV `unavailable`. Validation also rejects missing, future
 or at-least-one-hour-old UV timestamps and requests Unix seconds to avoid local
 time ambiguity. A current valid response without a usable UV number leaves it
 `unknown`. A valid zero remains zero. Repeated UV failures produce one private
@@ -316,7 +306,7 @@ metadata after expiry/failure, and `unavailable` means no valid catalogue has
 been loaded. These are catalogue states, not weather measurement freshness.
 Setup still validates the selected station's actual observation source.
 
-**Unreleased after 8.2.0:** the optional stations diagnostic is available only
+the optional stations diagnostic is available only
 with a current, successfully loaded catalogue. An expired/failed catalogue makes
 it unavailable even when last-good station metadata remains in memory. A first
 failed load does not report a healthy zero-station value. A subsequent successful
@@ -380,7 +370,7 @@ and restart HA. Existing Recorder retention/purging remains governed by HA;
 uninstalling is not an instruction to delete historical statistics or backups.
 Do not use removal/re-addition as an update or troubleshooting procedure.
 
-## Diagnostic version fields (unreleased after 8.2.0)
+## Diagnostic version fields
 
 The diagnostic payload's `integration_version` is the component's declared
 release version. `config_entry.version` and `minor_version` describe the saved

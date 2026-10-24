@@ -1,5 +1,12 @@
 # HACS acceptance of the maintained fork
 
+**24 October 8.3 update:** b4 is published and the operator reports the focused
+existing-entry check successful, with screenshots of the version and distinct
+station/forecast devices. Stable 8.3.0 retains that runtime with version-only
+component changes. Its eventual HACS download/version check is separate from
+publication. The earlier first-install/restore evidence below remains valid;
+it is not a claim of a new clean 8.3 installation. See [current readiness](RELEASE_READINESS.md).
+
 **Updated: 24 October 2026 · Plan and evidence V1.8**
 
 Both betas are public. Beta1's deployed runtime, the HACS 2.0.5 source switch,

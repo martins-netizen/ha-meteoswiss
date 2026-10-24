@@ -1,198 +1,146 @@
 # Set up MeteoSwiss
 
-This guide is for readers without programming experience. You do not need a
-MeteoSwiss account, API key or terminal commands. HACS must already be installed;
-its official setup guide is linked below.
-
-**Already using MeteoSwiss?** Follow [migration](MIGRATION.md) instead and retain
-your existing HA integration entry.
+This guide describes **8.3.0** for readers without programming experience.
+You do not need an API key, MeteoSwiss account or terminal commands. Install
+only a published release. **Already using MeteoSwiss?** Follow
+[migration](MIGRATION.md) and keep your existing HA entry.
 
 ## What this fork provides
 
-The integration brings Swiss observations, forecasts, warnings, pollen and air
-quality into your usual Home Assistant dashboards. A fork is a maintained
-variant of the [original project](https://github.com/LNKtwo/ha-meteoswiss).
-Reviewed fixes and four UI languages ship together.
+The integration brings Swiss weather, forecasts, natural-hazard warnings,
+pollen and air quality into Home Assistant. It is an independent community
+variant of the [original project](https://github.com/LNKtwo/ha-meteoswiss),
+with reviewed corrections and German, English, French and Italian UI text.
 
 | Benefit | What to expect |
 |---|---|
-| Follow local weather | Swiss station observations, official hourly rain statistics and a model forecast. The station does not measure at your house. |
-| Follow natural hazards | Active/upcoming postcode warnings with severity and event text, including BAFU flood and SLF avalanche warnings when the feed supplies them. |
-| Include pollen and air quality | Measurements from your selected pollen station, alongside modelled pollen and air quality. |
-| Reduce manual maintenance | Bundled German, English, French and Italian UI text; no additional weather card is needed. |
-| Understand missing data | A real zero, a missing individual value and a failed source are distinct. A failed warning source is not an all-clear. |
+| Current weather | Measured temperature, rain, wind and other values from a selected Swiss station. Its weather symbol is modelled for that station, not measured. |
+| Forecasts for another place | A town/postcode or POI such as a mountain, with named forecast entities and today/tomorrow values. |
+| Natural hazards | Active/upcoming postcode warnings, including flood and avalanche warnings when supplied by the shared feed. |
+| Pollen and air quality | Measured pollen from an independently selected station, alongside modelled pollen and air quality. |
+| Less manual maintenance | Bundled translations, retained settings/IDs and ordinary HA cards; no additional weather card is required. |
 
-This fork combines documented corrections to warning mapping, data age and rain
-statistics. Its changes, tests and known limits are public, with a dedicated
-[issue tracker](https://github.com/martins-netizen/ha-meteoswiss/issues).
-Some capabilities may already exist in your current version.
-
-Experienced users can go directly to [settings and sources](USAGE.md),
-[sensors](SENSORS.md), [warning codes](WARNING_CODES.md) or
-[architecture](ARCHITECTURE.md). This is an independent community project;
-the linked release status applies to all features described here.
-
-### What “Precipitation (10 minutes)” means
-
-It is the latest published **measured amount over one ten-minute interval**.
-The measurement time marks that interval's end: 12:20 means the ten minutes
-ending at 12:20, even if HA downloads the value later. It is not a continuously
-updated amount through the present moment. The station files used here are
-published every twenty minutes.
-
-A separate official statistics archive covers completed hours. The fork no
-longer creates its own current-hour sum. With the alternative Open-Meteo source,
-precipitation is modelled and labelled **Precipitation (modelled interval)**;
-its actual interval length is available as an attribute.
+The fork retains the original MIT licence and attribution. It is not an official
+MeteoSwiss product. Forecasts depend on providers and are not a guarantee of the
+most accurate model in every situation. A failed warning feed is not an all-clear.
 
 ## 1. Check prerequisites
 
-- Home Assistant **2026.8.3 or newer**, with working internet access.
-- HACS already installed. Otherwise follow the
-  [official HACS installation guide](https://www.hacs.xyz/docs/use/download/download/).
-- Read [release status](../README.md#release-status). Install only the explicitly
-  approved version; a development branch or successful CI run is not approval.
-- Under **Settings → System → Backups**, create a full backup, download a copy
-  and retain its recovery key securely.
-
-A prerelease is a test version, not an automatically approved everyday release.
+- Home Assistant **2026.8.3 or newer**, with internet access.
+- HACS installed; otherwise follow its [official installation guide](https://www.hacs.xyz/docs/use/download/download/).
+- Check the [latest stable release](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
+  and [8.3.0 notes](RELEASE_8.3.0.md). A development branch is not a release.
+- Create a full HA backup, download a copy and retain its recovery key securely.
 
 ## 2. Download through HACS
 
-The maintained fork is currently added as a **custom repository**. A stable
-GitHub release does not automatically add it to the HACS default catalogue.
-If `martins-netizen/ha-meteoswiss` is already present in your HACS list, **skip
-steps 2–3** and open that existing repository. Do not add it a second time.
-If you already have a configured MeteoSwiss installation, use the
-[migration/update guide](MIGRATION.md) and retain its HA entry.
+The fork uses a **custom repository**; a GitHub stable release does not establish
+HACS default-catalogue inclusion. If this fork is already present, open it and
+skip adding it again. If MeteoSwiss is configured, use [migration](MIGRATION.md).
 
 1. Open **HACS** in the sidebar.
 2. Open the top-right **three-dot menu → Custom repositories**.
-3. Enter `https://github.com/martins-netizen/ha-meteoswiss`, choose
-   **Integration** and select **Add**.
-4. Open **MeteoSwiss (maintained fork)** and **Download**. Expand
-   **Need a different version?**, select **8.2.0** under **Release**, and check
-   the announced version before confirming. If the intended version is missing,
-   refresh information first; do not substitute
-   a commit or development branch.
-5. Restart Home Assistant and wait for the interface to return.
+3. Add `https://github.com/martins-netizen/ha-meteoswiss`, type **Integration**.
+4. Open **MeteoSwiss (maintained fork) → Download**. Under **Need a different
+   version? → Release**, choose the announced stable **8.3.0** when it is listed.
+   If it is missing, refresh repository information and check the release page;
+   do not substitute a development branch or commit.
+5. Download the selected version, then restart HA and wait for it to return.
 
-**Three-dot menu → Update information** refreshes repository metadata without
-downloading components. The [HACS acceptance record](HACS_ACCEPTANCE.md)
-records the completed operator-confirmed source switch, clean first installation
-and recovery rehearsal, with their evidence limits.
-
-Stable **8.2.0** is published. Downloading supplies software; the next step
-configures its data locations. If it is missing in HACS, refresh the repository
-information and check that the source is this maintained fork.
-
-The steps below describe published **8.2.0**. In unreleased development, the
-interval field is removed from setup/Configure: new entries update automatically
-at 600 seconds, and existing individual intervals remain unchanged. Configure
-now brings weather station, measured-pollen station, forecast selection and
-warning postcode together in the **same Configure dialog**. This is unreleased
-after b2; published b1/b2 retain the separate forecast-only **Reconfigure** path.
-See the [unified-settings guide](CALENDAR_AND_LOCATION_SETTINGS.md) and the
-[postcode/town/POI guide](FORECAST_LOCATION_SETUP.md), including the distinction
-between translated dialogs and provider place names. Do not download development merely
-to obtain that dialog change.
+**Update information** refreshes metadata; it does not install component files.
+Downloading installs software; the next step chooses its data locations.
 
 ## 3. Select pollen, weather and warning locations
 
 Open **Settings → Devices & services → Add integration → MeteoSwiss**.
 
-For measured Swiss weather, choose **MeteoSwiss STAC API (Swiss Stations)**.
-You do not need to work with its underlying API. Keep the initial update
-interval at **600 seconds**.
+For Swiss measurements, choose **MeteoSwiss STAC API (Swiss Stations)** and
+explicitly select a **Station for measured pollen**. You might want a pollen
+station near your HA home location. This station is independent of weather
+measurements and the modelled pollen forecast. There is no preselected station.
+New observation entries refresh automatically every **600 seconds**; there is
+no interval field. Existing entries keep their stored individual interval.
 
-In this first dialog also explicitly choose a **Station for measured pollen**.
-Choose the measuring station relevant to you; it is independent of the weather station and warning postcode. It does
-not change the modelled pollen forecast location. No pollen station is
-preselected for a new entry. You can change it later in **Configure**.
+Continue to the next dialog. Choose the **weather measurement station** and a
+**four-digit Swiss warning postcode**, for example **8302**. You might want a
+weather station near your home, too. The postcode selects warnings; it does
+not choose the station. A failed source check leaves the form open to retry.
 
-This flow was introduced in Beta2 and is included in stable 8.2.0. The
-[acceptance record](HACS_ACCEPTANCE.md) records the completed operator check.
+**Alternative:** Open-Meteo supplies modelled current weather at entered
+coordinates instead of Swiss station observations. It is an explicit source
+choice, not an automatic observation backup. Its coordinates also define that
+entry's base location for modelled air quality, pollen and optional UV.
 
-**Older Beta1 entries:** setup did not ask for a pollen station. Choose it
-in **Configure**, as described below; do not recreate the entry.
+## 4. Choose the forecast location
 
-Continue to the **next dialog**. Choose a weather station and enter the
-warning location's **four-digit Swiss postcode**, for example **8302**.
-The integration checks the weather source before saving; a connection error
-leaves the same form available to retry.
+Keep the original base location or choose **Search by postcode, town or POI**.
+Enter a postcode or official catalogue name, select a result and check its name,
+category and height before confirming. A postcode point is a forecast point,
+not a post office or the exact position of your home. See
+[selection and place-name limits](FORECAST_LOCATION_SETUP.md).
 
-| Setting | Purpose |
+| Location | Purpose |
 |---|---|
-| Weather station, for example Zürich / Kloten | Measured temperature, rain, wind and other station values. |
-| Postcode | Weather/natural-hazard warning selection. |
-| Home Assistant home location | Weather forecasts, modelled pollen and air quality. |
-| Measured-pollen station | Pollen observations; choose independently during setup, or in Configure. |
+| HA home/base coordinates | Modelled air quality, modelled pollen and optional UV; also the default weather forecast if no separate point is selected. |
+| Measured-pollen station | Pollen observations; independent of weather measurements and forecasts. |
+| Weather measurement station | SwissMetNet observations and a separately labelled modelled weather condition at that station. |
+| Forecast town/POI | ICON hourly/daily forecasts, eight today/tomorrow sensors and forecast HGT. |
+| Separate warning postcode | Area for active/upcoming warnings; selecting a mountain forecast does not move it. |
 
-The postcode does not automatically select the weather station. Check the HA
-home location under **Settings → System → General** and change it only if it is
-wrong; other integrations also use it.
+For example, HA may be in Kloten, pollen measured in Zürich, weather measured
+in Zürich/Kloten and forecasts selected for Säntis. Changing the forecast moves
+only that role. The [README](../README.md#four-places-what-each-one-is-used-for)
+explains these four places and the independent warning postcode.
 
-**Alternative:** **Open-Meteo API (Free, Global)** supplies modelled current
-conditions at entered coordinates. It is an explicitly different source, not an
-automatic backup for Swiss station observations. Warnings still use the
-four-digit postcode.
+## 5. Check pollen station and initial values
 
-## 4. Check pollen station and initial values
+Open the existing entry's **Configure (gear)** to review or change the weather
+station/base coordinates, measured-pollen station, forecast choice and warning
+postcode in one dialog. A search continues inside it; cancelling saves none of
+the pending choices. Confirmed changes reload the entry once, without an HA
+Core restart. HA home coordinates remain in HA's general settings.
 
-Check the selected measured-pollen station under the existing MeteoSwiss
-entry's **Configure** options. You can change it without deleting the entry.
-It is not derived from the weather station and does not select the modelled
-pollen forecast location. Configure shows the update interval and pollen
-station only; saving it ends that dialog. The weather station and warning
-postcode belong to the new-entry setup, not these existing-entry options.
-
-For **8.2.0b1** or an older entry without a saved pollen choice, the fallback is
-**Luzern (PLZ)**. Select your intended station explicitly. Here PLZ is Luzern's
-station identifier, not a request to enter a postal code. Existing entries keep
-their settings when upgrading; the new initial picker does not reconfigure them.
-
-The [verified station list](POLLEN_STATIONS.md) distinguishes station identity
-from current data availability. A real station can temporarily publish no new
-measurements. In that case its measured-pollen sensors become unavailable;
-the integration does not silently show another station's values.
-
-Open the integration's devices. Expect weather, observation sensors, three
-warning sensors and pollen/air-quality entities. HA forecasts cover up to
-24 hours and five days. Additional optional sources start in the background;
-they need not all populate simultaneously.
+Open the integration's devices. Measurements and an explicitly selected
+forecast place have separate names. Numeric forecast sensors cover today and
+tomorrow; normal HA forecast cards provide hourly/daily predictions. Optional
+sources start independently and may populate at different times.
 
 | Display | Meaning |
 |---|---|
-| `0` | A real zero, for example no measured precipitation. |
-| `unknown` | No usable individual value is available. |
-| `unavailable` | The relevant source could not be refreshed successfully. |
-| Warning sensor off | No matching alert in a successfully read warning feed. |
+| `0` | A real zero, for example no measured rain. |
+| `unknown` | No usable individual value, including an unavailable optional station-condition code. |
+| `unavailable` | The relevant source failed or its current data could not be validated. |
+| Warning off | No matching alert in a successfully read feed. |
 
-Foehn index or snow depth may stay unknown when the station does not supply
-them. Missing UV alone does not establish an outage of other data.
-An unavailable warning source is not an all-clear.
+Stations do not all supply pressure, foehn index or snow depth. Missing values
+do not automatically mean installation failure. The [pollen station list](POLLEN_STATIONS.md)
+distinguishes real stations from temporary data availability; no substitute is
+selected automatically. Older entries without a pollen choice retain Luzern
+(station code PLZ) until you deliberately choose another station.
 
-## 5. Use the data and get help
+### What “Precipitation (10 minutes)” means
 
-Use the entities in existing HA cards. A custom dashboard/card is not required.
-DE/EN/FR/IT ship with the integration; do not copy translation files manually.
-Some existing device/attribute names and provider choices retain English names
-for compatibility.
+The latest published measured amount over one ten-minute interval. Its timestamp
+marks the interval's end; it is not a continuously updated current-hour sum.
+The source files publish every twenty minutes. The official archive covers
+completed hours. The alternative Open-Meteo source is explicitly modelled and
+exposes its interval length. See [sensors](SENSORS.md).
 
-Forecasts use **MeteoSwiss ICON Seamless via Open-Meteo**. They are model output,
-not measurements at your house or a guaranteed selection of the most accurate
-model in every situation. Modelled air quality does not replace a local sensor.
+## 6. Use the data and get help
 
-**Unreleased development after 8.2.0:** eight forecast sensors for today and
-tomorrow can be used in ordinary cards and automations. The
-[forecast sensor guide](FORECAST_SENSORS.md) explains full-day temperature/rain
-predictions and the times of the highest hourly rain probability.
+Use existing HA cards; translations ship with the integration. Some compatibility
+attributes and provider names remain English. With a selected forecast point,
+an older forecast card/action may need [one target change](FORECAST_DISPLAY.md).
+The [forecast sensor guide](FORECAST_SENSORS.md) explains complete Swiss days
+and the times of maximum hourly rain probability. [Cache Statistics](USAGE.md#cache-statistics-what-the-numbers-mean)
+counts local cache lookups, not forecast accuracy or network requests.
 
-For problems, retain the integration instead of deleting/recreating it.
-Record version, time and affected value; use [troubleshooting](USAGE.md#quick-troubleshooting)
-or the [fork issue tracker](https://github.com/martins-netizen/ha-meteoswiss/issues).
-Use [private vulnerability reporting](https://github.com/martins-netizen/ha-meteoswiss/security/advisories)
-for confidential security reports.
+For problems retain the entry and record version, time and affected value.
+Use [troubleshooting](USAGE.md#quick-troubleshooting) or the
+[fork issue tracker](https://github.com/martins-netizen/ha-meteoswiss/issues).
+Use [private reporting](https://github.com/martins-netizen/ha-meteoswiss/security/advisories)
+for confidential vulnerabilities. Never post backups or credentials.
 
-Further references: [sensors](SENSORS.md), [technical settings](USAGE.md) and
+Further references: [settings](USAGE.md), [migration](MIGRATION.md),
+[acceptance evidence](RELEASE_READINESS.md) and
 [official HACS controls](https://www.hacs.xyz/docs/use/repositories/dashboard/).

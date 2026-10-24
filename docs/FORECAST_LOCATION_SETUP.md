@@ -1,10 +1,9 @@
 # Choose or change a weather forecast location
 
-**Guide version:** 1.4 · **Updated:** 24 October 2026
-**Availability:** the 8.3.0b1 candidate track; published stable 8.2.0 does not
-show these dialogs. The [candidate notes](RELEASE_8.3.0b1.md) and
-[focused temporary-HA protocol](ACCEPTANCE_8.3.0b1.md) separate package review,
-prerelease publication and actual acceptance.
+**Guide version:** 1.5 · **Updated:** 24 October 2026
+**Availability:** included in the **8.3.0** runtime accepted as b4.
+Use the [announced release](RELEASE_8.3.0.md); earlier beta notes describe their
+historical scopes, not instructions to reinstall an older beta.
 
 ## What you are choosing
 
@@ -20,15 +19,13 @@ the chosen forecast point. After moving the forecast, the weather entity's
 current symbol no longer borrows that different-location forecast; current
 measurements remain available.
 
-## Display follow-up after 8.3.0b1
+## Separate measurement and forecast display
 
-The initial beta displayed Säntis forecasts under the Kloten device heading.
-The prepared 8.3.0b2 [display correction](FORECAST_DISPLAY.md) separates them into a
-named forecast device, including all eight scalars, HGT and a forecast-only
-weather entity. It preserves the station entity/IDs and personal names, while
-forecast cards/actions for a selected catalogue point use the new forecast
-weather entity. That correction needs its announced b2 installation;
-it is not included in the original 8.3.0b1 package.
+The [display guide](FORECAST_DISPLAY.md) describes the named forecast device,
+eight scalars, HGT and forecast weather entity. Station entities/IDs and personal
+names remain; existing cards/actions for a selected point use the new forecast
+weather entity. The measuring station has its own [modelled condition](STATION_WEATHER_CONDITION.md),
+with unchanged measured numeric values. The initial b1 ambiguity is corrected.
 
 ## New setup
 
@@ -52,26 +49,22 @@ duplicate current-source/warning entries still apply.
 
 ## Existing entry
 
-**Unreleased after b2:** open the existing entry’s **Configure (gear)** to
-change the weather station, measured-pollen station and forecast point together.
-The separate warning postcode is in the same form. A forecast search adds
-search/select/confirm steps to that dialog; no pending choice is saved before
-final submission. [Unified-settings instructions and checks](CALENDAR_AND_LOCATION_SETTINGS.md).
-The directions below retain the published b1/b2 forecast-only path.
+Open **Settings → Devices & services → MeteoSwiss → Configure (gear)**.
+Change the weather station, measured-pollen station and forecast point in the
+same form, alongside the independent warning postcode. Search/select/confirm
+continues inside this flow. Nothing is saved until final confirmation;
+cancelling an unfinished step discards all pending changes. See
+[unified settings](CALENDAR_AND_LOCATION_SETTINGS.md).
 
+The entry and retained entity/statistic IDs, personal names and legacy intervals
+remain. A loaded entry reloads once after a confirmed change without a Core
+restart. Keeping the current forecast leaves that role unchanged; other settings
+are still applied if deliberately changed and confirmed. The older
+**three-dot menu → Reconfigure** remains a forecast-only shortcut.
 
-Open **Settings → Devices & services → MeteoSwiss**, then the existing entry's
-**three-dot menu → Reconfigure**. In German HA this is **Neu konfigurieren**.
-Use the same search/select/confirm sequence. The entry, options, update interval,
-existing unique/entity/statistic IDs and other source locations are retained.
-A loaded entry reloads once after a confirmed change, without a Core restart.
-**Keep the current forecast location** or cancelling performs no location write.
-
-**Configure** continues to edit the measured-pollen station; it is not the
-forecast-location editor. Do not delete and recreate an existing entry.
-To undo a deliberate forecast move, choose **Return to the original base
-coordinates**, read the confirmation and submit. For a saved selection that is
-invalid, choose a replacement or this explicit reset; keep cannot conceal it.
+To undo a forecast move choose **Return to the original base coordinates** and
+confirm. An invalid saved point needs a replacement or explicit reset; keeping
+it cannot conceal an invalid selection. Do not delete/recreate the entry.
 
 ## No match, too many matches or a failed source
 
@@ -100,9 +93,9 @@ names to the same confirmed catalogue identity, preserve ambiguity and avoid
 assuming that every locality sharing a postcode is the same forecast point.
 Complete multilingual locality/POI names are **not** claimed by these dialogs.
 
-## Focused candidate checks in the existing temporary HA
+## Verification after a location change
 
-After a reviewed candidate is available, exercise the postcode, summit, pass
+For focused tests of a future changed selection flow, exercise the postcode, summit, pass
 and hut examples above, including Säntis station versus POI. Confirm the chosen
 name/height in local forecast attributes and actual forecast values. On an
 existing entry, cancel once, keep once, then confirm a change and reset it;
