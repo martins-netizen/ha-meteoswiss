@@ -30,6 +30,7 @@ from .coordinator import (
     MeteoSwissForecastCoordinator,
     MeteoSwissHourlyPrecipitationCoordinator,
     MeteoSwissPollenCoordinator,
+    MeteoSwissStationConditionCoordinator,
     OpenMeteoDataUpdateCoordinator,
     OpenMeteoPollenCoordinator,
 )
@@ -109,6 +110,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
     post_code = entry.data.get(CONF_POSTAL_CODE)
     lat, lon = _get_base_coordinates(hass, entry, data_source)
     forecast_target = resolve_forecast_target(entry.data, lat, lon)
+    station_condition_coordinator = None
     if forecast_target.status == "invalid":
         _LOGGER.error(
             "Saved forecast location is invalid; forecast disabled until reconfigured"
@@ -146,6 +148,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
             session=shared_session,
         )
         _LOGGER.debug("Using MeteoSwiss station observations")
+        station_condition_coordinator = MeteoSwissStationConditionCoordinator(
+            hass, station_id=station_id, session=shared_session
+        )
 
         # Forecasts are location-based and intentionally independent from
         # the selected observation station.
@@ -216,6 +221,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
     entry.runtime_data = MeteoSwissRuntimeData(
         coordinator=coordinator,
         forecast_coordinator=forecast_coordinator,
+        station_condition_coordinator=station_condition_coordinator,
         alerts_coordinator=alerts_coordinator,
         pollen_coordinator=pollen_coordinator,
         meteoswiss_pollen_coordinator=meteoswiss_pollen_coordinator,
@@ -236,6 +242,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
         pollen_coordinator,
         meteoswiss_pollen_coordinator,
     ]
+    if station_condition_coordinator is not None:
+        optional_coordinators.append(station_condition_coordinator)
     if hourly_precipitation_coordinator is not None:
         optional_coordinators.append(hourly_precipitation_coordinator)
         # External Recorder statistics have no CoordinatorEntity listener.

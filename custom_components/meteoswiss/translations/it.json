@@ -22,7 +22,7 @@
         },
         "data_description": {
           "postal_code": "Codice postale svizzero di quattro cifre, solo per gli avvisi di pericoli naturali. Non seleziona né la località delle previsioni meteo né la stazione di misurazione dei pollini.",
-          "station_id": "Fornisce temperatura, vento e pioggia misurati. La località delle previsioni ICON si sceglie dopo. Pollini modellizzati, qualità dell’aria e UV mantengono le coordinate di casa HA."
+          "station_id": "Fornisce temperatura, vento e pioggia misurati. La località delle previsioni ICON si sceglie dopo. Pollini modellizzati, qualità dell’aria e UV mantengono le coordinate di casa HA. La condizione meteo di questa stazione è modellata con MeteoSwiss ICON tramite Open-Meteo; i valori numerici restano misurazioni."
         }
       },
       "openmeteo": {
@@ -111,7 +111,7 @@
           "longitude": "Longitudine dei dati attuali modellati"
         },
         "data_description": {
-          "station_id": "Fornisce misurazioni meteorologiche. Le entità esistenti vengono mantenute; dopo la modifica i valori provengono dalla nuova stazione.",
+          "station_id": "Fornisce misurazioni meteorologiche. Le entità esistenti vengono mantenute; dopo la modifica i valori provengono dalla nuova stazione. La condizione meteo di questa stazione è modellata con MeteoSwiss ICON tramite Open-Meteo; i valori numerici restano misurazioni.",
           "pollen_station": "Modifica soltanto i pollini misurati. I pollini modellati e la qualità dell’aria mantengono la località di base.",
           "postal_code": "Codice postale svizzero di quattro cifre per le allerte. Non seleziona la stazione meteo né il punto di previsione.",
           "forecast_action": "Mantieni la località visualizzata, cerca codice postale/località/POI oppure torna alle coordinate di base. Il codice postale di ricerca non modifica quello delle allerte.",

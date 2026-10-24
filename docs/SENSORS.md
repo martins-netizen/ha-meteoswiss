@@ -219,6 +219,8 @@ entity ID: station count, GeoJSON and catalogue status. It is not another weathe
 station and can stay disabled. `meteoswiss_cache_stats` is the shared cache
 helper's unique ID. Existing entity names can differ. Integration diagnostics
 download a redacted technical summary.
+The [Cache Statistics guide](USAGE.md#cache-statistics-what-the-numbers-mean)
+explains hit rate, lookups, expiry and why these are not API-request counters.
 
 Camera/radar, standalone SLF and standalone BAFU clients were inactive
 placeholders in 8.2.0 and created no additional entities. Unreleased development

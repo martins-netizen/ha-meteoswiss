@@ -1,6 +1,6 @@
 # Coordinator placement review
 
-**Review version:** 1.5 · **Date:** 23 October 2026
+**Review version:** 1.6 · **Date:** 24 October 2026
 **Scope:** unreleased development after stable 8.2.0.
 
 The [HA common-modules rule](https://contributors.home-assistant.io/core/quality-scale/common-modules/)
@@ -13,12 +13,13 @@ This review records actual class definitions, not imports or type annotations.
 | MeteoSwissDataUpdateCoordinator | coordinator.py | Canonical observation coordinator. |
 | MeteoSwissAlertsCoordinator | coordinator.py | Moved from binary_sensor.py in this follow-up. |
 | MeteoSwissForecastCoordinator | coordinator.py | Extracted ICON source client owns HTTP/parsing; the canonical coordinator retains caching, scheduling and failure/recovery lifecycle. |
+| MeteoSwissStationConditionCoordinator | coordinator.py | Development after b3: optional station-local current model code; station_condition.py owns bounded HTTP/parsing and validity. The canonical coordinator owns catalogue resolution, caching and scheduling. |
 | OpenMeteoDataUpdateCoordinator | coordinator.py | Extracted current-condition client handles HTTP/parsing; HA coordinator retains cache, freshness, failure pause and lifecycle. |
 | OpenMeteoPollenCoordinator | coordinator.py | Source-only pollen/AQ client includes the separate optional UV request; the real HA coordinator retains current-hour validation, the shared AQ/UV result cache and transition logs. |
 | MeteoSwissPollenCoordinator | coordinator.py | Extracted measured-pollen client owns transport, parsing and freshness; HA coordinator owns scheduling and exception translation. |
 | MeteoSwissHourlyPrecipitationCoordinator | coordinator.py | Source-only hourly/archive client and amount parser in precipitation.py; explicit Recorder projection/import in precipitation_recorder.py; genuine HA coordinator composes both. |
 
-There are seven real coordinator classes. MeteoSwissSensor/MeteoSwissWeather
+There are eight real coordinator classes. MeteoSwissSensor/MeteoSwissWeather
 are coordinator-backed entities, not additional coordinator definitions. The
 shared station-catalogue loader is a locked metadata service, not a
 DataUpdateCoordinator. Shared entity bases already live in entity.py.
@@ -195,8 +196,9 @@ cases cover direct borrowed-session requests, both transport cancellation points
 private errors/retry budgets, four HA failure categories, partial parser failure
 and executor cancellation before queuing.
 
-All seven actual coordinator definitions are now canonical. This closes the
-seven-class placement inventory, not every Bronze/Silver/Gold requirement.
+All seven original coordinator definitions became canonical at this milestone.
+The station-condition follow-up adds the eighth class. Canonical placement
+does not establish every Bronze/Silver/Gold requirement.
 
 ## Remaining architecture and release limits
 

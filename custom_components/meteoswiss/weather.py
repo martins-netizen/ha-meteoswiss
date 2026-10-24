@@ -33,6 +33,7 @@ from .const import (
 from .coordinator import (
     MeteoSwissDataUpdateCoordinator,
     MeteoSwissForecastCoordinator,
+    MeteoSwissStationConditionCoordinator,
     OpenMeteoDataUpdateCoordinator,
 )
 from .entity import (
@@ -43,6 +44,7 @@ from .entity import (
 from .forecast_location_config import resolve_forecast_target
 from .forecast_summary import FORECAST_ATTRIBUTION
 from .runtime_data import MeteoSwissConfigEntry
+from .station_condition import STATION_CONDITION_SOURCE, current_station_condition
 from .weather_data import (
     FORECAST_TIME_ZONE,
     forecast_datetime,
@@ -277,6 +279,7 @@ async def async_setup_entry(
             entry.runtime_data.forecast_coordinator,
             entry,
             entry.data.get(CONF_STATION_NAME, "Unknown"),
+            station_condition_coordinator=entry.runtime_data.station_condition_coordinator,
         )
     ]
     if forecast := entry.runtime_data.forecast_coordinator:
@@ -313,10 +316,13 @@ class MeteoSwissWeather(
         forecast_coordinator: MeteoSwissForecastCoordinator | None,
         entry: MeteoSwissConfigEntry,
         station_name: str,
+        *,
+        station_condition_coordinator: MeteoSwissStationConditionCoordinator | None = None,
     ) -> None:
         super().__init__(coordinator)
         self._entry = entry
         self._forecast_coordinator = forecast_coordinator
+        self._station_condition_coordinator = station_condition_coordinator
         self._forecast_target = resolve_forecast_target(entry.data, None, None)
         self._attr_device_info = weather_device_info(entry.entry_id, station_name)
         self._attr_name = None
@@ -338,6 +344,17 @@ class MeteoSwissWeather(
                     self._handle_forecast_update
                 )
             )
+        if self._station_condition_coordinator is not None:
+            self.async_on_remove(
+                self._station_condition_coordinator.async_add_listener(
+                    self._handle_station_condition_update
+                )
+            )
+
+    @callback
+    def _handle_station_condition_update(self) -> None:
+        """Only the condition changes; station measurements own availability."""
+        self.async_write_ha_state()
 
     @property
     def coordinator_data(self) -> dict:
@@ -354,7 +371,32 @@ class MeteoSwissWeather(
     @property
     def extra_state_attributes(self) -> dict[str, Any] | None:
         """Explain an explicit forecast point without relabelling observations."""
-        return self._forecast_target.state_attributes() or None
+        attributes = self._forecast_target.state_attributes()
+        source = self._station_condition_coordinator
+        if source is not None and self._direct_condition() is None:
+            condition = self._station_model_condition()
+            attributes.update(
+                condition_source=STATION_CONDITION_SOURCE,
+                condition_value_type="modelled",
+                condition_location="weather_station",
+                condition_available=condition is not None,
+            )
+            if condition is not None:
+                attributes["condition_timestamp"] = source.data["time"]
+        return attributes or None
+
+    @property
+    def attribution(self) -> str:
+        """Credit both sources without claiming the model code is measured."""
+        if self._station_condition_coordinator is not None:
+            return "MeteoSwiss SwissMetNet / Open-Meteo (MeteoSwiss ICON)"
+        return super().attribution
+
+    def _station_model_condition(self) -> str | None:
+        source = self._station_condition_coordinator
+        if source is None or not source.last_update_success:
+            return None
+        return current_station_condition(source.data)
 
     def _current_forecast_condition(self) -> str | None:
         """A selected POI forecast must never become the home current condition."""
@@ -368,8 +410,8 @@ class MeteoSwissWeather(
                 return condition
         return None
 
-    def _resolve_condition(self) -> str | None:
-        """Prefer current weather, then a current forecast interval, then rain."""
+    def _direct_condition(self) -> str | None:
+        """A condition supplied by the current source retains precedence."""
         current = self.coordinator_data
         if condition := _condition(current.get("weather_condition")):
             return condition
@@ -379,9 +421,18 @@ class MeteoSwissWeather(
                 condition := self.METEOSWISS_CONDITION_MAP.get(str(symbol).lower())
             ):
                 return condition
+        return None
+
+    def _resolve_condition(self) -> str | None:
+        """Keep a station's model condition separate from the selected forecast."""
+        if condition := self._direct_condition():
+            return condition
+        station_condition = self._station_model_condition()
+        if self._station_condition_coordinator is not None:
+            return station_condition
         if condition := self._current_forecast_condition():
             return condition
-        rain = weather_number(current.get(SENSOR_PRECIPITATION), 0)
+        rain = weather_number(self.coordinator_data.get(SENSOR_PRECIPITATION), 0)
         return "rainy" if rain is not None and rain > 0 else None
 
     @property

@@ -54,6 +54,13 @@ warning postcode, air quality and pollen settings do not move with the forecast.
 
 ## Existing names, IDs and history
 
+**Development after b3:** the observation weather row can also have a
+[station-local modelled condition](STATION_WEATHER_CONDITION.md). Its numeric
+values remain measured; its condition is not borrowed from this forecast group.
+HA may show the forecast condition only as an icon in the compact device-page
+row, with its text in the weather detail/activity view. That layout does not
+mean the condition is missing from the weather entity.
+
 The eight existing forecast sensors and HGT keep their unique/entity IDs and
 personal options. They move to the forecast group, which reuses HGT's existing
 device identity instead of creating a different device for every chosen place.

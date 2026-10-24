@@ -22,7 +22,7 @@
         },
         "data_description": {
           "postal_code": "Four-digit Swiss postal code for natural-hazard warnings only. It does not select the weather forecast location or pollen station.",
-          "station_id": "Supplies measured temperature, wind and rain. Choose the ICON weather forecast location next. Modelled pollen, air quality and UV keep the Home Assistant home coordinates."
+          "station_id": "Supplies measured temperature, wind and rain. Choose the ICON weather forecast location next. Modelled pollen, air quality and UV keep the Home Assistant home coordinates. Its weather condition is modelled for this station using MeteoSwiss ICON via Open-Meteo; numeric values remain measurements."
         }
       },
       "openmeteo": {
@@ -111,7 +111,7 @@
           "longitude": "Current-data longitude"
         },
         "data_description": {
-          "station_id": "Supplies measured weather values. Changing it keeps the existing entities; their readings follow the new station from this change onward.",
+          "station_id": "Supplies measured weather values. Changing it keeps the existing entities; their readings follow the new station from this change onward. Its weather condition is modelled for this station using MeteoSwiss ICON via Open-Meteo; numeric values remain measurements.",
           "pollen_station": "Only measured pollen changes. Modelled pollen and air quality keep their base location.",
           "postal_code": "Four-digit Swiss postcode for warnings. This does not select the weather station or forecast point.",
           "forecast_action": "Keep the displayed forecast point, search by postcode/town/POI, or return to the original base coordinates. A forecast search postcode does not change the warning postcode.",

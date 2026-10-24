@@ -40,6 +40,7 @@ TO_REDACT = {
 COORDINATORS = (
     "coordinator",
     "forecast_coordinator",
+    "station_condition_coordinator",
     "alerts_coordinator",
     "pollen_coordinator",
     "meteoswiss_pollen_coordinator",

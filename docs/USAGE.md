@@ -340,6 +340,37 @@ retained. The generated picture-elements configuration is absent (`None`)
 unless a caller explicitly supplies an image and entity ID; no placeholder
 third-party image is used. Cache hit-rate totals include all three caches.
 
+## Cache Statistics: what the numbers mean
+
+**Cache Statistics** is an optional local diagnostic, not another weather
+measurement. A cache temporarily keeps data already obtained, so several
+consumers can reuse it instead of downloading it again. The entity's main
+value, such as **90.0% hit rate**, is the overall fraction of successful local
+cache lookups across `current_weather`, `forecast` and `stations`.
+
+| Counter | Meaning | How to interpret a higher value |
+|---|---|---|
+| `overall_hit_rate` / `hit_rate` | Hits divided by hits plus misses, as a percentage. The overall value weights the three caches by lookup count. | More lookups found unexpired cached data. For example, 900 hits out of 1,000 lookups gives 90%. Reuse can reduce repeated downloads and waiting. |
+| `hits` | Lookups which found an entry within its cache lifetime. | More reuse; this is a cumulative count, not a quality score. |
+| `misses` | Lookups which found no entry or an expired entry. | Expected on startup, at expiry, or when requesting another location. A miss does not by itself mean an API error. |
+| `total_requests` | Local cache lookups: `hits + misses`. | More cache activity. **This is not a count of HTTP/API requests.** |
+| `entries` | Entries currently retained after expired entries are removed. | More distinct cached results, not better data or faster weather updates. |
+| `evictions` | Expired entries removed during lookup or cleanup. | Normal cache turnover, not an error count. |
+
+A high hit rate is useful when it avoids duplicate work **within the allowed
+lifetime**. It does not prove that the provider data are fresh or accurate, that
+the service is reachable, or that a warning source is healthy. Source timestamps
+and availability have their own checks. A low rate can be normal when a source
+is polled less often than its cache expires; do not increase lifetimes simply
+to chase 100%. There is no universal good/bad threshold.
+
+These are shared, in-memory counters for the integration's three caches, not
+per-station request bills. A new HA process starts new caches/counters; reloading
+an entry does not necessarily reset them. Reading the statistics does not
+download weather data, though it removes expired local entries. The diagnostic
+can be disabled without disabling caching. It does not cover every source's
+private cache or every network request in the integration.
+
 ## Remove an entry
 
 In **Settings → Devices & services → MeteoSwiss**, open the relevant entry's menu

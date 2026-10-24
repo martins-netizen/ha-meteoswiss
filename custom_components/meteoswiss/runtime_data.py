@@ -16,6 +16,7 @@ if TYPE_CHECKING:
         MeteoSwissForecastCoordinator,
         MeteoSwissHourlyPrecipitationCoordinator,
         MeteoSwissPollenCoordinator,
+        MeteoSwissStationConditionCoordinator,
         OpenMeteoDataUpdateCoordinator,
         OpenMeteoPollenCoordinator,
     )
@@ -31,6 +32,7 @@ class MeteoSwissRuntimeData:
     session: ClientSession
     forecast_target: ForecastTarget | None = None
     forecast_coordinator: MeteoSwissForecastCoordinator | None = None
+    station_condition_coordinator: MeteoSwissStationConditionCoordinator | None = None
     alerts_coordinator: MeteoSwissAlertsCoordinator | None = None
     pollen_coordinator: OpenMeteoPollenCoordinator | None = None
     meteoswiss_pollen_coordinator: MeteoSwissPollenCoordinator | None = None

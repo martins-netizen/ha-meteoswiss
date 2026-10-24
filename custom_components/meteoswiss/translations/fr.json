@@ -22,7 +22,7 @@
         },
         "data_description": {
           "postal_code": "Code postal suisse à quatre chiffres, uniquement pour les alertes de dangers naturels. Il ne choisit ni le lieu des prévisions météo ni la station de mesure du pollen.",
-          "station_id": "Fournit la température, le vent et la pluie mesurés. Choisissez ensuite le lieu des prévisions ICON. Les pollens modélisés, la qualité de l’air et les UV gardent les coordonnées du domicile HA."
+          "station_id": "Fournit la température, le vent et la pluie mesurés. Choisissez ensuite le lieu des prévisions ICON. Les pollens modélisés, la qualité de l’air et les UV gardent les coordonnées du domicile HA. L’état météo de cette station est modélisé avec MeteoSwiss ICON via Open-Meteo ; les valeurs numériques restent des mesures."
         }
       },
       "openmeteo": {
@@ -111,7 +111,7 @@
           "longitude": "Longitude des données actuelles modélisées"
         },
         "data_description": {
-          "station_id": "Fournit les mesures météorologiques. Les entités existantes sont conservées ; leurs mesures proviennent ensuite de la nouvelle station.",
+          "station_id": "Fournit les mesures météorologiques. Les entités existantes sont conservées ; leurs mesures proviennent ensuite de la nouvelle station. L’état météo de cette station est modélisé avec MeteoSwiss ICON via Open-Meteo ; les valeurs numériques restent des mesures.",
           "pollen_station": "Modifie uniquement le pollen mesuré. Le pollen modélisé et la qualité de l’air conservent leur lieu de base.",
           "postal_code": "Code postal suisse à quatre chiffres pour les alertes. Il ne sélectionne ni la station météo ni le point de prévision.",
           "forecast_action": "Conservez le lieu affiché, recherchez un code postal/une localité/un POI ou revenez aux coordonnées de base. Le code postal de recherche ne modifie pas celui des alertes.",
