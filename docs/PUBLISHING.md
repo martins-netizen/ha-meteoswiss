@@ -1,5 +1,44 @@
 # Fork releases: publication and HACS acceptance
 
+## Next candidate: 8.3.0b1
+
+The candidate packet is based on reviewed PR #59 at
+**4c8169206fdcb8688a438c16a93f867a633a344f**. Only the two component versions
+change; **36 component files**, hacs.json (including country CH/branch hiding)
+and workflows match that source. [Release notes](RELEASE_8.3.0b1.md) and
+[focused acceptance](ACCEPTANCE_8.3.0b1.md) are prepared. The old 8.2.0 helpers
+below cannot publish this candidate.
+
+After the packaging PR is approved, regularly merged and all exact post-merge
+checks pass, use its full approved merge SHA. Commands assume repository root;
+a downloaded standalone helper works from any directory with the same arguments.
+
+```sh
+bash scripts/publish_meteoswiss_830_beta_v1.0.sh --check APPROVED_MERGE_COMMIT
+# Only after reviewing the exact preflight and approving prerelease publication:
+bash scripts/publish_meteoswiss_830_beta_v1.0.sh --publish APPROVED_MERGE_COMMIT
+```
+
+Replace APPROVED_MERGE_COMMIT with that exact forty-character lowercase SHA;
+it is not a branch name or PR head. --check performs only GitHub reads and
+writes its local receipt/log. --publish can only create **8.3.0b1**, draft=false,
+prerelease=true, make_latest=false. Its default internal mode is read-only.
+The helper checks GitHub Actions and Sonar app/head provenance, all latest
+check results, component versions/equality, CH/HACS/workflows, old immutable
+beta/stable tags and latest stable release 8.2.0. Source 4c81692 is reviewed CI
+code, not a claim of new live HA acceptance.
+
+The helper reserves a writable local receipt before API access, uses the Mac's
+existing gh authentication and a fixed github.com repository, and permits just
+one remote write type: creating this release. It cannot change refs, merge,
+rewrite notes or contact HA. A timeout after a release write is an uncertain
+result; rerun the same exact commit to verify an existing matching release
+before considering any further action. Do not delete/recreate or retag.
+The receipt records publication status separately from pending HA acceptance.
+After publication independently confirm the release/tag and then follow the
+focused temporary-HA checklist. Stable promotion/default-list submission remain
+separate decisions.
+
 ## Published stable release: 8.2.0
 
 **Published on 22 October 2026 at 08:52:40 Europe/Zurich** (06:52:40 UTC).

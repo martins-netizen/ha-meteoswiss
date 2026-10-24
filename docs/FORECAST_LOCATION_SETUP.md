@@ -1,9 +1,10 @@
 # Choose or change a weather forecast location
 
-**Guide version:** 1.0 · **Updated:** 23 October 2026
-**Availability:** unreleased development after 8.2.0. Published 8.2.0 does not
-show these dialogs. A reviewed candidate and the focused temporary-HA checks
-are still required before publication.
+**Guide version:** 1.1 · **Updated:** 24 October 2026
+**Availability:** the 8.3.0b1 candidate track; published stable 8.2.0 does not
+show these dialogs. The [candidate notes](RELEASE_8.3.0b1.md) and
+[focused temporary-HA protocol](ACCEPTANCE_8.3.0b1.md) separate package review,
+prerelease publication and actual acceptance.
 
 ## What you are choosing
 

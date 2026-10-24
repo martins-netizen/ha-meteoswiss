@@ -1,6 +1,6 @@
 # Release readiness: current candidate and completed 8.2.0
 
-**Document version:** 1.8 · **Updated:** 24 October 2026
+**Document version:** 1.9 · **Updated:** 24 October 2026
 **Purpose:** One entry point for completed evidence, remaining publication steps
 and work deliberately deferred to later versions.
 
@@ -14,19 +14,36 @@ sequence below remains historical evidence for 8.2.0.
 The agreed next scope includes the architecture boundaries (PRs #54/#55),
 forecast scalars (#53), official catalogue (#56), saved-location/height-aware
 ICON routing (#57) and translated postcode/town/POI setup/reconfiguration.
-PR #58's dialog package was approved and regularly merged at **5bed187**;
-its tree and all seven post-merge checks are confirmed. The
-[overall review](RELEASE_REVIEW_2026-10-24.md) adds four regression-backed
-corrections plus reconciled source/install/quality documentation. Review and
-merge that correction PR before freezing the exact **8.3.0b1** packet.
+PR #58's dialogs and the [overall review](RELEASE_REVIEW_2026-10-24.md)
+corrections are integrated. PR #59 was approved and regularly squash-merged at
+**4c8169206fdcb8688a438c16a93f867a633a344f**. Its independently verified tree
+matches the approved 5686a7b source tree, and all eight PR/seven post-merge
+checks passed. The agreed runtime scope is frozen at that source.
 
-Then prepare matching versions, release notes and a candidate-specific guarded
-publisher; the historical 8.2.0 helpers cannot publish 8.3.0b1. Pass exact PR and
-post-merge checks, publish only the approved prerelease, and perform the
-[focused postcode/town/POI and existing-entry checks](FORECAST_LOCATION_SETUP.md#focused-candidate-checks-in-the-existing-temporary-ha)
-in the existing temporary HA. Check missing daily values/UV, source roles,
-retained IDs and reset/cancel/keep. Do not reopen completed 8.2.0 installation,
-restore or require a new blanket 24-hour wait.
+The **8.3.0b1** packaging PR changes only manifest.json/version.py inside the
+integration; all other **36 component files**, CH/HACS manifest and workflows
+match PR #59. It includes English [candidate notes](RELEASE_8.3.0b1.md), the
+[candidate-only publisher](../scripts/publish_meteoswiss_830_beta_v1.0.sh) and
+[focused acceptance protocol](ACCEPTANCE_8.3.0b1.md). This prepared packet is
+not publication or a completed HA test.
+
+Next: review the packaging PR, merge normally and verify its exact tree/checks;
+run the publisher's read-only --check against that full approved merge SHA.
+Only after the concrete candidate/publication approval use --publish, creating
+this prerelease with latest stable 8.2.0 unchanged. Then update only the existing
+temporary HA through HACS and perform the focused checks. Keep the existing
+entry, source roles, personal settings and retained IDs. Completed 8.2.0
+installation/restore/update are not reopened and no new blanket 24-hour wait
+is imposed. A specific new failure is investigated before stable promotion.
+
+Local package verification: **1,340 tests plus 53 subtests** pass on each actual
+HA 2026.8.3/2026.10.2 environment, including **45 candidate-publisher cases**.
+Combined line/branch coverage remains **99.97506%** (3,138/3,139 statements;
+870/870 branches); every existing gate/exclusion is retained. The added
+standalone-shell check exercises read-only publication preflight, report/log
+creation and the gh command boundary with executable fixtures and no checkout.
+It is not a real GitHub release or a manual HA acceptance. CI still tests HA
+2026.8.3 and 2026.10.1. Exact packaging PR/post-merge checks remain required.
 
 A reviewed implementation is not candidate acceptance, stable publication,
 HACS default-list inclusion or a complete Silver/Gold assessment.

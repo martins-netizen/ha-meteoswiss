@@ -2,6 +2,22 @@
 
 ## [Unreleased]
 
+No additional feature changes beyond the prepared 8.3.0b1 candidate below.
+
+## [8.3.0b1] — location and forecast test candidate
+
+**Packaging prepared on 24 October 2026; publication and focused HA acceptance
+are separate steps.** [Candidate notes](docs/RELEASE_8.3.0b1.md) define scope and
+limits. Runtime/source is reviewed PR #59 at
+4c8169206fdcb8688a438c16a93f867a633a344f: only manifest/module versions differ;
+36 other component files, CH/HACS metadata and workflows remain identical.
+
+- Prepare the candidate-specific check/publish helper and its mocked refusal,
+  provenance, immutable-tag, stable-preservation and uncertain-write tests.
+  Publication is prerelease-only and does not contact Home Assistant.
+- Prepare the targeted existing-temporary-HA acceptance checklist; retain
+  completed clean-install, restore and stable-update evidence.
+
 - Correct daily forecast fallback: require every expected Swiss calendar hour,
   with rain/probability assigned to the preceding hour and next-midnight bucket.
   Do not publish partial hours as whole-day extrema, totals or probability.
