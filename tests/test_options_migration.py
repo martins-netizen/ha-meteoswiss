@@ -109,10 +109,13 @@ async def test_new_setup_and_options_do_not_offer_polling(
     with pytest.raises(vol.Invalid):
         form["data_schema"]({**values, CONF_UPDATE_INTERVAL: 900})
     entry = MockConfigEntry(
-        domain=DOMAIN, options={CONF_UPDATE_INTERVAL: 1200, "unknown_option": "retain"}
+        domain=DOMAIN,
+        data={"station_id": "klo", "postal_code": "8302"},
+        options={CONF_UPDATE_INTERVAL: 1200, "unknown_option": "retain"}
     )
     entry.add_to_hass(hass)
-    form = await hass.config_entries.options.async_init(entry.entry_id)
+    with patch("custom_components.meteoswiss.config_flow.MeteoSwissOptionsFlow._load_stations", return_value=[]):
+        form = await hass.config_entries.options.async_init(entry.entry_id)
     assert CONF_UPDATE_INTERVAL not in form["data_schema"]({})
     with pytest.raises(vol.Invalid):
         form["data_schema"]({CONF_UPDATE_INTERVAL: 900})

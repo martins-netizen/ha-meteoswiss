@@ -1,10 +1,21 @@
 # Release readiness: current candidate and completed 8.2.0
 
-**Document version:** 2.1 · **Updated:** 24 October 2026
+**Document version:** 2.2 · **Updated:** 24 October 2026
 **Purpose:** One entry point for completed evidence, remaining publication steps
 and work deliberately deferred to later versions.
 
 ## Current next-feature release position
+
+**Unreleased correction review after published b2:** the operator confirmed the
+separate Säntis/Kloten device groups and otherwise reports the beta working on
+HA **2026.10.3**. Three tomorrow values remained unknown for the 25 October
+clock-change day, and the gear exposed only pollen. The
+[calendar-day and unified-settings corrections](CALENDAR_AND_LOCATION_SETTINGS.md)
+address both findings. They are a new source change requiring their own review,
+new announced package and focused HA checks; b2 publication and the earlier
+successful installation do not establish their acceptance. No stable promotion
+or additional HACS catalogue inclusion is claimed.
+
 
 The operator confirmed the HACS update to stable **8.2.0** on 22 October.
 Completed source switch, clean install, restore and Beta2 setup are retained;

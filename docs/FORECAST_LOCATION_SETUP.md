@@ -1,6 +1,6 @@
 # Choose or change a weather forecast location
 
-**Guide version:** 1.3 · **Updated:** 24 October 2026
+**Guide version:** 1.4 · **Updated:** 24 October 2026
 **Availability:** the 8.3.0b1 candidate track; published stable 8.2.0 does not
 show these dialogs. The [candidate notes](RELEASE_8.3.0b1.md) and
 [focused temporary-HA protocol](ACCEPTANCE_8.3.0b1.md) separate package review,
@@ -51,6 +51,14 @@ One configured entry has one forecast location. The existing guards against
 duplicate current-source/warning entries still apply.
 
 ## Existing entry
+
+**Unreleased after b2:** open the existing entry’s **Configure (gear)** to
+change the weather station, measured-pollen station and forecast point together.
+The separate warning postcode is in the same form. A forecast search adds
+search/select/confirm steps to that dialog; no pending choice is saved before
+final submission. [Unified-settings instructions and checks](CALENDAR_AND_LOCATION_SETTINGS.md).
+The directions below retain the published b1/b2 forecast-only path.
+
 
 Open **Settings → Devices & services → MeteoSwiss**, then the existing entry's
 **three-dot menu → Reconfigure**. In German HA this is **Neu konfigurieren**.

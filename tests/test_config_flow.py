@@ -12,6 +12,7 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.meteoswiss.config_flow import (
     MeteoSwissConfigFlow,
+    MeteoSwissOptionsFlow,
     _has_matching_meteoswiss_entry,
     _has_matching_openmeteo_entry,
     _parse_stations,
@@ -363,12 +364,14 @@ async def test_validation_total_timeout_and_cancellation(hass):
         assert not await flow._validate_source(station_id="klo")
     import asyncio
 
-    with patch(
-        "custom_components.meteoswiss.config_flow.MeteoSwissDataUpdateCoordinator.async_refresh",
-        side_effect=asyncio.CancelledError,
+    with (
+        patch(
+            "custom_components.meteoswiss.config_flow.MeteoSwissDataUpdateCoordinator.async_refresh",
+            side_effect=asyncio.CancelledError,
+        ),
+        pytest.raises(asyncio.CancelledError),
     ):
-        with pytest.raises(asyncio.CancelledError):
-            await flow._validate_source(station_id="klo")
+        await flow._validate_source(station_id="klo")
 
 
 def test_catalogue_encoding_rows_and_sorting():
@@ -416,7 +419,7 @@ async def test_options_flow_preserves_entry_identity(
 ):
     entry = MockConfigEntry(
         domain=DOMAIN,
-        data={CONF_UPDATE_INTERVAL: 900},
+        data={CONF_UPDATE_INTERVAL: 900, CONF_STATION_ID: "klo", CONF_POSTAL_CODE: "8302"},
         options={
             CONF_UPDATE_INTERVAL: 1200,
             **({CONF_POLLEN_STATION: pollen_station} if pollen_station else {}),
@@ -424,7 +427,8 @@ async def test_options_flow_preserves_entry_identity(
         unique_id="meteoswiss:klo:8302",
     )
     entry.add_to_hass(hass)
-    result = await hass.config_entries.options.async_init(entry.entry_id)
+    with patch.object(MeteoSwissOptionsFlow, "_load_stations", return_value=STATIONS):
+        result = await hass.config_entries.options.async_init(entry.entry_id)
     assert result["type"] == "form"
     assert CONF_UPDATE_INTERVAL not in result["data_schema"]({})
     assert result["data_schema"]({})[CONF_POLLEN_STATION] == (

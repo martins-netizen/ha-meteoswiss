@@ -100,15 +100,72 @@
   "options": {
     "step": {
       "init": {
-        "title": "Paramètres MeteoSwiss",
-        "description": "Modifiez la station de mesure du pollen. Les lieux des observations, des prévisions et des alertes restent inchangés. Les données sont actualisées automatiquement.",
+        "title": "MeteoSwiss – lieux et stations",
+        "description": "Choisissez ensemble la station météo, la station de mesure du pollen et le lieu de prévision. Lieu de prévision actuel : {current_location}. Le code postal des alertes est indépendant. La recherche comporte des étapes supplémentaires ; rien n’est enregistré avant la confirmation finale. Les mises à jour sont automatiques.",
         "data": {
-          "pollen_station": "Station de mesure du pollen"
+          "station_id": "Station de mesure météorologique",
+          "pollen_station": "Station de mesure du pollen",
+          "postal_code": "Code postal des alertes",
+          "forecast_action": "Lieu de prévision",
+          "latitude": "Latitude des données actuelles modélisées",
+          "longitude": "Longitude des données actuelles modélisées"
         },
         "data_description": {
-          "pollen_station": "Choisissez la station de mesure du pollen indépendamment de la station météo et du code postal des alertes. Ce choix ne modifie pas le lieu des prévisions modélisées de pollen. Vous pourrez le modifier dans Configurer."
+          "station_id": "Fournit les mesures météorologiques. Les entités existantes sont conservées ; leurs mesures proviennent ensuite de la nouvelle station.",
+          "pollen_station": "Modifie uniquement le pollen mesuré. Le pollen modélisé et la qualité de l’air conservent leur lieu de base.",
+          "postal_code": "Code postal suisse à quatre chiffres pour les alertes. Il ne sélectionne ni la station météo ni le point de prévision.",
+          "forecast_action": "Conservez le lieu affiché, recherchez un code postal/une localité/un POI ou revenez aux coordonnées de base. Le code postal de recherche ne modifie pas celui des alertes.",
+          "latitude": "Coordonnées de base des données actuelles Open-Meteo, de la qualité de l’air/du pollen/des UV modélisés et des prévisions sans point choisi. Un point de prévision explicitement choisi reste indépendant.",
+          "longitude": "Coordonnées de base des données actuelles Open-Meteo, de la qualité de l’air/du pollen/des UV modélisés et des prévisions sans point choisi. Un point de prévision explicitement choisi reste indépendant."
+        }
+      },
+      "forecast_search": {
+        "title": "Rechercher un lieu de prévision",
+        "description": "Recherchez un code postal suisse à quatre chiffres ou un nom de localité/POI, par exemple 8302, Säntis ou Gotthardpass. La recherche est locale dans le catalogue officiel de MétéoSuisse. Elle sélectionne les prévisions, pas la couverture des alertes.",
+        "data": {
+          "query": "Code postal ou localité/POI"
+        },
+        "data_description": {
+          "query": "Saisissez 2 à 128 caractères. Les accents et les graphies ae/oe/ue sont acceptés. Affinez la recherche pour obtenir au maximum 20 résultats."
+        }
+      },
+      "forecast_select": {
+        "title": "Choisir le point de prévision",
+        "description": "Choisissez explicitement le point souhaité. Les libellés indiquent nom, catégorie, altitude du catalogue au-dessus du niveau de la mer et coordonnées. Une station et un POI homonyme sont des points distincts.",
+        "data": {
+          "point": "Point de prévision"
+        },
+        "data_description": {
+          "point": "Vérifiez la catégorie et l’altitude. Un point de code postal est une coordonnée de prévision attribuée, pas un bureau de poste ni votre adresse exacte. Aucun résultat n’est présélectionné."
+        }
+      },
+      "forecast_confirm": {
+        "title": "Confirmer le lieu de prévision",
+        "description": "Appliquer ensemble : météo/données actuelles {station} ; pollen mesuré {pollen_station} ; prévision {location} ; code postal des alertes {postal_code}. Un POI de prévision ne définit pas sa couverture d’alerte. Validez pour enregistrer toutes les modifications ou annulez pour conserver les réglages précédents.",
+        "data": {
+          "search_again": "Rechercher un autre lieu"
+        },
+        "data_description": {
+          "search_again": "Activez pour revenir à la recherche sans enregistrer. Sinon, validez pour confirmer le lieu affiché."
         }
       }
+    },
+    "error": {
+      "cannot_connect": "Impossible de se connecter à l'API météo",
+      "station_not_found": "Station introuvable",
+      "invalid_location": "Coordonnées invalides",
+      "invalid_postal_code": "Saisissez un code postal suisse à quatre chiffres, par exemple 8302.",
+      "invalid_pollen_station": "Choisissez une station de mesure du pollen dans la liste.",
+      "invalid_forecast_selection": "Choisissez un lieu valide dans ce dialogue. Remplacez la sélection enregistrée non valide ou rétablissez les coordonnées de base.",
+      "invalid_forecast_query": "Saisissez 2 à 128 caractères : code postal à quatre chiffres ou nom de localité/POI.",
+      "forecast_catalogue_unavailable": "Le catalogue est temporairement indisponible. Réessayez plus tard ou annulez ; le lieu enregistré est conservé.",
+      "forecast_no_matches": "Aucun point correspondant. Vérifiez l’orthographe ou essayez un autre code postal/nom.",
+      "forecast_too_many_matches": "Plus de 20 résultats. Précisez le nom ou le code postal.",
+      "already_configured": "Une autre entrée utilise déjà ce lieu météo et ce code postal des alertes."
+    },
+    "abort": {
+      "already_configured": "Une autre entrée utilise déjà ce lieu météo et ce code postal des alertes.",
+      "configuration_changed": "D’autres réglages ont été enregistrés pendant ce dialogue. Aucune modification de ce dialogue n’a été appliquée. Rouvrez les paramètres et réessayez."
     }
   },
   "title": "MeteoSwiss",

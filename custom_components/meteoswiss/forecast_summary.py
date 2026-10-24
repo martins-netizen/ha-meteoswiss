@@ -39,8 +39,10 @@ def _midnight(day: date) -> datetime:
     return datetime.combine(day, time.min, FORECAST_TIME_ZONE).astimezone(UTC)
 
 
-def _daily_value(rows: list[Any], target: date, metric: ForecastMetric) -> float | None:
-    """Use a native whole-day value; never sum a partial hourly series."""
+def _daily_value(
+    rows: list[Any], target: date, metric: ForecastMetric
+) -> tuple[float | None, dict[str, Any]]:
+    """Use a validated whole-day value and retain its aggregation provenance."""
     field = {
         "maximum_temperature": "daily_temperature_max",
         "minimum_temperature": "daily_temperature_min",
@@ -51,8 +53,15 @@ def _daily_value(rows: list[Any], target: date, metric: ForecastMetric) -> float
             continue
         value = weather_number(row.get(field), 0 if metric == "precipitation" else None)
         if value is not None:
-            return value
-    return None
+            details = {}
+            if row.get("daily_aggregation") in (
+                "provider_daily",
+                "hourly_calendar_day",
+            ):
+                details["aggregation"] = row["daily_aggregation"]
+                details["day_hours"] = row.get("daily_hours")
+            return value, details
+    return None, {}
 
 
 def _probability_values(
@@ -105,7 +114,8 @@ def summarize_forecast(
         "fetched_at": fetched.isoformat() if fetched else None,
     }
     if metric != "probability":
-        return _daily_value(rows, target, metric), attributes
+        value, details = _daily_value(rows, target, metric)
+        return value, {**attributes, **details}
 
     first = _midnight(target)
     last = _midnight(target + timedelta(days=1))

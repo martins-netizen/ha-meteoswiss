@@ -105,20 +105,10 @@ def _parse_stations(content: bytes) -> list[dict[str, Any]]:
         return []
 
 
-class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
-    """Handle public APIs; no account or authentication is needed."""
+class _LocationFlowMixin:
+    """Share validated location search between setup and existing-entry options."""
 
-    VERSION = 1
-    MINOR_VERSION = 2
-
-    @staticmethod
-    @callback
-    def async_get_options_flow(config_entry):
-        """Return the HA-managed options flow."""
-        return MeteoSwissOptionsFlow()
-
-    def __init__(self) -> None:
-        self._pollen_station = DEFAULT_POLLEN_STATION
+    def _init_location_flow(self) -> None:
         self._stations: list[dict[str, Any]] = []
         self._pending_data: dict[str, Any] = {}
         self._pending_title = ""
@@ -164,154 +154,6 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
             return False
         return coordinator.last_update_success
 
-    async def async_step_user(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
-        """Choose weather source and the independent measured-pollen station."""
-        errors = {}
-        if user_input is not None:
-            pollen_station = user_input.get(CONF_POLLEN_STATION)
-            if (
-                not isinstance(pollen_station, str)
-                or pollen_station not in POLLEN_STATIONS
-            ):
-                errors[CONF_POLLEN_STATION] = "invalid_pollen_station"
-            else:
-                self._pollen_station = pollen_station
-                if user_input[CONF_DATA_SOURCE] == DATA_SOURCE_OPENMETEO:
-                    return await self.async_step_openmeteo()
-                return await self.async_step_meteoswiss()
-        return self.async_show_form(
-            step_id="user",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(
-                        CONF_DATA_SOURCE, default=DATA_SOURCE_OPENMETEO
-                    ): SelectSelector(
-                        SelectSelectorConfig(
-                            options=[DATA_SOURCE_OPENMETEO, DATA_SOURCE_METEOSWISS],
-                            translation_key="data_source",
-                            mode=SelectSelectorMode.DROPDOWN,
-                        )
-                    ),
-                    vol.Required(CONF_POLLEN_STATION): vol.In(POLLEN_STATIONS),
-                }
-            ),
-            errors=errors,
-        )
-
-    async def async_step_meteoswiss(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
-        """Validate the selected station before creating a config entry."""
-        errors = {}
-        if user_input is not None:
-            station_id = user_input[CONF_STATION_ID].strip().lower()
-            postcode = user_input[CONF_POSTAL_CODE].strip()
-            if not WARNING_POSTCODE.fullmatch(postcode):
-                errors[CONF_POSTAL_CODE] = "invalid_postal_code"
-            else:
-                if _has_matching_meteoswiss_entry(
-                    self._async_current_entries(), station_id, postcode
-                ):
-                    return self.async_abort(reason="already_configured")
-                await self.async_set_unique_id(
-                    f"{DATA_SOURCE_METEOSWISS}:{station_id}:{postcode}"
-                )
-                self._abort_if_unique_id_configured()
-        if not self._stations:
-            self._stations = await self._load_stations()
-        if not self._stations:
-            errors["base"] = "cannot_connect"
-        elif user_input is not None and not errors:
-            station = next(
-                (item for item in self._stations if item["id"] == station_id), None
-            )
-            if station is None:
-                errors["base"] = "station_not_found"
-            elif not await self._validate_source(station_id=station_id):
-                errors["base"] = "cannot_connect"
-            else:
-                self._pending_title = (
-                    f"MeteoSwiss {station['name']} ({station_id.upper()})"
-                )
-                self._pending_data = {
-                    CONF_DATA_SOURCE: DATA_SOURCE_METEOSWISS,
-                    CONF_POSTAL_CODE: postcode,
-                    CONF_STATION_ID: station_id,
-                    CONF_STATION_NAME: station["name"],
-                    CONF_LATITUDE: station["lat"],
-                    CONF_LONGITUDE: station["lon"],
-                }
-                return await self.async_step_forecast_location()
-        return self.async_show_form(
-            step_id="meteoswiss",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_POSTAL_CODE): str,
-                    # Keep the field usable when loading the catalogue failed: the
-                    # user can submit again to retry, rather than an empty dropdown.
-                    vol.Required(CONF_STATION_ID): vol.In(
-                        {s["id"]: s["label"] for s in self._stations}
-                    )
-                    if self._stations
-                    else str,
-                }
-            ),
-            errors=errors,
-        )
-
-    async def async_step_openmeteo(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
-        """Validate coordinates and availability, and reject duplicate entries."""
-        errors = {}
-        if user_input is not None:
-            latitude, longitude = user_input[CONF_LATITUDE], user_input[CONF_LONGITUDE]
-            postcode = user_input[CONF_POSTAL_CODE].strip()
-            if not WARNING_POSTCODE.fullmatch(postcode):
-                errors[CONF_POSTAL_CODE] = "invalid_postal_code"
-            elif not (
-                math.isfinite(latitude)
-                and math.isfinite(longitude)
-                and -90 <= latitude <= 90
-                and -180 <= longitude <= 180
-            ):
-                errors["base"] = "invalid_location"
-            else:
-                if _has_matching_openmeteo_entry(
-                    self._async_current_entries(), latitude, longitude, postcode
-                ):
-                    return self.async_abort(reason="already_configured")
-                await self.async_set_unique_id(
-                    f"{DATA_SOURCE_OPENMETEO}:{latitude}:{longitude}:{postcode}"
-                )
-                self._abort_if_unique_id_configured()
-                if await self._validate_source(latitude=latitude, longitude=longitude):
-                    self._pending_title = (
-                        f"Open-Meteo ({latitude:.2f}, {longitude:.2f})"
-                    )
-                    self._pending_data = {
-                        CONF_DATA_SOURCE: DATA_SOURCE_OPENMETEO,
-                        CONF_POSTAL_CODE: postcode,
-                        CONF_LATITUDE: latitude,
-                        CONF_LONGITUDE: longitude,
-                        CONF_STATION_NAME: "Open-Meteo",
-                    }
-                    return await self.async_step_forecast_location()
-                errors["base"] = "cannot_connect"
-        return self.async_show_form(
-            step_id="openmeteo",
-            data_schema=vol.Schema(
-                {
-                    vol.Required(CONF_POSTAL_CODE): str,
-                    vol.Required(CONF_LATITUDE, default=47.05): vol.Coerce(float),
-                    vol.Required(CONF_LONGITUDE, default=8.31): vol.Coerce(float),
-                }
-            ),
-            errors=errors,
-        )
-
     async def _forecast_labels(self) -> dict[str, str]:
         language = self.context.get("language", self.hass.config.language)
         translations = await async_get_translations(
@@ -334,15 +176,6 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
             else f"{point.altitude_masl:g} m"
         )
         return f"{name} · {labels[str(point.point_type)]} · {height}"
-
-    async def async_step_reconfigure(
-        self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
-        """Change only forecast selection; keep current source/warning/pollen roles."""
-        entry = self._get_reconfigure_entry()
-        self._pending_data = dict(entry.data)
-        self._pending_title = entry.title
-        return await self.async_step_forecast_location(user_input)
 
     async def async_step_forecast_location(
         self, user_input: dict[str, Any] | None = None
@@ -514,9 +347,187 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
             description_placeholders={
                 "location": description,
                 "postal_code": self._pending_data.get(CONF_POSTAL_CODE, "—"),
+                **self._forecast_confirmation_details(),
             },
             last_step=True,
         )
+
+    def _forecast_confirmation_details(self) -> dict[str, str]:
+        return {}
+
+
+class MeteoSwissConfigFlow(_LocationFlowMixin, ConfigFlow, domain=DOMAIN):
+    """Handle public APIs; no account or authentication is needed."""
+
+    VERSION = 1
+    MINOR_VERSION = 2
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):
+        """Return the HA-managed options flow."""
+        return MeteoSwissOptionsFlow()
+
+    def __init__(self) -> None:
+        self._init_location_flow()
+        self._pollen_station = DEFAULT_POLLEN_STATION
+
+    async def async_step_user(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Choose weather source and the independent measured-pollen station."""
+        errors = {}
+        if user_input is not None:
+            pollen_station = user_input.get(CONF_POLLEN_STATION)
+            if (
+                not isinstance(pollen_station, str)
+                or pollen_station not in POLLEN_STATIONS
+            ):
+                errors[CONF_POLLEN_STATION] = "invalid_pollen_station"
+            else:
+                self._pollen_station = pollen_station
+                if user_input[CONF_DATA_SOURCE] == DATA_SOURCE_OPENMETEO:
+                    return await self.async_step_openmeteo()
+                return await self.async_step_meteoswiss()
+        return self.async_show_form(
+            step_id="user",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(
+                        CONF_DATA_SOURCE, default=DATA_SOURCE_OPENMETEO
+                    ): SelectSelector(
+                        SelectSelectorConfig(
+                            options=[DATA_SOURCE_OPENMETEO, DATA_SOURCE_METEOSWISS],
+                            translation_key="data_source",
+                            mode=SelectSelectorMode.DROPDOWN,
+                        )
+                    ),
+                    vol.Required(CONF_POLLEN_STATION): vol.In(POLLEN_STATIONS),
+                }
+            ),
+            errors=errors,
+        )
+
+    async def async_step_meteoswiss(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Validate the selected station before creating a config entry."""
+        errors = {}
+        if user_input is not None:
+            station_id = user_input[CONF_STATION_ID].strip().lower()
+            postcode = user_input[CONF_POSTAL_CODE].strip()
+            if not WARNING_POSTCODE.fullmatch(postcode):
+                errors[CONF_POSTAL_CODE] = "invalid_postal_code"
+            else:
+                if _has_matching_meteoswiss_entry(
+                    self._async_current_entries(), station_id, postcode
+                ):
+                    return self.async_abort(reason="already_configured")
+                await self.async_set_unique_id(
+                    f"{DATA_SOURCE_METEOSWISS}:{station_id}:{postcode}"
+                )
+                self._abort_if_unique_id_configured()
+        if not self._stations:
+            self._stations = await self._load_stations()
+        if not self._stations:
+            errors["base"] = "cannot_connect"
+        elif user_input is not None and not errors:
+            station = next(
+                (item for item in self._stations if item["id"] == station_id), None
+            )
+            if station is None:
+                errors["base"] = "station_not_found"
+            elif not await self._validate_source(station_id=station_id):
+                errors["base"] = "cannot_connect"
+            else:
+                self._pending_title = (
+                    f"MeteoSwiss {station['name']} ({station_id.upper()})"
+                )
+                self._pending_data = {
+                    CONF_DATA_SOURCE: DATA_SOURCE_METEOSWISS,
+                    CONF_POSTAL_CODE: postcode,
+                    CONF_STATION_ID: station_id,
+                    CONF_STATION_NAME: station["name"],
+                    CONF_LATITUDE: station["lat"],
+                    CONF_LONGITUDE: station["lon"],
+                }
+                return await self.async_step_forecast_location()
+        return self.async_show_form(
+            step_id="meteoswiss",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_POSTAL_CODE): str,
+                    # Keep the field usable when loading the catalogue failed: the
+                    # user can submit again to retry, rather than an empty dropdown.
+                    vol.Required(CONF_STATION_ID): vol.In(
+                        {s["id"]: s["label"] for s in self._stations}
+                    )
+                    if self._stations
+                    else str,
+                }
+            ),
+            errors=errors,
+        )
+
+    async def async_step_openmeteo(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Validate coordinates and availability, and reject duplicate entries."""
+        errors = {}
+        if user_input is not None:
+            latitude, longitude = user_input[CONF_LATITUDE], user_input[CONF_LONGITUDE]
+            postcode = user_input[CONF_POSTAL_CODE].strip()
+            if not WARNING_POSTCODE.fullmatch(postcode):
+                errors[CONF_POSTAL_CODE] = "invalid_postal_code"
+            elif not (
+                math.isfinite(latitude)
+                and math.isfinite(longitude)
+                and -90 <= latitude <= 90
+                and -180 <= longitude <= 180
+            ):
+                errors["base"] = "invalid_location"
+            else:
+                if _has_matching_openmeteo_entry(
+                    self._async_current_entries(), latitude, longitude, postcode
+                ):
+                    return self.async_abort(reason="already_configured")
+                await self.async_set_unique_id(
+                    f"{DATA_SOURCE_OPENMETEO}:{latitude}:{longitude}:{postcode}"
+                )
+                self._abort_if_unique_id_configured()
+                if await self._validate_source(latitude=latitude, longitude=longitude):
+                    self._pending_title = (
+                        f"Open-Meteo ({latitude:.2f}, {longitude:.2f})"
+                    )
+                    self._pending_data = {
+                        CONF_DATA_SOURCE: DATA_SOURCE_OPENMETEO,
+                        CONF_POSTAL_CODE: postcode,
+                        CONF_LATITUDE: latitude,
+                        CONF_LONGITUDE: longitude,
+                        CONF_STATION_NAME: "Open-Meteo",
+                    }
+                    return await self.async_step_forecast_location()
+                errors["base"] = "cannot_connect"
+        return self.async_show_form(
+            step_id="openmeteo",
+            data_schema=vol.Schema(
+                {
+                    vol.Required(CONF_POSTAL_CODE): str,
+                    vol.Required(CONF_LATITUDE, default=47.05): vol.Coerce(float),
+                    vol.Required(CONF_LONGITUDE, default=8.31): vol.Coerce(float),
+                }
+            ),
+            errors=errors,
+        )
+
+    async def async_step_reconfigure(
+        self, user_input: dict[str, Any] | None = None
+    ) -> FlowResult:
+        """Change only forecast selection; keep current source/warning/pollen roles."""
+        entry = self._get_reconfigure_entry()
+        self._pending_data = dict(entry.data)
+        self._pending_title = entry.title
+        return await self.async_step_forecast_location(user_input)
 
     def _finish_forecast_selection(self, *, change: bool) -> FlowResult:
         if self.source == SOURCE_RECONFIGURE:
@@ -544,31 +555,267 @@ class MeteoSwissConfigFlow(ConfigFlow, domain=DOMAIN):
         )
 
 
-class MeteoSwissOptionsFlow(OptionsFlow):
-    """Edit options without replacing the entry or its entity IDs."""
+class MeteoSwissOptionsFlow(_LocationFlowMixin, OptionsFlow):
+    """Stage all three locations together, and apply only the confirmed result."""
+
+    def __init__(self) -> None:
+        self._init_location_flow()
+        self._original_data: dict[str, Any] | None = None
+        self._original_options: dict[str, Any] = {}
+        self._pending_options: dict[str, Any] = {}
+        self._settings_input: dict[str, Any] = {}
+        self._options_stations_loaded = False
+
+    def _duplicate_observation(self, data: dict[str, Any]) -> bool:
+        others = [
+            entry
+            for entry in self.hass.config_entries.async_entries(DOMAIN)
+            if entry.entry_id != self.config_entry.entry_id
+        ]
+        if data.get(CONF_DATA_SOURCE, DATA_SOURCE_METEOSWISS) == DATA_SOURCE_METEOSWISS:
+            return _has_matching_meteoswiss_entry(
+                others, data.get(CONF_STATION_ID, ""), data.get(CONF_POSTAL_CODE, "")
+            )
+        return _has_matching_openmeteo_entry(
+            others,
+            data.get(CONF_LATITUDE),
+            data.get(CONF_LONGITUDE),
+            data.get(CONF_POSTAL_CODE, ""),
+        )
+
+    async def _stage_station(self, data: dict[str, Any], station_id: str) -> str | None:
+        previous = str(self.config_entry.data.get(CONF_STATION_ID, "")).strip().lower()
+        if station_id == previous:
+            return None
+        if not self._stations:
+            self._stations = await self._load_stations()
+        station = next(
+            (item for item in self._stations if item["id"] == station_id), None
+        )
+        if station is None:
+            return "station_not_found"
+        if not await self._validate_source(station_id=station_id):
+            return "cannot_connect"
+        data.update(
+            {
+                CONF_STATION_ID: station_id,
+                CONF_STATION_NAME: station["name"],
+                CONF_LATITUDE: station["lat"],
+                CONF_LONGITUDE: station["lon"],
+            }
+        )
+        return None
+
+    async def _stage_coordinates(
+        self, data: dict[str, Any], lat: float, lon: float
+    ) -> str | None:
+        if not (
+            math.isfinite(lat)
+            and math.isfinite(lon)
+            and -90 <= lat <= 90
+            and -180 <= lon <= 180
+        ):
+            return "invalid_location"
+        previous = self.config_entry.data
+        if (lat, lon) != (
+            previous.get(CONF_LATITUDE),
+            previous.get(CONF_LONGITUDE),
+        ) and not await self._validate_source(latitude=lat, longitude=lon):
+            return "cannot_connect"
+        data.update({CONF_LATITUDE: lat, CONF_LONGITUDE: lon})
+        return None
+
+    async def _stage_settings(
+        self, user_input: dict[str, Any], station_based: bool
+    ) -> tuple[dict[str, Any], dict[str, str]]:
+        data = dict(self._original_data)
+        errors = {}
+        pollen = user_input.get(CONF_POLLEN_STATION)
+        postcode = user_input[CONF_POSTAL_CODE].strip()
+        data[CONF_POSTAL_CODE] = postcode
+        if not isinstance(pollen, str) or pollen not in POLLEN_STATIONS:
+            errors[CONF_POLLEN_STATION] = "invalid_pollen_station"
+        if not WARNING_POSTCODE.fullmatch(postcode):
+            errors[CONF_POSTAL_CODE] = "invalid_postal_code"
+        if errors:
+            return data, errors
+        if station_based:
+            error = await self._stage_station(
+                data, user_input[CONF_STATION_ID].strip().lower()
+            )
+        else:
+            error = await self._stage_coordinates(
+                data, user_input[CONF_LATITUDE], user_input[CONF_LONGITUDE]
+            )
+        if error is not None:
+            errors["base"] = error
+        elif self._duplicate_observation(data):
+            errors["base"] = "already_configured"
+        return data, errors
+
+    async def _settings_forecast_action(
+        self, action: str, station_based: bool
+    ) -> FlowResult:
+        if action == "search":
+            return await self.async_step_forecast_search()
+        if action == "base":
+            self._selected_location = None
+            return await self.async_step_forecast_confirm()
+        if (
+            action == "keep"
+            and resolve_forecast_target(self._pending_data, None, None).status
+            != "invalid"
+        ):
+            return self._finish_forecast_selection(change=False)
+        return await self._settings_form(
+            station_based, {"base": "invalid_forecast_selection"}
+        )
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
     ) -> FlowResult:
-        if user_input is not None:
-            # The form edits one supported setting. Preserve legacy polling and
-            # other saved options that are deliberately not exposed by this UI.
-            options = dict(self.config_entry.options)
-            options[CONF_POLLEN_STATION] = user_input.get(
-                CONF_POLLEN_STATION,
-                options.get(CONF_POLLEN_STATION, DEFAULT_POLLEN_STATION),
+        entry = self.config_entry
+        if self._original_data is None:
+            self._original_data = dict(entry.data)
+            self._original_options = dict(entry.options)
+            self._pending_data = dict(entry.data)
+            self._pending_options = dict(entry.options)
+            self._pending_title = entry.title
+        station_based = (
+            entry.data.get(CONF_DATA_SOURCE, DATA_SOURCE_METEOSWISS)
+            == DATA_SOURCE_METEOSWISS
+        )
+        if station_based and not self._options_stations_loaded:
+            self._stations = await self._load_stations()
+            self._options_stations_loaded = True
+        if user_input is None:
+            return await self._settings_form(station_based, {})
+        self._settings_input = dict(user_input)
+        data, errors = await self._stage_settings(user_input, station_based)
+        if errors:
+            return await self._settings_form(station_based, errors)
+        self._pending_data = data
+        self._pending_options[CONF_POLLEN_STATION] = user_input[CONF_POLLEN_STATION]
+        return await self._settings_forecast_action(
+            user_input["forecast_action"], station_based
+        )
+
+    async def _settings_form(
+        self, station_based: bool, errors: dict[str, str]
+    ) -> FlowResult:
+        entry = self.config_entry
+        values = {
+            **entry.data,
+            CONF_POLLEN_STATION: entry.options.get(
+                CONF_POLLEN_STATION, DEFAULT_POLLEN_STATION
+            ),
+            **self._settings_input,
+        }
+        schema = {}
+        if station_based:
+            choices = {station["id"]: station["label"] for station in self._stations}
+            current = str(entry.data.get(CONF_STATION_ID, "")).strip().lower()
+            choices.setdefault(
+                current, entry.data.get(CONF_STATION_NAME, current.upper())
             )
-            return self.async_create_entry(title="", data=options)
+            schema[
+                vol.Required(
+                    CONF_STATION_ID,
+                    default=str(values.get(CONF_STATION_ID, current)).strip().lower(),
+                )
+            ] = vol.In(choices) if self._stations else str
+        else:
+            for key in (CONF_LATITUDE, CONF_LONGITUDE):
+                schema[vol.Required(key, default=values.get(key, 0))] = vol.Coerce(
+                    float
+                )
+        target = resolve_forecast_target(entry.data, None, None)
+        actions = (
+            ["search", "base"]
+            if target.status == "invalid"
+            else ["keep", "search", "base"]
+        )
+        schema[
+            vol.Required(CONF_POLLEN_STATION, default=values[CONF_POLLEN_STATION])
+        ] = vol.In(POLLEN_STATIONS)
+        schema[vol.Required("forecast_action", default=actions[0])] = SelectSelector(
+            SelectSelectorConfig(
+                options=actions,
+                translation_key="forecast_location_action",
+                mode=SelectSelectorMode.DROPDOWN,
+            )
+        )
+        schema[
+            vol.Required(CONF_POSTAL_CODE, default=values.get(CONF_POSTAL_CODE, ""))
+        ] = str
+        labels = await self._forecast_labels()
+        current = (
+            self._point_label(target.location, labels)
+            if target.location
+            else labels[target.status]
+        )
         return self.async_show_form(
             step_id="init",
-            data_schema=vol.Schema(
-                {
-                    vol.Optional(
-                        CONF_POLLEN_STATION,
-                        default=self.config_entry.options.get(
-                            CONF_POLLEN_STATION, DEFAULT_POLLEN_STATION
-                        ),
-                    ): vol.In(POLLEN_STATIONS),
-                }
-            ),
+            data_schema=vol.Schema(schema),
+            description_placeholders={"current_location": current},
+            errors=errors,
         )
+
+    def _forecast_confirmation_details(self) -> dict[str, str]:
+        station = self._pending_data.get(CONF_STATION_NAME, "Open-Meteo")
+        if self._pending_data.get(CONF_DATA_SOURCE) == DATA_SOURCE_OPENMETEO:
+            station = (
+                f"Open-Meteo ({self._pending_data[CONF_LATITUDE]:.2f}, "
+                f"{self._pending_data[CONF_LONGITUDE]:.2f})"
+            )
+        return {
+            "station": station,
+            "pollen_station": POLLEN_STATIONS[
+                self._pending_options[CONF_POLLEN_STATION]
+            ],
+        }
+
+    def _finish_forecast_selection(self, *, change: bool) -> FlowResult:
+        entry = self.config_entry
+        if (
+            dict(entry.data) != self._original_data
+            or dict(entry.options) != self._original_options
+        ):
+            return self.async_abort(reason="configuration_changed")
+        data = dict(self._pending_data)
+        if change:
+            data.pop(CONF_FORECAST_LOCATION, None)
+            if self._selected_location is not None:
+                data[CONF_FORECAST_LOCATION] = encode_forecast_location(
+                    self._selected_location
+                )
+        if self._duplicate_observation(data):
+            return self.async_abort(reason="already_configured")
+        source = data.get(CONF_DATA_SOURCE, DATA_SOURCE_METEOSWISS)
+        if source == DATA_SOURCE_METEOSWISS:
+            identity = f"{source}:{str(data.get(CONF_STATION_ID, '')).strip().lower()}:{data.get(CONF_POSTAL_CODE, '')}"
+            old_title = f"MeteoSwiss {entry.data.get(CONF_STATION_NAME)} ({str(entry.data.get(CONF_STATION_ID, '')).upper()})"
+            new_title = f"MeteoSwiss {data.get(CONF_STATION_NAME)} ({str(data.get(CONF_STATION_ID, '')).upper()})"
+        else:
+            lat, lon = data.get(CONF_LATITUDE, 0), data.get(CONF_LONGITUDE, 0)
+            identity = f"{source}:{lat}:{lon}:{data.get(CONF_POSTAL_CODE, '')}"
+            old_title = f"Open-Meteo ({entry.data.get(CONF_LATITUDE, 0):.2f}, {entry.data.get(CONF_LONGITUDE, 0):.2f})"
+            new_title = f"Open-Meteo ({lat:.2f}, {lon:.2f})"
+        # A unique ID for the *config entry* tracks its observation identity.
+        # The entry_id and existing entity IDs remain unchanged. External
+        # precipitation archives retain their separate station-specific IDs.
+        updates = {"data": data, "options": dict(self._pending_options)}
+        if entry.title == old_title:
+            updates["title"] = new_title
+        identity_fields = (
+            CONF_STATION_ID,
+            CONF_POSTAL_CODE,
+            CONF_LATITUDE,
+            CONF_LONGITUDE,
+        )
+        if entry.unique_id is not None and any(
+            data.get(key) != self._original_data.get(key) for key in identity_fields
+        ):
+            updates["unique_id"] = identity
+        self.hass.config_entries.async_update_entry(entry, **updates)
+        return self.async_create_entry(title="", data=dict(self._pending_options))

@@ -100,15 +100,72 @@
   "options": {
     "step": {
       "init": {
-        "title": "MeteoSwiss Settings",
-        "description": "Change the station for measured pollen. Weather, forecast and warning locations stay unchanged. Updates are scheduled automatically.",
+        "title": "MeteoSwiss locations and stations",
+        "description": "Choose the weather measuring station, measured-pollen station and forecast location together. Current forecast location: {current_location}. The warning postcode is independent. Search opens further steps; nothing is saved until you submit the final choice. Updates are automatic.",
         "data": {
-          "pollen_station": "Station for measured pollen"
+          "station_id": "Weather measuring station",
+          "pollen_station": "Station for measured pollen",
+          "postal_code": "Warning postcode",
+          "forecast_action": "Forecast location",
+          "latitude": "Current-data latitude",
+          "longitude": "Current-data longitude"
         },
         "data_description": {
-          "pollen_station": "Choose the pollen measuring station independently of the weather station and warning postcode. This choice does not change the modelled pollen forecast location. You can change it later in Configure."
+          "station_id": "Supplies measured weather values. Changing it keeps the existing entities; their readings follow the new station from this change onward.",
+          "pollen_station": "Only measured pollen changes. Modelled pollen and air quality keep their base location.",
+          "postal_code": "Four-digit Swiss postcode for warnings. This does not select the weather station or forecast point.",
+          "forecast_action": "Keep the displayed forecast point, search by postcode/town/POI, or return to the original base coordinates. A forecast search postcode does not change the warning postcode.",
+          "latitude": "Base coordinates for Open-Meteo current data, modelled air quality/pollen/UV and a forecast without an explicit point. An explicitly chosen forecast point remains independent.",
+          "longitude": "Base coordinates for Open-Meteo current data, modelled air quality/pollen/UV and a forecast without an explicit point. An explicitly chosen forecast point remains independent."
+        }
+      },
+      "forecast_search": {
+        "title": "Find a forecast location",
+        "description": "Search by four-digit Swiss postcode or a town/POI name, for example 8302, Säntis or Gotthardpass. The search is local to the official MeteoSwiss catalogue. This selects weather forecasts, not warning coverage.",
+        "data": {
+          "query": "Postcode or town/POI"
+        },
+        "data_description": {
+          "query": "Enter 2–128 characters. Accents and ae/oe/ue spellings are supported. Narrow a broad search until at most 20 results remain."
+        }
+      },
+      "forecast_select": {
+        "title": "Select the forecast point",
+        "description": "Choose the intended point explicitly. Labels show name, point category, catalogue height above sea level and coordinates. Stations and same-named POIs are different forecast points.",
+        "data": {
+          "point": "Forecast point"
+        },
+        "data_description": {
+          "point": "Check category and height. A postal-code point is an assigned forecast coordinate, not a post office or your exact home address. No result is preselected."
+        }
+      },
+      "forecast_confirm": {
+        "title": "Confirm the forecast location",
+        "description": "Apply these choices together: weather/current data {station}; measured pollen {pollen_station}; forecast {location}; warning postcode {postal_code}. A forecast POI does not establish warning coverage for that POI. Submit to save all pending changes, or cancel to retain the previous settings.",
+        "data": {
+          "search_again": "Search for another location"
+        },
+        "data_description": {
+          "search_again": "Enable to return to search without saving. Otherwise submit to confirm the displayed location."
         }
       }
+    },
+    "error": {
+      "cannot_connect": "Could not connect to weather API",
+      "station_not_found": "Station not found",
+      "invalid_location": "Invalid coordinates",
+      "invalid_postal_code": "Enter a four-digit Swiss postal code, for example 8302.",
+      "invalid_pollen_station": "Select a pollen measuring station from the list.",
+      "invalid_forecast_selection": "Choose a valid forecast location from this dialog. An invalid saved selection must be replaced or reset to the base coordinates.",
+      "invalid_forecast_query": "Enter 2–128 characters: a four-digit postcode or a town/POI name.",
+      "forecast_catalogue_unavailable": "The location catalogue is temporarily unavailable. Retry later or cancel; the saved location is retained.",
+      "forecast_no_matches": "No matching forecast point. Check the spelling or try another postcode/name.",
+      "forecast_too_many_matches": "More than 20 matches. Enter a more precise name or postcode.",
+      "already_configured": "Another entry already uses this weather location and warning postcode."
+    },
+    "abort": {
+      "already_configured": "Another entry already uses this weather location and warning postcode.",
+      "configuration_changed": "Other settings were saved while this dialog was open. Nothing from this dialog was applied. Reopen the settings and retry."
     }
   },
   "title": "MeteoSwiss",

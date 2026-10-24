@@ -21,6 +21,8 @@ from .weather_data import (
 _LOGGER = logging.getLogger(__name__)
 
 OPEN_METEO_BASE_URL = "https://api.open-meteo.com/v1/forecast"
+FORECAST_HOURS = 120
+CALENDAR_PAST_HOURS = 25
 
 
 def _series(block: dict[str, Any], key: str) -> list[Any]:
@@ -49,6 +51,39 @@ def _timestamp(raw: Any) -> datetime:
     if value is None:
         raise ValueError("Invalid forecast timestamp")
     return value
+
+
+def _calendar_hourly_values(
+    hourly: dict[str, Any], timestamps: list[datetime], first: datetime, last: datetime
+) -> dict[str, Any]:
+    """Aggregate a complete Swiss day; rain timestamps end the preceding hour."""
+    hours = int((last - first).total_seconds() // 3600)
+    instants = {first + timedelta(hours=i) for i in range(hours)}
+    interval_ends = {stamp + timedelta(hours=1) for stamp in instants}
+
+    def complete(key: str, expected: set[datetime], minimum=None, maximum=None):
+        series = _series(hourly, key)
+        values = {
+            stamp: _value(series, i, minimum, maximum)
+            for i, stamp in enumerate(timestamps)
+            if stamp in expected
+        }
+        if values.keys() != expected or any(v is None for v in values.values()):
+            return []
+        return list(values.values())
+
+    temperatures = complete("temperature_2m", instants)
+    rain = complete("precipitation", interval_ends, 0)
+    probabilities = complete("precipitation_probability", interval_ends, 0, 100)
+    return {
+        "temperature_max": max(temperatures) if temperatures else None,
+        "temperature_min": min(temperatures) if temperatures else None,
+        "temperature_mean": sum(temperatures) / hours if temperatures else None,
+        "precipitation": sum(rain) if rain else None,
+        "precipitation_probability": max(probabilities) if probabilities else None,
+        "aggregation": "hourly_calendar_day",
+        "hours": hours,
+    }
 
 
 class IconForecastError(Exception):
@@ -99,7 +134,7 @@ class IconForecastClient:
             f"?latitude={self._latitude}"
             f"&longitude={self._longitude}"
             f"&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,precipitation,windspeed_10m,winddirection_10m,weather_code,is_day,snowfall,freezing_level_height"
-            f"&forecast_hours=120"
+            f"&forecast_hours={FORECAST_HOURS}&past_hours={CALENDAR_PAST_HOURS}"
             f"&daily=temperature_2m_max,temperature_2m_min,temperature_2m_mean,precipitation_sum,precipitation_probability_max"
             f"&models=meteoswiss_icon_seamless"
             f"&timezone=Europe/Zurich&timeformat=unixtime"
@@ -126,7 +161,9 @@ class IconForecastClient:
             raise TypeError("Invalid hourly forecast object")
 
         times = _series(hourly, "time")
-        timestamps = [_timestamp(raw) for raw in times[:120]]
+        timestamps = [
+            _timestamp(raw) for raw in times[: FORECAST_HOURS + CALENDAR_PAST_HOURS]
+        ]
         if not timestamps or any(a >= b for a, b in pairwise(timestamps)):
             raise ValueError("Forecast times are empty or out of order")
         now = datetime.now(UTC)
@@ -157,7 +194,7 @@ class IconForecastClient:
         daily_mean_temps = _series(daily, "temperature_2m_mean")
         daily_precip = _series(daily, "precipitation_sum")
         daily_precip_prob = _series(daily, "precipitation_probability_max")
-        daily_extrema: dict[str, dict[str, float | None]] = {}
+        daily_extrema: dict[str, dict[str, Any]] = {}
         # Open-Meteo daily buckets use the response's fixed offset, even
         # across DST. Preserve their date labels; hourly timestamps use IANA.
         provider_offset = data.get("utc_offset_seconds")
@@ -175,13 +212,15 @@ class IconForecastClient:
                 last = datetime.combine(
                     local_day + timedelta(days=1), time.min, FORECAST_TIME_ZONE
                 )
-                # A fixed-offset 24-hour bucket can cross different boundaries
-                # from the advertised Swiss day. Preserve the hourly forecast,
-                # but do not present those aggregates as whole-calendar values.
-                if (
-                    day_time != first.astimezone(UTC)
-                    or day_time + timedelta(days=1) != last.astimezone(UTC)
-                ):
+                # A provider's fixed 24-hour bucket may not be a Swiss day.
+                # Rebuild only these mismatched buckets from the same response,
+                # with a complete independent coverage check for each field.
+                if day_time != first.astimezone(UTC) or day_time + timedelta(
+                    days=1
+                ) != last.astimezone(UTC):
+                    daily_extrema[local_day.isoformat()] = _calendar_hourly_values(
+                        hourly, timestamps, first.astimezone(UTC), last.astimezone(UTC)
+                    )
                     continue
             daily_extrema[local_day.isoformat()] = {
                 "temperature_max": _value(daily_max_temps, i),
@@ -189,10 +228,16 @@ class IconForecastClient:
                 "precipitation": _value(daily_precip, i, 0),
                 "precipitation_probability": _value(daily_precip_prob, i, 0, 100),
                 "temperature_mean": _value(daily_mean_temps, i),
+                "aggregation": "provider_daily",
+                "hours": 24,
             }
 
         fetched_at = datetime.now(UTC).isoformat()
-        for i in range(min(120, len(times))):
+        current_hour = now.replace(minute=0, second=0, microsecond=0)
+        projection = [i for i, stamp in enumerate(timestamps) if stamp >= current_hour][
+            :FORECAST_HOURS
+        ]
+        for i in projection:
             raw_code = _value(weather_codes, i, 0)
             code = (
                 int(raw_code)
@@ -220,6 +265,8 @@ class IconForecastClient:
                 "daily_temperature_max": daily_values.get("temperature_max"),
                 "daily_temperature_min": daily_values.get("temperature_min"),
                 "daily_temperature_mean": daily_values.get("temperature_mean"),
+                "daily_aggregation": daily_values.get("aggregation"),
+                "daily_hours": daily_values.get("hours"),
                 "humidity": _value(humidity, i, 0, 100),
                 "precipitation_probability": _value(precip_prob, i, 0, 100),
                 "precipitation": _value(precip, i, 0),
@@ -231,10 +278,7 @@ class IconForecastClient:
             }
             forecast_data.append(entry)
 
-        if not any(
-            row["temperature"] is not None and timestamps[i] + timedelta(hours=1) > now
-            for i, row in enumerate(forecast_data)
-        ):
+        if not any(row["temperature"] is not None for row in forecast_data):
             raise ValueError("Forecast contains no usable hourly temperature")
         _LOGGER.debug(
             "Fetched %d hours of forecast from Open-Meteo", len(forecast_data)

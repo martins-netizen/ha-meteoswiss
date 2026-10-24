@@ -38,9 +38,11 @@ The setup/options instructions below describe published **8.2.0**. The next
 development flow removes the observation polling field from both dialogs.
 New entries use **600 seconds automatically**. Existing individual intervals
 remain effective after upgrade and after a measured-pollen change. Configure
-then changes only the measured-pollen station; it still does not change weather,
-forecast or warning locations. The dialog explains that refreshes are automatic
-in DE/EN/FR/IT.
+now edits weather station, measured-pollen station, forecast selection and
+warning postcode together. A forecast search continues within that settings
+flow, and the final submission applies all pending choices together. See the
+[unreleased unified-settings guide](CALENDAR_AND_LOCATION_SETTINGS.md).
+The dialog explains automatic refreshes in DE/EN/FR/IT.
 
 Config schema 1.2 retains a stored legacy interval in options, preserving its
 previous precedence over data. Missing values retain the 600-second default;
@@ -159,8 +161,13 @@ from every expected Swiss calendar hour. Rain and probability include the
 next midnight's preceding-hour bucket. Partial/gapped/invalid series leave the
 affected daily field unknown; valid zero stays zero. Native provider buckets
 whose fixed UTC offset does not match both Swiss day boundaries are withheld.
-Consequently scalar daily temperature/rain and HGT can be unknown around DST,
-while hourly forecasts remain usable; they are not based on partial-day estimates.
+Unreleased after b2, the source instead derives those mismatched days from
+complete 23-/24-/25-hour Swiss calendar coverage in the same ICON response.
+It includes 25 past hours for today, while retaining the 120-hour rolling
+forecast and existing refresh schedule. Each metric has its own completeness
+check; a missing hour still leaves that metric unknown. This applies to scalar
+daily values, daily HGT and the weather entity together. Full-day scalar
+attributes identify `provider_daily` or `hourly_calendar_day` and `day_hours`.
 These are model predictions, not local measurement totals.
 
 ### Pollen, air quality and UV

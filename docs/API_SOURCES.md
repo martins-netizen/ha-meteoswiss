@@ -58,14 +58,18 @@ geo.admin.ch/swisstopo supplies their delivery infrastructure.
 ## Forecast and alternative current weather
 
 The weather forecast explicitly requests `models=meteoswiss_icon_seamless`,
-120 rolling hourly rows and daily extrema/mean/rain aggregates. Provider model
+120 rolling hourly rows, 25 past hours and daily extrema/mean/rain aggregates
+in unreleased development after b2. Provider model
 selection within Seamless is not a local benchmark deciding which of all
 weather models is most accurate. The integration records retrieval time, not
 a verified model-issuance time. It exposes up to 24 hours/five local days through
 HA. In unreleased development a native daily bucket is accepted only if both
 its boundaries match the stated Swiss calendar day. Open-Meteo fixes its daily
 UTC offset at request time; around DST, a mismatched bucket is withheld instead
-of being called a whole local day. Hourly forecasts remain usable. See the
+of being called a whole local day. The unreleased after-b2 correction rebuilds
+a mismatched day from its complete Swiss hourly coverage in the same response,
+separately validating temperature samples and preceding-hour rain/probability
+buckets. It never turns a partial series into a whole-day value. See the
 [forecast guide](FORECAST_SENSORS.md) and [Open-Meteo's MeteoSwiss model documentation](https://open-meteo.com/en/docs/meteoswiss-api).
 
 The alternative current-weather provider requests temperature, humidity,
