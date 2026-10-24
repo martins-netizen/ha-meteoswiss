@@ -2,7 +2,19 @@
 
 ## [Unreleased]
 
-No additional feature changes beyond the prepared 8.3.0b1 candidate below.
+- Separate selected-place forecasts from the existing current-condition device.
+  Reuse the HGT device identity for a translated, location-labelled forecast
+  group containing the eight existing scalars, HGT and a new forecast-only
+  weather entity. Retain existing unique/entity IDs, custom names and options.
+- Use only ICON model values for the forecast weather entity's current hour;
+  missing/failed forecasts never fall back to station measurements. Reuse the
+  existing coordinator without an extra request/cache/poller.
+- After an explicit catalogue selection, the original weather entity exposes
+  current conditions without hourly/daily forecast features. Select the new
+  forecast entity for those cards/actions. Legacy base entries keep their
+  combined interface for compatibility. See [display and migration](docs/FORECAST_DISPLAY.md).
+- Record successful 8.3.0b1 publication and the operator-reported display issue;
+  keep the published tag, original notes and baseline test protocol unchanged.
 
 ## [8.3.0b1] — location and forecast test candidate
 

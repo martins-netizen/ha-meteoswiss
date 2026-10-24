@@ -70,6 +70,7 @@ from .const import (
 )
 from .coordinator import MeteoSwissDataUpdateCoordinator, MeteoSwissForecastCoordinator
 from .entity import (
+    forecast_device_info,
     MeteoSwissCoordinatorEntity,
     MeteoSwissEntity,
     air_quality_device_info,
@@ -369,12 +370,12 @@ class MeteoSwissForecastSensor(
         description: MeteoSwissForecastSensorDescription,
         station_name: str,
     ) -> None:
-        """Attach only to the existing forecast coordinator and weather device."""
+        """Attach to the existing forecast coordinator and its named forecast device."""
         super().__init__(coordinator)
         self.entity_description = description
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_{description.key}"
-        self._attr_device_info = weather_device_info(entry.entry_id, station_name)
         self._forecast_target = resolve_forecast_target(entry.data, None, None)
+        self._attr_device_info = forecast_device_info(entry.entry_id, self._forecast_target)
         self._cancel_timer: Callable[[], None] | None = None
 
     @property
@@ -744,10 +745,7 @@ class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntit
         super().__init__(forecast_coordinator)
         self._forecast_target = resolve_forecast_target(entry.data, None, None)
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_heating_degree_days"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, f"calculated_{entry.entry_id}")},
-            name="Calculated Weather Metrics",
-        )
+        self._attr_device_info = forecast_device_info(entry.entry_id, self._forecast_target)
         self._attr_attribution = HGT_ATTRIBUTION
         self.entity_description = SensorEntityDescription(
             key="heating_degree_days",

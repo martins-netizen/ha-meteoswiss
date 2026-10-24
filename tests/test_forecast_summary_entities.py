@@ -83,7 +83,7 @@ def test_scalar_identity_units_precision_and_shared_device(hass, freezer):
     for description in FORECAST_SENSOR_DESCRIPTIONS:
         sensor = MeteoSwissForecastSensor(coordinator, entry, description, "Kloten")
         assert sensor.unique_id == f"meteoswiss_forecast-identity_{description.key}"
-        assert sensor.device_info["identifiers"] == {(DOMAIN, entry.entry_id)}
+        assert sensor.device_info["identifiers"] == {(DOMAIN, f"calculated_{entry.entry_id}")}
         assert sensor.state_class is None
         assert sensor.native_unit_of_measurement in ("°C", "mm", "%")
         assert sensor.suggested_display_precision in (0, 1)

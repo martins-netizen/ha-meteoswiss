@@ -26,6 +26,17 @@ forecast fallback. See [the saved-location contract](SAVED_FORECAST_LOCATION.md)
 hPa, km/h and mm; HA converts weather attributes to the user's selected units.
 Forecast failure returns an empty forecast while valid observations remain usable.
 
+## Distinct forecast device (development after 8.3.0b1)
+
+A [display correction](FORECAST_DISPLAY.md) places the eight scalars, HGT and a
+new forecast weather entity on a named forecast device. Its current-hour values
+are modelled ICON data for that point. The existing current-condition weather
+entity stays on its station/base-source device and, for an explicit catalogue
+selection, no longer exposes forecast features. Existing base entries retain
+that interface for compatibility; forecast cards/actions can use the new entity
+for an explicit source role. Existing IDs/options are preserved. This correction
+is not included in published 8.3.0b1.
+
 ## Forecast summary sensors (unreleased)
 
 Development after 8.2.0 adds eight numeric entities: today's and tomorrow's
