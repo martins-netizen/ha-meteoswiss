@@ -44,6 +44,7 @@ from .forecast_location_client import (
 )
 from .forecast_location_config import encode_forecast_location, resolve_forecast_target
 from .forecast_locations import ForecastLocation, search_forecast_locations
+from .repair_issues import async_sync_forecast_location_issue
 from .stations_map import WeatherStation, get_stations_map, parse_station_catalogue
 
 WARNING_POSTCODE = re.compile(r"[1-9][0-9]{3}")
@@ -546,7 +547,9 @@ class MeteoSwissConfigFlow(_LocationFlowMixin, ConfigFlow, domain=DOMAIN):
                 )
         if self.source == SOURCE_RECONFIGURE:
             # The registered entry update listener owns its single reload.
-            return self.async_update_and_abort(entry, data=data)
+            result = self.async_update_and_abort(entry, data=data)
+            async_sync_forecast_location_issue(self.hass, entry)
+            return result
         self._abort_if_unique_id_configured()
         return self.async_create_entry(
             title=self._pending_title,
@@ -818,4 +821,5 @@ class MeteoSwissOptionsFlow(_LocationFlowMixin, OptionsFlow):
         ):
             updates["unique_id"] = identity
         self.hass.config_entries.async_update_entry(entry, **updates)
+        async_sync_forecast_location_issue(self.hass, entry)
         return self.async_create_entry(title="", data=dict(self._pending_options))

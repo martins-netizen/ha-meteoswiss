@@ -4,6 +4,18 @@ This describes current fork work. Historical upstream release claims remain in
 the changelog as history; they are not current certifications. Check the
 [release status](README.md#release-status) before installing.
 
+## Unreleased development
+
+Weather-station help in setup and Configure links to the official MeteoSwiss
+measurement-network map in DE/EN/FR/IT, making nearby SwissMetNet stations easier
+to find before selecting them in HA.
+
+[HA repair notices](docs/REPAIRS.md) now identify invalid saved forecast
+selections and link to the existing settings. Code/tests cover confirmed
+recovery, cancellation, multi-entry isolation, source-outage boundaries and
+DE/EN/FR/IT text. This follow-up needs its own release and focused HA acceptance;
+the 8.3.0 publication and its earlier acceptance remain closed.
+
 ## Implemented and released in 8.3.0
 
 - HA-owned HTTP sessions, bounded transient retries, cancellation and independent
@@ -40,7 +52,8 @@ review, successful checks and current catalogue entry.
 
 The operator's earlier source-switch, clean-install and isolated restore checks
 are complete within their recorded scope; do not repeat them for catalogue
-admission. A later stable 8.3.0 operator-update check remains separate. See
+admission. On 25 October the operator confirmed that the production update
+from 8.2 to stable 8.3 worked successfully. See
 [release readiness](docs/RELEASE_READINESS.md) and [publication](docs/PUBLISHING.md).
 
 We use the HA Quality Scale to guide documented engineering work. The
@@ -53,7 +66,7 @@ custom integrations.
 | Scope | Decision still needed |
 |---|---|
 | Locality names in other languages | Obtain authoritative aliases; preserve provider identities and avoid invented translations or duplicate places. |
-| Remaining Gold engineering work | HA Repairs, reconfiguration-route review, device metadata, icon/error translations, diagnostic defaults and stale-device handling; preserve existing user choices and history. |
+| Remaining Gold engineering work | Release/accept the bounded repair follow-up; review reconfiguration routes, device metadata, icon/error translations, diagnostic defaults and stale-device handling; preserve existing user choices and history. |
 | External contributor CodeQL | The unprivileged route is implemented; retain evidence from the first actual external-fork run. A skipped analysis is not completed analysis. |
 | Processed local-forecast data | Assess provider payloads, resource limits and compatibility separately from the already released catalogue-based ICON selection. |
 | New sources/entities | Scope and test separately; no new device actions/sources in a documentation or release change. |

@@ -22,7 +22,7 @@
         },
         "data_description": {
           "postal_code": "Vierstellige Schweizer Postleitzahl nur für Naturgefahrenwarnungen. Sie bestimmt weder den Wetterprognosestandort noch die Pollenmessstation.",
-          "station_id": "Liefert gemessene Temperatur, Wind und Regen. Den ICON-Prognoseort wählst du anschliessend. Modellierte Pollen, Luftqualität und UV behalten die HA-Hauskoordinaten. Der Wetterzustand dieser Station wird mit MeteoSwiss ICON über Open-Meteo modelliert; die Zahlenwerte bleiben Messungen."
+          "station_id": "[Offizielle SwissMetNet-Stationskarte](https://www.meteoschweiz.admin.ch/service-und-publikationen/applikationen/messnetze.html). Liefert gemessene Temperatur, Wind und Regen. Den ICON-Prognoseort wählst du anschliessend. Modellierte Pollen, Luftqualität und UV behalten die HA-Hauskoordinaten. Der Wetterzustand dieser Station wird mit MeteoSwiss ICON über Open-Meteo modelliert; die Zahlenwerte bleiben Messungen."
         }
       },
       "openmeteo": {
@@ -111,7 +111,7 @@
           "longitude": "Längengrad für aktuelle Modelldaten"
         },
         "data_description": {
-          "station_id": "Liefert gemessene Wetterwerte. Die bestehenden Entitäten bleiben bei einem Wechsel erhalten; ihre Messwerte stammen ab dann von der neuen Station. Der Wetterzustand dieser Station wird mit MeteoSwiss ICON über Open-Meteo modelliert; die Zahlenwerte bleiben Messungen.",
+          "station_id": "[Offizielle SwissMetNet-Stationskarte](https://www.meteoschweiz.admin.ch/service-und-publikationen/applikationen/messnetze.html). Liefert gemessene Wetterwerte. Die bestehenden Entitäten bleiben bei einem Wechsel erhalten; ihre Messwerte stammen ab dann von der neuen Station. Der Wetterzustand dieser Station wird mit MeteoSwiss ICON über Open-Meteo modelliert; die Zahlenwerte bleiben Messungen.",
           "pollen_station": "Ändert nur gemessene Pollen. Modellierte Pollen und Luftqualität behalten ihren Basisstandort.",
           "postal_code": "Vierstellige Schweizer PLZ für Warnungen. Sie wählt weder Wetterstation noch Prognosepunkt aus.",
           "forecast_action": "Angezeigten Prognoseort beibehalten, nach PLZ/Ort/POI suchen oder zu den ursprünglichen Basiskoordinaten zurückkehren. Eine PLZ in der Prognosesuche ändert die Warnungs-PLZ nicht.",
@@ -395,6 +395,12 @@
     },
     "forecast_invalid": {
       "name": "MeteoSwiss Prognose (ungültiger Ort)"
+    }
+  },
+  "issues": {
+    "invalid_forecast_location": {
+      "title": "Prognoseort für {entry_title} prüfen",
+      "description": "Der gespeicherte Prognoseort kann nicht gelesen werden. Prognosen für diesen Eintrag sind nicht verfügbar; Wettermessungen, Pollen und Warnungen behalten ihre eigenen Einstellungen.\n\n[MeteoSwiss-Einstellungen öffnen]({configuration_url}) und bei **{entry_title}** auf **Konfigurieren** klicken. Einen anderen Prognoseort auswählen oder ausdrücklich zu den ursprünglichen Basiskoordinaten zurückkehren und die Änderung bestätigen. Nach dem Speichern gültiger Einstellungen verschwindet dieser Hinweis.\n\nDen bestehenden Integrationseintrag beibehalten."
     }
   }
 }

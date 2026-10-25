@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 import pytest
 from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.redact import REDACTED
 from pytest_homeassistant_custom_component.common import MockConfigEntry
@@ -188,6 +189,15 @@ async def test_real_entry_routes_forecast_only_and_reload_preserves_ids(
         await hass.async_block_till_done()
         runtime = entry.runtime_data
         forecast = runtime.forecast_coordinator
+        issue_id = f"invalid_forecast_location_{entry.entry_id}"
+        issue = ir.async_get(hass).async_get_issue(DOMAIN, issue_id)
+        if selection == "invalid":
+            assert issue is not None
+            assert issue.severity is ir.IssueSeverity.ERROR
+            assert "do-not-log" not in repr(issue) and "private-point" not in repr(issue)
+            issue_created = issue.created
+        else:
+            assert issue is None
         base = (47.45, 8.56) if source == "meteoswiss" else (46.2, 6.1)
         assert (
             runtime.pollen_coordinator.latitude,
@@ -269,6 +279,11 @@ async def test_real_entry_routes_forecast_only_and_reload_preserves_ids(
         assert entry.data == original and entry.unique_id == "existing-entry"
         assert await hass.config_entries.async_reload(entry.entry_id)
         await hass.async_block_till_done()
+        if selection == "invalid":
+            assert (
+                ir.async_get(hass).async_get_issue(DOMAIN, issue_id).created
+                == issue_created
+            )
         assert not forecast._listeners
         assert {
             row.entity_id: row.unique_id
@@ -292,6 +307,7 @@ async def test_real_entry_routes_forecast_only_and_reload_preserves_ids(
                 repaired.last_update_success and repaired.data[0]["temperature"] == -10
             )
             assert entry.runtime_data.forecast_target.location == selected_location
+            assert ir.async_get(hass).async_get_issue(DOMAIN, issue_id) is None
             assert {
                 row.entity_id: row.unique_id
                 for row in er.async_entries_for_config_entry(registry, entry.entry_id)

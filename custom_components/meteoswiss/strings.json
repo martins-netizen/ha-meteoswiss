@@ -22,7 +22,7 @@
         },
         "data_description": {
           "postal_code": "Four-digit Swiss postal code for natural-hazard warnings only. It does not select the weather forecast location or pollen station.",
-          "station_id": "Supplies measured temperature, wind and rain. Choose the ICON weather forecast location next. Modelled pollen, air quality and UV keep the Home Assistant home coordinates. Its weather condition is modelled for this station using MeteoSwiss ICON via Open-Meteo; numeric values remain measurements."
+          "station_id": "[Official SwissMetNet station map](https://www.meteoswiss.admin.ch/services-and-publications/applications/measuring-networks.html). Supplies measured temperature, wind and rain. Choose the ICON weather forecast location next. Modelled pollen, air quality and UV keep the Home Assistant home coordinates. Its weather condition is modelled for this station using MeteoSwiss ICON via Open-Meteo; numeric values remain measurements."
         }
       },
       "openmeteo": {
@@ -111,7 +111,7 @@
           "longitude": "Current-data longitude"
         },
         "data_description": {
-          "station_id": "Supplies measured weather values. Changing it keeps the existing entities; their readings follow the new station from this change onward. Its weather condition is modelled for this station using MeteoSwiss ICON via Open-Meteo; numeric values remain measurements.",
+          "station_id": "[Official SwissMetNet station map](https://www.meteoswiss.admin.ch/services-and-publications/applications/measuring-networks.html). Supplies measured weather values. Changing it keeps the existing entities; their readings follow the new station from this change onward. Its weather condition is modelled for this station using MeteoSwiss ICON via Open-Meteo; numeric values remain measurements.",
           "pollen_station": "Only measured pollen changes. Modelled pollen and air quality keep their base location.",
           "postal_code": "Four-digit Swiss postcode for warnings. This does not select the weather station or forecast point.",
           "forecast_action": "Keep the displayed forecast point, search by postcode/town/POI, or return to the original base coordinates. A forecast search postcode does not change the warning postcode.",
@@ -395,6 +395,12 @@
     },
     "forecast_invalid": {
       "name": "MeteoSwiss Forecast (invalid location)"
+    }
+  },
+  "issues": {
+    "invalid_forecast_location": {
+      "title": "Check the forecast location for {entry_title}",
+      "description": "The saved forecast location cannot be read. Forecasts for this entry are unavailable; weather measurements, pollen and warnings keep their own settings.\n\n[Open MeteoSwiss settings]({configuration_url}) and choose **Configure** for **{entry_title}**. Select another forecast location or explicitly return to the original base coordinates, then confirm the change. This notice disappears after valid settings are saved.\n\nKeep the existing integration entry."
     }
   }
 }
