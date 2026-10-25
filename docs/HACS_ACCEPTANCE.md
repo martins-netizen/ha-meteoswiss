@@ -1,6 +1,6 @@
 # HACS acceptance of the maintained fork
 
-**Updated: 25 October 2026 · Plan and evidence V1.9**
+**Updated: 25 October 2026 · Plan and evidence V1.10**
 
 ## HACS catalogue admission
 
@@ -32,8 +32,10 @@ was published on **24 October 2026 at 15:35:56 UTC / 17:35:56 Europe/Zurich**,
 release ID **422817883**, source **3ca9a1c166920fbdda88d15238affafe520f4b68**.
 It retains the accepted b4 runtime with version-only component changes. The
 operator reported the focused b4 existing-entry check successful; screenshots
-show its version and distinct station/forecast devices. A subsequent stable
-8.3.0 download/version check is not yet recorded. Earlier first-install/restore
+show its version and distinct station/forecast devices. On **25 October 2026**
+the operator confirmed that the production update from **8.2 to stable 8.3**
+worked successfully. This is reported update/operation evidence, without a new
+independent file/registry comparison. Earlier first-install/restore
 evidence remains valid; it is not a new clean 8.3 installation. See
 [current readiness](RELEASE_READINESS.md).
 
@@ -113,7 +115,8 @@ software and its corresponding warning filters together.
 
 | Evidence | State |
 |---|---|
-| Current stable release and resolved tag | Independently confirmed: 8.3.0 → 3ca9a1c166920fbdda88d15238affafe520f4b68, published 24 October at 15:35:56 UTC / 17:35:56 Europe/Zurich, release ID 422817883; latest-stable endpoint agrees. The subsequent operator HACS update is separate. |
+| Current stable release and resolved tag | Independently confirmed: 8.3.0 → 3ca9a1c166920fbdda88d15238affafe520f4b68, published 24 October at 15:35:56 UTC / 17:35:56 Europe/Zurich, release ID 422817883; latest-stable endpoint agrees. |
+| Stable 8.3 production update | Operator-confirmed on 25 October: the update from 8.2 to stable 8.3 worked successfully. No new independent source-file/registry comparison or newly specified HA version is inferred. |
 | Earlier stable release | 8.2.0 → 5a0bf684eb44fd54c4e91d7cbce9e90798b72fa5, published 22 October at 08:52:40 Europe/Zurich; retained unchanged. |
 | Stable 8.2.0 visible/downloaded in local HACS | Operator-confirmed on 22 October after Update information made the target available. No new independent file/ID/statistics comparison is inferred. |
 | Public prerelease and resolved tag | Confirmed: 8.2.0b1 → abbb6b7701134ac2573f35b425ab3f0697a80540. |

@@ -18,6 +18,7 @@ the retired legacy season-HGT entity. This page is the detailed reference.
 | The integration is missing after a new HACS download | Restart HA, then reload the browser. Existing users must not create a second entry. |
 | HACS search does not show this fork | Let HACS refresh its catalogue, reload the page and verify the repository name. Use the [documented fallback](GETTING_STARTED.md#if-the-repository-is-not-listed) if needed. |
 | HACS shows no newer version | Open the maintained fork, refresh its repository information and check the published release. Refreshing metadata does not download files; an actual download and restart are separate. |
+| A repair notice names an invalid saved forecast location | In the unreleased repair follow-up, use its settings link to correct or explicitly reset that entry's forecast choice. See [the repair guide](REPAIRS.md). Temporary provider outages do not trigger this notice. |
 
 Do not delete/re-add the integration to troubleshoot. Report installed version,
 source repository, affected entity, exact time/timezone and relevant redacted logs.
@@ -89,6 +90,13 @@ Change weather station/base coordinates, measured pollen, forecast point and
 warning postcode with **Configure**; the HA home setting remains separate.
 Saving confirmed changes reloads the entry once. The current-weather provider
 type is not changed by that dialog. See [four location roles](../README.md#four-places-what-each-one-is-used-for).
+
+Use the official
+[MeteoSwiss measurement-network map](https://www.meteoswiss.admin.ch/services-and-publications/applications/measuring-networks.html)
+to locate SwissMetNet stations, then choose the station by name in HA. This is
+an external reference, not a station selector for HA. **Unreleased development:**
+the weather-station field in setup and Configure includes the map link in
+DE/EN/FR/IT. It does not send your HA coordinates or selection to the map.
 
 ## Reading values and using automations
 

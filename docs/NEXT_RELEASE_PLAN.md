@@ -3,8 +3,9 @@
 **Plan version:** 1.27 · **Updated:** 25 October 2026
 **Status:** The agreed architecture, catalogue/POI, forecast-display, shared-settings
 and station-condition scope is released in stable 8.3.0. B4 runtime acceptance,
-stable publication and HACS default-catalogue admission are complete. A subsequent
-operator stable-update check remains separate. The current next-work overview is
+stable publication and HACS default-catalogue admission are complete. The operator
+confirmed the successful production update from 8.2 to stable 8.3 on 25 October.
+The current next-work overview is
 [ROADMAP.md](../ROADMAP.md); earlier implementation packages below are retained
 as planning history, not new instructions to repeat completed work.
 This document does not approve a new feature, installation or release.

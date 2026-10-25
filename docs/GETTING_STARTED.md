@@ -86,6 +86,12 @@ Continue to the next dialog. Choose the **weather measurement station** and a
 weather station near your home, too. The postcode selects warnings; it does
 not choose the station. A failed source check leaves the form open to retry.
 
+To locate a nearby station before choosing it, open the official
+[MeteoSwiss measurement-network map](https://www.meteoswiss.admin.ch/services-and-publications/applications/measuring-networks.html)
+and view SwissMetNet. Then return to HA and select the station by name. The map
+does not change your HA settings. **Unreleased development:** setup and Configure
+also link to this map in the selected UI language; 8.3.0 does not yet show that link.
+
 **Alternative:** Open-Meteo supplies modelled current weather at entered
 coordinates instead of Swiss station observations. It is an explicit source
 choice, not an automatic observation backup. Its coordinates also define that

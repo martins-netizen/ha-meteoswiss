@@ -8,7 +8,8 @@
 was published on **24 October 2026 at 15:35:56 UTC**, release ID **422817883**,
 from **3ca9a1c166920fbdda88d15238affafe520f4b68**. It is the latest stable release.
 [HACS catalogue admission](HACS_ACCEPTANCE.md#hacs-catalogue-admission) was completed
-later that day. The subsequent operator HACS update remains a separate check.
+later that day. On 25 October the operator also confirmed the successful
+production update from 8.2 to stable 8.3; see [the evidence](HACS_ACCEPTANCE.md).
 
 The following is the completed, version-specific publication procedure. Keep
 it as a recovery/audit reference; do not repeat it or reuse its fixed-version

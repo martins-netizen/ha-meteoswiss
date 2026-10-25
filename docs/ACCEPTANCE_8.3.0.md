@@ -2,6 +2,11 @@
 
 **Protocol version:** 1.0 · **Updated:** 24 October 2026
 
+**Reported result — 25 October 2026:** the operator confirmed that the production
+update from 8.2 to stable 8.3 worked successfully. This closes the reported update
+check; no new independent file/registry audit is inferred. The protocol below
+remains available for other installations without reopening the completed check.
+
 The runtime was accepted as b4. Stable changes only its two version files;
 do not repeat completed clean-install, restore or location-dialog rehearsals.
 

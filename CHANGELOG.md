@@ -2,7 +2,21 @@
 
 ## [Unreleased]
 
-No additional runtime changes beyond the accepted 8.3.0 package below.
+Development follow-ups below are not included in the published 8.3.0 package.
+
+- Link to the official MeteoSwiss measurement-network map from weather-station
+  help in setup and Configure, using the matching DE/EN/FR/IT page. Explain the
+  map in the guides; station selection remains an explicit HA setting.
+- Add a translated, entry-specific HA Repairs notice when a saved forecast
+  selection is invalid. Link to the existing settings; clear only after a
+  confirmed correction/reset, entry disablement or removal. Preserve unresolved
+  and ignored notices through ordinary reloads. Provider outages remain source
+  availability states, without configuration-repair notices.
+- Exercise native settings/entry lifecycle, multi-entry isolation, cancellation,
+  failed validation, source outages, cleanup and all four UI languages. Add a
+  full line/branch gate for the repair helper without changing existing gates.
+- Record the operator-confirmed successful production update from 8.2 to stable
+  8.3 on 25 October 2026; completed first-install/restore checks remain closed.
 
 - Record the completed HACS default-catalogue admission through
   [hacs/default #12593](https://github.com/hacs/default/pull/12593) on 24 October

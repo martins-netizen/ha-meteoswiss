@@ -65,6 +65,7 @@ def validate() -> None:
         "pollen_sensor.py",
         "precipitation.py",
         "precipitation_recorder.py",
+        "repair_issues.py",
         "calc.py",
     ):
         source = files[f"custom_components/meteoswiss/{module}"]

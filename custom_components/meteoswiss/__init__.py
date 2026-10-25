@@ -40,6 +40,10 @@ from .precipitation import (
     ARCHIVE_LOOKBACK_MONTHS,
     ARCHIVE_UPDATE_INTERVAL,
 )
+from .repair_issues import (
+    async_clear_forecast_location_issue,
+    async_sync_forecast_location_issue,
+)
 from .runtime_data import MeteoSwissConfigEntry, MeteoSwissRuntimeData
 
 _LOGGER = logging.getLogger(__name__)
@@ -110,6 +114,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
     post_code = entry.data.get(CONF_POSTAL_CODE)
     lat, lon = _get_base_coordinates(hass, entry, data_source)
     forecast_target = resolve_forecast_target(entry.data, lat, lon)
+    async_sync_forecast_location_issue(hass, entry)
     station_condition_coordinator = None
     if forecast_target.status == "invalid":
         _LOGGER.error(
@@ -301,7 +306,15 @@ async def async_unload_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) 
         ):
             hass.data[DOMAIN].pop(key, None)
 
+    if unload_ok and entry.disabled_by is not None:
+        async_clear_forecast_location_issue(hass, entry)
+
     return unload_ok
+
+
+async def async_remove_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -> None:
+    """Remove an obsolete repair even when the entry never finished setup."""
+    async_clear_forecast_location_issue(hass, entry)
 
 
 async def async_reload_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -> None:

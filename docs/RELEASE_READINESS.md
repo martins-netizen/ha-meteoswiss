@@ -1,6 +1,6 @@
 # Release readiness: 8.3.0 promotion from accepted b4
 
-**Document version:** 2.7 · **Updated:** 25 October 2026
+**Document version:** 2.8 · **Updated:** 25 October 2026
 
 ## Current release position
 
@@ -21,8 +21,9 @@ Stable **8.3.0 was published on 24 October 2026 at 15:35:56 UTC**, release ID
 **422817883**, from **3ca9a1c166920fbdda88d15238affafe520f4b68**. The
 [latest published stable endpoint](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
 agrees. [HACS catalogue admission](HACS_ACCEPTANCE.md#hacs-catalogue-admission)
-was completed later that day. A subsequent operator HACS download/version check
-is separate and has not yet been recorded here.
+was completed later that day. On **25 October** the operator confirmed that the
+production update from **8.2 to stable 8.3** worked successfully. Publication,
+catalogue admission and reported local update are now separately recorded.
 
 ## Completed evidence
 
@@ -39,19 +40,20 @@ is separate and has not yet been recorded here.
 | Documentation | Current setup/migration/roles/settings guides describe 8.3; provider labels, selected-place limits, card-target changes, cache counters and quality-tier limits remain explicit. |
 | Stable publication | PR #68 regularly merged as 3ca9a1c166920fbdda88d15238affafe520f4b68. Release 8.3.0 / ID 422817883 published 24 October at 15:35:56 UTC, latest stable, no draft/prerelease; tag and seven prior tags verified. |
 | HACS catalogue | [hacs/default #12593](https://github.com/hacs/default/pull/12593) approved by Frenck and merged 24 October at 20:04:26 UTC. Current integration list contains the fork; all 13 distinct latest checks passed. See [evidence](HACS_ACCEPTANCE.md#hacs-catalogue-admission). |
+| Stable production update | Operator confirmed on 25 October that the update from 8.2 to stable 8.3 worked successfully. This is reported operational evidence, not a new independent byte/registry audit. |
 
-## Completed publication and remaining operator check
+## Completed publication and operator update
 
 The stable-package PR, exact-head/merge checks, guarded publication and
 release/tag/latest verification are complete. The [publication procedure](PUBLISHING.md#stable-830)
 retains their version-specific method as history, not a new instruction to
 merge, publish or retag 8.3.0 again. HACS catalogue admission is also complete.
 
-The separate [stable HACS update check](ACCEPTANCE_8.3.0.md) records the version
-actually downloaded in the operator's HA, retaining the existing entry and
-intended locations. No new blanket 24-hour wait, repeated first-install or
-restore rehearsal is required for unchanged component code. Catalogue admission
-alone requires no reinstallation.
+The [stable HACS update check](ACCEPTANCE_8.3.0.md) is closed by the operator's
+successful production-update report. Its protocol remains available for other
+installations; it does not reopen this completed update. No new blanket 24-hour
+wait, repeated first-install or restore rehearsal is required for unchanged
+component code. Catalogue admission alone requires no reinstallation.
 
 Do not repeat merges or publication once their exact result is confirmed.
 Operational outcomes belong in the operator's master; this source document
@@ -70,8 +72,9 @@ The [rule matrix](QUALITY_SCALE.md) records applicable technical Bronze/Silver
 evidence, the custom branding route and open/partial Gold work. Custom integrations
 have no official HA quality tiers; the rules guide our engineering assessment.
 The completed HACS catalogue admission is a separate distribution result.
-Further work includes sourced multilingual locality aliases, HA Repairs and
-the remaining Gold items. Retain App v3 warnings; separate river/bulletin/radar
+The bounded [HA Repairs follow-up](REPAIRS.md) is unreleased development and
+needs separate focused acceptance. Further work includes sourced multilingual
+locality aliases and the remaining Gold items. Retain App v3 warnings; separate river/bulletin/radar
 products are not introduced. A UTM restart problem was reported; its cause was
 not diagnosed and these tests do not establish one.
 

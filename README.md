@@ -34,6 +34,11 @@ The station weather row can also show a **modelled condition for the measuring s
 Its numeric values remain measurements; the condition is identified separately
 as modelled. See [the source and failure behaviour](docs/STATION_WEATHER_CONDITION.md).
 
+Find nearby SwissMetNet stations on the official
+[MeteoSwiss measurement-network map](https://www.meteoswiss.admin.ch/services-and-publications/applications/measuring-networks.html),
+then select the station by name in HA. The [setup guide](docs/GETTING_STARTED.md#3-select-pollen-weather-and-warning-locations)
+also explains the unreleased map-link help in the configuration dialogs.
+
 For example: **HA home in Kloten, pollen measurements from Zürich, weather
 measurements from Zürich/Kloten and weather forecasts for Säntis.** Changing
 the forecast to Säntis changes its ICON predictions and calculated HGT. The
@@ -115,6 +120,11 @@ and remaining work. [HACS catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-cata
 is complete and provides a separate distribution/review milestone. We keep the
 quality checklist as a transparent engineering record, without an awarded-tier
 badge or manifest claim.
+
+**Unreleased development:** [actionable repair notices](docs/REPAIRS.md) guide
+users from an invalid saved forecast location to the existing settings. This
+follow-up and its lifecycle/translation tests are separate from the accepted
+8.3 runtime described above; the published 8.3.0 package does not include it.
 
 ## Start here
 

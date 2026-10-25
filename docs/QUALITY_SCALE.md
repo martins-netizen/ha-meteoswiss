@@ -22,8 +22,14 @@ engineering assessment below and from an operator's actual HA update.
 
 **Evidence** below means code, automated tests or current documentation exists
 within the stated scope. **Open/partial** identifies a remaining requirement.
-**Exempt** gives its applicability reason. Operator acceptance of b4 is recorded separately from automated evidence;
-GitHub publication does not establish the later stable HACS update.
+**Exempt** gives its applicability reason. Operator acceptance is recorded
+separately from automated evidence. On 25 October the operator confirmed the
+successful production update from 8.2 to stable 8.3; see [HACS evidence](HACS_ACCEPTANCE.md).
+
+**Unreleased follow-up:** the repair-issues row below additionally records the
+new [saved-location repair notice](REPAIRS.md) and its tests. This feature is not
+in the published 8.3.0 package and has no separate operator UI acceptance yet.
+Other runtime evidence retains the accepted 8.3 scope above.
 
 **Reading the result:** all applicable technical Bronze rules and applicable
 Silver rules have recorded evidence below. Bundled branding follows the custom
@@ -102,7 +108,7 @@ engineering work.
 | `exception-translations` | Partial | Setup/selection errors are translated; remaining fixed HA update-error messages have not all moved to translated exceptions. |
 | `icon-translations` | Open | Active icons exist, but no complete icons.json migration. |
 | `reconfiguration-flow` | Partial | Forecast-only Reconfigure is implemented/tested. B3 also edits weather station/base coordinates, measured-pollen station, forecast point and warning postcode together through Configure, without recreating the entry; tests cover validation, atomic cancellation and retained IDs. The official rule prescribes a reconfigure step for setup fields. Review that route mapping separately: the existing Reconfigure shortcut still changes only forecasts. |
-| `repair-issues` | Open | Invalid saved selection has explicit unavailable state, private log and recovery flow, but no HA Repair issue yet. |
+| `repair-issues` | Unreleased code/test evidence | An invalid offline saved selection raises a translated entry-specific issue with a link to the existing settings. Confirmed correction/reset clears it; cancellation/failed validation preserves it. Ordinary reloads preserve ignored state; disablement/removal clean up that entry. Provider outages raise no configuration issue. Native entry/settings and HA translation tests cover these boundaries; focused UI acceptance belongs to the next release. |
 | `stale-devices` | Open | Review removal of obsolete grouping after measured-pollen station changes without deleting wanted registry/history data. |
 
 The Gold engineering checklist therefore remains incomplete. Strict typing
