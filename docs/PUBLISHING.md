@@ -1,6 +1,41 @@
 # Publish the maintained fork
 
-**Procedure version:** 1.4 · **Updated:** 25 October 2026
+**Procedure version:** 1.5 · **Updated:** 25 October 2026
+
+## 8.3.1b1 test candidate (prepared)
+
+The [8.3.1b1 package](RELEASE_8.3.1b1.md) is prepared, **not published**.
+Its runtime is the approved/merged PR #70 source
+**22004177b96adb4452fdbd116174915de4dc18cf**. Do not run a publisher against
+that runtime commit: the version-only packaging PR must first be reviewed,
+regularly merged and pass all checks at its own exact merge SHA.
+
+The new **scripts/publish_meteoswiss_831_beta_v1.4.sh** derives from Beta
+Publisher V1.3. It accepts only that exact approved protected development head,
+checks the 40-file component footprint against PR #70 with only two version
+changes, preserves HACS/workflows and eight earlier tags, and requires the
+seven expected merge checks. Latest stable must remain **8.3.0 / ID 422817883**.
+
+After packaging approval and verified merge checks, use the full packaging
+merge SHA with the existing Mac `gh` authentication:
+
+```bash
+bash publish_meteoswiss_831_beta_v1.4.sh --check FULL_APPROVED_PACKAGING_MERGE_SHA
+bash publish_meteoswiss_831_beta_v1.4.sh --publish FULL_APPROVED_PACKAGING_MERGE_SHA
+```
+
+The optional first command is read-only; publish repeats the checks. The only
+remote write creates **8.3.1b1**, draft=false, prerelease=true, make_latest=false.
+The latest-stable check runs again immediately before creation and afterwards.
+A matching retry verifies without posting again. Conflicting tag/notes stop;
+an uncertain result must be checked before retrying, never deleted or retagged.
+Retain the JSON/log under Downloads/HA/05_Diagnose, independently verify the
+release/tag/notes/latest, and then announce the [focused check](ACCEPTANCE_8.3.1b1.md).
+
+This helper makes no HA connection or restart. It does not alter the stable
+8.3.0 release, install the candidate, or establish its UI acceptance. Earlier
+fixed-profile helpers retain their historical contracts and must not be reused
+for this new package.
 
 ## Stable 8.3.0
 

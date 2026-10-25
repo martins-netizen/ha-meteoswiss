@@ -1,7 +1,8 @@
 # Correct an invalid saved forecast location
 
-**Status:** unreleased development after 8.3.0. This notice is not part of the
-published 8.3.0 package. Install only a separately announced release.
+**Status:** prepared [8.3.1b1 test candidate](RELEASE_8.3.1b1.md), not yet
+published. This notice is not part of the published 8.3.0 package. Install only
+a separately announced release; follow the [focused check](ACCEPTANCE_8.3.1b1.md).
 
 ## What the notice means
 

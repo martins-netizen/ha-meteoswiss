@@ -2,7 +2,18 @@
 
 ## [Unreleased]
 
-Development follow-ups below are not included in the published 8.3.0 package.
+No additional runtime changes beyond the prepared test candidate below.
+
+## [8.3.1b1] — prepared repair and station-map test candidate
+
+Not yet published. [Candidate notes](docs/RELEASE_8.3.1b1.md) and the
+[focused UI check](docs/ACCEPTANCE_8.3.1b1.md) define the scope. Stable 8.3.0
+remains the normal installation route.
+
+- Retain reviewed PR #70 runtime at 22004177b96adb4452fdbd116174915de4dc18cf;
+  change only the two component version files for this package. Add fixed-profile
+  Publisher V1.4, preserving all eight earlier tags and latest stable 8.3.0,
+  with source/check/refusal/retry tests. Earlier publishers remain unchanged.
 
 - Link to the official MeteoSwiss measurement-network map from weather-station
   help in setup and Configure, using the matching DE/EN/FR/IT page. Explain the

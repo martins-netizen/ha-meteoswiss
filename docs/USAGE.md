@@ -94,7 +94,7 @@ type is not changed by that dialog. See [four location roles](../README.md#four-
 Use the official
 [MeteoSwiss measurement-network map](https://www.meteoswiss.admin.ch/services-and-publications/applications/measuring-networks.html)
 to locate SwissMetNet stations, then choose the station by name in HA. This is
-an external reference, not a station selector for HA. **Unreleased development:**
+an external reference, not a station selector for HA. **Prepared 8.3.1b1 candidate:**
 the weather-station field in setup and Configure includes the map link in
 DE/EN/FR/IT. It does not send your HA coordinates or selection to the map.
 

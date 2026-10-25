@@ -6,6 +6,10 @@ the changelog as history; they are not current certifications. Check the
 
 ## Unreleased development
 
+The bounded [8.3.1b1 test package](docs/RELEASE_8.3.1b1.md) is prepared,
+not published. It retains reviewed PR #70 runtime with version-only component
+changes and has a [short UI checklist](docs/ACCEPTANCE_8.3.1b1.md).
+
 Weather-station help in setup and Configure links to the official MeteoSwiss
 measurement-network map in DE/EN/FR/IT, making nearby SwissMetNet stations easier
 to find before selecting them in HA.
