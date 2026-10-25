@@ -48,6 +48,24 @@ from .repair_issues import async_sync_forecast_location_issue
 from .stations_map import WeatherStation, get_stations_map, parse_station_catalogue
 
 WARNING_POSTCODE = re.compile(r"[1-9][0-9]{3}")
+STATION_MAP_URLS = {
+    "de": (
+        "https://www.meteoschweiz.admin.ch/"
+        "service-und-publikationen/applikationen/messnetze.html"
+    ),
+    "en": (
+        "https://www.meteoswiss.admin.ch/"
+        "services-and-publications/applications/measuring-networks.html"
+    ),
+    "fr": (
+        "https://www.meteosuisse.admin.ch/"
+        "services-et-publications/applications/reseaux-de-mesure.html"
+    ),
+    "it": (
+        "https://www.meteosvizzera.admin.ch/"
+        "servizi-e-pubblicazioni/applicazioni/reti-di-misura.html"
+    ),
+}
 
 
 def _has_matching_meteoswiss_entry(
@@ -108,6 +126,13 @@ def _parse_stations(content: bytes) -> list[dict[str, Any]]:
 
 class _LocationFlowMixin:
     """Share validated location search between setup and existing-entry options."""
+
+    def _station_map_placeholders(self) -> dict[str, str]:
+        """Keep static external URLs outside HA's translated strings."""
+        language = self.context.get("language", self.hass.config.language)
+        return {
+            "station_map_url": STATION_MAP_URLS.get(language, STATION_MAP_URLS["en"])
+        }
 
     def _init_location_flow(self) -> None:
         self._stations: list[dict[str, Any]] = []
@@ -467,6 +492,7 @@ class MeteoSwissConfigFlow(_LocationFlowMixin, ConfigFlow, domain=DOMAIN):
                     else str,
                 }
             ),
+            description_placeholders=self._station_map_placeholders(),
             errors=errors,
         )
 
@@ -760,7 +786,10 @@ class MeteoSwissOptionsFlow(_LocationFlowMixin, OptionsFlow):
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema(schema),
-            description_placeholders={"current_location": current},
+            description_placeholders={
+                "current_location": current,
+                **self._station_map_placeholders(),
+            },
             errors=errors,
         )
 

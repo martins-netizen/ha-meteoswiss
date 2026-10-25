@@ -1,8 +1,17 @@
 """HA must serve help and localised source choices for actual setup fields."""
 
-import pytest
-from homeassistant.helpers.translation import async_get_translations
+from unittest.mock import patch
+from urllib.parse import urlsplit
 
+import pytest
+from homeassistant.config_entries import SOURCE_USER
+from homeassistant.helpers.translation import async_get_translations
+from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+from custom_components.meteoswiss.config_flow import (
+    MeteoSwissConfigFlow,
+    MeteoSwissOptionsFlow,
+)
 from custom_components.meteoswiss.const import DOMAIN
 
 
@@ -44,3 +53,63 @@ async def test_ha_serves_both_localised_source_choices(
         assert translated.get(
             f"component.{DOMAIN}.selector.data_source.options.{source}"
         )
+
+
+@pytest.mark.parametrize(
+    "language,expected_host",
+    [
+        ("de", "www.meteoschweiz.admin.ch"),
+        ("en", "www.meteoswiss.admin.ch"),
+        ("fr", "www.meteosuisse.admin.ch"),
+        ("it", "www.meteosvizzera.admin.ch"),
+        ("nl", "www.meteoswiss.admin.ch"),
+        (None, "www.meteoschweiz.admin.ch"),
+    ],
+)
+async def test_native_station_forms_supply_localised_link_placeholders(
+    hass, enable_custom_integrations, language, expected_host
+):
+    """HA forms must supply URLs separately from translated help text."""
+    hass.config.language = "de"
+    context = {"language": language} if language is not None else {}
+    stations = [{"id": "klo", "label": "Zürich/Kloten (KLO)"}]
+    with (
+        patch.object(MeteoSwissConfigFlow, "_load_stations", return_value=stations),
+        patch.object(MeteoSwissOptionsFlow, "_load_stations", return_value=stations),
+    ):
+        result = await hass.config_entries.flow.async_init(
+            DOMAIN, context={"source": SOURCE_USER, **context}
+        )
+        setup = await hass.config_entries.flow.async_configure(
+            result["flow_id"],
+            {"data_source": "meteoswiss", "pollen_station": "PZH"},
+        )
+        entry = MockConfigEntry(
+            domain=DOMAIN,
+            data={"station_id": "klo", "postal_code": "8302"},
+        )
+        entry.add_to_hass(hass)
+        options = await hass.config_entries.options.async_init(
+            entry.entry_id, context=context
+        )
+    for category, step, form in (
+        ("config", "meteoswiss", setup),
+        ("options", "init", options),
+    ):
+        texts = await async_get_translations(
+            hass, language or "de", category, {DOMAIN}
+        )
+        help_text = texts[
+            f"component.{DOMAIN}.{category}.step.{step}.data_description.station_id"
+        ]
+        assert "https://" not in help_text
+        placeholders = form["description_placeholders"]
+        rendered = help_text.format(**placeholders)
+        url = urlsplit(placeholders["station_map_url"])
+        assert url.scheme == "https" and url.hostname == expected_host
+        assert not url.query and not url.fragment
+        assert f"]({url.geturl()})" in rendered
+        assert "{station_map_url}" not in rendered
+        if category == "options":
+            assert placeholders["current_location"]
+    assert entry.data == {"station_id": "klo", "postal_code": "8302"}
