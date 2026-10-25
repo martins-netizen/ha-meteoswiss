@@ -1,15 +1,43 @@
 # HACS acceptance of the maintained fork
 
-**24 October 8.3 update:** b4 is published and the operator reports the focused
-existing-entry check successful, with screenshots of the version and distinct
-station/forecast devices. Stable 8.3.0 retains that runtime with version-only
-component changes. Its eventual HACS download/version check is separate from
-publication. The earlier first-install/restore evidence below remains valid;
-it is not a claim of a new clean 8.3 installation. See [current readiness](RELEASE_READINESS.md).
+**Updated: 25 October 2026 · Plan and evidence V1.9**
 
-**Updated: 24 October 2026 · Plan and evidence V1.8**
+## HACS catalogue admission
 
-Both betas are public. Beta1's deployed runtime, the HACS 2.0.5 source switch,
+**martins-netizen/ha-meteoswiss is in the HACS default catalogue.** Frenck
+[approved the submission](https://github.com/hacs/default/pull/12593#pullrequestreview-5639754168)
+and merged [hacs/default PR #12593](https://github.com/hacs/default/pull/12593)
+on **24 October 2026 at 20:04:26 UTC / 22:04:26 Europe/Zurich**. Merge commit:
+**eb62dacb6c9806c5626543494263dbc34b0ae093**. The repository is present in the
+[current integration list](https://github.com/hacs/default/blob/master/integration).
+
+The [label-triggered Check run](https://github.com/hacs/default/actions/runs/40127024234)
+passed all ten jobs, including the seven skipped before the **New default
+repository** label was set. With JSON schema, Sorted and JQ from the original
+run, all **13 distinct latest check results** succeeded on submission head
+**eb64488d53f6b631f2b793b328b318c622457a5c**. The old skips are historical results.
+
+New users search for **MeteoSwiss** in HACS and verify the repository owner.
+The [custom-repository route](GETTING_STARTED.md#if-the-repository-is-not-listed)
+remains a fallback, including for upstream source switches. Existing users keep
+their configured entry and one software owner. Catalogue admission requires no
+reinstallation by itself and does not prove which version a particular HA has
+downloaded. See [quality evidence](QUALITY_SCALE.md) for the separate engineering
+checklist; HACS admission does not assign a Home Assistant quality tier.
+
+## Release and operator evidence
+
+Stable [8.3.0](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.0)
+was published on **24 October 2026 at 15:35:56 UTC / 17:35:56 Europe/Zurich**,
+release ID **422817883**, source **3ca9a1c166920fbdda88d15238affafe520f4b68**.
+It retains the accepted b4 runtime with version-only component changes. The
+operator reported the focused b4 existing-entry check successful; screenshots
+show its version and distinct station/forecast devices. A subsequent stable
+8.3.0 download/version check is not yet recorded. Earlier first-install/restore
+evidence remains valid; it is not a new clean 8.3 installation. See
+[current readiness](RELEASE_READINESS.md).
+
+For the earlier 8.2 series, Beta1's deployed runtime, the HACS 2.0.5 source switch,
 temporary clean first installation and isolated backup restore are complete.
 Beta2 added the explicit initial pollen choice; on 22 October the operator
 completed new setup with other geographic locations and reported values.
@@ -34,8 +62,8 @@ The following precheck does not remove/download software or restart HA.
 3. If it already points to **martins-netizen/ha-meteoswiss**, select
    **Update information**. This refreshes metadata without downloading components.
 4. Open **Download** or **Redownload**, expand **Need a different version?** and
-   select the published stable **8.2.0** under **Release**. Check the version, then
-   **Cancel** for this precheck. Stable 8.2.0 does not require beta visibility.
+    select the published stable **8.3.0** under **Release**. Check the version, then
+    **Cancel** for this precheck. A stable release does not require beta visibility.
 5. If the entry points to **LNKtwo/ha-meteoswiss**, retain it during this
    precheck. Confirm provenance, backup and recovery before following
    [migration](MIGRATION.md). Two repositories must not unknowingly manage the
@@ -49,7 +77,7 @@ device or access details. A GitHub release alone does not prove local HACS visib
 
 | Check | Suitable environment | Evidence required |
 |---|---|---|
-| Clean first installation | Temporary empty HA instance with HACS and no production device control | Add the repository as Integration; explicitly download the intended published release; restart; configure MeteoSwiss once; check station, warning postcode and initial data. |
+| Clean first installation | Temporary empty HA instance with HACS and no production device control | Find the maintained fork in HACS; explicitly download the intended published release; restart; configure MeteoSwiss once; check station, warning postcode and initial data. Use custom registration only as a fallback. |
 | Source switch | Temporary instance with existing MeteoSwiss, or a separately planned production switch after precheck/recovery preparation | Replace the HACS software source while retaining the HA entry; compare target version/files and continued IDs, settings and statistics. |
 
 No second permanent HA installation is required. An existing configured
@@ -85,7 +113,8 @@ software and its corresponding warning filters together.
 
 | Evidence | State |
 |---|---|
-| Stable release and resolved tag | Independently confirmed: 8.2.0 → 5a0bf684eb44fd54c4e91d7cbce9e90798b72fa5, published 22 October at 08:52:40 Europe/Zurich; GitHub latest-stable endpoint agrees. |
+| Current stable release and resolved tag | Independently confirmed: 8.3.0 → 3ca9a1c166920fbdda88d15238affafe520f4b68, published 24 October at 15:35:56 UTC / 17:35:56 Europe/Zurich, release ID 422817883; latest-stable endpoint agrees. The subsequent operator HACS update is separate. |
+| Earlier stable release | 8.2.0 → 5a0bf684eb44fd54c4e91d7cbce9e90798b72fa5, published 22 October at 08:52:40 Europe/Zurich; retained unchanged. |
 | Stable 8.2.0 visible/downloaded in local HACS | Operator-confirmed on 22 October after Update information made the target available. No new independent file/ID/statistics comparison is inferred. |
 | Public prerelease and resolved tag | Confirmed: 8.2.0b1 → abbb6b7701134ac2573f35b425ab3f0697a80540. |
 | HA 2026.10.2 runtime, 24 hours and visual acceptance | Complete; publication contains the same 33 component/translation/brand files. |
@@ -102,7 +131,8 @@ software and its corresponding warning filters together.
 | Beta2 public tag | Confirmed: 8.2.0b2 → 80bf9195ecc3d42d9e4d1beb4ce8143e2c2df2c8, published 22 October 2026 at 07:12:40 Europe/Zurich. |
 | New independent post-switch live file/ID/statistics comparison | Not collected; earlier technical runtime acceptance remains valid within its original scope. |
 | Default branch hidden | Beta2/stable manifests set hide_default_branch=true. Its practical UI result was not separately reported; immutable Beta1 lacks that flag and is unchanged. |
-| HACS default listing or official HA quality tier | On 22 October the maintained fork was absent from the current [default integration catalogue](https://github.com/hacs/default/blob/master/integration). New users therefore add it as a custom repository; users who already added it skip that step. Neither default inclusion nor an official HA tier is claimed. |
+| HACS default listing | Completed on 24 October through approved/merged PR #12593 and independently confirmed in the current integration list. See [admission evidence](#hacs-catalogue-admission). |
+| Quality engineering evidence | The [rule matrix](QUALITY_SCALE.md) records code, tests, documentation and remaining work. Home Assistant assigns no official tiers to custom integrations; catalogue admission is a separate result. |
 
 The written operator confirmation proves reported source, downloaded version
 and restart; the preceding report confirms initial visual success. Submitted
@@ -126,8 +156,10 @@ Both immutable beta tags remain unchanged. The completed first-install, restore
 and Beta2 setup checks are not reopened by a documentation/version-only change.
 A successful complete setup demonstrates the required picker path; it does not
 independently prove every source/station change. Do not delete production entries
-for these tests. Existing-entry Configure edits interval/pollen only; a new-entry
-flow continues to the weather-station/postcode step.
+for these tests. The original 8.2 Beta2 Configure check concerned interval/pollen;
+in 8.3, Configure edits weather station/base coordinates, measured pollen,
+forecast and warning postcode together, with no polling field. See
+[current settings](CALENDAR_AND_LOCATION_SETTINGS.md).
 
 ## References
 

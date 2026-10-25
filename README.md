@@ -15,6 +15,9 @@ This is an independent community project, not an official MeteoSwiss product.
 This guide describes the **8.3 series**; [8.3.0 release notes](docs/RELEASE_8.3.0.md)
 explain the changes from 8.2.0. Use a published HACS release, not a branch.
 
+**Available in the HACS default catalogue.** Search for **MeteoSwiss** in HACS
+and check that the repository is **martins-netizen/ha-meteoswiss**.
+
 ## Four places: what each one is used for
 
 **HA home, pollen measurements, weather measurements and weather forecasts can
@@ -94,21 +97,24 @@ Read the [plain-language overview](docs/GETTING_STARTED.md#what-this-fork-provid
 
 ## Quality goals: Bronze, Silver and Gold
 
-We use the [Home Assistant Integration Quality Scale](https://contributors.home-assistant.io/core/quality-scale/)
-as an engineering checklist. **This fork has no officially awarded tier.**
-The following is our documented self-assessment of the **8.3 runtime**,
-operator-tested in b4. It is not an official assessment or catalogue approval.
+We follow the [Home Assistant Integration Quality Scale](https://contributors.home-assistant.io/core/quality-scale/)
+as an engineering checklist, with rule-by-rule code, test and documentation
+evidence. The following summarises our assessment of the **8.3 runtime**,
+operator-tested in b4. Home Assistant's [custom-integration guidance](https://contributors.home-assistant.io/marketplace/guides/integrations/#keep-up-with-home-assistant)
+explains that custom integrations have no official quality tiers; Bronze,
+Silver and Gold below identify the rules we use to guide improvements.
 
 | Goal | What it means for you | Current evidence and remaining work |
 |---|---|---|
-| **Bronze: a sound foundation** | Setup in HA, stable entity identities, tested setup and clear instructions. | The applicable technical rules have evidence in our checklist. The Core branding requirement remains unverified; local HACS images do not establish it. |
-| **Silver: reliable operation** | Clear unavailable states, recovery from source failures, clean unloading and a maintained support route. | All applicable Silver rules have recorded evidence, including more than 95% coverage per module. A complete tier also needs its Bronze prerequisites; focused b4 HA acceptance is operator-confirmed. |
+| **Bronze: a sound foundation** | Setup in HA, stable entity identities, tested setup and clear instructions. | The checklist records setup/configuration tests, identity checks, installation guides and valid bundled brand images. |
+| **Silver: reliable operation** | Clear unavailable states, recovery from source failures, clean unloading and a maintained support route. | All applicable Silver rules have recorded evidence, including more than 95% coverage per module. The checklist also records the underlying Bronze rules; focused b4 HA acceptance is operator-confirmed. |
 | **Gold: a more complete user experience** | Easier configuration, useful diagnostics, translations and actionable help. | Several features already exist, including the unified location dialog. Remaining work includes HA Repairs, icon/error translations, diagnostic defaults, metadata and stale-device handling; the full checklist also records the reconfiguration-route review and proposed exemptions. |
 
 The [rule-by-rule assessment](docs/QUALITY_SCALE.md) links the scope, test evidence
-and remaining boundaries. HACS validation and default-catalogue inclusion are
-separate from these HA quality tiers. We do not add an awarded-tier badge or
-manifest claim on the strength of this self-assessment.
+and remaining work. [HACS catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-catalogue-admission)
+is complete and provides a separate distribution/review milestone. We keep the
+quality checklist as a transparent engineering record, without an awarded-tier
+badge or manifest claim.
 
 ## Start here
 
@@ -136,8 +142,10 @@ restore, calendar-day and shared-settings evidence is retained in the
 
 Minimum supported HA is **2026.8.3**. CI also covers **2026.10.1**; additional
 local automated tests cover **2026.10.3**, with operator evidence on
-2026.10.2/2026.10.3 within its recorded scope. HACS default-catalogue inclusion
-and an official HA quality tier have not been granted.
+2026.10.2/2026.10.3 within its recorded scope. Stable **8.3.0** was published on
+**24 October 2026**. [HACS default-catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-catalogue-admission)
+was approved and merged later that day. Publication, catalogue admission and
+the version actually downloaded in your HA are separate results.
 
 ## Data and compatibility
 
@@ -179,8 +187,11 @@ For installation or update:
 
 1. Back up Home Assistant and keep the recovery key. Existing users first read
    the [migration and warning-consumer checks](docs/MIGRATION.md).
-2. If the fork is absent, add `https://github.com/martins-netizen/ha-meteoswiss`
-   under **HACS → menu → Custom repositories**, type **Integration**.
+2. Open **HACS**, search for **MeteoSwiss** and choose the entry whose repository
+   is **martins-netizen/ha-meteoswiss**. If this fork is already downloaded, open
+   that entry. For a different installed source, follow the migration guide
+   first. [Custom-repository steps](docs/GETTING_STARTED.md#if-the-repository-is-not-listed)
+   are a fallback when the catalogue entry is not yet visible.
 3. Open **Download/Redownload → Need a different version? → Release** and select
    the announced stable release. Refresh repository information if needed;
    then actually download it and restart HA. Do not keep two HACS repositories

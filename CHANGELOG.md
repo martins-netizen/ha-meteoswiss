@@ -4,6 +4,17 @@
 
 No additional runtime changes beyond the accepted 8.3.0 package below.
 
+- Record the completed HACS default-catalogue admission through
+  [hacs/default #12593](https://github.com/hacs/default/pull/12593) on 24 October
+  2026. Put normal HACS search first in installation and source-switch guides;
+  retain custom registration as a fallback and preserve the configured HA entry.
+- Reconcile publication/readiness/roadmap records with stable 8.3.0 and the
+  completed catalogue review. Clarify how the Home Assistant Quality Scale guides
+  documented engineering evidence for this custom integration. Earlier dated
+  reviews and published tags retain their historical scope.
+- Point the coverage checker's explanatory output to the rule matrix; retain
+  every coverage threshold and refusal condition.
+
 ## [8.3.0] — promotion of accepted b4
 
 Prepared24 October 2026 from published/accepted b4 at

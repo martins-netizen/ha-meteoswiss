@@ -1,8 +1,18 @@
 # Publish the maintained fork
 
-**Procedure version:** 1.3 · **Updated:** 24 October 2026
+**Procedure version:** 1.4 · **Updated:** 25 October 2026
 
 ## Stable 8.3.0
+
+**Publication completed:** [8.3.0](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.0)
+was published on **24 October 2026 at 15:35:56 UTC**, release ID **422817883**,
+from **3ca9a1c166920fbdda88d15238affafe520f4b68**. It is the latest stable release.
+[HACS catalogue admission](HACS_ACCEPTANCE.md#hacs-catalogue-admission) was completed
+later that day. The subsequent operator HACS update remains a separate check.
+
+The following is the completed, version-specific publication procedure. Keep
+it as a recovery/audit reference; do not repeat it or reuse its fixed-version
+publisher for a future release. Existing tags and release notes remain unchanged.
 
 The operator accepted published b4 and requested stable promotion. Component
 code must match b4 **a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5**:37 non-version
@@ -60,8 +70,10 @@ version or green CI alone is not a published release.
 
 Use one software owner for `meteoswiss`; do not delete the configured HA entry
 to switch versions. `hide_default_branch:true`, country CH and minimumHA 2026.8.3
-remain. HACS validation is required, but passing it or creating a stable GitHub
-release does not grant default-catalogue inclusion. A submission and an
-official HA quality-tier assessment are distinct later processes. See
+remain. HACS validation is required for future changes. The separate
+[catalogue submission](HACS_ACCEPTANCE.md#hacs-catalogue-admission) has now been
+approved and merged; no repeat submission is needed. The Home Assistant Quality
+Scale guides our documented engineering work; official tiers are not assigned
+to custom integrations. See
 [quality](QUALITY_SCALE.md), [installation](GETTING_STARTED.md),
 [migration/recovery](MIGRATION.md) and the [bounded review](RELEASE_REVIEW_2026-10-24.md).

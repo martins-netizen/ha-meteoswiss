@@ -16,6 +16,8 @@ the retired legacy season-HGT entity. This page is the detailed reference.
 | Measured pollen is from another station | Choose the pollen station independently in Configure; it is not selected from the weather station. |
 | A warning card uses an old label or misses Wind/Drought | Review the actual dashboard/automation dictionaries and filters using the migration guide. |
 | The integration is missing after a new HACS download | Restart HA, then reload the browser. Existing users must not create a second entry. |
+| HACS search does not show this fork | Let HACS refresh its catalogue, reload the page and verify the repository name. Use the [documented fallback](GETTING_STARTED.md#if-the-repository-is-not-listed) if needed. |
+| HACS shows no newer version | Open the maintained fork, refresh its repository information and check the published release. Refreshing metadata does not download files; an actual download and restart are separate. |
 
 Do not delete/re-add the integration to troubleshoot. Report installed version,
 source repository, affected entity, exact time/timezone and relevant redacted logs.
@@ -29,6 +31,10 @@ and Open-Meteo is required. HA's TLS verification remains enabled. Observation,
 forecast, warning and pollen services can fail independently.
 
 Use the approved release and the installation/update procedure in the README.
+Search for **MeteoSwiss** in HACS and verify **martins-netizen/ha-meteoswiss**;
+the maintained fork is in the default catalogue. Existing upstream installations
+follow the migration guide before switching software ownership. Custom-repository
+registration is a [fallback](GETTING_STARTED.md#if-the-repository-is-not-listed).
 A prepared development PR is not a tested HACS release. Existing installations
 must retain their config entry, domain, entity unique IDs and statistic IDs.
 

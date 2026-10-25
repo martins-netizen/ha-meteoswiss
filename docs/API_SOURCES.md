@@ -11,8 +11,8 @@ availability or permission for every use. Check the providers' current terms.
 |---|---|---|---|
 | Station observations | MeteoSwiss SwissMetNet via `data.geo.admin.ch/api/stac/v1` | Selected weather station | Configured interval, minimum/default 600 seconds |
 | Alternative current conditions | Open-Meteo `api.open-meteo.com/v1/forecast` | Explicit coordinates | Configured interval, minimum/default 600 seconds |
-| Weather forecasts | MeteoSwiss ICON Seamless through the same Open-Meteo forecast endpoint | Explicit saved catalogue point in unreleased development; otherwise the original HA/configured base coordinates | 1 hour |
-| Station weather condition (development after b3) | Small Open-Meteo request pinned to MeteoSwiss ICON Seamless; only current weather code/daylight | Actual weather-station catalogue coordinates and available height | Normally 10 minutes, or at the model interval's end; optional, independently failing |
+| Weather forecasts | MeteoSwiss ICON Seamless through the same Open-Meteo forecast endpoint | Explicit saved catalogue point; otherwise the original HA/configured base coordinates | 1 hour |
+| Station weather condition | Small Open-Meteo request pinned to MeteoSwiss ICON Seamless; only current weather code/daylight | Actual weather-station catalogue coordinates and available height | Normally 10 minutes, or at the model interval's end; optional, independently failing |
 | Weather/hazard warnings | MeteoSwiss App `app-prod-ws.meteoswiss-app.ch/v3/plzDetail` | Warning postcode with the internal `00` suffix added by the client | 10 minutes |
 | Measured pollen | MeteoSwiss `data.geo.admin.ch/ch.meteoschweiz.ogd-pollen` | Independently selected pollen station | 1 hour |
 | Pollen/AQ model values | Open-Meteo `air-quality-api.open-meteo.com/v1/air-quality` | Original HA/configured base coordinates, independent of a saved weather-forecast POI | 30 minutes |
@@ -60,14 +60,14 @@ geo.admin.ch/swisstopo supplies their delivery infrastructure.
 
 The weather forecast explicitly requests `models=meteoswiss_icon_seamless`,
 120 rolling hourly rows, 25 past hours and daily extrema/mean/rain aggregates
-in unreleased development after b2. Provider model
+in the released 8.3 runtime. Provider model
 selection within Seamless is not a local benchmark deciding which of all
 weather models is most accurate. The integration records retrieval time, not
 a verified model-issuance time. It exposes up to 24 hours/five local days through
-HA. In unreleased development a native daily bucket is accepted only if both
+HA. A native daily bucket is accepted only if both
 its boundaries match the stated Swiss calendar day. Open-Meteo fixes its daily
 UTC offset at request time; around DST, a mismatched bucket is withheld instead
-of being called a whole local day. The unreleased after-b2 correction rebuilds
+of being called a whole local day. The calendar-day correction included in 8.3 rebuilds
 a mismatched day from its complete Swiss hourly coverage in the same response,
 separately validating temperature samples and preceding-hour rain/probability
 buckets. It never turns a partial series into a whole-day value. See the
@@ -83,7 +83,7 @@ Default forecast cache lifetime is 30 minutes; current-weather cache lifetime
 is ten minutes. These are cache limits, not promises about model issuance or
 provider publication. See [the general API contract](https://open-meteo.com/en/docs).
 
-### Station-local model condition (development after b3)
+### Station-local model condition
 
 The [station-condition follow-up](STATION_WEATHER_CONDITION.md) keeps the
 numeric SwissMetNet readings but fills their weather entity's qualitative
@@ -119,7 +119,7 @@ The AQ request supplies modelled birch/alder/grass/mugwort/ragweed pollen and
 PM2.5, PM10, NO₂, O₃. It selects the actual current hour using Unix seconds;
 availability depends on provider/parameter/geography, not a claimed uniform
 global resolution. UV is a separate optional current value, not daily maximum.
-Unreleased development requests its timestamp as Unix seconds and rejects a
+The 8.3 runtime requests its timestamp as Unix seconds and rejects a
 missing, future or at-least-one-hour-old timestamp without discarding valid AQ.
 A valid timestamp with no usable UV number is a missing value, not a source outage.
 
@@ -140,7 +140,7 @@ ends that retry sequence. It is not a persistent cross-refresh cooldown.
 Current/forecast clients have their documented circuit pauses; not every family
 has the same breaker. Polling, caches, multiple entries, archive downloads and
 retries determine total traffic: there is no fixed requests/hour guarantee.
-In unreleased development after stable 8.2.0, all active sources use fixed-host
+In the released 8.3 runtime, all active sources use fixed-host
 HTTPS validation, reject redirects and enforce streaming wire/decompressed
 limits. STAC asset URLs are constrained before fetching. Historical decade CSVs
 have a separate 64 MiB budget, preserving the official archive path. See the

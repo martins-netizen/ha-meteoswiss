@@ -22,7 +22,7 @@
    and history persist and that active/upcoming warning consumers use the
    verified catalogue and preserve the provider's concrete event text.
 5. Update manifest.json, version.py and CHANGELOG.md together when preparing a
-   release. Stable `8.2.0` was published on 22 October 2026; later development
+   release. Stable `8.3.0` was published on 24 October 2026; later development
    changes remain unreleased until separately packaged and accepted. Tag only
    the approved tested commit on `development`, not the upstream mirror `main`;
    preserve existing immutable stable/beta tags. HACS must point at
@@ -41,8 +41,10 @@ Do not record tokens, account data or full private diagnostic payloads.
 
 Follow [the publication checklist](PUBLISHING.md) for repository metadata,
 the official HACS validation, local brand assets and explicit release selection.
-A passing HACS check does not complete live acceptance or
-award a Home Assistant Quality Scale tier.
+[HACS catalogue admission](HACS_ACCEPTANCE.md#hacs-catalogue-admission) is complete.
+Keep the catalogue's normal HACS-search installation route first in user guides,
+with custom registration as a fallback. HACS checks and admission remain separate
+from live acceptance and the [Quality Scale engineering checklist](QUALITY_SCALE.md).
 
 ## Local tool input boundaries
 
@@ -53,12 +55,12 @@ file with the documented pytest coverage command before each gate run; a
 different report pathname is no longer a supported argument. The per-module,
 strict source/flow, branch-coverage and aggregate requirements are unchanged.
 
-The candidate-specific [8.3.0b2 publisher V1.1](PUBLISHING.md#stable-830)
-adds read-only preflight and one prerelease-only creation path; its tests exercise
-source equality, check provenance, old tags, stable preservation and uncertain
-writes. It performs no HA deployment. Keep it separate from the historical
-8.2.0 tools below and the already executed b1 V1.0. The regression cases run
-both b1/b2 profiles independently of the current root version.
+The historical [8.3 publishers](PUBLISHING.md#stable-830) retain version-specific
+preflight and publication paths. Their tests exercise source equality, check
+provenance, old tags, stable selection/preservation and uncertain writes. They
+perform no HA deployment. Keep these fixed-version tools as historical recipes;
+do not reuse them for a future release. Regression profiles run independently
+of the current root version.
 
 All three historical versioned release helpers use Bash `[[ ... ]]` conditions, including
 their help and argument guards. Their embedded Python publication code, fixed

@@ -1,5 +1,22 @@
 # Overall release review — 24 October 2026
 
+## Status addendum 1.2 — 25 October 2026
+
+Stable **8.3.0** was published on 24 October at **15:35:56 UTC**, release ID
+**422817883**, from **3ca9a1c166920fbdda88d15238affafe520f4b68**. Later that day,
+Frenck approved and merged [hacs/default #12593](https://github.com/hacs/default/pull/12593)
+at **20:04:26 UTC**. The fork is in the current integration list, and all 13
+distinct latest check results passed. [HACS acceptance](HACS_ACCEPTANCE.md#hacs-catalogue-admission)
+retains the admission evidence and the separate earlier operator checks.
+
+The earlier addendum and source audit below describe their dated scope; their
+then-open publication/admission steps are now complete. The operator's subsequent
+stable HACS update is a separate result. The [quality matrix](QUALITY_SCALE.md)
+uses the HA rules as an engineering checklist; official tiers are not assigned
+to custom integrations. Existing code/test evidence and open Gold work remain
+visible. The user guides now put normal HACS search first, as requested in the
+admission review, with custom registration as a fallback.
+
 ## Review addendum 1.1: stable 8.3.0 promotion
 
 The original review below is a dated source audit; its then-open runtime,

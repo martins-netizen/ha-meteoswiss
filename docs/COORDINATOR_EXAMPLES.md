@@ -1,8 +1,9 @@
 # Coordinator examples for contributors
 
-**Guide version:** 1.3 · **Updated:** 24 October 2026
-**Scope:** development including saved forecast-location routing, unreleased after stable 8.2.0.
-This guide explains the implemented development behaviour and ownership;
+**Guide version:** 1.4 · **Updated:** 25 October 2026
+**Scope:** the released 8.3 runtime, including saved forecast-location routing
+and the independent station-condition source.
+This guide explains the implemented behaviour and ownership;
 it does not itself change HA configuration or polling. Use the [architecture](ARCHITECTURE.md) for the
 full contracts and [sensor guide](SENSORS.md) for end-user features.
 
@@ -20,7 +21,7 @@ and its archive use two instances of the same class.
 | MeteoSwissDataUpdateCoordinator | Latest measured temperature and ten-minute rain at KLO, the observation station. | Configured current-weather interval; default/minimum 600 seconds. | Bounded station metadata/CSV logic remains in this class; weather and observation sensors share its result. |
 | OpenMeteoDataUpdateCoordinator | Alternative modelled current conditions at the configured coordinates, not a KLO instrument reading. | Same configured current-weather interval; default/minimum 600 seconds. | OpenMeteoCurrentClient in openmeteo.py; alternative weather/sensor consumers. |
 | MeteoSwissForecastCoordinator | ICON forecast and today/tomorrow summaries at forecast coordinates, independently of the observation station. | 3600 seconds. | IconForecastClient in forecast.py; weather.get_forecasts and eight scalar forecast sensors share the data. |
-| MeteoSwissStationConditionCoordinator | Development after b3: a modelled condition at Altdorf's measurement-station coordinates/height, while a Säntis forecast remains separate. | Normally 600 seconds; refresh earlier at the provider interval boundary. | StationConditionClient in station_condition.py; only the original station weather entity's condition, with numeric observations retained. A failure affects no measured readings. |
+| MeteoSwissStationConditionCoordinator | A modelled condition at Altdorf's measurement-station coordinates/height, while a Säntis forecast remains separate. | Normally 600 seconds; refresh earlier at the provider interval boundary. | StationConditionClient in station_condition.py; only the original station weather entity's condition, with numeric observations retained. A failure affects no measured readings. |
 | MeteoSwissAlertsCoordinator | App v3 warnings for the separately configured warning postcode, for example 8302. | 600 seconds. | MeteoSwissAlertsAPI in alerts.py; warning entities use validated alerts/validity windows. |
 | MeteoSwissPollenCoordinator | Actual measured pollen at the independently selected pollen station, for example PZH. | 3600 seconds. | MeteoSwissPollenClient in pollen_meteoswiss.py; measured-pollen sensors. |
 | OpenMeteoPollenCoordinator | Modelled pollen/AQ and optional UV at existing base coordinates, independent of a weather-forecast POI; not measured-pollen station data. | 1800 seconds. | OpenMeteoPollenClient in pollen_openmeteo.py; modelled pollen/AQ/UV entities. |

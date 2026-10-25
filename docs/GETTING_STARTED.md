@@ -34,21 +34,41 @@ most accurate model in every situation. A failed warning feed is not an all-clea
 
 ## 2. Download through HACS
 
-The fork uses a **custom repository**; a GitHub stable release does not establish
-HACS default-catalogue inclusion. If this fork is already present, open it and
-skip adding it again. If MeteoSwiss is configured, use [migration](MIGRATION.md).
+The maintained fork is in the **HACS default catalogue**, following
+[approval on 24 October 2026](HACS_ACCEPTANCE.md#hacs-catalogue-admission).
+If this fork is already downloaded, open its existing HACS entry.
+If MeteoSwiss is configured from another source, use [migration](MIGRATION.md).
 
 1. Open **HACS** in the sidebar.
-2. Open the top-right **three-dot menu → Custom repositories**.
-3. Add `https://github.com/martins-netizen/ha-meteoswiss`, type **Integration**.
-4. Open **MeteoSwiss (maintained fork) → Download**. Under **Need a different
+2. Search for **MeteoSwiss**. Open the result and check that its repository is
+   **martins-netizen/ha-meteoswiss**, rather than the upstream project or the
+   separate radar integration.
+3. Open **Download**. Under **Need a different
    version? → Release**, choose the announced stable **8.3.0** when it is listed.
    If it is missing, refresh repository information and check the release page;
    do not substitute a development branch or commit.
-5. Download the selected version, then restart HA and wait for it to return.
+4. Download the selected version, then restart HA and wait for it to return.
 
 **Update information** refreshes metadata; it does not install component files.
 Downloading installs software; the next step chooses its data locations.
+
+### If the repository is not listed
+
+Let HACS refresh its catalogue, reload the HACS page and search again. If the
+maintained fork is still absent, the following custom-repository route remains
+available as a fallback, including during a source switch from the upstream
+version:
+
+1. In **HACS**, open the top-right **three-dot menu → Custom repositories**.
+2. Add `https://github.com/martins-netizen/ha-meteoswiss`, type **Integration**.
+3. Return to the HACS list, open the maintained fork and continue with the
+   release selection and download above.
+
+If HACS reports that the repository is already in the default catalogue, close
+the custom-repository dialog and find it in the main HACS list. Adding a URL
+does not download the integration. An existing upstream installation must follow
+the [source-switch procedure](MIGRATION.md#4-switch-hacs-software-ownership);
+keep its configured HA entry and use one software owner for `meteoswiss`.
 
 ## 3. Select pollen, weather and warning locations
 

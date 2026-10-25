@@ -1,10 +1,15 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.26 · **Updated:** 24 October 2026
-**Status:** Catalogue/location work and display correction #61 integrated; 8.3.0b1 publication completed; b2 packaging and focused compatibility/display acceptance remain open.
+**Plan version:** 1.27 · **Updated:** 25 October 2026
+**Status:** The agreed architecture, catalogue/POI, forecast-display, shared-settings
+and station-condition scope is released in stable 8.3.0. B4 runtime acceptance,
+stable publication and HACS default-catalogue admission are complete. A subsequent
+operator stable-update check remains separate. The current next-work overview is
+[ROADMAP.md](../ROADMAP.md); earlier implementation packages below are retained
+as planning history, not new instructions to repeat completed work.
 This document does not approve a new feature, installation or release.
 
-## Next feature release: agreed scope on 23 October 2026
+## Historical agreed scope and b1/b2 sequence — 23–24 October 2026
 
 The operator explicitly includes both remaining architecture boundaries and
 location/POI selection in the next release. Do not freeze the scope at the
@@ -45,6 +50,16 @@ the smaller forecast-only scope no longer applies.
 
 ## Current position
 
+Stable **8.3.0** was published on **24 October 2026** from
+**3ca9a1c166920fbdda88d15238affafe520f4b68**, retaining the accepted b4 runtime.
+The b2/b3 display, calendar and settings follow-ups and b4 station condition are
+complete within the [recorded acceptance scope](RELEASE_READINESS.md).
+[HACS catalogue admission](HACS_ACCEPTANCE.md#hacs-catalogue-admission) is complete.
+The next bounded engineering choices include the remaining Gold checklist and
+authoritatively sourced multilingual locality aliases; a processed-forecast
+source change needs its own decision. No new feature or release date is approved
+by this status update.
+
 The first beta, its deployed HA 2026.10.2 acceptance and the operator-confirmed
 HACS source switch are complete. The temporary clean first installation and
 isolated restore were confirmed on 21 October; Beta2 new setup with other
@@ -68,27 +83,26 @@ The 21 October download verifies **5816 unique type/ID pairs**, including
 fully identical; 86 bare IDs span multiple types. The plan records hashes,
 coordinates, catalogue heights and a proposed result display. Catalogue-backed
 selection uses the existing ICON forecast source. Processed OGD forecast
-payload/resource evaluation is a separate future decision; selection dialogs are now implemented and regression-tested; practical
-compatibility acceptance remains open for this release. Height/request/cache
+payload/resource evaluation is a separate future decision. Selection dialogs are
+implemented, regression-tested and covered by the accepted b3/b4 checks.
+Height/request/cache
 semantics are now defined and regression-tested in the second package.
 Selecting a forecast POI does not establish point-specific warning coverage;
 a separately confirmed warning postcode can remain supported.
 
 ## HACS default-list submission gate
 
-Checked against the [current inclusion rules](https://www.hacs.xyz/docs/publish/include/)
-on 23 October 2026. The maintained fork is not in the retrieved hacs/default
-integration list. PR #35 integrated **country: CH** in hacs.json; it must be present
-in the next released HACS manifest too. Do not rewrite the immutable 8.2.0 release.
+**Completed.** Stable 8.3.0 includes **country: CH**, bundled brand assets and
+the reviewed manifest. The owner-authored editable alphabetical addition
+[hacs/default #12593](https://github.com/hacs/default/pull/12593) disclosed the
+fork origin, shared domain and validation implementation. Frenck approved and
+merged it on **24 October 2026 at 20:04:26 UTC** after successful checks.
+The current integration list contains the maintained fork; see
+[admission evidence](HACS_ACCEPTANCE.md#hacs-catalogue-admission).
 
-After the agreed POI implementation and candidate acceptance, rerun HACS without
-ignores and Hassfest, then publish the reviewed stable release before submitting
-an owner-authored, editable, alphabetical addition to hacs/default. Recheck
-branding, manifest, licence, active repository and Core-domain eligibility at
-submission time. Explain the fork origin and shared domain transparently;
-the published rules do not impose a blanket ban on forks. HACS review is still
-required and can take months. Passing our checks or completing HA quality-tier
-work is not acceptance into the default list.
+The 23 October eligibility audit and the prior immutable releases remain
+historical evidence. Do not repeat the submission or rewrite their tags.
+Future changes still require the repository's normal HACS/Hassfest checks.
 
 ## Baseline and quality claims
 
@@ -98,7 +112,8 @@ matching `9c50b6b`. The [dated review](REVIEW_2026-10-17.md) and
 
 The [HA quality tiers](https://contributors.home-assistant.io/core/quality-scale/tiers/)
 build on each other. They are an engineering benchmark for this custom/HACS
-fork, not an official award. Passing HACS validation is separate. Only a
+fork. Official tiers are not assigned to custom integrations; the rules guide
+our documented self-assessment. Completed HACS admission is separate. Only a
 complete rule-by-rule assessment can justify a documented self-assessment of
 applicable Silver requirements; exceptions need their specified justification.
 This plan adds no quality-scale manifest value or badge.
@@ -141,7 +156,14 @@ That intermediate candidate passed 779 tests on HA 2026.8.3/2026.10.1/2026.10.2,
 92 keys per language. Those figures are historical, not the latest 786-test
 accepted runtime.
 
-## Work order and decision gates
+## Historical work order and decision gates
+
+The packages and suggested PR order below record the earlier implementation
+plan. Their architecture, lifecycle, coverage and P0/P1/P2 work is reconciled
+in the [current rule matrix](QUALITY_SCALE.md), [release record](RELEASE_READINESS.md)
+and [roadmap](../ROADMAP.md). Read those current records before starting another
+package; the old “unreleased” and acceptance gates below describe their original
+planning date, not the released 8.3.0 state.
 
 | Package | Scope | Completion criterion | Dependency |
 |---|---|---|---|
