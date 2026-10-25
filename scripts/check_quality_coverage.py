@@ -32,7 +32,8 @@ def validate() -> None:
             raise SystemExit(f"{name} must exceed 95% per-module coverage")
     total = report["totals"]["percent_covered"]
     print(
-        f"\nCombined integration coverage: **{total:.2f}%**. All modules exceed 95%; full Silver assessment remains pending."
+        f"\nCombined integration coverage: **{total:.2f}%**. All modules exceed 95%; "
+        "see docs/QUALITY_SCALE.md for the rule-by-rule engineering evidence."
     )
     flow = files["custom_components/meteoswiss/config_flow.py"]
     if flow["missing_lines"] or flow["missing_branches"]:

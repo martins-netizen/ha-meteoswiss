@@ -1,6 +1,6 @@
 # Release readiness: 8.3.0 promotion from accepted b4
 
-**Document version:** 2.6 · **Updated:** 24 October 2026
+**Document version:** 2.7 · **Updated:** 25 October 2026
 
 ## Current release position
 
@@ -17,10 +17,12 @@ only from b4 to **8.3.0**. HACS metadata, seven earlier tags, workflows and four
 178-key UI catalogues are retained. This is a version-only promotion; no new
 feature is included after the accepted runtime.
 
-Stable publication, the actual release ID/time and the subsequent HACS update
-are separate results. The [latest published stable endpoint](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
-is authoritative. Until the stable publisher verifies 8.3.0 there, a source
-version alone is not publication evidence.
+Stable **8.3.0 was published on 24 October 2026 at 15:35:56 UTC**, release ID
+**422817883**, from **3ca9a1c166920fbdda88d15238affafe520f4b68**. The
+[latest published stable endpoint](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
+agrees. [HACS catalogue admission](HACS_ACCEPTANCE.md#hacs-catalogue-admission)
+was completed later that day. A subsequent operator HACS download/version check
+is separate and has not yet been recorded here.
 
 ## Completed evidence
 
@@ -35,20 +37,21 @@ version alone is not publication evidence.
 | Stable package automation | 1,653 tests +63 subtests on each local HA 2026.8.3/2026.10.3. Includes 226 publisher cases across five profiles: 220 shared boundary cases and six stable-specific cases; stable/latest selection, preserved publications/tags and no-write retries are covered. Coverage and strict gates unchanged. |
 | Hosted checks | CI matrix remains 2026.8.3/2026.10.1; tests, SonarCloud, HACS, hassfest and CodeQL must pass on the exact stable PR/head and merge. Additional local 2026.10.3 evidence is distinct. |
 | Documentation | Current setup/migration/roles/settings guides describe 8.3; provider labels, selected-place limits, card-target changes, cache counters and quality-tier limits remain explicit. |
+| Stable publication | PR #68 regularly merged as 3ca9a1c166920fbdda88d15238affafe520f4b68. Release 8.3.0 / ID 422817883 published 24 October at 15:35:56 UTC, latest stable, no draft/prerelease; tag and seven prior tags verified. |
+| HACS catalogue | [hacs/default #12593](https://github.com/hacs/default/pull/12593) approved by Frenck and merged 24 October at 20:04:26 UTC. Current integration list contains the fork; all 13 distinct latest checks passed. See [evidence](HACS_ACCEPTANCE.md#hacs-catalogue-admission). |
 
-## Remaining stable steps
+## Completed publication and remaining operator check
 
-1. Regular stable-package PR with all exact-head checks successful; merge without
-   bypass, then verify the expected tree and all merge-commit checks.
-2. Run **veroeffentliche_meteoswiss_stable_v1.3.sh --check FULL_MERGE_SHA**, or
-   directly its approved **--publish FULL_MERGE_SHA** mode, which performs the
-   same checks before its only remote write. It requires the exact protected
-   development head, accepted b4 code/publication and previous stable 8.2.0.
-3. Verify the published 8.3.0 tag, notes, release ID/time, latest-stable selection
-   and all seven old tags. The helper never retags or overwrites a release.
-4. Follow the [stable HACS update check](ACCEPTANCE_8.3.0.md), retaining the
-   existing entry and intended locations. No new blanket 24-hour wait, repeated
-   first-install or restore rehearsal is required for unchanged component code.
+The stable-package PR, exact-head/merge checks, guarded publication and
+release/tag/latest verification are complete. The [publication procedure](PUBLISHING.md#stable-830)
+retains their version-specific method as history, not a new instruction to
+merge, publish or retag 8.3.0 again. HACS catalogue admission is also complete.
+
+The separate [stable HACS update check](ACCEPTANCE_8.3.0.md) records the version
+actually downloaded in the operator's HA, retaining the existing entry and
+intended locations. No new blanket 24-hour wait, repeated first-install or
+restore rehearsal is required for unchanged component code. Catalogue admission
+alone requires no reinstallation.
 
 Do not repeat merges or publication once their exact result is confirmed.
 Operational outcomes belong in the operator's master; this source document
@@ -64,8 +67,9 @@ zero-vulnerability claim is made. Private-reporting activation is
 operator-confirmed, not a fresh administration-settings audit.
 
 The [rule matrix](QUALITY_SCALE.md) records applicable technical Bronze/Silver
-evidence, external Core branding limits and open/partial Gold rules. Official
-tiers and HACS default-catalogue submission are separate from this release.
+evidence, the custom branding route and open/partial Gold work. Custom integrations
+have no official HA quality tiers; the rules guide our engineering assessment.
+The completed HACS catalogue admission is a separate distribution result.
 Further work includes sourced multilingual locality aliases, HA Repairs and
 the remaining Gold items. Retain App v3 warnings; separate river/bulletin/radar
 products are not introduced. A UTM restart problem was reported; its cause was

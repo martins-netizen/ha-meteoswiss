@@ -36,6 +36,11 @@ and switching does not promise more accurate forecasts from the same stated mode
 | LNKtwo/ha-meteoswiss through HACS | Use the software-source switch below. |
 | Manual files, local patches or uncertain provenance | Establish source and changes before overwriting. |
 
+The maintained fork is now in the [HACS default catalogue](HACS_ACCEPTANCE.md#hacs-catalogue-admission).
+Users who already downloaded it, including through a custom repository, keep
+that HACS entry. Catalogue admission alone requires no reinstallation or new HA
+configuration entry.
+
 In **HACS → three-dot menu → Repository**, record the source and version.
 Matching version strings do not prove identical manually patched code.
 If provenance is unclear, stop and ask in the
@@ -127,11 +132,12 @@ When moving from `LNKtwo/ha-meteoswiss`:
 1. Remove its old software entry through the **HACS three-dot menu**. This removes
    managed component files; it is not deletion of the configured integration
    under **Devices & services**.
-2. Under **HACS → three-dot menu → Custom repositories**, add
-   `https://github.com/martins-netizen/ha-meteoswiss` as **Integration**.
-3. Open **MeteoSwiss (maintained fork)** and **Download/Redownload**.
+2. Search for **MeteoSwiss** in the main HACS list and select the entry whose
+   repository is **martins-netizen/ha-meteoswiss**. If it is not yet visible,
+   use the [custom-repository fallback](GETTING_STARTED.md#if-the-repository-is-not-listed).
+3. Open the maintained fork and **Download/Redownload**.
    Under **Need a different version? → Release**, explicitly select the
-   published stable **8.2.0**.
+   published stable **8.3.0**.
    Verify the announced version before download. If the target is missing
    or HACS rejects the switch, stop;
    do not delete HA configuration or edit hidden storage files.

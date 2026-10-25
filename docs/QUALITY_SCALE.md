@@ -1,17 +1,24 @@
 # Quality evidence and remaining work
 
-**Assessment date:**24 October 2026. **Scope:** the 8.3 runtime accepted as
+**Runtime assessment:** 24 October 2026. **Documentation updated:** 25 October 2026.
+**Scope:** the 8.3 runtime accepted as
 published b4 at **a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5**. Stable packaging
 changes only two component version files. The operator confirmed b3 calendar-day
 values/shared station changes and positive b4 operation; screenshots show distinct
 station/forecast devices. [Readiness](RELEASE_READINESS.md) retains evidence limits.
 
-This is an engineering self-assessment using the
-[Home Assistant rules](https://contributors.home-assistant.io/core/quality-scale/rules/),
-not an awarded tier. HACS eligibility is assessed separately in the
-[overall review](RELEASE_REVIEW_2026-10-24.md). `quality_scale` is deliberately
-absent from the manifest. A full tier needs the applicable preceding rules too;
-one green percentage or a working reconfiguration flow does not establish it.
+We use the [Home Assistant rules](https://contributors.home-assistant.io/core/quality-scale/rules/)
+to guide engineering work and record the evidence for each applicable rule.
+Home Assistant's [custom-integration guidance](https://contributors.home-assistant.io/marketplace/guides/integrations/#keep-up-with-home-assistant)
+states that custom integrations have no official tiers. Bronze, Silver and
+Gold therefore organise this project's self-assessment and remaining work;
+they are not pending official awards. `quality_scale` is deliberately absent
+from the manifest. Assess the underlying rules too, rather than relying on one
+coverage percentage or a working reconfiguration flow.
+
+[HACS catalogue admission](HACS_ACCEPTANCE.md#hacs-catalogue-admission) was completed
+on 24 October 2026. That distribution/review milestone is separate from the
+engineering assessment below and from an operator's actual HA update.
 
 **Evidence** below means code, automated tests or current documentation exists
 within the stated scope. **Open/partial** identifies a remaining requirement.
@@ -19,8 +26,9 @@ within the stated scope. **Open/partial** identifies a remaining requirement.
 GitHub publication does not establish the later stable HACS update.
 
 **Reading the result:** all applicable technical Bronze rules and applicable
-Silver rules have recorded evidence below, with the external Core branding rule
-still unverified. This is not a complete Bronze/Silver tier claim. Gold has
+Silver rules have recorded evidence below. Bundled branding follows the custom
+integration/HACS route; the separate Core branding requirement is not assessed.
+Gold has
 explicit open/partial rules and proposed exemptions requiring review. The
 [README summary](../README.md#quality-goals-bronze-silver-and-gold) is intentionally
 short; these tables retain the qualifications and release scope.
@@ -31,7 +39,7 @@ short; these tables retain the qualifications and release scope.
 |---|---|---|
 | `action-setup` | Exempt | No custom integration actions. `weather.get_forecasts` belongs to HA's weather platform. |
 | `appropriate-polling` | Evidence | Developer-selected 600-second observation default/minimum; source-specific forecast, warning, pollen and archive schedules. New setup/options no longer expose an interval. Legacy intervals survive without a new UI knob. See API_SOURCES.md and options migration tests. |
-| `brands` | Open for a full Core-tier claim | Valid local HACS PNGs exist. They do not establish accepted home-assistant/brands assets for the Core rule; that external evidence remains separate. HACS accepts the local brand route. |
+| `brands` | Custom-integration asset evidence; Core route not assessed | Valid bundled HACS PNGs are present and catalogue admission is complete. The separate home-assistant/brands requirement concerns the Core rule; it is not an outstanding route to an official tier for this custom integration. |
 | `common-modules` | Evidence | All eight real coordinator classes are in coordinator.py; shared bases are in entity.py and runtime ownership is typed. Source separation is substantive for ICON/current/AQ/pollen/precipitation, not alias-only placement. The legacy station adapter remains in its coordinator, with executor CSV parsing. |
 | `config-flow` | Evidence | Native setup/options and forecast Reconfigure. Four-language fields/help; source selector; explicit pollen choice and point search/selection/confirmation. Current source and warning/forecast/pollen purposes stay distinct. |
 | `config-flow-test-coverage` | Evidence | Full line/branch gate. Real flow-manager tests cover both providers, errors, retries, duplicate guards, translations, cancel/keep/reset and loaded-entry reconfiguration. |
@@ -67,8 +75,9 @@ short; these tables retain the qualifications and release scope.
 
 The original audit's interval, field-help, common-layout, UV/catalogue and
 per-module coverage findings are implemented in the reviewed tree. Their old
-wording must not be read as new work to repeat. External Core branding remains unverified; operational acceptance does not
-turn this engineering self-assessment into an officially awarded tier.
+wording must not be read as new work to repeat. The rule matrix preserves the
+scope of each technical result, the custom branding route and the remaining
+engineering work.
 
 ## Gold: bounded assessment of all twenty-one rules
 
@@ -76,7 +85,7 @@ turn this engineering self-assessment into an officially awarded tier.
 |---|---|---|
 | `devices` | Partial | Stable weather, warning, measured pollen, AQ and diagnostic grouping is tested; audit completeness of legacy manufacturer/model metadata separately. |
 | `diagnostics` | Evidence | Safe unloaded-entry exports, status/timestamps, aggregate cache counts and whole saved-location redaction; no raw payload or network load. |
-| `discovery` | Exemption candidate | This is a manually selected public cloud service, not a discoverable local device. Record the rule-specific exemption in any formal tier proposal. |
+| `discovery` | Exemption candidate | This is a manually selected public cloud service, not a discoverable local device. Record the rule-specific applicability reason in this engineering assessment. |
 | `discovery-update-info` | Exemption candidate | No discovered network address; assess with discovery above. |
 | `docs-data-update` | Evidence | API_SOURCES.md distinguishes polling, cache, publication and measurement intervals; documents time/freshness and failure limits. |
 | `docs-examples` | Evidence | COORDINATOR_EXAMPLES.md, standard forecast usage and escaped warning-card example. Examples do not actuate devices. |
@@ -96,9 +105,10 @@ turn this engineering self-assessment into an officially awarded tier.
 | `repair-issues` | Open | Invalid saved selection has explicit unavailable state, private log and recovery flow, but no HA Repair issue yet. |
 | `stale-devices` | Open | Review removal of obsolete grouping after measured-pollen station changes without deleting wanted registry/history data. |
 
-Gold is therefore not complete. Platinum's strict typing and all async/source
-library requirements are not awarded by this review either. These tier goals
-are not an unbounded prerequisite for packaging the agreed next feature release.
+The Gold engineering checklist therefore remains incomplete. Strict typing
+and the async/source-library requirements associated with Platinum need their
+own evidence too. These improvement goals are separate from packaging an
+agreed feature release.
 
 ## Reproduce and distinguish history
 
@@ -119,4 +129,5 @@ The [17 October audit](QUALITY_AUDIT_2026-10-17.md) and
 [dated implementation record](QUALITY_PROGRESS_2026-10-22.md) retain the previous
 baselines. The original 68-test/54.78% snapshot and later 762-/786-/967-test
 numbers are history, not the current suite or a demand to repeat completed
-acceptance. See RELEASE_READINESS.md for the remaining publication/update steps.
+acceptance. See RELEASE_READINESS.md for completed publication/catalogue results
+and the separately recorded operator-update scope.

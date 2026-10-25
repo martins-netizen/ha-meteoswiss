@@ -1,14 +1,20 @@
 # Local forecast points: separate catalogue and forecast decisions
 
-**Plan version:** 1.8 · **Updated:** 24 October 2026
-**Status:** Catalogue foundation and offline saved-selection/height-aware ICON routing implemented in development; translated HA flows are implemented and regression-tested; focused candidate acceptance remains open.
-Existing entries without a selection retain their forecast coordinates and IDs. Installed version remains unchanged.
+**Plan version:** 1.9 · **Updated:** 25 October 2026
+**Status:** Catalogue selection, offline saved selections, height-aware ICON
+routing and translated HA flows are released in stable **8.3.0**. The focused
+b3/b4 operator checks are complete within the [recorded scope](RELEASE_READINESS.md).
+[HACS catalogue admission](HACS_ACCEPTANCE.md#hacs-catalogue-admission) is complete.
+Existing entries without a selection retain their forecast coordinates and IDs;
+an individual installation's version still depends on its actual HACS download.
 
 See the [translated selection/reconfiguration guide](FORECAST_LOCATION_SETUP.md),
 [saved-location contract](SAVED_FORECAST_LOCATION.md) and
 [catalogue implementation contract](FORECAST_LOCATION_CATALOGUE.md)
-and its fresh 23 October source/client evidence. The dated audits below remain
-historical rather than evidence of a completed HA selection feature.
+and its dated 23 October source/client evidence. The audits below retain the
+investigation and original design. The later implementation/acceptance records
+above establish the released selection feature. Adopting processed OGD forecast
+payloads remains a separate future source decision.
 
 ## Decision and purpose
 

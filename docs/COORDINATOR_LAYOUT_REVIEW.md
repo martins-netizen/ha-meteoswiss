@@ -1,7 +1,9 @@
 # Coordinator placement review
 
-**Review version:** 1.6 · **Date:** 24 October 2026
-**Scope:** unreleased development after stable 8.2.0.
+**Review version:** 1.7 · **Updated:** 25 October 2026
+**Scope:** the released 8.3 runtime. The completed extraction sections below
+retain the sequence and evidence of the original reviews; they are not new
+architecture work to repeat. See [current release status](RELEASE_READINESS.md).
 
 The [HA common-modules rule](https://contributors.home-assistant.io/core/quality-scale/common-modules/)
 places DataUpdateCoordinator definitions in coordinator.py and the shared entity
@@ -13,7 +15,7 @@ This review records actual class definitions, not imports or type annotations.
 | MeteoSwissDataUpdateCoordinator | coordinator.py | Canonical observation coordinator. |
 | MeteoSwissAlertsCoordinator | coordinator.py | Moved from binary_sensor.py in this follow-up. |
 | MeteoSwissForecastCoordinator | coordinator.py | Extracted ICON source client owns HTTP/parsing; the canonical coordinator retains caching, scheduling and failure/recovery lifecycle. |
-| MeteoSwissStationConditionCoordinator | coordinator.py | Development after b3: optional station-local current model code; station_condition.py owns bounded HTTP/parsing and validity. The canonical coordinator owns catalogue resolution, caching and scheduling. |
+| MeteoSwissStationConditionCoordinator | coordinator.py | Optional station-local current model code; station_condition.py owns bounded HTTP/parsing and validity. The canonical coordinator owns catalogue resolution, caching and scheduling. |
 | OpenMeteoDataUpdateCoordinator | coordinator.py | Extracted current-condition client handles HTTP/parsing; HA coordinator retains cache, freshness, failure pause and lifecycle. |
 | OpenMeteoPollenCoordinator | coordinator.py | Source-only pollen/AQ client includes the separate optional UV request; the real HA coordinator retains current-hour validation, the shared AQ/UV result cache and transition logs. |
 | MeteoSwissPollenCoordinator | coordinator.py | Extracted measured-pollen client owns transport, parsing and freshness; HA coordinator owns scheduling and exception translation. |

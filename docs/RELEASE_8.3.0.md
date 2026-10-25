@@ -2,6 +2,13 @@
 
 **Release notes version:** 1.0 · **Prepared:** 24 October 2026
 
+**Status addendum — 25 October 2026:** stable 8.3.0 was published on 24 October;
+[HACS catalogue admission](HACS_ACCEPTANCE.md#hacs-catalogue-admission) was approved
+and merged later that day. The text below records the release's original scope.
+Current [installation](GETTING_STARTED.md) and [readiness](RELEASE_READINESS.md)
+track these completed results separately from an operator's actual HA update.
+The published tag and GitHub release notes are unchanged.
+
 This community fork builds on [LNKtwo/ha-meteoswiss](https://github.com/LNKtwo/ha-meteoswiss)
 and retains its MIT licence and attribution. It is not an official MeteoSwiss
 product. Install a published release through HACS; a version in a branch is

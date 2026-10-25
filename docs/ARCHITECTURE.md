@@ -2,8 +2,9 @@
 
 ## Purpose and boundaries
 
-Maintain the existing integration for reliable local use while upstream PRs
-remain pending. Preserve `meteoswiss`, config entries, unique IDs, entity IDs,
+Maintain an independent community fork with reviewed fixes, its own releases
+and [HACS catalogue admission](HACS_ACCEPTANCE.md#hacs-catalogue-admission).
+The contracts below describe the released 8.3 runtime. Preserve `meteoswiss`, config entries, unique IDs, entity IDs,
 and Recorder statistic IDs for retained entities. The legacy forecast-only
 season-HGT entity is explicitly retired rather than presented as a measured
 accumulated total; see the migration guide. Upstream source, licence and attribution remain
@@ -76,7 +77,7 @@ independent source failures and reset/reload, not just constructed metadata.
 
 ## Sources and time
 
-### Station-local weather condition (development after b3)
+### Station-local weather condition
 
 `station_condition.py` owns the small ICON current-code/daylight HTTP request,
 mapping and interval validation. The eighth canonical class,
@@ -577,7 +578,8 @@ line/branch coverage, enforced in CI alongside config flow. The weather entity
 and shared weather-data contract also require full line/branch coverage. Cache,
 diagnostics and the shared station catalogue now have the same CI requirement. The station client
 must retain 100% line and branch coverage, and the whole-integration
-floor is 99.0%; Silver remains pending. The current gate in
+floor is 99.0%. The [rule matrix](QUALITY_SCALE.md) records the applicable
+Bronze/Silver engineering evidence and remaining Gold work. The current gate in
 `scripts/check_quality_coverage.py` is authoritative for the complete enforced
 module list; the global percentage does not certify every inactive module.
 CI runs minimum and current
