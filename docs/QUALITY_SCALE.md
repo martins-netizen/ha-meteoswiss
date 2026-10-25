@@ -26,7 +26,7 @@ within the stated scope. **Open/partial** identifies a remaining requirement.
 separately from automated evidence. On 25 October the operator confirmed the
 successful production update from 8.2 to stable 8.3; see [HACS evidence](HACS_ACCEPTANCE.md).
 
-**Unreleased follow-up:** the repair-issues row below additionally records the
+**Prepared 8.3.1b1 follow-up:** the repair-issues row below additionally records the
 new [saved-location repair notice](REPAIRS.md) and its tests. This feature is not
 in the published 8.3.0 package and has no separate operator UI acceptance yet.
 Other runtime evidence retains the accepted 8.3 scope above.

@@ -1,6 +1,34 @@
 # Release readiness: 8.3.0 promotion from accepted b4
 
-**Document version:** 2.8 · **Updated:** 25 October 2026
+**Document version:** 2.9 · **Updated:** 25 October 2026
+
+## Prepared 8.3.1b1 test candidate
+
+The [repair and station-map package](RELEASE_8.3.1b1.md) is prepared, **not
+published**. Its reviewed runtime is PR #70 at
+**22004177b96adb4452fdbd116174915de4dc18cf**, tree
+**6bb5eb45e10cd3390b32e5901ccbe288a6591a63**. All eight PR checks and seven
+post-merge checks passed. Packaging retains **38 non-version component files**;
+only the two version files become **8.3.1b1**. HACS/CH, workflows, all four
+180-key catalogues and eight earlier release tags are unchanged.
+
+Publisher V1.4 has a fixed 40-file/source contract, exact-merge/check provenance,
+read-only preflight, immutable-tag and retry guards. It preserves latest stable
+**8.3.0 / ID 422817883**, including a final pre-write check. The shared
+publication tests retain all five earlier profiles and add the new one. Local
+full suites pass **1,729 tests plus 63 subtests** on each **HA 2026.8.3 and
+2026.10.3 / Python 3.14.8**, including **280 publication-profile cases**.
+Combined coverage remains **99.977698%**: **3,503/3,504 statements** and
+**980/980 branches**. Both coverage gates pass; strict modules, thresholds and
+the four existing exclusions are unchanged. DE/EN/FR/IT each have **180 keys**
+with English/source parity. Hosted packaging checks must pass on the exact PR
+head and later regular merge; they are separate from these local results.
+
+After packaging review and a regular merge, verify that merge's checks before
+announcing publication. The [focused UI check](ACCEPTANCE_8.3.1b1.md) is pending;
+it needs no damaged production entry, forced outage, repeated restore or new
+blanket observation period. The operator-confirmed stable 8.3 update below
+remains complete. A prepared package is not a HA installation or UI acceptance.
 
 ## Current release position
 
