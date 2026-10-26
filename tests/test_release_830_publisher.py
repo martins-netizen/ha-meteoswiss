@@ -26,8 +26,9 @@ ROOT = Path(__file__).resolve().parents[1]
         ("v1.3", "8.3.0b3", "8.3.0b4", "95890788c12bfc675d41f81052c2143522434924"),
         ("stable-v1.3", "8.3.0b4", "8.3.0", "a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5"),
         ("v1.4", "8.3.0", "8.3.1b1", "22004177b96adb4452fdbd116174915de4dc18cf"),
+        ("stable-v1.4", "8.3.1b1", "8.3.1", "c7b20c78d4273a33ba8c6f06c1834fc2f22c8665"),
     ],
-    ids=["beta1", "beta2", "beta3", "beta4", "stable", "beta831"],
+    ids=["beta1", "beta2", "beta3", "beta4", "stable", "beta831", "stable831"],
 )
 def publisher(request):
     """Exercise each historical/follow-up boundary independently."""
@@ -36,6 +37,8 @@ def publisher(request):
         script = ROOT / "scripts/veroeffentliche_meteoswiss_stable_v1.3.sh"
     elif tag == "8.3.1b1":
         script = ROOT / "scripts/publish_meteoswiss_831_beta_v1.4.sh"
+    elif tag == "8.3.1":
+        script = ROOT / "scripts/veroeffentliche_meteoswiss_stable_v1.4.sh"
     else:
         script = ROOT / f"scripts/publish_meteoswiss_830_beta_{revision}.sh"
     payload = (
@@ -46,15 +49,16 @@ def publisher(request):
     assert module.TAG == tag and module.REVIEWED_SOURCE == reviewed
     module._script = script
     module._source_version = source_version
-    module._is_stable = tag == "8.3.0"
+    module._is_stable = tag in {"8.3.0", "8.3.1"}
     module._identical_files = {
-        "8.3.0b4": 37, "8.3.0": 37, "8.3.1b1": 38
+        "8.3.0b4": 37, "8.3.0": 37, "8.3.1b1": 38, "8.3.1": 38
     }.get(tag, 36)
     return module
 
 
 STABLE_PROFILE = ("stable-v1.3", "8.3.0b4", "8.3.0", "a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5")
 BETA831_PROFILE = ("v1.4", "8.3.0", "8.3.1b1", "22004177b96adb4452fdbd116174915de4dc18cf")
+STABLE831_PROFILE = ("stable-v1.4", "8.3.1b1", "8.3.1", "c7b20c78d4273a33ba8c6f06c1834fc2f22c8665")
 
 
 COMMIT = "a" * 40
@@ -79,9 +83,9 @@ class GitHub:
         files = json.loads(
             (ROOT / "tests/fixtures/release_830_component_paths.json").read_text()
         )
-        if publisher.TAG in {"8.3.0b4", "8.3.0", "8.3.1b1"}:
+        if publisher.TAG in {"8.3.0b4", "8.3.0", "8.3.1b1", "8.3.1"}:
             files.append(PREFIX + "station_condition.py")
-        if publisher.TAG == "8.3.1b1":
+        if publisher.TAG in {"8.3.1b1", "8.3.1"}:
             files.append(PREFIX + "repair_issues.py")
         self.candidate = {
             path: ("100644", blob((ROOT / path).read_bytes())) for path in files
@@ -130,12 +134,17 @@ class GitHub:
         self.release = None
         self.stable = dict(
             id=self.publisher.STABLE_RELEASE_ID,
-            tag_name="8.3.0" if publisher.TAG == "8.3.1b1" else "8.2.0",
+            tag_name="8.3.0" if publisher.TAG in {"8.3.1b1", "8.3.1"} else "8.2.0",
             draft=False,
             prerelease=False,
         )
         self.previous_stable = copy.deepcopy(self.stable)
-        self.source_release = {"id": 422790421, "tag_name": "8.3.0b4", "draft": False, "prerelease": True}
+        self.source_release = {
+            "id": 423899845 if publisher.TAG == "8.3.1" else 422790421,
+            "tag_name": "8.3.1b1" if publisher.TAG == "8.3.1" else "8.3.0b4",
+            "draft": False,
+            "prerelease": True,
+        }
         self.fail_after_post = False
         self.change_stable_after_post = False
         self.truncated = False
@@ -211,9 +220,9 @@ class GitHub:
             return copy.deepcopy(self.stable)
         if suffix == "/releases/tags/" + self.publisher.TAG:
             return copy.deepcopy(self.release)
-        if suffix == "/releases/tags/8.2.0":
+        if suffix == "/releases/tags/" + self.previous_stable["tag_name"]:
             return copy.deepcopy(self.previous_stable)
-        if suffix == "/releases/tags/8.3.0b4" and self.publisher._is_stable:
+        if suffix == "/releases/tags/" + self.source_release["tag_name"] and self.publisher._is_stable:
             return copy.deepcopy(self.source_release)
         if suffix.startswith("/contents/"):
             source = suffix.endswith("?ref=" + self.publisher.REVIEWED_SOURCE)
@@ -398,7 +407,7 @@ def test_uncertain_write_records_receipt_and_retry_does_not_post_again(
     assert receipt["status"] == "publication_result_unconfirmed"
     assert receipt["release_write_attempted"] is True
     assert receipt["ha_writes_performed"] is False
-    assert receipt["focused_ha_ui_acceptance"] == ("operator_confirmed_8.3.0b4" if publisher._is_stable
+    assert receipt["focused_ha_ui_acceptance"] == (f"operator_confirmed_{publisher._source_version}" if publisher._is_stable
                                                     else f"pending_{publisher.TAG}")
     fake.fail_after_post = False
     fake.calls.clear()
@@ -535,32 +544,34 @@ def test_shell_guard_runs_before_any_external_command(publisher, args, status):
 
 
 def test_profiles_preserve_the_preceding_published_betas(publisher):
-    if publisher.TAG in {"8.3.0b2", "8.3.0b3", "8.3.0b4", "8.3.0", "8.3.1b1"}:
+    if publisher.TAG in {"8.3.0b2", "8.3.0b3", "8.3.0b4", "8.3.0", "8.3.1b1", "8.3.1"}:
         assert (
             publisher.PRESERVED_TAGS["8.3.0b1"]
             == "a6b9df9f57dec3e93c8f698133cdb0e7e4c3e937"
         )
     else:
         assert "8.3.0b1" not in publisher.PRESERVED_TAGS
-    if publisher.TAG in {"8.3.0b3", "8.3.0b4", "8.3.0", "8.3.1b1"}:
+    if publisher.TAG in {"8.3.0b3", "8.3.0b4", "8.3.0", "8.3.1b1", "8.3.1"}:
         assert publisher.PRESERVED_TAGS["8.3.0b2"] == "50b5711213bd8a1706871718a283b9fcb4db257d"
     else:
         assert "8.3.0b2" not in publisher.PRESERVED_TAGS
-    if publisher.TAG in {"8.3.0b4", "8.3.0", "8.3.1b1"}:
+    if publisher.TAG in {"8.3.0b4", "8.3.0", "8.3.1b1", "8.3.1"}:
         assert publisher.PRESERVED_TAGS["8.3.0b3"] == "9d75aa8673c417f24caaa1f83181b5ef811d56fc"
     else:
         assert "8.3.0b3" not in publisher.PRESERVED_TAGS
-    if publisher.TAG == "8.3.1b1":
+    if publisher.TAG in {"8.3.1b1", "8.3.1"}:
         assert publisher.PRESERVED_TAGS["8.3.0b4"] == "a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5"
         assert publisher.PRESERVED_TAGS["8.3.0"] == "3ca9a1c166920fbdda88d15238affafe520f4b68"
         assert publisher.STABLE_RELEASE_ID == 422817883
+        if publisher.TAG == "8.3.1":
+            assert publisher.PRESERVED_TAGS["8.3.1b1"] == publisher.REVIEWED_SOURCE
     else:
         assert publisher.STABLE_RELEASE_ID == 420392277
 
 
-@pytest.mark.parametrize("publisher", [STABLE_PROFILE], indirect=True)
-def test_stable_profile_retains_accepted_b4_and_marks_the_latest_release(publisher):
-    assert publisher.PRESERVED_TAGS["8.3.0b4"] == publisher.REVIEWED_SOURCE
+@pytest.mark.parametrize("publisher", [STABLE_PROFILE, STABLE831_PROFILE], indirect=True)
+def test_stable_profile_retains_accepted_beta_and_marks_the_latest_release(publisher):
+    assert publisher.PRESERVED_TAGS[publisher._source_version] == publisher.REVIEWED_SOURCE
     fake = GitHub(publisher)
     result = run(fake, write=True)
     assert result["prerelease"] is False
@@ -577,7 +588,7 @@ def test_stable_profile_retains_accepted_b4_and_marks_the_latest_release(publish
     ("source_release", "draft", True),
     ("source_release", "prerelease", False),
 ])
-@pytest.mark.parametrize("publisher", [STABLE_PROFILE], indirect=True)
+@pytest.mark.parametrize("publisher", [STABLE_PROFILE, STABLE831_PROFILE], indirect=True)
 def test_stable_profile_requires_actual_unchanged_accepted_publications(publisher, area, key, value):
     fake = GitHub(publisher)
     getattr(fake, area)[key] = value
@@ -586,7 +597,7 @@ def test_stable_profile_requires_actual_unchanged_accepted_publications(publishe
     assert not fake.writes()
 
 
-@pytest.mark.parametrize("publisher", [STABLE_PROFILE, BETA831_PROFILE], indirect=True)
+@pytest.mark.parametrize("publisher", [STABLE_PROFILE, BETA831_PROFILE, STABLE831_PROFILE], indirect=True)
 def test_publication_profile_rechecks_latest_immediately_before_creation(publisher):
     fake = GitHub(publisher)
     latest_reads = 0

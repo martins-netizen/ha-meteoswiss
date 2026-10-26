@@ -1,6 +1,6 @@
 # HACS acceptance of the maintained fork
 
-**Updated: 25 October 2026 · Plan and evidence V1.10**
+**Updated: 26 October 2026 · Plan and evidence V1.11**
 
 ## HACS catalogue admission
 
@@ -26,6 +26,14 @@ downloaded. See [quality evidence](QUALITY_SCALE.md) for the separate engineerin
 checklist; HACS admission does not assign a Home Assistant quality tier.
 
 ## Release and operator evidence
+
+Test [8.3.1b1](RELEASE_8.3.1b1.md), ID **423899845**, was published on
+26 October 2026 at **05:54:44 UTC** from
+**c7b20c78d4273a33ba8c6f06c1834fc2f22c8665**, retaining latest stable 8.3.0.
+The operator subsequently confirmed the requested installed-version and visual
+check. This closes the focused b1 check; no new independent HA-core or registry
+audit is inferred. Stable [8.3.1 promotion](RELEASE_8.3.1.md) is prepared and not
+yet published; its later actual download uses a [short check](ACCEPTANCE_8.3.1.md).
 
 Stable [8.3.0](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.0)
 was published on **24 October 2026 at 15:35:56 UTC / 17:35:56 Europe/Zurich**,
@@ -64,7 +72,7 @@ The following precheck does not remove/download software or restart HA.
 3. If it already points to **martins-netizen/ha-meteoswiss**, select
    **Update information**. This refreshes metadata without downloading components.
 4. Open **Download** or **Redownload**, expand **Need a different version?** and
-    select the published stable **8.3.0** under **Release**. Check the version, then
+    select the announced published stable version under **Release**. Check the version, then
     **Cancel** for this precheck. A stable release does not require beta visibility.
 5. If the entry points to **LNKtwo/ha-meteoswiss**, retain it during this
    precheck. Confirm provenance, backup and recovery before following

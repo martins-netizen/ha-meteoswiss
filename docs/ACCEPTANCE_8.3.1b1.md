@@ -1,6 +1,13 @@
 # 8.3.1b1 focused Home Assistant check
 
-**Protocol version:** 1.0 · **Prepared:** 25 October 2026
+**Protocol version:** 1.1 · **Updated:** 26 October 2026
+
+**Reported result — 26 October 2026:** after publication of 8.3.1b1, the operator
+confirmed the requested version and visual check. This closes the focused
+practical acceptance within the requested scope. No new independent HA-core,
+registry, statistic or deliberate damaged-selection audit is inferred. The
+steps below remain the protocol, not a request to repeat completed checks.
+The [stable update check](ACCEPTANCE_8.3.1.md) records a later actual stable download.
 
 Use the existing test HA and entry. Install only after the exact **8.3.1b1**
 release is announced. The normal stable release remains **8.3.0**. Retain the

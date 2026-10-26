@@ -37,7 +37,7 @@ as modelled. See [the source and failure behaviour](docs/STATION_WEATHER_CONDITI
 Find nearby SwissMetNet stations on the official
 [MeteoSwiss measurement-network map](https://www.meteoswiss.admin.ch/services-and-publications/applications/measuring-networks.html),
 then select the station by name in HA. The [setup guide](docs/GETTING_STARTED.md#3-select-pollen-weather-and-warning-locations)
-also explains the map-link help prepared for the 8.3.1b1 test candidate.
+also explains the map-link help introduced in 8.3.1b1 and retained for stable 8.3.1.
 
 For example: **HA home in Kloten, pollen measurements from Zürich, weather
 measurements from Zürich/Kloten and weather forecasts for Säntis.** Changing
@@ -104,8 +104,8 @@ Read the [plain-language overview](docs/GETTING_STARTED.md#what-this-fork-provid
 
 We follow the [Home Assistant Integration Quality Scale](https://contributors.home-assistant.io/core/quality-scale/)
 as an engineering checklist, with rule-by-rule code, test and documentation
-evidence. The following summarises our assessment of the **8.3 runtime**,
-operator-tested in b4. Home Assistant's [custom-integration guidance](https://contributors.home-assistant.io/marketplace/guides/integrations/#keep-up-with-home-assistant)
+evidence. The following summarises the **8.3 series**, with the b4 runtime and
+the bounded 8.3.1b1 repair/map follow-up accepted by the operator. Home Assistant's [custom-integration guidance](https://contributors.home-assistant.io/marketplace/guides/integrations/#keep-up-with-home-assistant)
 explains that custom integrations have no official quality tiers; Bronze,
 Silver and Gold below identify the rules we use to guide improvements.
 
@@ -113,7 +113,7 @@ Silver and Gold below identify the rules we use to guide improvements.
 |---|---|---|
 | **Bronze: a sound foundation** | Setup in HA, stable entity identities, tested setup and clear instructions. | The checklist records setup/configuration tests, identity checks, installation guides and valid bundled brand images. |
 | **Silver: reliable operation** | Clear unavailable states, recovery from source failures, clean unloading and a maintained support route. | All applicable Silver rules have recorded evidence, including more than 95% coverage per module. The checklist also records the underlying Bronze rules; focused b4 HA acceptance is operator-confirmed. |
-| **Gold: a more complete user experience** | Easier configuration, useful diagnostics, translations and actionable help. | Several features already exist, including the unified location dialog. Remaining work includes HA Repairs, icon/error translations, diagnostic defaults, metadata and stale-device handling; the full checklist also records the reconfiguration-route review and proposed exemptions. |
+| **Gold: a more complete user experience** | Easier configuration, useful diagnostics, translations and actionable help. | The shared location dialog and actionable repair notices have bounded evidence; the repair/map follow-up was accepted in 8.3.1b1. Remaining work includes icon/error translations, diagnostic defaults, metadata and stale-device handling, plus the reconfiguration-route review and proposed exemptions. |
 
 The [rule-by-rule assessment](docs/QUALITY_SCALE.md) links the scope, test evidence
 and remaining work. [HACS catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-catalogue-admission)
@@ -121,12 +121,11 @@ is complete and provides a separate distribution/review milestone. We keep the
 quality checklist as a transparent engineering record, without an awarded-tier
 badge or manifest claim.
 
-**Prepared 8.3.1b1 test candidate:** [actionable repair notices](docs/REPAIRS.md) guide
-users from an invalid saved forecast location to the existing settings. This
-follow-up and its lifecycle/translation tests are separate from the accepted
-8.3 runtime described above; the published 8.3.0 package does not include it.
-The [candidate notes](docs/RELEASE_8.3.1b1.md) and [short UI check](docs/ACCEPTANCE_8.3.1b1.md)
-also cover the station-map links. Install only after this exact test release is announced.
+**Accepted 8.3.1b1 follow-up:** [actionable repair notices](docs/REPAIRS.md) guide
+users from an invalid saved forecast location to the existing settings. Official
+station-map links help find nearby SwissMetNet stations. The operator confirmed
+the requested version/visual check on 26 October. Stable [8.3.1 packaging](docs/RELEASE_8.3.1.md)
+retains that runtime and is not yet published; stable 8.3.0 does not include it.
 
 ## Start here
 
@@ -139,8 +138,11 @@ also cover the station-map links. Install only after this exact test release is 
 
 ## Release status
 
-**8.3.1b1 is prepared, not published.** Its reviewed repair/map changes need
-their own focused UI check; stable **8.3.0** remains the normal installation.
+**8.3.1b1 is published and its version/visual check is operator-confirmed.**
+Stable [8.3.1](docs/RELEASE_8.3.1.md) is prepared as a version-only promotion;
+it is not yet published. **8.3.0** remains the normal stable installation until
+publication is confirmed. The [short stable update check](docs/ACCEPTANCE_8.3.1.md)
+records a later actual download without repeating accepted beta tests.
 
 The [latest stable release page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
 is authoritative for normal installation. The [8.3.0 notes](docs/RELEASE_8.3.0.md)

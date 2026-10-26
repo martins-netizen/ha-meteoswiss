@@ -1,8 +1,9 @@
 # Correct an invalid saved forecast location
 
-**Status:** prepared [8.3.1b1 test candidate](RELEASE_8.3.1b1.md), not yet
-published. This notice is not part of the published 8.3.0 package. Install only
-a separately announced release; follow the [focused check](ACCEPTANCE_8.3.1b1.md).
+**Availability:** included in published, operator-accepted
+[8.3.1b1](RELEASE_8.3.1b1.md). The [stable 8.3.1 package](RELEASE_8.3.1.md)
+promotes the same behaviour and is not yet published. Stable 8.3.0 does not
+include this notice; use an announced release from the intended release track.
 
 ## What the notice means
 
@@ -57,5 +58,5 @@ this feature does not require a newer repair-flow API.
   source outages, disable/reenable/removal and HA-loaded DE/EN/FR/IT text.
 - [Registered weather/entity tests](../tests/test_forecast_location_routing.py):
   both current-weather sources, retained IDs and independent failure/recovery.
-- [Engineering checklist](QUALITY_SCALE.md): the unreleased repair follow-up is
-  distinguished from the already accepted 8.3 runtime.
+- [Engineering checklist](QUALITY_SCALE.md): the accepted b1 repair follow-up
+  and remaining Gold work are recorded separately.

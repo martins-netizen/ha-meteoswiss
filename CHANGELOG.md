@@ -2,13 +2,32 @@
 
 ## [Unreleased]
 
-No additional runtime changes beyond the prepared test candidate below.
+No additional runtime changes beyond the stable-promotion package below.
 
-## [8.3.1b1] — prepared repair and station-map test candidate
+## [8.3.1] — prepared stable promotion of accepted 8.3.1b1
 
-Not yet published. [Candidate notes](docs/RELEASE_8.3.1b1.md) and the
-[focused UI check](docs/ACCEPTANCE_8.3.1b1.md) define the scope. Stable 8.3.0
-remains the normal installation route.
+Prepared 26 October 2026 from published and operator-accepted b1 at
+**c7b20c78d4273a33ba8c6f06c1834fc2f22c8665**. Only two component version
+files change; 38 others, HACS metadata and workflows match. [Release notes](docs/RELEASE_8.3.1.md)
+and the [short stable update check](docs/ACCEPTANCE_8.3.1.md) define the scope.
+Publication is still a separate verified step; 8.3.0 remains latest stable.
+
+- Promote the accepted repair notices and language-matched station-map help
+  without adding runtime changes, settings migrations or polling.
+- Record b1 publication and the operator's version/visual acceptance; retain
+  completed first-install/restore and previous update evidence.
+- Add Stable Publisher V1.4 with exact-source/check provenance, previous-stable
+  and accepted-beta publication guards, latest selection and read-only retries.
+  Preserve all nine existing tags and every earlier publication helper.
+- Reconcile current guides and the quality evidence with the accepted b1 scope;
+  full Gold remains separate.
+
+## [8.3.1b1] — repair and station-map test prerelease
+
+Published 26 October 2026 at 05:54:44 UTC, release ID 423899845; the operator
+subsequently confirmed the requested version/visual check. [Candidate notes](docs/RELEASE_8.3.1b1.md)
+and the [completed focused protocol](docs/ACCEPTANCE_8.3.1b1.md) retain the scope.
+Stable 8.3.0 remains the normal installation route until 8.3.1 is published.
 
 - Retain reviewed PR #70 runtime at 22004177b96adb4452fdbd116174915de4dc18cf;
   change only the two component version files for this package. Add fixed-profile

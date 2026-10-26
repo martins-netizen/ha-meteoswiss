@@ -1,34 +1,55 @@
-# Release readiness: 8.3.0 promotion from accepted b4
+# Release readiness: accepted 8.3.1b1 to stable 8.3.1
 
-**Document version:** 2.9 · **Updated:** 25 October 2026
+**Document version:** 2.10 · **Updated:** 26 October 2026
 
-## Prepared 8.3.1b1 test candidate
+## Prepared stable 8.3.1
 
-The [repair and station-map package](RELEASE_8.3.1b1.md) is prepared, **not
-published**. Its reviewed runtime is PR #70 at
-**22004177b96adb4452fdbd116174915de4dc18cf**, tree
-**6bb5eb45e10cd3390b32e5901ccbe288a6591a63**. All eight PR checks and seven
-post-merge checks passed. Packaging retains **38 non-version component files**;
-only the two version files become **8.3.1b1**. HACS/CH, workflows, all four
-180-key catalogues and eight earlier release tags are unchanged.
+The [stable 8.3.1 package](RELEASE_8.3.1.md) promotes the accepted b1 runtime.
+It is **not published**. Source is published beta
+**c7b20c78d4273a33ba8c6f06c1834fc2f22c8665**, tree
+**d6e3853205f387372b1a2e49d6fb9f33c6b513b0**. Of 40 component files,
+**38 non-version files match**; only manifest.json/version.py become **8.3.1**.
+HACS/CH, workflows and all four 180-key catalogues are unchanged.
 
-Publisher V1.4 has a fixed 40-file/source contract, exact-merge/check provenance,
-read-only preflight, immutable-tag and retry guards. It preserves latest stable
-**8.3.0 / ID 422817883**, including a final pre-write check. The shared
-publication tests retain all five earlier profiles and add the new one. Local
-full suites pass **1,729 tests plus 63 subtests** on each **HA 2026.8.3 and
-2026.10.3 / Python 3.14.8**, including **280 publication-profile cases**.
-Combined coverage remains **99.977698%**: **3,503/3,504 statements** and
-**980/980 branches**. Both coverage gates pass; strict modules, thresholds and
-the four existing exclusions are unchanged. DE/EN/FR/IT each have **180 keys**
-with English/source parity. Hosted packaging checks must pass on the exact PR
-head and later regular merge; they are separate from these local results.
+Stable Publisher V1.4 derives from the successful V1.3 route. It checks exact
+protected development/source/version boundaries, seven checks and their apps,
+previous stable 8.3.0 and accepted beta 8.3.1b1 publications, nine preserved tags,
+release notes and latest selection before/after the single permitted write.
+A matching retry is read-only; conflicts stop. Complete package tests retain
+all earlier profiles and add the new stable profile: **1,780 tests plus
+73 subtests** pass on each local **HA 2026.8.3 and 2026.10.3 / Python 3.14.8**,
+including **331 publication-profile cases**. Combined coverage remains
+**99.977698%**: **3,503/3,504 statements** and **980/980 branches**. Both strict
+gates pass; thresholds, strict modules and four exclusions are unchanged.
+DE/EN/FR/IT each have **180 keys** with English/source parity. Actual PR/head
+and regular merge checks remain separate evidence before publication.
 
-After packaging review and a regular merge, verify that merge's checks before
-announcing publication. The [focused UI check](ACCEPTANCE_8.3.1b1.md) is pending;
-it needs no damaged production entry, forced outage, repeated restore or new
-blanket observation period. The operator-confirmed stable 8.3 update below
-remains complete. A prepared package is not a HA installation or UI acceptance.
+After publication, the [short stable update](ACCEPTANCE_8.3.1.md) records the
+version actually downloaded through HACS and continued intended places/values.
+The accepted beta UI check and previous first-install/restore checks stay closed.
+No new blanket 24-hour observation window is added.
+
+<a id="prepared-831b1-test-candidate"></a>
+
+## Published and accepted 8.3.1b1
+
+Beta **8.3.1b1 / ID 423899845** was published on **26 October 2026 at
+05:54:44 UTC** from **c7b20c78d4273a33ba8c6f06c1834fc2f22c8665**, after
+approved PR #71. Receipt/log and independent release/tag/notes/version/latest
+checks confirm the result, including unchanged stable **8.3.0 / ID 422817883**.
+All eight PR checks and seven merge checks passed. The operator subsequently
+confirmed the requested installed-version and visual check. This is focused
+reported acceptance; no separately supplied HA-core version, registry/statistic
+audit or deliberate damaged-selection test is inferred.
+
+The source retains PR #70 repair/map runtime at
+**22004177b96adb4452fdbd116174915de4dc18cf** with only beta version changes.
+Its local suites passed **1,729 tests plus 63 subtests** on each HA 2026.8.3
+and 2026.10.3 / Python 3.14.8, including **280 publication-profile cases**.
+Coverage was **99.977698%**: **3,503/3,504 statements**, **980/980 branches**,
+all strict gates and the four previous exclusions retained. All four 180-key
+catalogues have English/source parity. The [focused protocol](ACCEPTANCE_8.3.1b1.md)
+remains available as a method, not a request to repeat completed checks.
 
 ## Current release position
 
@@ -100,8 +121,8 @@ The [rule matrix](QUALITY_SCALE.md) records applicable technical Bronze/Silver
 evidence, the custom branding route and open/partial Gold work. Custom integrations
 have no official HA quality tiers; the rules guide our engineering assessment.
 The completed HACS catalogue admission is a separate distribution result.
-The bounded [HA Repairs follow-up](REPAIRS.md) is unreleased development and
-needs separate focused acceptance. Further work includes sourced multilingual
+The bounded [HA Repairs follow-up](REPAIRS.md) is published and operator-accepted
+in 8.3.1b1; stable promotion remains a separate publication. Further work includes sourced multilingual
 locality aliases and the remaining Gold items. Retain App v3 warnings; separate river/bulletin/radar
 products are not introduced. A UTM restart problem was reported; its cause was
 not diagnosed and these tests do not establish one.
