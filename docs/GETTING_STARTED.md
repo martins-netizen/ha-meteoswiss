@@ -1,6 +1,6 @@
 # Set up MeteoSwiss
 
-This guide describes **8.3.0** for readers without programming experience.
+This guide describes the **8.3 series** for readers without programming experience.
 You do not need an API key, MeteoSwiss account or terminal commands. Install
 only a published release. **Already using MeteoSwiss?** Follow
 [migration](MIGRATION.md) and keep your existing HA entry.
@@ -44,7 +44,7 @@ If MeteoSwiss is configured from another source, use [migration](MIGRATION.md).
    **martins-netizen/ha-meteoswiss**, rather than the upstream project or the
    separate radar integration.
 3. Open **Download**. Under **Need a different
-   version? → Release**, choose the announced stable **8.3.0** when it is listed.
+   version? → Release**, choose the announced stable release shown on the latest-stable page.
    If it is missing, refresh repository information and check the release page;
    do not substitute a development branch or commit.
 4. Download the selected version, then restart HA and wait for it to return.
@@ -89,9 +89,10 @@ not choose the station. A failed source check leaves the form open to retry.
 To locate a nearby station before choosing it, open the official
 [MeteoSwiss measurement-network map](https://www.meteoswiss.admin.ch/services-and-publications/applications/measuring-networks.html)
 and view SwissMetNet. Then return to HA and select the station by name. The map
-does not change your HA settings. **Prepared 8.3.1b1 test candidate:** setup and
-Configure also link to this map in the selected UI language; 8.3.0 does not yet
-show that link. Install the candidate only after its release is announced.
+does not change your HA settings. **From 8.3.1b1:** setup and Configure also
+link to this map in the selected UI language. The operator accepted that test
+release; stable 8.3.1 promotes the same help when announced. Stable 8.3.0 does
+not show the link.
 
 **Alternative:** Open-Meteo supplies modelled current weather at entered
 coordinates instead of Swiss station observations. It is an explicit source

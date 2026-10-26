@@ -4,11 +4,13 @@ This describes current fork work. Historical upstream release claims remain in
 the changelog as history; they are not current certifications. Check the
 [release status](README.md#release-status) before installing.
 
-## Unreleased development
+## Stable 8.3.1 promotion in preparation
 
-The bounded [8.3.1b1 test package](docs/RELEASE_8.3.1b1.md) is prepared,
-not published. It retains reviewed PR #70 runtime with version-only component
-changes and has a [short UI checklist](docs/ACCEPTANCE_8.3.1b1.md).
+The bounded [8.3.1b1 test package](docs/RELEASE_8.3.1b1.md) was published on
+26 October and the operator confirmed the requested version/visual check.
+[Stable 8.3.1](docs/RELEASE_8.3.1.md) retains that runtime, changing only two
+component version files. Its publication and later actual HACS download remain
+separate steps; stable 8.3.0 is still the normal installation route.
 
 Weather-station help in setup and Configure links to the official MeteoSwiss
 measurement-network map in DE/EN/FR/IT, making nearby SwissMetNet stations easier
@@ -17,8 +19,9 @@ to find before selecting them in HA.
 [HA repair notices](docs/REPAIRS.md) now identify invalid saved forecast
 selections and link to the existing settings. Code/tests cover confirmed
 recovery, cancellation, multi-entry isolation, source-outage boundaries and
-DE/EN/FR/IT text. This follow-up needs its own release and focused HA acceptance;
-the 8.3.0 publication and its earlier acceptance remain closed.
+DE/EN/FR/IT text. The focused b1 version/visual acceptance is complete; stable
+promotion needs its own reviewed publication. The 8.3.0 publication and earlier
+acceptance remain closed.
 
 ## Implemented and released in 8.3.0
 
@@ -70,7 +73,7 @@ custom integrations.
 | Scope | Decision still needed |
 |---|---|
 | Locality names in other languages | Obtain authoritative aliases; preserve provider identities and avoid invented translations or duplicate places. |
-| Remaining Gold engineering work | Release/accept the bounded repair follow-up; review reconfiguration routes, device metadata, icon/error translations, diagnostic defaults and stale-device handling; preserve existing user choices and history. |
+| Remaining Gold engineering work | Promote the accepted repair follow-up to stable; review reconfiguration routes, device metadata, icon/error translations, diagnostic defaults and stale-device handling; preserve existing user choices and history. |
 | External contributor CodeQL | The unprivileged route is implemented; retain evidence from the first actual external-fork run. A skipped analysis is not completed analysis. |
 | Processed local-forecast data | Assess provider payloads, resource limits and compatibility separately from the already released catalogue-based ICON selection. |
 | New sources/entities | Scope and test separately; no new device actions/sources in a documentation or release change. |

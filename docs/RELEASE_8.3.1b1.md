@@ -2,9 +2,11 @@
 
 **Notes version:** 1.0 · **Prepared:** 25 October 2026
 
-**Status:** prepared candidate, not a published release. Install only after
-publication of this exact version is announced. Stable **8.3.0** remains the
-normal installation route.
+**Status addendum — 26 October 2026:** 8.3.1b1 was published at 05:54:44 UTC,
+release ID **423899845**, from **c7b20c78d4273a33ba8c6f06c1834fc2f22c8665**.
+The operator confirmed the requested installed-version and visual check.
+The original package scope below is retained; published tag/notes are unchanged.
+Stable [8.3.1 promotion](RELEASE_8.3.1.md) is prepared, not yet published.
 
 This community fork builds on [LNKtwo/ha-meteoswiss](https://github.com/LNKtwo/ha-meteoswiss)
 and retains its MIT licence and attribution. It is not an official MeteoSwiss
@@ -82,7 +84,9 @@ Exact full-suite and coverage results are recorded in [readiness](RELEASE_READIN
 CI covers HA 2026.8.3/2026.10.1; additional local tests use HA 2026.10.3.
 Four complete **180-key** UI catalogues retain English/source parity.
 
-Real HA UI acceptance of these new links/notices remains pending. Do not
+At package preparation, real HA UI acceptance was pending. The dated
+26 October addendum above records the subsequently confirmed version/visual
+check. The following testing guidance remains applicable. Do not
 deliberately corrupt saved settings, force an outage or recreate an entry to
 produce a notice. Automated native-HA regressions cover the damaged-selection
 cases; a valid existing entry should have no new repair notice.

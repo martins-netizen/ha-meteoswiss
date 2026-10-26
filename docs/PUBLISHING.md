@@ -1,41 +1,57 @@
 # Publish the maintained fork
 
-**Procedure version:** 1.5 · **Updated:** 25 October 2026
+**Procedure version:** 1.6 · **Updated:** 26 October 2026
 
-## 8.3.1b1 test candidate (prepared)
+## Stable 8.3.1 (prepared)
 
-The [8.3.1b1 package](RELEASE_8.3.1b1.md) is prepared, **not published**.
-Its runtime is the approved/merged PR #70 source
-**22004177b96adb4452fdbd116174915de4dc18cf**. Do not run a publisher against
-that runtime commit: the version-only packaging PR must first be reviewed,
-regularly merged and pass all checks at its own exact merge SHA.
+[Stable 8.3.1](RELEASE_8.3.1.md) is prepared, **not published**. The operator
+confirmed the focused version/visual check of published 8.3.1b1 on 26 October.
+Keep the existing beta tag/release/notes unchanged. This package retains its
+**38 non-version component files**, with only manifest.json/version.py changing
+to **8.3.1**. HACS/CH, workflows and all four 180-key catalogues match.
 
-The new **scripts/publish_meteoswiss_831_beta_v1.4.sh** derives from Beta
-Publisher V1.3. It accepts only that exact approved protected development head,
-checks the 40-file component footprint against PR #70 with only two version
-changes, preserves HACS/workflows and eight earlier tags, and requires the
-seven expected merge checks. Latest stable must remain **8.3.0 / ID 422817883**.
+1. Review and regularly merge the version/docs/publisher package. Verify its
+   exact tree and all seven merge checks: tests, HA 2026.8.3, HA 2026.10.1,
+   hassfest, Analyze Python, HACS validation and SonarCloud Code Analysis.
+2. Use **scripts/veroeffentliche_meteoswiss_stable_v1.4.sh**, derived from the
+   successful stable V1.3 route, with the full approved packaging merge SHA:
 
-After packaging approval and verified merge checks, use the full packaging
-merge SHA with the existing Mac `gh` authentication:
+   ```bash
+   bash veroeffentliche_meteoswiss_stable_v1.4.sh --check FULL_APPROVED_PACKAGING_MERGE_SHA
+   bash veroeffentliche_meteoswiss_stable_v1.4.sh --publish FULL_APPROVED_PACKAGING_MERGE_SHA
+   ```
 
-```bash
-bash publish_meteoswiss_831_beta_v1.4.sh --check FULL_APPROVED_PACKAGING_MERGE_SHA
-bash publish_meteoswiss_831_beta_v1.4.sh --publish FULL_APPROVED_PACKAGING_MERGE_SHA
-```
+   Check is read-only and optional; publish repeats all gates. The only remote
+   write creates **8.3.1**, draft=false, prerelease=false, make_latest=true.
+3. Retain the JSON/log under Downloads/HA/05_Diagnose. Independently verify the
+   actual release/tag/notes/latest and record the result. Only then announce the
+   [short stable update check](ACCEPTANCE_8.3.1.md).
 
-The optional first command is read-only; publish repeats the checks. The only
-remote write creates **8.3.1b1**, draft=false, prerelease=true, make_latest=false.
-The latest-stable check runs again immediately before creation and afterwards.
-A matching retry verifies without posting again. Conflicting tag/notes stop;
-an uncertain result must be checked before retrying, never deleted or retagged.
-Retain the JSON/log under Downloads/HA/05_Diagnose, independently verify the
-release/tag/notes/latest, and then announce the [focused check](ACCEPTANCE_8.3.1b1.md).
+The fixed-profile helper requires the exact protected development head, the
+40-file footprint/version-only comparison against accepted beta
+**c7b20c78d4273a33ba8c6f06c1834fc2f22c8665**, expected check apps, unchanged
+HACS/workflows and all nine earlier tags. It verifies previous stable
+**8.3.0 / ID 422817883** and accepted beta **8.3.1b1 / ID 423899845** by their
+actual published flags. Latest must be 8.3.0 immediately before creation and
+the exact new 8.3.1 afterwards. Matching retries verify without another write;
+conflicting tags/notes stop, and uncertain writes are recorded as unconfirmed.
+No HA connection, installation, restart or device action is performed.
 
-This helper makes no HA connection or restart. It does not alter the stable
-8.3.0 release, install the candidate, or establish its UI acceptance. Earlier
-fixed-profile helpers retain their historical contracts and must not be reused
-for this new package.
+<a id="831b1-test-candidate-prepared"></a>
+
+## 8.3.1b1 test prerelease (completed)
+
+[8.3.1b1](RELEASE_8.3.1b1.md), ID **423899845**, was published on
+**26 October 2026 at 05:54:44 UTC** from
+**c7b20c78d4273a33ba8c6f06c1834fc2f22c8665** after approved PR #71 and its
+seven merge checks. The receipt/log and independent release/tag/notes/version/
+latest checks agree; latest stable remained 8.3.0. The operator subsequently
+confirmed the [focused version/visual check](ACCEPTANCE_8.3.1b1.md).
+
+Beta Publisher V1.4 retains its fixed source/40-file/8-tag contract and creates
+only that prerelease with make_latest=false. It is historical publication
+evidence, not an instruction to republish b1 or use its source SHA for the new
+stable package. Earlier helpers, immutable tags and published notes are unchanged.
 
 ## Stable 8.3.0
 

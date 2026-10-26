@@ -137,7 +137,7 @@ When moving from `LNKtwo/ha-meteoswiss`:
    use the [custom-repository fallback](GETTING_STARTED.md#if-the-repository-is-not-listed).
 3. Open the maintained fork and **Download/Redownload**.
    Under **Need a different version? → Release**, explicitly select the
-   published stable **8.3.0**.
+   announced published stable version from the latest-stable page.
    Verify the announced version before download. If the target is missing
    or HACS rejects the switch, stop;
    do not delete HA configuration or edit hidden storage files.
@@ -211,10 +211,16 @@ POI's condition. [Source and failure limits](STATION_WEATHER_CONDITION.md).
 
 ### Upgrading an accepted 8.3 beta
 
-B4 is the accepted runtime for stable 8.3.0; only its two component version files
-change. Keep the existing entry and intended locations. After the stable release
+B4 was the accepted runtime for stable 8.3.0; only its two component version files
+changed. Keep the existing entry and intended locations. After the stable release
 is published, refresh HACS information, actually download it, restart once and
 confirm the version, availability and current card targets. Do not repeat a
 completed first-install/restore rehearsal or invent a new 24-hour window for
 the identical runtime. Redownloading older software does not undo user settings
 changed during testing; restore those deliberately or use the matching backup.
+
+Published 8.3.1b1 was subsequently accepted in the focused version/visual check.
+Stable 8.3.1 retains that runtime and changes only two version files. After its
+publication is announced, follow the [short stable update](ACCEPTANCE_8.3.1.md);
+keep the existing entry and intended places. The accepted beta UI check needs
+no repeat. Latest stable remains 8.3.0 until actual 8.3.1 publication.

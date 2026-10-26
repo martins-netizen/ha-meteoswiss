@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.28 · **Updated:** 25 October 2026
+**Plan version:** 1.29 · **Updated:** 26 October 2026
 **Status:** The agreed architecture, catalogue/POI, forecast-display, shared-settings
 and station-condition scope is released in stable 8.3.0. B4 runtime acceptance,
 stable publication and HACS default-catalogue admission are complete. The operator
@@ -10,11 +10,12 @@ The current next-work overview is
 as planning history, not new instructions to repeat completed work.
 This document does not approve a new feature, installation or release.
 
-**Next bounded package:** [8.3.1b1](RELEASE_8.3.1b1.md) prepares the approved
-PR #70 repair notices and station-map help for a separate [short UI check](ACCEPTANCE_8.3.1b1.md).
-It is not yet published; normal stable installation stays on 8.3.0. Remaining
-Gold reconfiguration/metadata work and multilingual locality aliases stay
-separate from this small candidate.
+**Next bounded package:** [stable 8.3.1](RELEASE_8.3.1.md) promotes the
+published and operator-accepted [8.3.1b1](RELEASE_8.3.1b1.md) repair/map runtime.
+Only two component version files change. Stable publication and its later
+[actual HACS download](ACCEPTANCE_8.3.1.md) remain separate steps; latest stable
+is still 8.3.0. The focused b1 check is closed. Remaining Gold route/metadata
+work and authoritative multilingual locality aliases stay separate.
 
 ## Historical agreed scope and b1/b2 sequence — 23–24 October 2026
 

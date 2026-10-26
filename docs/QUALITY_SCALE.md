@@ -26,10 +26,11 @@ within the stated scope. **Open/partial** identifies a remaining requirement.
 separately from automated evidence. On 25 October the operator confirmed the
 successful production update from 8.2 to stable 8.3; see [HACS evidence](HACS_ACCEPTANCE.md).
 
-**Prepared 8.3.1b1 follow-up:** the repair-issues row below additionally records the
-new [saved-location repair notice](REPAIRS.md) and its tests. This feature is not
-in the published 8.3.0 package and has no separate operator UI acceptance yet.
-Other runtime evidence retains the accepted 8.3 scope above.
+**Accepted 8.3.1b1 follow-up:** the repair-issues row additionally records the
+[saved-location repair notice](REPAIRS.md), native lifecycle tests and the
+operator-confirmed version/visual check on 26 October. The feature is not in
+8.3.0. Stable [8.3.1 promotion](RELEASE_8.3.1.md) retains the accepted b1 runtime
+and remains a separate publication; no full Gold completion is claimed.
 
 **Reading the result:** all applicable technical Bronze rules and applicable
 Silver rules have recorded evidence below. Bundled branding follows the custom
@@ -77,7 +78,7 @@ short; these tables retain the qualifications and release scope.
 | `log-when-unavailable` | Evidence | Coordinator transition logs avoid repeated outages, raw coordinate/postcode URLs and payloads; separate cached UV status has its own outage/recovery transition. Tests inspect formatted error chains too. |
 | `parallel-updates` | Evidence | sensor.py uses 1 for diagnostic polling; coordinator-driven weather/binary/pollen platforms use 0. These values do not assert zero network requests. |
 | `reauthentication-flow` | Exempt | No provider accounts or credentials. |
-| `test-coverage` | Evidence | B4 passes 1,603 tests plus 53 subtests locally on each HA 2026.8.3/2026.10.3, including 176 publisher-profile cases. Stable packaging additionally exercises latest-stable promotion; exact package counts are in RELEASE_READINESS.md. Combined line/branch coverage is 99.97753%: 3,474/3,475 statements and 976/976 branches. Every module exceeds 95%; existing strict source/flow gates remain 100%. Four prior exclusion lines and the aggregate floor are unchanged. CI's second version remains 2026.10.1. These coverage results come from local pytest, not a SonarCloud coverage import. |
+| `test-coverage` | Evidence | Accepted 8.3.1b1 passes 1,729 tests plus 63 subtests on each local HA 2026.8.3/2026.10.3, including 280 publisher-profile cases. Combined coverage is 99.977698%: 3,503/3,504 statements and 980/980 branches. Every module exceeds 95%; strict source/flow/repair gates remain 100%. Four exclusions and all thresholds are unchanged. Stable packaging adds its own publication profile; exact results are in RELEASE_READINESS.md. CI also covers 2026.10.1. These are local pytest coverage results, not a SonarCloud coverage import. |
 
 The original audit's interval, field-help, common-layout, UV/catalogue and
 per-module coverage findings are implemented in the reviewed tree. Their old
@@ -104,11 +105,11 @@ engineering work.
 | `entity-category` | Evidence | Diagnostic helpers stay diagnostic; measured/modelled pollen and AQ stay ordinary sensors, with registry tests. |
 | `entity-device-class` | Partial | Numeric metadata and HA conversion tests exist; review legacy Foehn/code and derived HGT metadata before a complete Gold assertion. |
 | `entity-disabled-by-default` | Open | Legacy diagnostic defaults are retained. Decide new-install defaults separately without changing existing user registry choices. |
-| `entity-translations` | Partial | Four complete 178-key UI catalogues and ordinary entity translations exist; strings.json matches English. Legacy diagnostic/device/attribute compatibility names remain; provider place-name aliases are a separate unsolved feature. |
+| `entity-translations` | Partial | Four complete 180-key UI catalogues and ordinary entity translations exist; strings.json matches English. Legacy diagnostic/device/attribute compatibility names remain; authoritative provider place-name aliases are separate future work. |
 | `exception-translations` | Partial | Setup/selection errors are translated; remaining fixed HA update-error messages have not all moved to translated exceptions. |
 | `icon-translations` | Open | Active icons exist, but no complete icons.json migration. |
 | `reconfiguration-flow` | Partial | Forecast-only Reconfigure is implemented/tested. B3 also edits weather station/base coordinates, measured-pollen station, forecast point and warning postcode together through Configure, without recreating the entry; tests cover validation, atomic cancellation and retained IDs. The official rule prescribes a reconfigure step for setup fields. Review that route mapping separately: the existing Reconfigure shortcut still changes only forecasts. |
-| `repair-issues` | Unreleased code/test evidence | An invalid offline saved selection raises a translated entry-specific issue with a link to the existing settings. Confirmed correction/reset clears it; cancellation/failed validation preserves it. Ordinary reloads preserve ignored state; disablement/removal clean up that entry. Provider outages raise no configuration issue. Native entry/settings and HA translation tests cover these boundaries; focused UI acceptance belongs to the next release. |
+| `repair-issues` | Evidence in accepted 8.3.1b1 | Invalid offline saved forecast selections raise a translated entry-specific notice linking to the existing settings. Confirmed correction/reset clears it; cancellation/failed validation retains it. Reloads preserve ignored state; disablement/removal cleans up that entry. Provider outages create no configuration notice. Native entry/settings and four-language tests cover these boundaries; the operator confirmed the requested version/visual check, without a separately reported deliberate-corruption test. Stable 8.3.1 retains that runtime. |
 | `stale-devices` | Open | Review removal of obsolete grouping after measured-pollen station changes without deleting wanted registry/history data. |
 
 The Gold engineering checklist therefore remains incomplete. Strict typing
