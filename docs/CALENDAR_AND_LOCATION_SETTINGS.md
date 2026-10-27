@@ -6,6 +6,11 @@
 Use the [announced release](RELEASE_8.3.0.md); earlier beta notes describe their
 historical scopes, not instructions to reinstall an older beta.
 
+**Unreleased route follow-up:** the complete settings transaction also serves
+the entry menu's Reconfigure route, with the same source checks, cancellation
+and concurrency protection. See [current route guidance](FORECAST_LOCATION_SETUP.md#existing-entry).
+The original 8.3.0 acceptance and numerical evidence below retain their scope.
+
 ## What the corrections address
 
 On 24 October, the existing beta correctly separated Kloten observations from
@@ -67,8 +72,9 @@ observation/postcode change to keep duplicate detection correct. Entity unique
 IDs are retained. Duplicate entries and concurrent edits are rejected without
 partially applying the pending settings.
 
-The older **three-dot menu → Reconfigure** path remains a forecast-only shortcut.
-It is no longer required to reach forecast selection from the Configure gear.
+In the accepted **8.3.0/8.3.1** runtime, the older **three-dot menu → Reconfigure**
+path remains forecast-only. The unreleased follow-up makes that route use the
+same complete dialog; Configure already includes forecast selection.
 
 ## Complete Swiss calendar days
 

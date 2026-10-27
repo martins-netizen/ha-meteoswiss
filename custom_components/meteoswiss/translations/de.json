@@ -46,7 +46,7 @@
           "action": "Prognoseort"
         },
         "data_description": {
-          "action": "Bisherigen Ort beibehalten, im amtlichen Katalog suchen oder ausdrücklich zu den ursprünglichen Basiskoordinaten zurückkehren. Erst die Bestätigung übernimmt eine Änderung."
+          "action": "Ursprüngliche Basiskoordinaten behalten oder im offiziellen Katalog suchen. Ein ausgewählter Punkt wird erst nach Bestätigung gespeichert."
         }
       },
       "forecast_search": {
@@ -78,6 +78,36 @@
         "data_description": {
           "search_again": "Aktivieren, um ohne Speichern zur Suche zurückzukehren. Andernfalls mit Absenden den angezeigten Ort bestätigen."
         }
+      },
+      "reconfigure": {
+        "title": "MeteoSwiss – Standorte und Messstationen",
+        "description": "Wähle Wetter-Messstation, Pollenmessstation und Prognoseort gemeinsam. Bisheriger Prognoseort: {current_location}. Die Warnungs-PLZ ist unabhängig davon. Bei einer Suche folgen weitere Schritte; gespeichert wird erst mit der abschliessenden Bestätigung. Aktualisierungen erfolgen automatisch.",
+        "data": {
+          "station_id": "MeteoSchweiz-Messstation",
+          "pollen_station": "Station für Pollenmessungen",
+          "postal_code": "Postleitzahl für Warnungen",
+          "forecast_action": "Prognoseort",
+          "latitude": "Breitengrad für aktuelle Modelldaten",
+          "longitude": "Längengrad für aktuelle Modelldaten"
+        },
+        "data_description": {
+          "station_id": "[Offizielle SwissMetNet-Stationskarte]({station_map_url}). Liefert gemessene Wetterwerte. Die bestehenden Entitäten bleiben bei einem Wechsel erhalten; ihre Messwerte stammen ab dann von der neuen Station. Der Wetterzustand dieser Station wird mit MeteoSwiss ICON über Open-Meteo modelliert; die Zahlenwerte bleiben Messungen.",
+          "pollen_station": "Ändert nur gemessene Pollen. Modellierte Pollen und Luftqualität behalten ihren Basisstandort.",
+          "postal_code": "Vierstellige Schweizer PLZ für Warnungen. Sie wählt weder Wetterstation noch Prognosepunkt aus.",
+          "forecast_action": "Angezeigten Prognoseort beibehalten, nach PLZ/Ort/POI suchen oder zu den ursprünglichen Basiskoordinaten zurückkehren. Eine PLZ in der Prognosesuche ändert die Warnungs-PLZ nicht.",
+          "latitude": "Basiskoordinaten für aktuelle Open-Meteo-Daten, modellierte Luftqualität/Pollen/UV und Prognosen ohne bewusst gewählten Ort. Ein ausdrücklich gewählter Prognosepunkt bleibt unabhängig.",
+          "longitude": "Basiskoordinaten für aktuelle Open-Meteo-Daten, modellierte Luftqualität/Pollen/UV und Prognosen ohne bewusst gewählten Ort. Ein ausdrücklich gewählter Prognosepunkt bleibt unabhängig."
+        }
+      },
+      "settings_confirm": {
+        "title": "Orte und Stationen bestätigen",
+        "description": "Diese Auswahl gemeinsam übernehmen: Wetter-/Aktuellquelle {station}; Pollenmessung {pollen_station}; Prognose {location}; Warnungs-PLZ {postal_code}. Ein Prognose-POI legt keine Warnabdeckung für diesen POI fest. Absenden speichert alle vorgemerkten Änderungen; Abbrechen behält die bisherigen Einstellungen.",
+        "data": {
+          "search_again": "Anderen Ort suchen"
+        },
+        "data_description": {
+          "search_again": "Aktivieren, um ohne Speichern zur Suche zurückzukehren. Andernfalls mit Absenden den angezeigten Ort bestätigen."
+        }
       }
     },
     "error": {
@@ -90,11 +120,13 @@
       "invalid_forecast_query": "2–128 Zeichen eingeben: vierstellige PLZ oder Orts-/POI-Name.",
       "forecast_catalogue_unavailable": "Der Ortskatalog ist vorübergehend nicht verfügbar. Später erneut versuchen oder abbrechen; der gespeicherte Ort bleibt erhalten.",
       "forecast_no_matches": "Kein passender Prognosepunkt. Schreibweise prüfen oder eine andere PLZ/einen anderen Namen versuchen.",
-      "forecast_too_many_matches": "Mehr als 20 Treffer. Einen genaueren Namen oder eine Postleitzahl eingeben."
+      "forecast_too_many_matches": "Mehr als 20 Treffer. Einen genaueren Namen oder eine Postleitzahl eingeben.",
+      "already_configured": "Ein anderer Eintrag verwendet bereits diesen Messort und diese Warnungs-PLZ."
     },
     "abort": {
       "already_configured": "Diese Datenquelle und dieser Standort sind bereits eingerichtet.",
-      "reconfigure_successful": "Prognoseort beibehalten."
+      "reconfigure_successful": "Einstellungen gespeichert.",
+      "configuration_changed": "Während dieses Dialogs wurden andere Einstellungen gespeichert. Aus diesem Dialog wurde nichts übernommen. Öffne die Einstellungen erneut und versuche es nochmals."
     }
   },
   "options": {
@@ -140,7 +172,7 @@
         }
       },
       "forecast_confirm": {
-        "title": "Prognoseort bestätigen",
+        "title": "Orte und Stationen bestätigen",
         "description": "Diese Auswahl gemeinsam übernehmen: Wetter-/Aktuellquelle {station}; Pollenmessung {pollen_station}; Prognose {location}; Warnungs-PLZ {postal_code}. Ein Prognose-POI legt keine Warnabdeckung für diesen POI fest. Absenden speichert alle vorgemerkten Änderungen; Abbrechen behält die bisherigen Einstellungen.",
         "data": {
           "search_again": "Anderen Ort suchen"

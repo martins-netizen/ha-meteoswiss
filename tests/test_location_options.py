@@ -7,12 +7,13 @@ from unittest.mock import patch
 
 import pytest
 from homeassistant.data_entry_flow import InvalidData
+from homeassistant.config_entries import SOURCE_RECONFIGURE
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.translation import async_get_translations
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.meteoswiss import async_setup_entry as actual_setup_entry
-from custom_components.meteoswiss.config_flow import MeteoSwissOptionsFlow
+from custom_components.meteoswiss.config_flow import MeteoSwissConfigFlow, MeteoSwissOptionsFlow
 from custom_components.meteoswiss.const import CONF_FORECAST_LOCATION, DOMAIN
 from custom_components.meteoswiss.forecast_location_config import (
     decode_forecast_location,
@@ -405,8 +406,9 @@ async def test_invalid_saved_forecast_can_be_reset_from_unified_settings(
     assert CONF_FORECAST_LOCATION not in entry.data
 
 
+@pytest.mark.parametrize("route", ["configure", "reconfigure"])
 async def test_station_change_reloads_once_with_new_readings_and_preserved_entity_ids(
-    hass, enable_custom_integrations, catalogue
+    hass, enable_custom_integrations, catalogue, route
 ):
     from contextlib import ExitStack
 
@@ -418,6 +420,9 @@ async def test_station_change_reloads_once_with_new_readings_and_preserved_entit
         return {"temperature": 12 if source.station_id == "klo" else 15}
 
     with ExitStack() as stack:
+        stack.enter_context(
+            patch.object(MeteoSwissConfigFlow, "_load_stations", return_value=STATIONS)
+        )
         stack.enter_context(
             patch(
                 "custom_components.meteoswiss.async_setup_entry", new=actual_setup_entry
@@ -466,18 +471,21 @@ async def test_station_change_reloads_once_with_new_readings_and_preserved_entit
         with patch.object(
             hass.config_entries, "async_reload", wraps=hass.config_entries.async_reload
         ) as reload:
-            form = await hass.config_entries.options.async_init(entry.entry_id)
-            assert (
-                await submit(
-                    hass,
-                    form,
-                    {
-                        "station_id": "sma",
-                        "pollen_station": "PBE",
-                        "postal_code": "8000",
-                    },
+            if route == "configure":
+                manager = hass.config_entries.options
+                form = await manager.async_init(entry.entry_id)
+            else:
+                manager = hass.config_entries.flow
+                form = await manager.async_init(
+                    DOMAIN, context={"source": SOURCE_RECONFIGURE, "entry_id": entry.entry_id}
                 )
-            )["type"] == "create_entry"
+            values = form["data_schema"](
+                {"station_id": "sma", "pollen_station": "PBE", "postal_code": "8000"}
+            )
+            result = await manager.async_configure(form["flow_id"], values)
+            assert result["type"] == ("create_entry" if route == "configure" else "abort")
+            if route == "reconfigure":
+                assert result["reason"] == "reconfigure_successful"
             await hass.async_block_till_done()
             reload.assert_awaited_once_with(entry.entry_id)
         assert hass.states.get(weather).attributes["temperature"] == 15

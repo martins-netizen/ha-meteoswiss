@@ -59,8 +59,15 @@ cancelling an unfinished step discards all pending changes. See
 The entry and retained entity/statistic IDs, personal names and legacy intervals
 remain. A loaded entry reloads once after a confirmed change without a Core
 restart. Keeping the current forecast leaves that role unchanged; other settings
-are still applied if deliberately changed and confirmed. The older
-**three-dot menu → Reconfigure** remains a forecast-only shortcut.
+are still applied if deliberately changed and confirmed.
+
+**Unreleased follow-up:** **three-dot menu → Reconfigure** opens the same
+complete settings dialog. You can change weather observations, measured pollen,
+forecast point and warning postcode together through either route. A failed
+source check retains the chosen search/reset for the retry. If another dialog
+saves settings first, the older dialog aborts without overwriting them; reopen
+it to review the current values. The stable 8.3.1 Reconfigure shortcut remains
+forecast-only until a release containing this follow-up is installed.
 
 To undo a forecast move choose **Return to the original base coordinates** and
 confirm. An invalid saved point needs a replacement or explicit reset; keeping
