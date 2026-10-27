@@ -1,0 +1,2 @@
+# CI-only floor; keep the supported HA dependency pins unchanged.
+certifi>=2026.10.19
