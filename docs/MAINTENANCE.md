@@ -25,8 +25,9 @@
    and history persist and that active/upcoming warning consumers use the
    verified catalogue and preserve the provider's concrete event text.
 5. Update manifest.json, version.py and CHANGELOG.md together when preparing a
-   release. Stable `8.3.0` was published on 24 October 2026; later development
-   changes remain unreleased until separately packaged and accepted. Tag only
+   release. Stable `8.3.1` was published on 26 October 2026. The shared-settings
+   `8.3.2b1` candidate is prepared, not published; later development changes
+   remain unreleased until separately packaged and accepted. Tag only
    the approved tested commit on `development`, not the upstream mirror `main`;
    preserve existing immutable stable/beta tags. HACS must point at
    `martins-netizen/ha-meteoswiss` and the selected tested release; never infer

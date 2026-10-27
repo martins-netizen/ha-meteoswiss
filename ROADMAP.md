@@ -4,24 +4,25 @@ This describes current fork work. Historical upstream release claims remain in
 the changelog as history; they are not current certifications. Check the
 [release status](README.md#release-status) before installing.
 
-## Stable 8.3.1 promotion in preparation
+## Published 8.3.1 and prepared shared-settings follow-up
 
-The bounded [8.3.1b1 test package](docs/RELEASE_8.3.1b1.md) was published on
-26 October and the operator confirmed the requested version/visual check.
-[Stable 8.3.1](docs/RELEASE_8.3.1.md) retains that runtime, changing only two
-component version files. Its publication and later actual HACS download remain
-separate steps; stable 8.3.0 is still the normal installation route.
+Stable [8.3.1](docs/RELEASE_8.3.1.md), ID **424249153**, was published on
+**26 October 2026 at 12:54:24 UTC** from
+**fa298ca72bf62da727797f9bfcacf95c83ffeaf1**. It retains the accepted 8.3.1b1
+repair/map runtime and is the normal installation route. Actual HACS downloads
+are recorded separately from GitHub publication.
 
-Weather-station help in setup and Configure links to the official MeteoSwiss
-measurement-network map in DE/EN/FR/IT, making nearby SwissMetNet stations easier
-to find before selecting them in HA.
+The next bounded package is [8.3.2b1](docs/RELEASE_8.3.2b1.md), **prepared,
+not published**. Approved PR #76 is regularly integrated, after including #75
+and passing the required checks. Configure and Reconfigure share the complete
+weather/pollen/forecast/warning-postcode transaction, source retry and
+concurrent-edit protection. Only the two component version files change for
+this package. Its [focused existing-entry HA check](docs/ACCEPTANCE_8.3.2b1.md)
+remains pending; earlier acceptance is not extended to an uninstalled build.
 
-[HA repair notices](docs/REPAIRS.md) now identify invalid saved forecast
-selections and link to the existing settings. Code/tests cover confirmed
-recovery, cancellation, multi-entry isolation, source-outage boundaries and
-DE/EN/FR/IT text. The focused b1 version/visual acceptance is complete; stable
-promotion needs its own reviewed publication. The 8.3.0 publication and earlier
-acceptance remain closed.
+Published 8.3.1 includes language-matched official SwissMetNet map help and
+entry-specific repair notices for invalid saved forecast selections. The
+8.3.1b1 version/visual acceptance and earlier 8.3.0 acceptance remain closed.
 
 ## Implemented and released in 8.3.0
 
@@ -73,7 +74,7 @@ custom integrations.
 | Scope | Decision still needed |
 |---|---|
 | Locality names in other languages | Obtain authoritative aliases; preserve provider identities and avoid invented translations or duplicate places. |
-| Remaining Gold engineering work | Promote the accepted repair follow-up to stable; review reconfiguration routes, device metadata, icon/error translations, diagnostic defaults and stale-device handling; preserve existing user choices and history. |
+| Remaining Gold engineering work | Complete focused HA acceptance of the prepared shared-Reconfigure follow-up; review device metadata, icon/error translations, diagnostic defaults, stale-device handling and proposed exemptions; preserve existing user choices and history. |
 | External contributor CodeQL | The unprivileged route is implemented; retain evidence from the first actual external-fork run. A skipped analysis is not completed analysis. |
 | Processed local-forecast data | Assess provider payloads, resource limits and compatibility separately from the already released catalogue-based ICON selection. |
 | New sources/entities | Scope and test separately; no new device actions/sources in a documentation or release change. |

@@ -113,7 +113,7 @@ Silver and Gold below identify the rules we use to guide improvements.
 |---|---|---|
 | **Bronze: a sound foundation** | Setup in HA, stable entity identities, tested setup and clear instructions. | The checklist records setup/configuration tests, identity checks, installation guides and valid bundled brand images. |
 | **Silver: reliable operation** | Clear unavailable states, recovery from source failures, clean unloading and a maintained support route. | All applicable Silver rules have recorded evidence, including more than 95% coverage per module. The checklist also records the underlying Bronze rules; focused b4 HA acceptance is operator-confirmed. |
-| **Gold: a more complete user experience** | Easier configuration, useful diagnostics, translations and actionable help. | The shared location dialog and actionable repair notices have bounded evidence; the repair/map follow-up was accepted in 8.3.1b1. Remaining work includes icon/error translations, diagnostic defaults, metadata and stale-device handling, plus the reconfiguration-route review and proposed exemptions. |
+| **Gold: a more complete user experience** | Easier configuration, useful diagnostics, translations and actionable help. | The shared location dialog and actionable repair notices have bounded evidence; the repair/map follow-up was accepted in 8.3.1b1. Remaining work includes icon/error translations, diagnostic defaults, metadata and stale-device handling, plus focused HA acceptance of the prepared shared-Reconfigure follow-up and review of proposed exemptions. |
 
 The [rule-by-rule assessment](docs/QUALITY_SCALE.md) links the scope, test evidence
 and remaining work. [HACS catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-catalogue-admission)
@@ -124,8 +124,9 @@ badge or manifest claim.
 **Accepted 8.3.1b1 follow-up:** [actionable repair notices](docs/REPAIRS.md) guide
 users from an invalid saved forecast location to the existing settings. Official
 station-map links help find nearby SwissMetNet stations. The operator confirmed
-the requested version/visual check on 26 October. Stable [8.3.1 packaging](docs/RELEASE_8.3.1.md)
-retains that runtime and is not yet published; stable 8.3.0 does not include it.
+the requested version/visual check on 26 October. Published stable [8.3.1](docs/RELEASE_8.3.1.md) retains that runtime.
+The prepared [8.3.2b1 follow-up](docs/RELEASE_8.3.2b1.md) adds the complete
+Reconfigure route; its focused HA acceptance is still pending.
 
 ## Start here
 
@@ -138,11 +139,16 @@ retains that runtime and is not yet published; stable 8.3.0 does not include it.
 
 ## Release status
 
-**8.3.1b1 is published and its version/visual check is operator-confirmed.**
-Stable [8.3.1](docs/RELEASE_8.3.1.md) is prepared as a version-only promotion;
-it is not yet published. **8.3.0** remains the normal stable installation until
-publication is confirmed. The [short stable update check](docs/ACCEPTANCE_8.3.1.md)
-records a later actual download without repeating accepted beta tests.
+**Stable 8.3.1 is published and is the normal installation route.** Release
+ID **424249153**, published **26 October 2026 at 12:54:24 UTC** from
+**fa298ca72bf62da727797f9bfcacf95c83ffeaf1**. It retains the operator-accepted
+8.3.1b1 repair/map runtime. Publication and a particular HA's actual download
+remain separate; the [short stable check](docs/ACCEPTANCE_8.3.1.md) records the latter.
+
+**8.3.2b1 is prepared, not published or installed.** It packages the reviewed
+shared Configure/Reconfigure settings and retained retry choices. Use it only
+after publication is announced, in the existing test HA, following the
+[focused check](docs/ACCEPTANCE_8.3.2b1.md). See [candidate notes](docs/RELEASE_8.3.2b1.md).
 
 The [latest stable release page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
 is authoritative for normal installation. The [8.3.0 notes](docs/RELEASE_8.3.0.md)

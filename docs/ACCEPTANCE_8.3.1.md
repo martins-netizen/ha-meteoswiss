@@ -1,6 +1,6 @@
 # Stable 8.3.1: short HACS update check
 
-**Protocol version:** 1.0 · **Prepared:** 26 October 2026
+**Protocol version:** 1.1 · **Updated:** 27 October 2026
 
 The operator confirmed the 8.3.1b1 version/visual check. Stable 8.3.1 retains
 that runtime with only two version changes. This protocol records a later
@@ -8,7 +8,10 @@ stable HACS download; it does not reopen the accepted beta UI or earlier
 first-install/restore evidence.
 
 Use only the announced published **8.3.1** through the existing maintained-fork
-HACS repository. Until publication is confirmed, normal stable is **8.3.0**.
+HACS repository. Publication is confirmed: release **424249153**,
+**26 October 2026 at 12:54:24 UTC**, source
+**fa298ca72bf62da727797f9bfcacf95c83ffeaf1**. Actual installation remains
+a separate operator result; no confirmation is inferred here.
 
 1. Retain the existing backup and configured HA entry. In HACS, refresh
    repository information if needed, then actually Download/Redownload

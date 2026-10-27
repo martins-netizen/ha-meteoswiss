@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+No additional runtime changes beyond the prepared 8.3.2b1 package below.
+
+## [8.3.2b1] — shared location settings test prerelease
+
+Prepared 27 October 2026, not yet published or installed. Retain reviewed
+PR #76 source **d6ae2a0b1ae9c195c9647f6b416d347891f91a74**: 38 component
+files match; only manifest.json/version.py become 8.3.2b1. Add the fixed
+V1.5 publisher, an eighth publication test profile and the
+[focused acceptance](docs/ACCEPTANCE_8.3.2b1.md). Stable 8.3.1 remains latest.
+See [candidate notes](docs/RELEASE_8.3.2b1.md).
+
 - Make the entry menu's Reconfigure route offer the same weather station/base
   coordinates, measured-pollen station, forecast point and warning postcode as
   Configure. Both routes share validation, staged confirmation, duplicate checks
@@ -13,13 +24,15 @@
   unrelated settings and legacy intervals; confirmed loaded-entry changes
   reload once through the existing listener.
 
-## [8.3.1] — prepared stable promotion of accepted 8.3.1b1
+## [8.3.1] — published stable promotion of accepted 8.3.1b1
 
 Prepared 26 October 2026 from published and operator-accepted b1 at
 **c7b20c78d4273a33ba8c6f06c1834fc2f22c8665**. Only two component version
 files change; 38 others, HACS metadata and workflows match. [Release notes](docs/RELEASE_8.3.1.md)
 and the [short stable update check](docs/ACCEPTANCE_8.3.1.md) define the scope.
-Publication is still a separate verified step; 8.3.0 remains latest stable.
+Published **26 October 2026 at 12:54:24 UTC**, release ID **424249153**,
+from **fa298ca72bf62da727797f9bfcacf95c83ffeaf1**; it is the latest stable.
+The operator's actual stable HACS download is a separate evidence item.
 
 - Promote the accepted repair notices and language-matched station-map help
   without adding runtime changes, settings migrations or polling.

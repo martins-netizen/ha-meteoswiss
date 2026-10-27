@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.29 · **Updated:** 26 October 2026
+**Plan version:** 1.30 · **Updated:** 27 October 2026
 **Status:** The agreed architecture, catalogue/POI, forecast-display, shared-settings
 and station-condition scope is released in stable 8.3.0. B4 runtime acceptance,
 stable publication and HACS default-catalogue admission are complete. The operator
@@ -10,12 +10,15 @@ The current next-work overview is
 as planning history, not new instructions to repeat completed work.
 This document does not approve a new feature, installation or release.
 
-**Next bounded package:** [stable 8.3.1](RELEASE_8.3.1.md) promotes the
-published and operator-accepted [8.3.1b1](RELEASE_8.3.1b1.md) repair/map runtime.
-Only two component version files change. Stable publication and its later
-[actual HACS download](ACCEPTANCE_8.3.1.md) remain separate steps; latest stable
-is still 8.3.0. The focused b1 check is closed. Remaining Gold route/metadata
-work and authoritative multilingual locality aliases stay separate.
+**Next bounded package:** [8.3.2b1](RELEASE_8.3.2b1.md) packages reviewed
+shared Configure/Reconfigure settings from merged PR #76. It is prepared,
+not published or installed. Only two component version files change; the
+[focused test-HA check](ACCEPTANCE_8.3.2b1.md) remains pending. Stable
+[8.3.1](RELEASE_8.3.1.md) was published on 26 October at 12:54:24 UTC,
+ID **424249153**, retaining the accepted repair/map runtime. Its actual HACS
+download remains separate evidence. Remaining Gold work and authoritative
+multilingual locality aliases retain their separate scope. Earlier planning
+sections below preserve the decisions/evidence at their stated dates.
 
 ## Historical agreed scope and b1/b2 sequence — 23–24 October 2026
 
@@ -56,7 +59,9 @@ The broader Silver/Gold matrix remains a separate evidence claim, not a new
 unbounded prerequisite for every release step. A next-day release estimate for
 the smaller forecast-only scope no longer applies.
 
-## Current position
+<a id="current-position"></a>
+
+## Historical position (24–25 October)
 
 Stable **8.3.0** was published on **24 October 2026** from
 **3ca9a1c166920fbdda88d15238affafe520f4b68**, retaining the accepted b4 runtime.

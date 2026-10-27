@@ -1,6 +1,6 @@
 # Quality evidence and remaining work
 
-**Runtime assessment:** 24 October 2026. **Documentation updated:** 25 October 2026.
+**Runtime assessment:** 24 October 2026. **Documentation updated:** 27 October 2026.
 **Scope:** the 8.3 runtime accepted as
 published b4 at **a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5**. Stable packaging
 changes only two component version files. The operator confirmed b3 calendar-day
@@ -29,15 +29,17 @@ successful production update from 8.2 to stable 8.3; see [HACS evidence](HACS_AC
 **Accepted 8.3.1b1 follow-up:** the repair-issues row additionally records the
 [saved-location repair notice](REPAIRS.md), native lifecycle tests and the
 operator-confirmed version/visual check on 26 October. The feature is not in
-8.3.0. Stable [8.3.1 promotion](RELEASE_8.3.1.md) retains the accepted b1 runtime
-and remains a separate publication; no full Gold completion is claimed.
+8.3.0. Stable [8.3.1](RELEASE_8.3.1.md) was published on 26 October, retaining
+the accepted b1 runtime. Actual installation is separate evidence; no full
+Gold completion is claimed.
 
-**Unreleased shared-settings follow-up:** the reconfiguration and configuration
+**Prepared 8.3.2b1 shared-settings follow-up (not published):** the reconfiguration and configuration
 documentation rows below additionally describe the complete native Reconfigure
 route in this development tree. It shares Configure's transaction and preserves
 the original setup confirmation. Automated manager/lifecycle tests cover both
 routes and providers; operator acceptance of this unreleased UI is still pending.
-The accepted 8.3/8.3.1 evidence above is not retroactively extended.
+The [focused HA protocol](ACCEPTANCE_8.3.2b1.md) is pending publication and
+installation. The accepted 8.3/8.3.1 evidence above is not retroactively extended.
 
 **Reading the result:** all applicable technical Bronze rules and applicable
 Silver rules have recorded evidence below. Bundled branding follows the custom
@@ -115,7 +117,7 @@ engineering work.
 | `entity-translations` | Partial | Four complete 180-key UI catalogues and ordinary entity translations exist; strings.json matches English. Legacy diagnostic/device/attribute compatibility names remain; authoritative provider place-name aliases are separate future work. |
 | `exception-translations` | Partial | Setup/selection errors are translated; remaining fixed HA update-error messages have not all moved to translated exceptions. |
 | `icon-translations` | Open | Active icons exist, but no complete icons.json migration. |
-| `reconfiguration-flow` | Automated evidence in unreleased follow-up; operator UI check pending | Native Reconfigure and Configure share the complete weather station/base-coordinate, measured-pollen, forecast and warning-postcode transaction. Tests cover both providers/routes, explicit confirmation, cancellation at each stage, source retry with retained choices, duplicate/concurrent-edit rejection, translations and retained entity IDs with a single loaded-entry reload. The original setup confirmation remains separate. This extends stable 8.3.1's forecast-only shortcut; no deployed-UI acceptance is inferred. |
+| `reconfiguration-flow` | Automated evidence in prepared 8.3.2b1; publication and operator UI check pending | Native Reconfigure and Configure share the complete weather station/base-coordinate, measured-pollen, forecast and warning-postcode transaction. Tests cover both providers/routes, explicit confirmation, cancellation at each stage, source retry with retained choices, duplicate/concurrent-edit rejection, translations and retained entity IDs with a single loaded-entry reload. The original setup confirmation remains separate. This extends stable 8.3.1's forecast-only shortcut; no deployed-UI acceptance is inferred. |
 | `repair-issues` | Evidence in accepted 8.3.1b1 | Invalid offline saved forecast selections raise a translated entry-specific notice linking to the existing settings. Confirmed correction/reset clears it; cancellation/failed validation retains it. Reloads preserve ignored state; disablement/removal cleans up that entry. Provider outages create no configuration notice. Native entry/settings and four-language tests cover these boundaries; the operator confirmed the requested version/visual check, without a separately reported deliberate-corruption test. Stable 8.3.1 retains that runtime. |
 | `stale-devices` | Open | Review removal of obsolete grouping after measured-pollen station changes without deleting wanted registry/history data. |
 

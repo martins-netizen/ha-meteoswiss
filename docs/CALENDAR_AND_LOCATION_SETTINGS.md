@@ -1,12 +1,12 @@
 # Calendar-day forecasts and one location-settings dialog
 
-**Guide version:** 1.2 · **Updated:** 24 October 2026
+**Guide version:** 1.3 · **Updated:** 27 October 2026
 
 **Availability:** included in the **8.3.0** runtime accepted as b4.
 Use the [announced release](RELEASE_8.3.0.md); earlier beta notes describe their
 historical scopes, not instructions to reinstall an older beta.
 
-**Unreleased route follow-up:** the complete settings transaction also serves
+**Prepared 8.3.2b1 route follow-up (not published):** the complete settings transaction also serves
 the entry menu's Reconfigure route, with the same source checks, cancellation
 and concurrency protection. See [current route guidance](FORECAST_LOCATION_SETUP.md#existing-entry).
 The original 8.3.0 acceptance and numerical evidence below retain their scope.
