@@ -2,9 +2,12 @@
 
 **Notes version:** 1.0 · **Prepared:** 26 October 2026
 
-**Status:** stable promotion prepared, not yet published. The latest published
-stable release remains 8.3.0 until the actual GitHub release confirms otherwise.
-Published 8.3.1b1 has passed the operator's focused version/visual check.
+**Publication verified — 27 October 2026:** stable **8.3.1**, release ID
+**424249153**, was published **26 October 2026 at 12:54:24 UTC** from
+**fa298ca72bf62da727797f9bfcacf95c83ffeaf1** and is latest stable.
+Actual stable HACS installation is separate evidence. The original promotion
+scope below and the already published tag/release body are retained as history.
+For the next prepared test package, see [8.3.2b1](RELEASE_8.3.2b1.md).
 
 This community fork builds on [LNKtwo/ha-meteoswiss](https://github.com/LNKtwo/ha-meteoswiss)
 and retains its MIT licence and attribution. It is not an official MeteoSwiss

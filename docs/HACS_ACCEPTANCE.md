@@ -1,6 +1,6 @@
 # HACS acceptance of the maintained fork
 
-**Updated: 26 October 2026 · Plan and evidence V1.11**
+**Updated: 27 October 2026 · Plan and evidence V1.12**
 
 ## HACS catalogue admission
 
@@ -27,13 +27,21 @@ checklist; HACS admission does not assign a Home Assistant quality tier.
 
 ## Release and operator evidence
 
+Stable **[8.3.1](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.1)**,
+ID **424249153**, was published on **26 October 2026 at 12:54:24 UTC** from
+**fa298ca72bf62da727797f9bfcacf95c83ffeaf1** and is latest stable. It retains
+the operator-accepted b1 runtime. A later actual stable HACS download remains
+unconfirmed here; publication or CI does not establish that installation.
+Prepared [8.3.2b1](RELEASE_8.3.2b1.md) is not published or installed and has
+its own pending [focused shared-settings check](ACCEPTANCE_8.3.2b1.md).
+
 Test [8.3.1b1](RELEASE_8.3.1b1.md), ID **423899845**, was published on
 26 October 2026 at **05:54:44 UTC** from
 **c7b20c78d4273a33ba8c6f06c1834fc2f22c8665**, retaining latest stable 8.3.0.
 The operator subsequently confirmed the requested installed-version and visual
 check. This closes the focused b1 check; no new independent HA-core or registry
-audit is inferred. Stable [8.3.1 promotion](RELEASE_8.3.1.md) is prepared and not
-yet published; its later actual download uses a [short check](ACCEPTANCE_8.3.1.md).
+audit is inferred. Stable [8.3.1](RELEASE_8.3.1.md) was published afterwards, as recorded
+above; its actual download uses a [short check](ACCEPTANCE_8.3.1.md).
 
 Stable [8.3.0](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.0)
 was published on **24 October 2026 at 15:35:56 UTC / 17:35:56 Europe/Zurich**,

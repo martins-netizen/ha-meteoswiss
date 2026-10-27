@@ -1,11 +1,51 @@
-# Release readiness: accepted 8.3.1b1 to stable 8.3.1
+# Release readiness: shared settings test candidate 8.3.2b1
 
-**Document version:** 2.10 · **Updated:** 26 October 2026
+**Document version:** 2.11 · **Updated:** 27 October 2026
 
-## Prepared stable 8.3.1
+<a id="prepared-832b1-test-candidate"></a>
 
-The [stable 8.3.1 package](RELEASE_8.3.1.md) promotes the accepted b1 runtime.
-It is **not published**. Source is published beta
+## Prepared 8.3.2b1: complete shared settings
+
+[8.3.2b1](RELEASE_8.3.2b1.md) is prepared, **not published or installed**.
+Reviewed runtime is merged PR #76 at
+**d6ae2a0b1ae9c195c9647f6b416d347891f91a74**, tree
+**489d818a27e58c45428085ab3d917b25ac694dbf**. It includes #75's secured local
+recipe and the shared native settings transaction, retained search/reset on
+source retry, concurrent-edit protection and complete four-language confirmation.
+All eight updated-head checks and seven actual merge checks passed.
+
+Both actual source-merge HA jobs passed **1,883 tests plus 73 subtests** on
+**Python 3.14.10 / pip 26.2.2 / certifi 2026.10.23**, with UV_OFFLINE enabled.
+Config flow has **406/406 statements and 146/146 branches**; whole integration
+has **3,516/3,517 statements and 974/974 branches**, with all existing strict
+gates/four exclusions retained. The historical uv pins remain explicitly
+unpatched offline-only compatibility exceptions. CI is separate from operator
+acceptance and does not patch a live HA image.
+
+Packaging retains **38 non-version files** within the 40-file component, only
+manifest.json/version.py become **8.3.2b1**. HACS/CH, minimum HA, workflows,
+security guards and the ten older tags remain. The four **200-key** catalogues
+retain English/source parity. V1.5 adds an eighth fixed publication profile:
+**380 publication cases** pass, including 49 added cases for this package.
+Both complete local suites pass **1,932 tests plus 73 subtests** on
+**HA 2026.8.3 (88.63 s)** and **HA 2026.10.3 (81.64 s)**. These existing local
+environments still use **Python 3.14.8**; they are regression evidence, not
+evidence of the newer security baseline. Coverage remains **3,516/3,517
+statements and 974/974 branches**, combined **99.977733%**, with the existing
+strict gates. Hosted exact-head and actual merge checks remain separate gates
+before publication. The
+[focused existing-entry protocol](ACCEPTANCE_8.3.2b1.md) is pending publication
+and installation; previous clean-install/restore acceptance stays closed.
+
+<a id="prepared-stable-831"></a>
+
+## Published stable 8.3.1
+
+Stable **8.3.1 / ID 424249153** was published on **26 October 2026 at
+12:54:24 UTC** from **fa298ca72bf62da727797f9bfcacf95c83ffeaf1**, retaining
+the accepted b1 runtime. Actual stable HACS download is separately unconfirmed.
+The following retains its historical package evidence.
+The [stable 8.3.1 package](RELEASE_8.3.1.md) promotes the accepted b1 runtime. Source is published beta
 **c7b20c78d4273a33ba8c6f06c1834fc2f22c8665**, tree
 **d6e3853205f387372b1a2e49d6fb9f33c6b513b0**. Of 40 component files,
 **38 non-version files match**; only manifest.json/version.py become **8.3.1**.
@@ -51,7 +91,9 @@ all strict gates and the four previous exclusions retained. All four 180-key
 catalogues have English/source parity. The [focused protocol](ACCEPTANCE_8.3.1b1.md)
 remains available as a method, not a request to repeat completed checks.
 
-## Current release position
+<a id="current-release-position"></a>
+
+## Historical 8.3.0 release position (24–25 October)
 
 The operator accepted **8.3.0b4** with a positive overall result and requested stable 8.3.
 Additional screenshots show the installed b4 version, seven devices/45 entities,
@@ -69,7 +111,8 @@ feature is included after the accepted runtime.
 Stable **8.3.0 was published on 24 October 2026 at 15:35:56 UTC**, release ID
 **422817883**, from **3ca9a1c166920fbdda88d15238affafe520f4b68**. The
 [latest published stable endpoint](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
-agrees. [HACS catalogue admission](HACS_ACCEPTANCE.md#hacs-catalogue-admission)
+agreed at that verification; the later 8.3.1 publication is recorded above.
+[HACS catalogue admission](HACS_ACCEPTANCE.md#hacs-catalogue-admission)
 was completed later that day. On **25 October** the operator confirmed that the
 production update from **8.2 to stable 8.3** worked successfully. Publication,
 catalogue admission and reported local update are now separately recorded.

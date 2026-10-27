@@ -6,7 +6,9 @@
 release ID **423899845**, from **c7b20c78d4273a33ba8c6f06c1834fc2f22c8665**.
 The operator confirmed the requested installed-version and visual check.
 The original package scope below is retained; published tag/notes are unchanged.
-Stable [8.3.1 promotion](RELEASE_8.3.1.md) is prepared, not yet published.
+**Later publication:** stable [8.3.1](RELEASE_8.3.1.md), ID **424249153**,
+was published on 26 October at 12:54:24 UTC. The original b1 scope below
+and its published release body remain historical and unchanged.
 
 This community fork builds on [LNKtwo/ha-meteoswiss](https://github.com/LNKtwo/ha-meteoswiss)
 and retains its MIT licence and attribution. It is not an official MeteoSwiss

@@ -1,6 +1,6 @@
 # Choose or change a weather forecast location
 
-**Guide version:** 1.5 · **Updated:** 24 October 2026
+**Guide version:** 1.6 · **Updated:** 27 October 2026
 **Availability:** included in the **8.3.0** runtime accepted as b4.
 Use the [announced release](RELEASE_8.3.0.md); earlier beta notes describe their
 historical scopes, not instructions to reinstall an older beta.
@@ -61,13 +61,14 @@ remain. A loaded entry reloads once after a confirmed change without a Core
 restart. Keeping the current forecast leaves that role unchanged; other settings
 are still applied if deliberately changed and confirmed.
 
-**Unreleased follow-up:** **three-dot menu → Reconfigure** opens the same
+**Prepared 8.3.2b1 follow-up (not published):** **three-dot menu → Reconfigure** opens the same
 complete settings dialog. You can change weather observations, measured pollen,
 forecast point and warning postcode together through either route. A failed
 source check retains the chosen search/reset for the retry. If another dialog
 saves settings first, the older dialog aborts without overwriting them; reopen
 it to review the current values. The stable 8.3.1 Reconfigure shortcut remains
-forecast-only until a release containing this follow-up is installed.
+forecast-only until a release containing this follow-up is installed. Follow
+the [focused test protocol](ACCEPTANCE_8.3.2b1.md) only after publication is announced.
 
 To undo a forecast move choose **Return to the original base coordinates** and
 confirm. An invalid saved point needs a replacement or explicit reset; keeping
