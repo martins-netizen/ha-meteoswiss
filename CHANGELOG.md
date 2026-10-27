@@ -2,7 +2,16 @@
 
 ## [Unreleased]
 
-No additional runtime changes beyond the stable-promotion package below.
+- Make the entry menu's Reconfigure route offer the same weather station/base
+  coordinates, measured-pollen station, forecast point and warning postcode as
+  Configure. Both routes share validation, staged confirmation, duplicate checks
+  and protection against concurrent edits.
+- Retain a selected forecast search/reset after a failed observation-source
+  check, so retrying does not silently switch the action back to Keep.
+- Translate the complete reconfiguration and combined confirmation in
+  DE/EN/FR/IT. Preserve existing entries, entity identities, custom names,
+  unrelated settings and legacy intervals; confirmed loaded-entry changes
+  reload once through the existing listener.
 
 ## [8.3.1] — prepared stable promotion of accepted 8.3.1b1
 

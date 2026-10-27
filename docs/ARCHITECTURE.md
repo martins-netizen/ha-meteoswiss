@@ -437,10 +437,14 @@ and newer minor schemas are left intact. Stable 8.2.0 already reads interval
 options before data, so it can still read migrated entries. Its older Configure
 form can still edit that value; a later upgrade keeps the options value.
 
-Configure stages all three location choices and the warning
-postcode in one form. A shared location-flow mixin reuses the existing catalogue,
-search/selection and ICON validation for setup, forecast Reconfigure and unified
-options; there is no second geocoder or duplicate search implementation.
+The unreleased shared-settings follow-up stages all three location choices and
+the warning postcode through both Configure and native Reconfigure. A shared
+location-flow mixin reuses catalogue search/selection and ICON validation for
+setup and existing-entry settings. One settings-transaction mixin owns source
+validation, pending data/options, duplicate checks, confirmation and concurrent
+edit rejection; each HA route retains its native completion result. Setup keeps
+its separate forecast confirmation. There is no second geocoder or duplicate
+search implementation.
 Data/options are updated together only after confirmation. Source failure,
 cancel, a duplicate observation identity or a concurrent edit cannot partially
 apply the pending choices. Existing unknown data/options and legacy intervals

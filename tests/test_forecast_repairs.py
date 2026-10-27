@@ -110,11 +110,12 @@ async def reconfigure(hass, entry):
 
 
 async def configure(hass, result, data):
-    return await hass.config_entries.flow.async_configure(result["flow_id"], data)
+    values = result["data_schema"](data)
+    return await hass.config_entries.flow.async_configure(result["flow_id"], values)
 
 
 async def select_point(hass, result):
-    result = await configure(hass, result, {"action": "search"})
+    result = await configure(hass, result, {"forecast_action": "search"})
     result = await configure(hass, result, {"query": "Säntis"})
     return await configure(hass, result, {"point": "3:711"})
 
@@ -169,9 +170,9 @@ async def test_reconfigure_cancellation_keeps_issue_until_explicit_commit(
         result = (
             await select_point(hass, result)
             if action == "point"
-            else await configure(hass, result, {"action": "base"})
+            else await configure(hass, result, {"forecast_action": "base"})
         )
-        assert result["step_id"] == "forecast_confirm"
+        assert result["step_id"] == "settings_confirm"
         assert issue_for(hass, entry) is not None and entry.data == original_data
         hass.config_entries.flow.async_abort(result["flow_id"])
         assert issue_for(hass, entry) is not None and entry.data == original_data
@@ -179,7 +180,7 @@ async def test_reconfigure_cancellation_keeps_issue_until_explicit_commit(
         result = (
             await select_point(hass, result)
             if action == "point"
-            else await configure(hass, result, {"action": "base"})
+            else await configure(hass, result, {"forecast_action": "base"})
         )
         result = await configure(hass, result, {})
     assert result["type"] == "abort" and result["reason"] == "reconfigure_successful"

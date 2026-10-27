@@ -46,7 +46,7 @@
           "action": "Forecast location"
         },
         "data_description": {
-          "action": "Keep the current location, search the official catalogue, or explicitly return to the original base coordinates. No location changes until you confirm."
+          "action": "Keep the original base location or search the official catalogue. An explicitly selected point is saved only after confirmation."
         }
       },
       "forecast_search": {
@@ -78,6 +78,36 @@
         "data_description": {
           "search_again": "Enable to return to search without saving. Otherwise submit to confirm the displayed location."
         }
+      },
+      "reconfigure": {
+        "title": "MeteoSwiss locations and stations",
+        "description": "Choose the weather measuring station, measured-pollen station and forecast location together. Current forecast location: {current_location}. The warning postcode is independent. Search opens further steps; nothing is saved until you submit the final choice. Updates are automatic.",
+        "data": {
+          "station_id": "Weather measuring station",
+          "pollen_station": "Station for measured pollen",
+          "postal_code": "Warning postcode",
+          "forecast_action": "Forecast location",
+          "latitude": "Current-data latitude",
+          "longitude": "Current-data longitude"
+        },
+        "data_description": {
+          "station_id": "[Official SwissMetNet station map]({station_map_url}). Supplies measured weather values. Changing it keeps the existing entities; their readings follow the new station from this change onward. Its weather condition is modelled for this station using MeteoSwiss ICON via Open-Meteo; numeric values remain measurements.",
+          "pollen_station": "Only measured pollen changes. Modelled pollen and air quality keep their base location.",
+          "postal_code": "Four-digit Swiss postcode for warnings. This does not select the weather station or forecast point.",
+          "forecast_action": "Keep the displayed forecast point, search by postcode/town/POI, or return to the original base coordinates. A forecast search postcode does not change the warning postcode.",
+          "latitude": "Base coordinates for Open-Meteo current data, modelled air quality/pollen/UV and a forecast without an explicit point. An explicitly chosen forecast point remains independent.",
+          "longitude": "Base coordinates for Open-Meteo current data, modelled air quality/pollen/UV and a forecast without an explicit point. An explicitly chosen forecast point remains independent."
+        }
+      },
+      "settings_confirm": {
+        "title": "Confirm locations and stations",
+        "description": "Apply these choices together: weather/current data {station}; measured pollen {pollen_station}; forecast {location}; warning postcode {postal_code}. A forecast POI does not establish warning coverage for that POI. Submit to save all pending changes, or cancel to retain the previous settings.",
+        "data": {
+          "search_again": "Search for another location"
+        },
+        "data_description": {
+          "search_again": "Enable to return to search without saving. Otherwise submit to confirm the displayed location."
+        }
       }
     },
     "error": {
@@ -90,11 +120,13 @@
       "invalid_forecast_query": "Enter 2–128 characters: a four-digit postcode or a town/POI name.",
       "forecast_catalogue_unavailable": "The location catalogue is temporarily unavailable. Retry later or cancel; the saved location is retained.",
       "forecast_no_matches": "No matching forecast point. Check the spelling or try another postcode/name.",
-      "forecast_too_many_matches": "More than 20 matches. Enter a more precise name or postcode."
+      "forecast_too_many_matches": "More than 20 matches. Enter a more precise name or postcode.",
+      "already_configured": "Another entry already uses this weather location and warning postcode."
     },
     "abort": {
       "already_configured": "This data source and location are already configured.",
-      "reconfigure_successful": "Forecast location retained."
+      "reconfigure_successful": "Settings saved.",
+      "configuration_changed": "Other settings were saved while this dialog was open. Nothing from this dialog was applied. Reopen the settings and retry."
     }
   },
   "options": {
@@ -140,7 +172,7 @@
         }
       },
       "forecast_confirm": {
-        "title": "Confirm the forecast location",
+        "title": "Confirm locations and stations",
         "description": "Apply these choices together: weather/current data {station}; measured pollen {pollen_station}; forecast {location}; warning postcode {postal_code}. A forecast POI does not establish warning coverage for that POI. Submit to save all pending changes, or cancel to retain the previous settings.",
         "data": {
           "search_again": "Search for another location"

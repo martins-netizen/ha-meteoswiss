@@ -46,7 +46,7 @@
           "action": "Lieu des prévisions"
         },
         "data_description": {
-          "action": "Conserver le lieu actuel, rechercher dans le catalogue officiel ou revenir explicitement aux coordonnées de base initiales. Seule la confirmation applique une modification."
+          "action": "Conserver le lieu de base d’origine ou rechercher dans le catalogue officiel. Un point choisi explicitement est enregistré uniquement après confirmation."
         }
       },
       "forecast_search": {
@@ -78,6 +78,36 @@
         "data_description": {
           "search_again": "Activez pour revenir à la recherche sans enregistrer. Sinon, validez pour confirmer le lieu affiché."
         }
+      },
+      "reconfigure": {
+        "title": "MeteoSwiss – lieux et stations",
+        "description": "Choisissez ensemble la station météo, la station de mesure du pollen et le lieu de prévision. Lieu de prévision actuel : {current_location}. Le code postal des alertes est indépendant. La recherche comporte des étapes supplémentaires ; rien n’est enregistré avant la confirmation finale. Les mises à jour sont automatiques.",
+        "data": {
+          "station_id": "Station de mesure météorologique",
+          "pollen_station": "Station de mesure du pollen",
+          "postal_code": "Code postal des alertes",
+          "forecast_action": "Lieu de prévision",
+          "latitude": "Latitude des données actuelles modélisées",
+          "longitude": "Longitude des données actuelles modélisées"
+        },
+        "data_description": {
+          "station_id": "[Carte officielle des stations SwissMetNet]({station_map_url}). Fournit les mesures météorologiques. Les entités existantes sont conservées ; leurs mesures proviennent ensuite de la nouvelle station. L’état météo de cette station est modélisé avec MeteoSwiss ICON via Open-Meteo ; les valeurs numériques restent des mesures.",
+          "pollen_station": "Modifie uniquement le pollen mesuré. Le pollen modélisé et la qualité de l’air conservent leur lieu de base.",
+          "postal_code": "Code postal suisse à quatre chiffres pour les alertes. Il ne sélectionne ni la station météo ni le point de prévision.",
+          "forecast_action": "Conservez le lieu affiché, recherchez un code postal/une localité/un POI ou revenez aux coordonnées de base. Le code postal de recherche ne modifie pas celui des alertes.",
+          "latitude": "Coordonnées de base des données actuelles Open-Meteo, de la qualité de l’air/du pollen/des UV modélisés et des prévisions sans point choisi. Un point de prévision explicitement choisi reste indépendant.",
+          "longitude": "Coordonnées de base des données actuelles Open-Meteo, de la qualité de l’air/du pollen/des UV modélisés et des prévisions sans point choisi. Un point de prévision explicitement choisi reste indépendant."
+        }
+      },
+      "settings_confirm": {
+        "title": "Confirmer les lieux et les stations",
+        "description": "Appliquer ensemble : météo/données actuelles {station} ; pollen mesuré {pollen_station} ; prévision {location} ; code postal des alertes {postal_code}. Un POI de prévision ne définit pas sa couverture d’alerte. Validez pour enregistrer toutes les modifications ou annulez pour conserver les réglages précédents.",
+        "data": {
+          "search_again": "Rechercher un autre lieu"
+        },
+        "data_description": {
+          "search_again": "Activez pour revenir à la recherche sans enregistrer. Sinon, validez pour confirmer le lieu affiché."
+        }
       }
     },
     "error": {
@@ -90,11 +120,13 @@
       "invalid_forecast_query": "Saisissez 2 à 128 caractères : code postal à quatre chiffres ou nom de localité/POI.",
       "forecast_catalogue_unavailable": "Le catalogue est temporairement indisponible. Réessayez plus tard ou annulez ; le lieu enregistré est conservé.",
       "forecast_no_matches": "Aucun point correspondant. Vérifiez l’orthographe ou essayez un autre code postal/nom.",
-      "forecast_too_many_matches": "Plus de 20 résultats. Précisez le nom ou le code postal."
+      "forecast_too_many_matches": "Plus de 20 résultats. Précisez le nom ou le code postal.",
+      "already_configured": "Une autre entrée utilise déjà ce lieu météo et ce code postal des alertes."
     },
     "abort": {
       "already_configured": "Cette source de données et cet emplacement sont déjà configurés.",
-      "reconfigure_successful": "Lieu des prévisions conservé."
+      "reconfigure_successful": "Paramètres enregistrés.",
+      "configuration_changed": "D’autres réglages ont été enregistrés pendant ce dialogue. Aucune modification de ce dialogue n’a été appliquée. Rouvrez les paramètres et réessayez."
     }
   },
   "options": {
@@ -140,7 +172,7 @@
         }
       },
       "forecast_confirm": {
-        "title": "Confirmer le lieu de prévision",
+        "title": "Confirmer les lieux et les stations",
         "description": "Appliquer ensemble : météo/données actuelles {station} ; pollen mesuré {pollen_station} ; prévision {location} ; code postal des alertes {postal_code}. Un POI de prévision ne définit pas sa couverture d’alerte. Validez pour enregistrer toutes les modifications ou annulez pour conserver les réglages précédents.",
         "data": {
           "search_again": "Rechercher un autre lieu"

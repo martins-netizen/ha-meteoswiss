@@ -58,7 +58,8 @@ def setup_mock():
 
 
 async def configure(hass, result, data):
-    return await hass.config_entries.flow.async_configure(result["flow_id"], data)
+    values = result["data_schema"](data) if "data_schema" in result else data
+    return await hass.config_entries.flow.async_configure(result["flow_id"], values)
 
 
 async def new_flow(hass, source="openmeteo"):
@@ -191,17 +192,19 @@ async def test_reconfigure_keep_cancel_and_reset_are_explicit(
     result = await hass.config_entries.flow.async_init(
         DOMAIN, context={"source": SOURCE_RECONFIGURE, "entry_id": entry.entry_id}
     )
-    result = await configure(hass, result, {"action": "keep"})
     if state == "invalid":
-        assert result["errors"] == {"base": "invalid_forecast_selection"}
+        # The complete settings form excludes keeping an invalid forecast.
+        with pytest.raises(vol.Invalid):
+            await configure(hass, result, {"forecast_action": "keep"})
     else:
+        result = await configure(hass, result, {"forecast_action": "keep"})
         assert result["type"] == "abort" and entry.data == data
         result = await hass.config_entries.flow.async_init(
             DOMAIN, context={"source": SOURCE_RECONFIGURE, "entry_id": entry.entry_id}
         )
     if state != "legacy":
-        result = await configure(hass, result, {"action": "base"})
-        assert result["step_id"] == "forecast_confirm" and entry.data == data
+        result = await configure(hass, result, {"forecast_action": "base"})
+        assert result["step_id"] == "settings_confirm" and entry.data == data
         result = await configure(hass, result, {})
         assert (
             result["type"] == "abort" and result["reason"] == "reconfigure_successful"
@@ -213,8 +216,9 @@ async def test_reconfigure_keep_cancel_and_reset_are_explicit(
     await hass.async_block_till_done()
 
 
-async def test_failed_confirmation_retries_search_again_and_preserves_latest_data(
-    hass, enable_custom_integrations, catalogue
+@pytest.mark.parametrize("concurrent", [False, True])
+async def test_failed_confirmation_retries_and_never_overwrites_concurrent_settings(
+    hass, enable_custom_integrations, catalogue, concurrent
 ):
     entry, result = await reconfigure(hass, BASE)
     with (
@@ -226,7 +230,7 @@ async def test_failed_confirmation_retries_search_again_and_preserves_latest_dat
             MeteoSwissConfigFlow, "_validate_forecast", side_effect=[False, True]
         ),
     ):
-        result = await configure(hass, result, {"action": "search"})
+        result = await configure(hass, result, {"forecast_action": "search"})
         result = await configure(hass, result, {"query": "Säntis"})
         result = await configure(hass, result, {"point": "3:711"})
         result = await configure(hass, result, {})
@@ -234,14 +238,21 @@ async def test_failed_confirmation_retries_search_again_and_preserves_latest_dat
         result = await configure(hass, result, {"search_again": True})
         result = await configure(hass, result, {"query": "8302"})
         result = await configure(hass, result, {"point": "2:830200"})
-        hass.config_entries.async_update_entry(
-            entry, data={**entry.data, "unrelated": "retain"}
-        )
+        if concurrent:
+            hass.config_entries.async_update_entry(
+                entry, data={**entry.data, "unrelated": "retain"}
+            )
         result = await configure(hass, result, {})
         assert load.await_count == 2
     assert result["type"] == "abort"
-    assert entry.data["unrelated"] == "retain" and entry.data["postal_code"] == "8302"
-    assert entry.data[CONF_FORECAST_LOCATION]["point_id"] == "830200"
+    assert entry.data["postal_code"] == "8302"
+    if concurrent:
+        assert result["reason"] == "configuration_changed"
+        assert entry.data["unrelated"] == "retain"
+        assert CONF_FORECAST_LOCATION not in entry.data
+    else:
+        assert result["reason"] == "reconfigure_successful"
+        assert entry.data[CONF_FORECAST_LOCATION]["point_id"] == "830200"
     assert entry.options["update_interval"] == 900
     await hass.async_block_till_done()
 
@@ -453,7 +464,7 @@ async def test_confirmed_change_reloads_a_real_loaded_entry_once_and_keeps_ids(
         result = await hass.config_entries.flow.async_init(
             DOMAIN, context={"source": SOURCE_RECONFIGURE, "entry_id": entry.entry_id}
         )
-        result = await configure(hass, result, {"action": "search"})
+        result = await configure(hass, result, {"forecast_action": "search"})
         result = await configure(hass, result, {"query": "Saentis"})
         result = await configure(hass, result, {"point": "3:711"})
         assert entry.runtime_data is runtime_before and entry.data == BASE

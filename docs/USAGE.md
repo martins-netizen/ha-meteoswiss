@@ -48,6 +48,12 @@ forecast selection and warning postcode together. A search continues within
 that flow and final confirmation applies all pending choices together.
 Cancelling an unfinished step saves none. See [unified settings](CALENDAR_AND_LOCATION_SETTINGS.md).
 
+**Unreleased follow-up:** the entry's **three-dot menu → Reconfigure** opens
+the same complete location settings as Configure. Both routes validate the
+selected source and forecast, reject duplicate/concurrent changes, and retain
+the existing entry and entities. The previous stable forecast-only shortcut
+remains the behaviour of 8.3.1 until this follow-up is released and installed.
+
 Schema 1.2 retains a legacy interval in options, with its previous precedence
 over data. Unknown options, IDs and the 600-second default remain. Diagnostics
 show configuration-format/coordinator-interval metadata; do not edit HA storage.

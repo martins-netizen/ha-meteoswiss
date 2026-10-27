@@ -32,6 +32,13 @@ operator-confirmed version/visual check on 26 October. The feature is not in
 8.3.0. Stable [8.3.1 promotion](RELEASE_8.3.1.md) retains the accepted b1 runtime
 and remains a separate publication; no full Gold completion is claimed.
 
+**Unreleased shared-settings follow-up:** the reconfiguration and configuration
+documentation rows below additionally describe the complete native Reconfigure
+route in this development tree. It shares Configure's transaction and preserves
+the original setup confirmation. Automated manager/lifecycle tests cover both
+routes and providers; operator acceptance of this unreleased UI is still pending.
+The accepted 8.3/8.3.1 evidence above is not retroactively extended.
+
 **Reading the result:** all applicable technical Bronze rules and applicable
 Silver rules have recorded evidence below. Bundled branding follows the custom
 integration/HACS route; the separate Core branding requirement is not assessed.
@@ -48,7 +55,7 @@ short; these tables retain the qualifications and release scope.
 | `appropriate-polling` | Evidence | Developer-selected 600-second observation default/minimum; source-specific forecast, warning, pollen and archive schedules. New setup/options no longer expose an interval. Legacy intervals survive without a new UI knob. See API_SOURCES.md and options migration tests. |
 | `brands` | Custom-integration asset evidence; Core route not assessed | Valid bundled HACS PNGs are present and catalogue admission is complete. The separate home-assistant/brands requirement concerns the Core rule; it is not an outstanding route to an official tier for this custom integration. |
 | `common-modules` | Evidence | All eight real coordinator classes are in coordinator.py; shared bases are in entity.py and runtime ownership is typed. Source separation is substantive for ICON/current/AQ/pollen/precipitation, not alias-only placement. The legacy station adapter remains in its coordinator, with executor CSV parsing. |
-| `config-flow` | Evidence | Native setup/options and forecast Reconfigure. Four-language fields/help; source selector; explicit pollen choice and point search/selection/confirmation. Current source and warning/forecast/pollen purposes stay distinct. |
+| `config-flow` | Evidence | Native setup/options and Reconfigure. The unreleased follow-up offers the complete settings transaction through both existing-entry routes. Four-language fields/help; source selector; explicit pollen choice and point search/selection/confirmation. Current source and warning/forecast/pollen purposes stay distinct. |
 | `config-flow-test-coverage` | Evidence | Full line/branch gate. Real flow-manager tests cover both providers, errors, retries, duplicate guards, translations, cancel/keep/reset and loaded-entry reconfiguration. |
 | `dependency-transparency` | Exempt | Manifest requirements are empty; there is no separately distributed extra runtime library. HA-provided dependencies and public data/service dependencies are documented. |
 | `docs-actions` | Exempt | No custom actions. USAGE.md explains the standard HA forecast service. |
@@ -71,7 +78,7 @@ short; these tables retain the qualifications and release scope.
 |---|---|---|
 | `action-exceptions` | Exempt | No custom actions; reassess if added. |
 | `config-entry-unloading` | Evidence | Native platform unload/reload; entry-managed tasks/listeners, Recorder import listeners, stable IDs and borrowed session ownership tested for both providers. |
-| `docs-configuration-parameters` | Evidence | One Configure dialog stages measured pollen, weather station/base coordinates, forecast point and warning postcode; forecast-only Reconfigure remains compatible. Source checks, atomic cancel/confirm, hidden legacy intervals and station-specific archives are documented. |
+| `docs-configuration-parameters` | Evidence | One Configure dialog stages measured pollen, weather station/base coordinates, forecast point and warning postcode. The unreleased follow-up exposes the same transaction through Reconfigure, with version-qualified guides. Source checks, atomic cancel/confirm, hidden legacy intervals and station-specific archives are documented. |
 | `docs-installation-parameters` | Evidence | GETTING_STARTED.md and FORECAST_LOCATION_SETUP.md cover 8.3 setup and location fields, point purposes, height, ambiguity and confirmation. |
 | `entity-unavailable` | Evidence | Registered HA states cover observation, forecast, warnings, pollen/AQ, optional UV and catalogue failure/recovery. Valid zero, missing field and failed source remain distinct. The review adds UV timestamp rejection and honest incomplete/DST daily values. |
 | `integration-owner` | Evidence | @martins-netizen is manifest codeowner; active repository, Issues, issue forms and SECURITY.md provide support/reporting routes. Private-reporting activation was operator-confirmed; no independent settings audit is inferred. |
@@ -108,7 +115,7 @@ engineering work.
 | `entity-translations` | Partial | Four complete 180-key UI catalogues and ordinary entity translations exist; strings.json matches English. Legacy diagnostic/device/attribute compatibility names remain; authoritative provider place-name aliases are separate future work. |
 | `exception-translations` | Partial | Setup/selection errors are translated; remaining fixed HA update-error messages have not all moved to translated exceptions. |
 | `icon-translations` | Open | Active icons exist, but no complete icons.json migration. |
-| `reconfiguration-flow` | Partial | Forecast-only Reconfigure is implemented/tested. B3 also edits weather station/base coordinates, measured-pollen station, forecast point and warning postcode together through Configure, without recreating the entry; tests cover validation, atomic cancellation and retained IDs. The official rule prescribes a reconfigure step for setup fields. Review that route mapping separately: the existing Reconfigure shortcut still changes only forecasts. |
+| `reconfiguration-flow` | Automated evidence in unreleased follow-up; operator UI check pending | Native Reconfigure and Configure share the complete weather station/base-coordinate, measured-pollen, forecast and warning-postcode transaction. Tests cover both providers/routes, explicit confirmation, cancellation at each stage, source retry with retained choices, duplicate/concurrent-edit rejection, translations and retained entity IDs with a single loaded-entry reload. The original setup confirmation remains separate. This extends stable 8.3.1's forecast-only shortcut; no deployed-UI acceptance is inferred. |
 | `repair-issues` | Evidence in accepted 8.3.1b1 | Invalid offline saved forecast selections raise a translated entry-specific notice linking to the existing settings. Confirmed correction/reset clears it; cancellation/failed validation retains it. Reloads preserve ignored state; disablement/removal cleans up that entry. Provider outages create no configuration notice. Native entry/settings and four-language tests cover these boundaries; the operator confirmed the requested version/visual check, without a separately reported deliberate-corruption test. Stable 8.3.1 retains that runtime. |
 | `stale-devices` | Open | Review removal of obsolete grouping after measured-pollen station changes without deleting wanted registry/history data. |
 
