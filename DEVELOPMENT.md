@@ -23,9 +23,9 @@ and anchors, factual status against its evidence, and required GitHub checks.
 
 The compatibility jobs request the latest stable Python **3.14** patch release
 with `actions/setup-python`'s `check-latest: true`. A check before the first
-dependency installation requires **3.14.10 or newer within 3.14** and records
-the selected Python and pip versions without local account or file paths.
-An older cached interpreter stops the job instead of running the tests.
+dependency installation requires **3.14.10 or newer within 3.14** and
+**pip 26.2.2 or newer**. It records the selected versions without local account
+or file paths. An older cached interpreter or installer stops the job.
 
 [Python 3.14.10](https://www.python.org/downloads/release/python-31410/)
 blocks the compromised eMudhra intermediate CA keys in the `ssl` module and
@@ -33,12 +33,39 @@ includes additional security fixes. Future security advisories may require
 raising this floor again. The latest-patch lookup is intentional; see the
 [setup-python documentation](https://github.com/actions/setup-python/blob/5fda3b95a4ea91299a34e894583c3862153e4b97/docs/advanced-usage.md#check-latest-version).
 
-The supported HA test versions and their dependency requirements remain
-separate from this interpreter baseline. The workflow installs dependencies
-with pip; the minimum-HA fixture still includes the uv version required by
-that HA. This change does not update uv, the separately pinned validator
-containers or an installed Home Assistant instance. Those runtimes and their
-certificate stores need their own security review.
+Dependency installation uses pip with `requirements_ci_security.txt`, which
+requires **certifi 2026.10.19 or newer**. A second check after installation
+rejects outdated pip or certifi, verifies the selected HA version and reports
+the uv policy before tests run. Prerelease package versions fail this check.
+These floors follow the [Python security announcement](https://discuss.python.org/t/information-for-python-users-regarding-emudhra-emsign-ca-certificate-security-incident/109576).
+
+The supported HA versions keep their upstream dependency pins, including
+**uv 0.11.31 for HA 2026.8.3** and **uv 0.12.23 for HA 2026.10.1**. These uv
+versions are **not security-patched** and are restricted to offline test use.
+The compatibility job sets [`UV_OFFLINE=true`](https://docs.astral.sh/uv/reference/environment/#uv_offline)
+for all steps, including HA subprocesses. uv cannot fetch packages in this mode;
+the separate pip installation step supplies the test dependencies. The check
+accepts older uv only for those exact HA/uv pairs, and rejects missing offline
+mode even with newer uv. Review this exception when changing the HA matrix.
+Do not use these legacy fixture environments for online uv operations.
+Regression tests probe the installed uv binary against a loopback-only index:
+offline mode must make no requests, while a local positive control proves the
+detector works. No public package index is used by this probe.
+
+To run the same checks locally, use a supported patched Python and pip, then:
+
+```sh
+export UV_OFFLINE=true
+python scripts/check_ci_security.py bootstrap
+python -m pip install --constraint requirements_ci_security.txt -r requirements_test.txt
+python scripts/check_ci_security.py installed --ha-version 2026.10.1
+pytest -q
+```
+
+For the minimum-HA job, substitute `requirements_test_min.txt` and `2026.8.3`.
+These checks do not update the separately pinned validator containers, an
+installed Home Assistant instance, or existing local environments. Those
+runtimes and certificate stores need their own security review.
 
 ## Branch policy
 
