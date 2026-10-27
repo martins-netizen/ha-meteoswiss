@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.30 · **Updated:** 27 October 2026
+**Plan version:** 1.31 · **Updated:** 27 October 2026
 **Status:** The agreed architecture, catalogue/POI, forecast-display, shared-settings
 and station-condition scope is released in stable 8.3.0. B4 runtime acceptance,
 stable publication and HACS default-catalogue admission are complete. The operator
@@ -10,15 +10,16 @@ The current next-work overview is
 as planning history, not new instructions to repeat completed work.
 This document does not approve a new feature, installation or release.
 
-**Next bounded package:** [8.3.2b1](RELEASE_8.3.2b1.md) packages reviewed
-shared Configure/Reconfigure settings from merged PR #76. It is prepared,
-not published or installed. Only two component version files change; the
-[focused test-HA check](ACCEPTANCE_8.3.2b1.md) remains pending. Stable
-[8.3.1](RELEASE_8.3.1.md) was published on 26 October at 12:54:24 UTC,
-ID **424249153**, retaining the accepted repair/map runtime. Its actual HACS
-download remains separate evidence. Remaining Gold work and authoritative
-multilingual locality aliases retain their separate scope. Earlier planning
-sections below preserve the decisions/evidence at their stated dates.
+**Next bounded package:** [stable 8.3.2](RELEASE_8.3.2.md), prepared and not
+published, promotes accepted [8.3.2b1](RELEASE_8.3.2b1.md) at
+**5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**. Beta ID **425962004** was
+published on 27 October at 20:40:42 UTC; all five focused existing-entry steps
+were reported positive on **Core 2026.10.4**. Only two component version files
+change for stable. The [short stable update](ACCEPTANCE_8.3.2.md) records the
+later actual download; do not repeat accepted beta/clean-install/restore tests.
+Stable **8.3.1 / ID 424249153** remains latest until actual publication.
+Remaining Gold work and authoritative multilingual locality aliases retain
+their separate scopes. Earlier sections preserve planning at their stated dates.
 
 ## Historical agreed scope and b1/b2 sequence — 23–24 October 2026
 

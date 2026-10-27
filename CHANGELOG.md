@@ -2,12 +2,31 @@
 
 ## [Unreleased]
 
-No additional runtime changes beyond the prepared 8.3.2b1 package below.
+No additional runtime changes beyond the stable-promotion package below.
+
+## [8.3.2] — prepared stable promotion of accepted 8.3.2b1
+
+Prepared 27 October 2026 from published and operator-accepted beta
+**5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**. Only the two component
+version files change; 38 other files, HACS/CH, workflows and security guards
+match. [Release notes](docs/RELEASE_8.3.2.md) and the
+[short stable update](docs/ACCEPTANCE_8.3.2.md) define the scope. Publication
+remains separate; **8.3.1** is latest stable.
+
+- Retain the accepted complete Configure/Reconfigure transaction, retry-choice
+  preservation, independent location roles and four-language confirmation.
+- Record the positive five-step beta report on HA Core 2026.10.4; do not repeat
+  those steps, clean installation or restore for a version-only promotion.
+- Add fixed Stable Publisher V1.5 and the ninth publication test profile;
+  preserve all eleven previous tags and every earlier publisher.
+- Reconcile release, user-guide and quality evidence without claiming full Gold.
 
 ## [8.3.2b1] — shared location settings test prerelease
 
-Prepared 27 October 2026, not yet published or installed. Retain reviewed
-PR #76 source **d6ae2a0b1ae9c195c9647f6b416d347891f91a74**: 38 component
+Published **27 October 2026 at 20:40:42 UTC**, release ID **425962004**,
+from **5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**. The operator reported all
+five focused steps positive on **HA Core 2026.10.4**. Original packaging retained
+reviewed PR #76 source **d6ae2a0b1ae9c195c9647f6b416d347891f91a74**: 38 component
 files match; only manifest.json/version.py become 8.3.2b1. Add the fixed
 V1.5 publisher, an eighth publication test profile and the
 [focused acceptance](docs/ACCEPTANCE_8.3.2b1.md). Stable 8.3.1 remains latest.

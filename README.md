@@ -105,7 +105,7 @@ Read the [plain-language overview](docs/GETTING_STARTED.md#what-this-fork-provid
 We follow the [Home Assistant Integration Quality Scale](https://contributors.home-assistant.io/core/quality-scale/)
 as an engineering checklist, with rule-by-rule code, test and documentation
 evidence. The following summarises the **8.3 series**, with the b4 runtime and
-the bounded 8.3.1b1 repair/map follow-up accepted by the operator. Home Assistant's [custom-integration guidance](https://contributors.home-assistant.io/marketplace/guides/integrations/#keep-up-with-home-assistant)
+the bounded repair/map and 8.3.2b1 shared-settings follow-ups accepted by the operator. Home Assistant's [custom-integration guidance](https://contributors.home-assistant.io/marketplace/guides/integrations/#keep-up-with-home-assistant)
 explains that custom integrations have no official quality tiers; Bronze,
 Silver and Gold below identify the rules we use to guide improvements.
 
@@ -113,7 +113,7 @@ Silver and Gold below identify the rules we use to guide improvements.
 |---|---|---|
 | **Bronze: a sound foundation** | Setup in HA, stable entity identities, tested setup and clear instructions. | The checklist records setup/configuration tests, identity checks, installation guides and valid bundled brand images. |
 | **Silver: reliable operation** | Clear unavailable states, recovery from source failures, clean unloading and a maintained support route. | All applicable Silver rules have recorded evidence, including more than 95% coverage per module. The checklist also records the underlying Bronze rules; focused b4 HA acceptance is operator-confirmed. |
-| **Gold: a more complete user experience** | Easier configuration, useful diagnostics, translations and actionable help. | The shared location dialog and actionable repair notices have bounded evidence; the repair/map follow-up was accepted in 8.3.1b1. Remaining work includes icon/error translations, diagnostic defaults, metadata and stale-device handling, plus focused HA acceptance of the prepared shared-Reconfigure follow-up and review of proposed exemptions. |
+| **Gold: a more complete user experience** | Easier configuration, useful diagnostics, translations and actionable help. | The shared location dialog and actionable repair notices have bounded evidence; the repair/map follow-up was accepted in 8.3.1b1. Remaining work includes icon/error translations, diagnostic defaults, metadata and stale-device handling, plus review of proposed exemptions. The five-step shared-Reconfigure check was reported positive on Core 2026.10.4. |
 
 The [rule-by-rule assessment](docs/QUALITY_SCALE.md) links the scope, test evidence
 and remaining work. [HACS catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-catalogue-admission)
@@ -125,8 +125,10 @@ badge or manifest claim.
 users from an invalid saved forecast location to the existing settings. Official
 station-map links help find nearby SwissMetNet stations. The operator confirmed
 the requested version/visual check on 26 October. Published stable [8.3.1](docs/RELEASE_8.3.1.md) retains that runtime.
-The prepared [8.3.2b1 follow-up](docs/RELEASE_8.3.2b1.md) adds the complete
-Reconfigure route; its focused HA acceptance is still pending.
+The published [8.3.2b1 follow-up](docs/RELEASE_8.3.2b1.md) adds the complete
+Reconfigure route. The operator reported all five focused steps positive on
+HA Core **2026.10.4**; stable [8.3.2](docs/RELEASE_8.3.2.md) is prepared with
+that accepted runtime and only two version changes.
 
 ## Start here
 
@@ -145,10 +147,16 @@ ID **424249153**, published **26 October 2026 at 12:54:24 UTC** from
 8.3.1b1 repair/map runtime. Publication and a particular HA's actual download
 remain separate; the [short stable check](docs/ACCEPTANCE_8.3.1.md) records the latter.
 
-**8.3.2b1 is prepared, not published or installed.** It packages the reviewed
-shared Configure/Reconfigure settings and retained retry choices. Use it only
-after publication is announced, in the existing test HA, following the
-[focused check](docs/ACCEPTANCE_8.3.2b1.md). See [candidate notes](docs/RELEASE_8.3.2b1.md).
+**8.3.2b1 is published and its five-step existing-entry check is accepted.**
+Release **425962004**, published **27 October 2026 at 20:40:42 UTC** from
+**5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**. The operator reported all five
+[focused steps](docs/ACCEPTANCE_8.3.2b1.md) positive on **HA Core 2026.10.4**.
+
+**Stable 8.3.2 is prepared, not published.** It retains the accepted beta's
+38 non-version component files. Only manifest.json/version.py change. After
+publication, the [short stable update check](docs/ACCEPTANCE_8.3.2.md) confirms
+the actual version downloaded; the beta dialog checks stay closed. See
+[stable notes](docs/RELEASE_8.3.2.md).
 
 The [latest stable release page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
 is authoritative for normal installation. The [8.3.0 notes](docs/RELEASE_8.3.0.md)
@@ -165,7 +173,8 @@ restore, calendar-day and shared-settings evidence is retained in the
 
 Minimum supported HA is **2026.8.3**. CI also covers **2026.10.1**; additional
 local automated tests cover **2026.10.3**, with operator evidence on
-2026.10.2/2026.10.3 within its recorded scope. Stable **8.3.0** was published on
+2026.10.2/2026.10.3 and the focused 8.3.2b1 check on **2026.10.4**, within
+their recorded scopes. Stable **8.3.0** was published on
 **24 October 2026**. [HACS default-catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-catalogue-admission)
 was approved and merged later that day. Publication, catalogue admission and
 the version actually downloaded in your HA are separate results.

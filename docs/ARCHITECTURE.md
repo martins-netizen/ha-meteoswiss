@@ -437,7 +437,7 @@ and newer minor schemas are left intact. Stable 8.2.0 already reads interval
 options before data, so it can still read migrated entries. Its older Configure
 form can still edit that value; a later upgrade keeps the options value.
 
-The unreleased shared-settings follow-up stages all three location choices and
+The shared-settings transaction published in 8.3.2b1 stages all three location choices and
 the warning postcode through both Configure and native Reconfigure. A shared
 location-flow mixin reuses catalogue search/selection and ICON validation for
 setup and existing-entry settings. One settings-transaction mixin owns source

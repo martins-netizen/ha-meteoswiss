@@ -2,9 +2,12 @@
 
 **Notes version:** 1.0 · **Prepared:** 27 October 2026
 
-**Status:** prepared candidate, not published or installed. Stable **8.3.1**
-remains the normal installation route. Merge checks, publication and the
-operator's focused HA acceptance are separate steps.
+**Publication and acceptance addendum — 27 October 2026:** **8.3.2b1**, ID
+**425962004**, was published at **20:40:42 UTC** from
+**5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**. The operator subsequently
+reported all five focused steps positive on **HA Core 2026.10.4**. The original
+package scope below and published release body remain unchanged. Stable
+[8.3.2](RELEASE_8.3.2.md) is prepared, not published; normal stable is **8.3.1**.
 
 This community fork builds on [LNKtwo/ha-meteoswiss](https://github.com/LNKtwo/ha-meteoswiss)
 and retains its MIT licence and attribution. It is not an official MeteoSwiss
