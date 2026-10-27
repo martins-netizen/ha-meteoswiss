@@ -19,6 +19,27 @@ their original spelling.
 Before merging a documentation PR, check language consistency, relative links
 and anchors, factual status against its evidence, and required GitHub checks.
 
+## CI Python security baseline
+
+The compatibility jobs request the latest stable Python **3.14** patch release
+with `actions/setup-python`'s `check-latest: true`. A check before the first
+dependency installation requires **3.14.10 or newer within 3.14** and records
+the selected Python and pip versions without local account or file paths.
+An older cached interpreter stops the job instead of running the tests.
+
+[Python 3.14.10](https://www.python.org/downloads/release/python-31410/)
+blocks the compromised eMudhra intermediate CA keys in the `ssl` module and
+includes additional security fixes. Future security advisories may require
+raising this floor again. The latest-patch lookup is intentional; see the
+[setup-python documentation](https://github.com/actions/setup-python/blob/5fda3b95a4ea91299a34e894583c3862153e4b97/docs/advanced-usage.md#check-latest-version).
+
+The supported HA test versions and their dependency requirements remain
+separate from this interpreter baseline. The workflow installs dependencies
+with pip; the minimum-HA fixture still includes the uv version required by
+that HA. This change does not update uv, the separately pinned validator
+containers or an installed Home Assistant instance. Those runtimes and their
+certificate stores need their own security review.
+
 ## Branch policy
 
 The `development` branch is an integration branch for changes that have been
