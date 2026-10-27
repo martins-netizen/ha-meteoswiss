@@ -52,14 +52,27 @@ Regression tests probe the installed uv binary against a loopback-only index:
 offline mode must make no requests, while a local positive control proves the
 detector works. No public package index is used by this probe.
 
-To run the same checks locally, use a supported patched Python and pip, then:
+## Local compatibility checks
+
+Run these commands from the repository root in an activated, isolated virtual
+environment using the supported patched Python and pip described above. Create
+a separate environment for each HA fixture. If the bootstrap check fails,
+update or recreate that environment using its supported Python/package manager;
+do not bypass the check or modify Home Assistant's managed runtime.
+
+This is the shared local recipe for the README, quality evidence and maintenance
+guide. It follows the compatibility job's security, translation and coverage
+checks:
 
 ```sh
 export UV_OFFLINE=true
 python scripts/check_ci_security.py bootstrap
-python -m pip install --constraint requirements_ci_security.txt -r requirements_test.txt
+python -m pip install --disable-pip-version-check --constraint requirements_ci_security.txt -r requirements_test.txt
 python scripts/check_ci_security.py installed --ha-version 2026.10.1
-pytest -q
+python -m compileall -q custom_components/meteoswiss tests
+python scripts/check_translations.py
+python -m pytest -q --cov=custom_components.meteoswiss --cov-branch --cov-report=term-missing --cov-report=json:coverage.json
+python scripts/check_quality_coverage.py
 ```
 
 For the minimum-HA job, substitute `requirements_test_min.txt` and `2026.8.3`.

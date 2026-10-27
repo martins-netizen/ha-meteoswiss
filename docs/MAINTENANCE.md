@@ -8,10 +8,13 @@
    checks `tests`, CodeQL's `Analyze Python` and `HACS validation`; do not bypass
    protection. External PRs follow the [unprivileged CodeQL review procedure](CODEQL_FORK_REVIEW.md);
    a skipped analysis is not a successful security scan.
-3. Run `python scripts/check_translations.py` and the complete tests with both
-   `requirements_test_min.txt` (HA 2026.8.3) and `requirements_test.txt`
-   (HA 2026.10.1). Add regression tests for real failures. Measure line/branch coverage and run
-   `scripts/check_quality_coverage.py`; review the per-module report and
+3. Follow the [local compatibility checks](../DEVELOPMENT.md#local-compatibility-checks)
+   in separate environments for both `requirements_test_min.txt` (HA 2026.8.3)
+   and `requirements_test.txt` (HA 2026.10.1). Apply the Python/pip bootstrap,
+   certifi constraint and installed-version check, and offline uv policy before
+   running the complete translations/tests/coverage sequence. Add regression
+   tests for real failures. Retain `scripts/check_quality_coverage.py` and review
+   the per-module report and
    `docs/QUALITY_SCALE.md` before making any quality-level claim. Review Hassfest and
    CodeQL results; do not suppress a failed check to obtain a release.
 4. Before release, verify the installed source/commit and create a restorable
