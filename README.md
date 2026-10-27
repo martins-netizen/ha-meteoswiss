@@ -246,12 +246,10 @@ See [setup, all parameters, removal and troubleshooting](docs/USAGE.md).
 - [Branch policy](DEVELOPMENT.md)
 - [Changes](CHANGELOG.md)
 
-```sh
-python -m pip install -r requirements_test.txt
-python scripts/check_translations.py
-python -m pytest -q --cov=custom_components.meteoswiss --cov-branch --cov-report=json:coverage.json
-python scripts/check_quality_coverage.py
-```
+Follow the [local compatibility checks](DEVELOPMENT.md#local-compatibility-checks)
+in separate environments for both supported HA fixtures. The shared recipe
+includes the Python/pip bootstrap check, constrained CA-bundle installation,
+offline uv policy, translations and full line/branch coverage gates.
 
 `development` is the protected integration branch; `main` tracks upstream.
 Use this fork's [issue tracker](https://github.com/martins-netizen/ha-meteoswiss/issues)

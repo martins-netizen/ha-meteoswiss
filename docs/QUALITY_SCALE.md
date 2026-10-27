@@ -119,15 +119,14 @@ agreed feature release.
 
 ## Reproduce and distinguish history
 
-```sh
-python -m pip install -r requirements_test.txt
-python scripts/check_translations.py
-python -m pytest -q --cov=custom_components.meteoswiss --cov-branch --cov-report=json:coverage.json
-python scripts/check_quality_coverage.py
-```
+Use the [local compatibility checks](../DEVELOPMENT.md#local-compatibility-checks)
+in a separate isolated environment for each supported HA fixture. This shared
+recipe checks Python and pip before downloads, constrains and verifies certifi,
+requires offline uv, and retains the full translation and line/branch coverage
+checks. An existing historical test environment is not evidence that the current
+security baseline passes.
 
-Repeat in an isolated environment with requirements_test_min.txt. The
-[overall review](RELEASE_REVIEW_2026-10-24.md) records the additional component-only
+The [overall review](RELEASE_REVIEW_2026-10-24.md) records the additional component-only
 installation simulation, link checks, regressions and exact scope. Required PR
 and post-merge checks must pass on the exact commit; local results do not prove
 an unrun hosted check or a manual HACS installation.
