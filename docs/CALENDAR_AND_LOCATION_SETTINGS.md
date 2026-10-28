@@ -1,12 +1,12 @@
 # Calendar-day forecasts and one location-settings dialog
 
-**Guide version:** 1.3 · **Updated:** 27 October 2026
+**Guide version:** 1.4 · **Updated:** 27 October 2026
 
 **Availability:** included in the **8.3.0** runtime accepted as b4.
 Use the [announced release](RELEASE_8.3.0.md); earlier beta notes describe their
 historical scopes, not instructions to reinstall an older beta.
 
-**Prepared 8.3.2b1 route follow-up (not published):** the complete settings transaction also serves
+**From published 8.3.2b1 (retained for prepared stable 8.3.2):** the complete settings transaction also serves
 the entry menu's Reconfigure route, with the same source checks, cancellation
 and concurrency protection. See [current route guidance](FORECAST_LOCATION_SETUP.md#existing-entry).
 The original 8.3.0 acceptance and numerical evidence below retain their scope.
@@ -73,7 +73,7 @@ IDs are retained. Duplicate entries and concurrent edits are rejected without
 partially applying the pending settings.
 
 In the accepted **8.3.0/8.3.1** runtime, the older **three-dot menu → Reconfigure**
-path remains forecast-only. The unreleased follow-up makes that route use the
+path remains forecast-only. Published 8.3.2b1 makes that route use the
 same complete dialog; Configure already includes forecast selection.
 
 ## Complete Swiss calendar days

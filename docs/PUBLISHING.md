@@ -1,12 +1,51 @@
 # Publish the maintained fork
 
-**Procedure version:** 1.7 · **Updated:** 27 October 2026
+**Procedure version:** 1.8 · **Updated:** 27 October 2026
+
+<a id="stable-832-prepared"></a>
+
+## Stable 8.3.2 (prepared)
+
+[8.3.2](RELEASE_8.3.2.md) is prepared, **not published**. It retains accepted
+beta **5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**, whose five focused steps
+were reported positive on **Core 2026.10.4**. All 38 non-version component
+files match; only manifest.json/version.py change. HACS/CH, workflows, security
+guards, four 200-key catalogues and all eleven previous tags are retained.
+
+1. Review and regularly merge this version/docs/publisher package. Verify the
+   exact tree, required check provenance and all successful actual merge checks.
+2. Download **scripts/veroeffentliche_meteoswiss_stable_v1.5.sh** from that
+   approved packaging merge and use its full SHA:
+
+   ```bash
+   bash veroeffentliche_meteoswiss_stable_v1.5.sh --check FULL_APPROVED_PACKAGING_MERGE_SHA
+   bash veroeffentliche_meteoswiss_stable_v1.5.sh --publish FULL_APPROVED_PACKAGING_MERGE_SHA
+   ```
+
+   Check is read-only and optional; publish repeats every gate. The only remote
+   write creates stable **8.3.2**, draft=false, prerelease=false, make_latest=true.
+3. Retain JSON/log and independently verify actual release/tag/notes/latest.
+   Then announce the [short stable update](ACCEPTANCE_8.3.2.md). Completed beta
+   dialog, clean-install and restore checks stay closed.
+
+Stable V1.5 derives from V1.4. It requires the exact protected development head,
+accepted-beta/version-only boundary, successful checks and expected apps,
+previous stable **8.3.1 / ID 424249153**, accepted beta **8.3.2b1 / ID 425962004**
+and all eleven previous tags. Latest must be 8.3.1 before creation and the exact
+new stable afterwards. Matching retries only verify; conflicts stop and
+uncertain writes remain unconfirmed. No HA connection or restart is made.
+All historical fixed-profile helpers and immutable release bodies remain.
 
 <a id="832b1-test-candidate-prepared"></a>
 
-## 8.3.2b1 shared-settings test candidate (prepared)
+## 8.3.2b1 shared-settings test candidate (completed)
 
-[8.3.2b1](RELEASE_8.3.2b1.md) is **not published or installed**. The package
+[8.3.2b1](RELEASE_8.3.2b1.md), ID **425962004**, was published on
+**27 October 2026 at 20:40:42 UTC** from
+**5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**. The receipt/log and independent
+source/tag/notes/latest checks agree. The operator reported all five focused
+steps positive on **Core 2026.10.4**. The following is the completed fixed
+beta recipe, retained as history; do not repeat it for the stable package. The package
 retains reviewed PR #76 at **d6ae2a0b1ae9c195c9647f6b416d347891f91a74**,
 tree **489d818a27e58c45428085ab3d917b25ac694dbf**. Of 40 component files,
 38 non-version files match; only manifest.json/version.py become 8.3.2b1.

@@ -1,6 +1,6 @@
 # HACS acceptance of the maintained fork
 
-**Updated: 27 October 2026 · Plan and evidence V1.12**
+**Updated: 27 October 2026 · Plan and evidence V1.13**
 
 ## HACS catalogue admission
 
@@ -32,8 +32,15 @@ ID **424249153**, was published on **26 October 2026 at 12:54:24 UTC** from
 **fa298ca72bf62da727797f9bfcacf95c83ffeaf1** and is latest stable. It retains
 the operator-accepted b1 runtime. A later actual stable HACS download remains
 unconfirmed here; publication or CI does not establish that installation.
-Prepared [8.3.2b1](RELEASE_8.3.2b1.md) is not published or installed and has
-its own pending [focused shared-settings check](ACCEPTANCE_8.3.2b1.md).
+Published [8.3.2b1](RELEASE_8.3.2b1.md), ID **425962004**, was released
+on **27 October 2026 at 20:40:42 UTC** from
+**5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**, without changing latest stable.
+The operator reported all five [focused steps](ACCEPTANCE_8.3.2b1.md) positive
+on **HA Core 2026.10.4**. This closes that requested existing-entry acceptance,
+not a new independent registry audit or clean-install test. Prepared stable
+[8.3.2](RELEASE_8.3.2.md) retains that runtime; its later actual download uses
+the [short stable check](ACCEPTANCE_8.3.2.md). An unreported intermediate 8.3.1
+download is not a prerequisite for that update.
 
 Test [8.3.1b1](RELEASE_8.3.1b1.md), ID **423899845**, was published on
 26 October 2026 at **05:54:44 UTC** from

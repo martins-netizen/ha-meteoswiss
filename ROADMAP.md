@@ -4,25 +4,25 @@ This describes current fork work. Historical upstream release claims remain in
 the changelog as history; they are not current certifications. Check the
 [release status](README.md#release-status) before installing.
 
-## Published 8.3.1 and prepared shared-settings follow-up
+## Accepted 8.3.2b1 and prepared stable 8.3.2
 
-Stable [8.3.1](docs/RELEASE_8.3.1.md), ID **424249153**, was published on
-**26 October 2026 at 12:54:24 UTC** from
-**fa298ca72bf62da727797f9bfcacf95c83ffeaf1**. It retains the accepted 8.3.1b1
-repair/map runtime and is the normal installation route. Actual HACS downloads
-are recorded separately from GitHub publication.
+Stable [8.3.1](docs/RELEASE_8.3.1.md), ID **424249153**, remains latest stable.
+The shared-settings [8.3.2b1](docs/RELEASE_8.3.2b1.md), ID **425962004**, was
+published **27 October 2026 at 20:40:42 UTC** from
+**5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**. Its receipt/log and independent
+release/tag/notes/latest checks agree. The operator reported all five focused
+existing-entry steps positive on **HA Core 2026.10.4**.
 
-The next bounded package is [8.3.2b1](docs/RELEASE_8.3.2b1.md), **prepared,
-not published**. Approved PR #76 is regularly integrated, after including #75
-and passing the required checks. Configure and Reconfigure share the complete
-weather/pollen/forecast/warning-postcode transaction, source retry and
-concurrent-edit protection. Only the two component version files change for
-this package. Its [focused existing-entry HA check](docs/ACCEPTANCE_8.3.2b1.md)
-remains pending; earlier acceptance is not extended to an uninstalled build.
+The next bounded package is [stable 8.3.2](docs/RELEASE_8.3.2.md), **prepared,
+not published**. Its 38 non-version component files match the accepted beta;
+only manifest.json/version.py change. Publication and the later actual stable
+download are separate steps. Use the [short stable check](docs/ACCEPTANCE_8.3.2.md)
+after publication; do not repeat the accepted beta/clean-install/restore checks.
 
-Published 8.3.1 includes language-matched official SwissMetNet map help and
-entry-specific repair notices for invalid saved forecast selections. The
-8.3.1b1 version/visual acceptance and earlier 8.3.0 acceptance remain closed.
+Both Configure and Reconfigure share complete weather/pollen/forecast/warning
+settings, source retry and concurrent-edit protection. Repair/map acceptance
+and earlier 8.3.0 evidence remain closed. Remaining Gold metadata, translations,
+defaults, stale-device handling and proposed exemptions retain their own scope.
 
 ## Implemented and released in 8.3.0
 
@@ -74,7 +74,7 @@ custom integrations.
 | Scope | Decision still needed |
 |---|---|
 | Locality names in other languages | Obtain authoritative aliases; preserve provider identities and avoid invented translations or duplicate places. |
-| Remaining Gold engineering work | Complete focused HA acceptance of the prepared shared-Reconfigure follow-up; review device metadata, icon/error translations, diagnostic defaults, stale-device handling and proposed exemptions; preserve existing user choices and history. |
+| Remaining Gold engineering work | Review device metadata, icon/error translations, diagnostic defaults, stale-device handling and proposed exemptions; preserve existing user choices and history. Shared-Reconfigure focused acceptance is completed within its reported scope. |
 | External contributor CodeQL | The unprivileged route is implemented; retain evidence from the first actual external-fork run. A skipped analysis is not completed analysis. |
 | Processed local-forecast data | Assess provider payloads, resource limits and compatibility separately from the already released catalogue-based ICON selection. |
 | New sources/entities | Scope and test separately; no new device actions/sources in a documentation or release change. |

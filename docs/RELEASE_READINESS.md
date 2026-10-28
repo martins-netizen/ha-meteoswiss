@@ -1,12 +1,51 @@
-# Release readiness: shared settings test candidate 8.3.2b1
+# Release readiness: accepted 8.3.2b1 to stable 8.3.2
 
-**Document version:** 2.11 · **Updated:** 27 October 2026
+**Document version:** 2.12 · **Updated:** 27 October 2026
+
+## Prepared stable 8.3.2
+
+[Stable 8.3.2](RELEASE_8.3.2.md) is prepared, **not published**. Accepted source
+is published beta **5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**, tree
+**8add2f80ac62d78ac3817ff4b5898c74ad80da0f**. Of 40 component files,
+**38 non-version files match**; only manifest.json/version.py become **8.3.2**.
+HACS/CH, workflows, security guards and four 200-key catalogues are unchanged.
+No runtime addition follows the accepted beta.
+
+Stable Publisher V1.5 retains the version-only/check/provenance boundaries,
+previous stable 8.3.1 and accepted beta 8.3.2b1 publication guards, all eleven
+old tags, latest selection and read-only retry semantics. It adds a ninth
+fixed publication regression profile: **431 publication cases**, including
+51 added cases. Both complete local suites pass **1,983 tests plus 83 subtests**
+on **HA 2026.8.3 (57.17 s)** and **HA 2026.10.3 (52.80 s)**. These existing
+local interpreters remain **Python 3.14.8**; they provide regression evidence,
+not proof of the current security baseline. Coverage is unchanged at
+**3,516/3,517 statements and 974/974 branches**, combined **99.977733%**;
+all existing strict gates and the four exclusions remain. Exact-head hosted
+checks and the later actual merge checks are separate publication gates.
+
+Publication is separate from the [short actual stable download](ACCEPTANCE_8.3.2.md).
+The five accepted beta steps below and earlier clean-install/restore checks
+remain closed. Full Gold and future features stay separate.
 
 <a id="prepared-832b1-test-candidate"></a>
 
-## Prepared 8.3.2b1: complete shared settings
+## Published and accepted 8.3.2b1: complete shared settings
 
-[8.3.2b1](RELEASE_8.3.2b1.md) is prepared, **not published or installed**.
+**8.3.2b1 / ID 425962004** was published **27 October 2026 at 20:40:42 UTC**
+from **5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**. The receipt/log and
+independent release/tag/notes/versions/latest checks agree, including unchanged
+latest stable 8.3.1 and ten old tags. All seven actual merge checks passed,
+with **1,932 tests plus 73 subtests** on each hosted HA 2026.8.3/2026.10.1
+using Python 3.14.10, pip 26.2.2, certifi 2026.10.23 and offline uv.
+
+The operator reported **all five focused steps positive on HA Core 2026.10.4**.
+This closes installation/version, both settings routes, cancellation, combined
+saving and restoration of intended choices for the configured source. No
+separate clean installation, independent registry/statistic audit, manual test
+of every provider or independently inspected UTM environment is inferred.
+The following preserves the original source/package evidence.
+
+[8.3.2b1](RELEASE_8.3.2b1.md) retained the reviewed shared-settings source.
 Reviewed runtime is merged PR #76 at
 **d6ae2a0b1ae9c195c9647f6b416d347891f91a74**, tree
 **489d818a27e58c45428085ab3d917b25ac694dbf**. It includes #75's secured local
@@ -33,9 +72,9 @@ environments still use **Python 3.14.8**; they are regression evidence, not
 evidence of the newer security baseline. Coverage remains **3,516/3,517
 statements and 974/974 branches**, combined **99.977733%**, with the existing
 strict gates. Hosted exact-head and actual merge checks remain separate gates
-before publication. The
-[focused existing-entry protocol](ACCEPTANCE_8.3.2b1.md) is pending publication
-and installation; previous clean-install/restore acceptance stays closed.
+before publication; their later successful result is recorded above. The
+[focused existing-entry protocol](ACCEPTANCE_8.3.2b1.md) records the accepted
+operator report; previous clean-install/restore acceptance stays closed.
 
 <a id="prepared-stable-831"></a>
 

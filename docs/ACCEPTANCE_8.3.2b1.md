@@ -1,10 +1,17 @@
 # 8.3.2b1: focused shared-settings check
 
-**Protocol version:** 1.0 · **Prepared:** 27 October 2026
+**Protocol version:** 1.1 · **Updated:** 27 October 2026
 
-**Status:** pending publication, installation and operator acceptance. This is a
-short check of the existing entry in the existing test HA, not another clean
-installation or restore rehearsal. The normal stable release remains **8.3.1**.
+**Reported acceptance — 27 October 2026:** after publication of **8.3.2b1**,
+the operator reported **all five steps positive on HA Core 2026.10.4**. This
+closes the focused existing-entry check: installation/version, both routes,
+cancellation, combined saving and restoration of intended choices. This is
+reported acceptance, not an independent registry/statistic audit, separate
+clean-install test or proof of an independently inspected UTM environment.
+
+The steps below retain the accepted protocol, not a request to repeat it.
+The [stable 8.3.2 update check](ACCEPTANCE_8.3.2.md) records a later actual
+stable download. Normal stable remains **8.3.1** until that publication.
 
 1. **Install the announced version.** After publication is confirmed, use the
    maintained-fork HACS entry → Download/Redownload → **8.3.2b1**. Refresh its
