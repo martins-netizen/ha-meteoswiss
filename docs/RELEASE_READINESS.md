@@ -1,6 +1,45 @@
-# Release readiness: published and accepted stable 8.3.2
+# Release readiness: stable 8.3.2 and prepared 8.3.3b1
 
-**Document version:** 2.13 · **Updated:** 30 October 2026
+**Document version:** 2.14 · **Updated:** 30 October 2026
+
+<a id="prepared-833b1-test-candidate"></a>
+
+## Prepared 8.3.3b1: native icons and translated update failures
+
+**Prepared, not published and not yet visually accepted.** The
+[release scope](RELEASE_8.3.3b1.md) bundles reviewed #80/#81 without adding a
+new source or settings migration. The [three-step HA check](ACCEPTANCE_8.3.3b1.md)
+starts only after actual publication. Stable 8.3.2 remains latest and accepted.
+
+- **Reviewed source complete:** actual #81 merge
+  **c7c64d64e0efa582873d2e8e492531deb2aa6112**, tree
+  **43fc687bc766bbaf4fafd845b5a95449aea85713**, incorporates #80 through a
+  normal feature merge. Only the adjacent Gold-matrix rows needed conflict
+  resolution; approved code contents were preserved. Eight combined PR checks
+  and seven actual merge checks pass. Actual source-merge CI passes **1,996
+  tests plus 83 subtests** on each HA 2026.8.3/2026.10.1.
+- **Packaging boundary:** 41 component files, 39 non-version files identical
+  to that source, two version files changed to 8.3.3b1. The four 219-key
+  catalogues, icons.json, HACS/CH, workflows and security guards are retained.
+  Fixed Beta Publisher V1.6 adds a tenth publication regression profile.
+- **Packaging gates:** exact-head native HA, Hassfest, HACS, CodeQL and
+  SonarCloud checks must pass, followed by actual regular-merge checks.
+  Source results above do not claim these candidate checks already ran.
+- **Publication gate:** the fixed publisher requires the approved protected
+  development head and all twelve earlier tags. It creates only prerelease
+  8.3.3b1 and preserves latest stable **8.3.2 / ID 426633496**. Receipt and
+  independent actual release/tag/notes checks precede an install announcement.
+- **Manual boundary:** the short version/icon/normal-operation check remains
+  pending. Native tests already load all 19 exception keys in DE/EN/FR/IT;
+  no manufactured outage, settings retest, new installation or restore is needed.
+
+Source coverage remains **406/406 flow statements and 146/146 branches**,
+**3,516/3,517 whole-component statements and 974/974 branches**, with unchanged
+gates/four exclusions. Hosted source CI uses **Python 3.14.10 / pip 26.2.2 /
+certifi 2026.10.23 / UV_OFFLINE=true**. Historical HA uv pins remain explicitly
+unpatched offline exceptions. Packaging results will retain their own exact
+head/environment evidence; local Python 3.12 checks do not claim native HA
+validation. Full Gold and live HA/Python security remain separate assessments.
 
 ## Published and accepted stable 8.3.2
 

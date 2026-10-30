@@ -1,6 +1,6 @@
 # Translated update failures
 
-**Scope:** unreleased development candidate, after stable 8.3.2.
+**Scope:** implemented in #81 and included in prepared [8.3.3b1](RELEASE_8.3.3b1.md), not yet published. Stable 8.3.2 retains its previous error messages.
 
 All 21 user-facing `UpdateFailed` sites use 19 stable keys in the integration's
 `exceptions` catalogue, with English, German, French and Italian messages.
@@ -21,5 +21,6 @@ validation exceptions are not relabelled as successful updates.
 Tests verify native HA loading of all four exception catalogues, complete
 coverage of actual raised keys, and absence of inline messages/placeholders.
 Existing source, privacy and recovery tests now assert stable error categories
-instead of language-specific English text. This change is independent of the
-icon-translations PR and does not publish or install a release.
+instead of language-specific English text. This change was reviewed separately
+from the icon-translations PR; the prepared 8.3.3b1 package bundles both.
+Publication and the focused HA visual check remain separate steps.

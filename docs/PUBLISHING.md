@@ -1,6 +1,40 @@
 # Publish the maintained fork
 
-**Procedure version:** 1.9 · **Updated:** 30 October 2026
+**Procedure version:** 1.10 · **Updated:** 30 October 2026
+
+<a id="833b1-test-candidate-prepared"></a>
+
+## 8.3.3b1 native-icons and translated-errors test package (prepared)
+
+[8.3.3b1](RELEASE_8.3.3b1.md) is prepared, **not published**. It retains the
+combined reviewed #80/#81 source **c7c64d64e0efa582873d2e8e492531deb2aa6112**,
+tree **43fc687bc766bbaf4fafd845b5a95449aea85713**. Within the 41-file component,
+39 non-version files match; only manifest.json/version.py become **8.3.3b1**.
+HACS/CH, workflows, security guards and four 219-key catalogues remain.
+
+1. Review and regularly merge the packaging PR. Verify the exact tree and all
+   successful actual merge checks, including both HA jobs, Hassfest, CodeQL,
+   HACS and SonarCloud. Do not publish from a feature branch or an unrun check.
+2. Download **scripts/publish_meteoswiss_833_beta_v1.6.sh** from that approved
+   packaging merge. Use existing `gh` authentication and its full merge SHA:
+
+   ```bash
+   bash publish_meteoswiss_833_beta_v1.6.sh --check FULL_APPROVED_PACKAGING_MERGE_SHA
+   bash publish_meteoswiss_833_beta_v1.6.sh --publish FULL_APPROVED_PACKAGING_MERGE_SHA
+   ```
+
+   Check is read-only and optional; publish repeats every gate. The only remote
+   write creates **8.3.3b1**, draft=false, prerelease=true, make_latest=false.
+3. Retain JSON/log, independently verify the actual release/tag/notes/latest,
+   and record release ID/time. Only then announce the
+   [short version/icon check](ACCEPTANCE_8.3.3b1.md).
+
+V1.6 derives from the fixed V1.5 beta profile. It pins the reviewed source,
+version-only boundary, expected check apps and all **twelve** earlier tags.
+Latest stable must remain **8.3.2 / ID 426633496** before and after creation.
+Matching retries only verify; conflicts stop and uncertain writes remain
+unconfirmed. No HA connection, installation, restart or device action occurs.
+Historical helpers and existing published release bodies stay unchanged.
 
 <a id="stable-832-prepared"></a>
 

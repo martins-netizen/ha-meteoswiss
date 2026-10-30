@@ -19,20 +19,23 @@ settings, source retry and concurrent-edit protection. The five-step beta
 acceptance on Core 2026.10.4 and earlier repair/map, first-install and restore
 evidence stay closed within their recorded scopes.
 
-## Next bounded Gold packages
+## Prepared 8.3.3b1 and remaining Gold work
 
-1. Reconcile the actual stable publication and reported acceptance in current
-   documentation; keep immutable release notes and earlier evidence intact.
-2. Prepare icon translations in a focused PR, preserving intended icons and
-   personal overrides, and validate them with supported native HA checks.
-3. Prepare translated update exceptions in a separate PR, with DE/EN/FR/IT,
-   safe error chains and outage/recovery tests.
-4. Review diagnostic defaults for new entities, device metadata/classes,
-   stale grouping and proposed rule-specific exemptions in later scopes.
+Documentation reconciliation (#79), native icon translations (#80) and translated
+update failures (#81) are regularly merged. The combined reviewed source at
+**c7c64d64e0efa582873d2e8e492531deb2aa6112** passes 1,996 tests plus 83 subtests
+on each hosted HA fixture, with all seven actual merge checks successful.
 
-These are proposed implementation packages, not additional features in 8.3.2.
-Keep existing registry choices, identities and history. The
-[Gold matrix](docs/QUALITY_SCALE.md) retains the remaining requirements.
+1. Review the [8.3.3b1 packaging](docs/RELEASE_8.3.3b1.md), verify actual merge
+   checks and publish the separate prerelease. It is prepared, not published.
+2. Complete the short [version/icon visual check](docs/ACCEPTANCE_8.3.3b1.md)
+   before considering stable promotion. Keep earlier settings/restore checks closed.
+3. Review diagnostic defaults for new entities, device metadata/classes,
+   stale grouping and rule-specific exemptions in separate later scopes.
+
+Stable 8.3.2 remains the normal installation route. Keep personal registry
+choices, identities and history. The [Gold matrix](docs/QUALITY_SCALE.md)
+retains the remaining requirements; the two new candidates do not complete Gold.
 
 ## Implemented and released in 8.3.0
 
@@ -84,7 +87,7 @@ custom integrations.
 | Scope | Decision still needed |
 |---|---|
 | Locality names in other languages | Obtain authoritative aliases; preserve provider identities and avoid invented translations or duplicate places. |
-| Remaining Gold engineering work | Review device metadata, icon/error translations, diagnostic defaults, stale-device handling and proposed exemptions; preserve existing user choices and history. Shared-Reconfigure focused acceptance is completed within its reported scope. |
+| Remaining Gold engineering work | Review device metadata, diagnostic defaults, stale-device handling and proposed exemptions; icon/error translations are integrated and awaiting the separate 8.3.3b1 visual check; preserve existing user choices and history. Shared-Reconfigure focused acceptance is completed within its reported scope. |
 | External contributor CodeQL | The unprivileged route is implemented; retain evidence from the first actual external-fork run. A skipped analysis is not completed analysis. |
 | Processed local-forecast data | Assess provider payloads, resource limits and compatibility separately from the already released catalogue-based ICON selection. |
 | New sources/entities | Scope and test separately; no new device actions/sources in a documentation or release change. |
