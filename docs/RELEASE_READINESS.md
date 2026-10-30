@@ -1,10 +1,18 @@
-# Release readiness: accepted 8.3.2b1 to stable 8.3.2
+# Release readiness: published and accepted stable 8.3.2
 
-**Document version:** 2.12 · **Updated:** 27 October 2026
+**Document version:** 2.13 · **Updated:** 30 October 2026
 
-## Prepared stable 8.3.2
+## Published and accepted stable 8.3.2
 
-[Stable 8.3.2](RELEASE_8.3.2.md) is prepared, **not published**. Accepted source
+[Stable 8.3.2](RELEASE_8.3.2.md), ID **426633496**, was published **28 October
+2026 at 12:21:19 UTC** from **aea4c5eab0534a6e675a4f564bde7521df193c58**.
+It is latest stable, immutable and not a prerelease. The exact published
+source/notes and all eleven prior tags were independently checked. Actual
+merge checks pass **1,983 tests plus 83 subtests** on each hosted HA fixture;
+see [the complete release evidence](RELEASE_EVIDENCE_8.3.2.md).
+On **30 October** the operator confirmed its HACS download, HA restart and
+working operation, closing the [short stable update](ACCEPTANCE_8.3.2.md).
+Accepted source
 is published beta **5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**, tree
 **8add2f80ac62d78ac3817ff4b5898c74ad80da0f**. Of 40 component files,
 **38 non-version files match**; only manifest.json/version.py become **8.3.2**.
@@ -23,7 +31,8 @@ not proof of the current security baseline. Coverage is unchanged at
 all existing strict gates and the four exclusions remain. Exact-head hosted
 checks and the later actual merge checks are separate publication gates.
 
-Publication is separate from the [short actual stable download](ACCEPTANCE_8.3.2.md).
+Publication and the [short actual stable download](ACCEPTANCE_8.3.2.md) are
+separate results; both are now recorded as complete within their scope.
 The five accepted beta steps below and earlier clean-install/restore checks
 remain closed. Full Gold and future features stay separate.
 

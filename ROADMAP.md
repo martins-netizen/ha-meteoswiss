@@ -4,25 +4,35 @@ This describes current fork work. Historical upstream release claims remain in
 the changelog as history; they are not current certifications. Check the
 [release status](README.md#release-status) before installing.
 
-## Accepted 8.3.2b1 and prepared stable 8.3.2
+## Stable 8.3.2 published and accepted
 
-Stable [8.3.1](docs/RELEASE_8.3.1.md), ID **424249153**, remains latest stable.
-The shared-settings [8.3.2b1](docs/RELEASE_8.3.2b1.md), ID **425962004**, was
-published **27 October 2026 at 20:40:42 UTC** from
-**5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**. Its receipt/log and independent
-release/tag/notes/latest checks agree. The operator reported all five focused
-existing-entry steps positive on **HA Core 2026.10.4**.
-
-The next bounded package is [stable 8.3.2](docs/RELEASE_8.3.2.md), **prepared,
-not published**. Its 38 non-version component files match the accepted beta;
-only manifest.json/version.py change. Publication and the later actual stable
-download are separate steps. Use the [short stable check](docs/ACCEPTANCE_8.3.2.md)
-after publication; do not repeat the accepted beta/clean-install/restore checks.
+[Stable 8.3.2](docs/RELEASE_8.3.2.md), ID **426633496**, was published on
+**28 October 2026 at 12:21:19 UTC** from
+**aea4c5eab0534a6e675a4f564bde7521df193c58** and is latest stable.
+The [publication and acceptance record](docs/RELEASE_EVIDENCE_8.3.2.md) confirms
+the exact source, immutable notes, seven successful merge checks and preserved
+old tags. On **30 October** the operator confirmed the HACS download, HA
+restart and working operation. This closes the short stable update.
 
 Both Configure and Reconfigure share complete weather/pollen/forecast/warning
-settings, source retry and concurrent-edit protection. Repair/map acceptance
-and earlier 8.3.0 evidence remain closed. Remaining Gold metadata, translations,
-defaults, stale-device handling and proposed exemptions retain their own scope.
+settings, source retry and concurrent-edit protection. The five-step beta
+acceptance on Core 2026.10.4 and earlier repair/map, first-install and restore
+evidence stay closed within their recorded scopes.
+
+## Next bounded Gold packages
+
+1. Reconcile the actual stable publication and reported acceptance in current
+   documentation; keep immutable release notes and earlier evidence intact.
+2. Prepare icon translations in a focused PR, preserving intended icons and
+   personal overrides, and validate them with supported native HA checks.
+3. Prepare translated update exceptions in a separate PR, with DE/EN/FR/IT,
+   safe error chains and outage/recovery tests.
+4. Review diagnostic defaults for new entities, device metadata/classes,
+   stale grouping and proposed rule-specific exemptions in later scopes.
+
+These are proposed implementation packages, not additional features in 8.3.2.
+Keep existing registry choices, identities and history. The
+[Gold matrix](docs/QUALITY_SCALE.md) retains the remaining requirements.
 
 ## Implemented and released in 8.3.0
 

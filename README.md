@@ -37,7 +37,7 @@ as modelled. See [the source and failure behaviour](docs/STATION_WEATHER_CONDITI
 Find nearby SwissMetNet stations on the official
 [MeteoSwiss measurement-network map](https://www.meteoswiss.admin.ch/services-and-publications/applications/measuring-networks.html),
 then select the station by name in HA. The [setup guide](docs/GETTING_STARTED.md#3-select-pollen-weather-and-warning-locations)
-also explains the map-link help introduced in 8.3.1b1 and retained for stable 8.3.1.
+also explains the map-link help included in stable 8.3.2.
 
 For example: **HA home in Kloten, pollen measurements from Zürich, weather
 measurements from Zürich/Kloten and weather forecasts for Säntis.** Changing
@@ -127,8 +127,9 @@ station-map links help find nearby SwissMetNet stations. The operator confirmed
 the requested version/visual check on 26 October. Published stable [8.3.1](docs/RELEASE_8.3.1.md) retains that runtime.
 The published [8.3.2b1 follow-up](docs/RELEASE_8.3.2b1.md) adds the complete
 Reconfigure route. The operator reported all five focused steps positive on
-HA Core **2026.10.4**; stable [8.3.2](docs/RELEASE_8.3.2.md) is prepared with
-that accepted runtime and only two version changes.
+HA Core **2026.10.4**. Stable [8.3.2](docs/RELEASE_8.3.2.md) was published on
+28 October; on 30 October the operator confirmed its HACS download, restart
+and working operation. See [the bounded evidence](docs/RELEASE_EVIDENCE_8.3.2.md).
 
 ## Start here
 
@@ -141,43 +142,33 @@ that accepted runtime and only two version changes.
 
 ## Release status
 
-**Stable 8.3.1 is published and is the normal installation route.** Release
-ID **424249153**, published **26 October 2026 at 12:54:24 UTC** from
-**fa298ca72bf62da727797f9bfcacf95c83ffeaf1**. It retains the operator-accepted
-8.3.1b1 repair/map runtime. Publication and a particular HA's actual download
-remain separate; the [short stable check](docs/ACCEPTANCE_8.3.1.md) records the latter.
+**[Stable 8.3.2](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.2)
+is published and is the normal installation route.** Release ID **426633496**,
+published **28 October 2026 at 12:21:19 UTC**, from
+**aea4c5eab0534a6e675a4f564bde7521df193c58**. It retains the accepted 8.3.2b1
+runtime, changing only two component version files. Both Configure and
+Reconfigure offer the complete location-settings transaction.
 
-**8.3.2b1 is published and its five-step existing-entry check is accepted.**
-Release **425962004**, published **27 October 2026 at 20:40:42 UTC** from
-**5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**. The operator reported all five
-[focused steps](docs/ACCEPTANCE_8.3.2b1.md) positive on **HA Core 2026.10.4**.
-
-**Stable 8.3.2 is prepared, not published.** It retains the accepted beta's
-38 non-version component files. Only manifest.json/version.py change. After
-publication, the [short stable update check](docs/ACCEPTANCE_8.3.2.md) confirms
-the actual version downloaded; the beta dialog checks stay closed. See
-[stable notes](docs/RELEASE_8.3.2.md).
+The operator reported the five focused beta steps positive on **HA Core
+2026.10.4**, then confirmed the actual **8.3.2 HACS download, HA restart and
+working operation on 30 October**. The [release evidence](docs/RELEASE_EVIDENCE_8.3.2.md)
+separates those reports from source, CI and publication checks. The
+[short stable protocol](docs/ACCEPTANCE_8.3.2.md) is complete for that installation;
+other users follow the normal update guide without repeating our earlier tests.
 
 The [latest stable release page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
-is authoritative for normal installation. The [8.3.0 notes](docs/RELEASE_8.3.0.md)
-describe the version-only promotion of accepted **8.3.0b4** and the changes since
-8.2.0. A prepared source version or a merged PR alone does not mean that the
-release is published. Select only an announced release offered by HACS.
+is authoritative for normal installation. Select a published release in HACS;
+refreshing repository information alone does not download files. Existing users
+retain their configured entry. Earlier 8.3.1/beta releases and their immutable
+notes remain history; an intermediate 8.3.1 download is not required.
 
-The operator accepted b4 on 24 October: the measuring station and a different
-forecast place have separate weather displays and values. Prior clean-install,
-restore, calendar-day and shared-settings evidence is retained in the
-[readiness record](docs/RELEASE_READINESS.md). Earlier beta notes remain historical:
-[b1](docs/RELEASE_8.3.0b1.md), [b2](docs/RELEASE_8.3.0b2.md),
-[b3](docs/RELEASE_8.3.0b3.md), [b4](docs/RELEASE_8.3.0b4.md).
-
-Minimum supported HA is **2026.8.3**. CI also covers **2026.10.1**; additional
-local automated tests cover **2026.10.3**, with operator evidence on
-2026.10.2/2026.10.3 and the focused 8.3.2b1 check on **2026.10.4**, within
-their recorded scopes. Stable **8.3.0** was published on
-**24 October 2026**. [HACS default-catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-catalogue-admission)
-was approved and merged later that day. Publication, catalogue admission and
-the version actually downloaded in your HA are separate results.
+Minimum supported HA is **2026.8.3**. Hosted CI also covers **2026.10.1**;
+additional local regression tests cover **2026.10.3**. Operator reports on
+2026.10.2/2026.10.3 and the five-step beta report on 2026.10.4 keep their own
+scope; the stable update report supplies no new Core/Python version.
+[HACS default-catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-catalogue-admission),
+earlier clean-install/restore checks and the 8.2-to-8.3 update are complete.
+The [readiness record](docs/RELEASE_READINESS.md) retains their evidence.
 
 ## Data and compatibility
 

@@ -1,10 +1,13 @@
 # 8.3.2 — complete shared location settings
 
-**Notes version:** 1.0 · **Prepared:** 27 October 2026
+**Notes version:** 1.1 · **Status updated:** 30 October 2026
 
-**Status:** stable promotion prepared, not published. Latest stable remains
-**8.3.1** until actual publication. Published **8.3.2b1** passed all five focused
-existing-entry acceptance steps reported by the operator on HA Core **2026.10.4**.
+**Published:** 28 October 2026 at **12:21:19 UTC**, release **426633496**,
+from **aea4c5eab0534a6e675a4f564bde7521df193c58**, latest stable and immutable.
+On **30 October** the operator confirmed its HACS download, HA restart and
+working operation. See [the current evidence](RELEASE_EVIDENCE_8.3.2.md).
+The published release body below is retained verbatim as historical text;
+the publication and short stable update it describes are now completed.
 
 This community fork builds on [LNKtwo/ha-meteoswiss](https://github.com/LNKtwo/ha-meteoswiss)
 and retains its MIT licence and attribution. It is not an official MeteoSwiss
