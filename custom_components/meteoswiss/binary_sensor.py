@@ -46,14 +46,12 @@ ALERT_SENSOR_DESCRIPTIONS: Final[
         translation_key="any_alert",
         device_class=BinarySensorDeviceClass.SAFETY,
         name="Weather Alert",
-        icon="mdi:alert",
     ),
     MeteoSwissAlertsBinarySensorDescription(
         key="critical_alert",
         translation_key="critical_alert",
         device_class=BinarySensorDeviceClass.SAFETY,
         name="Critical Weather Alert",
-        icon="mdi:alert-octagram",
         warn_level=3,  # Level 3 or above
     ),
     MeteoSwissAlertsBinarySensorDescription(
@@ -61,7 +59,6 @@ ALERT_SENSOR_DESCRIPTIONS: Final[
         translation_key="upcoming_alert",
         device_class=BinarySensorDeviceClass.SAFETY,
         name="Upcoming Weather Alert",
-        icon="mdi:alert-outline",
         alert_timing="upcoming",
     ),
 )

@@ -323,34 +323,30 @@ FORECAST_SENSOR_DESCRIPTIONS = tuple(
         device_class=device_class,
         native_unit_of_measurement=unit,
         suggested_display_precision=precision,
-        icon=icon,
         day_offset=offset,
         metric=metric,
     )
     for offset, day in ((0, "today"), (1, "tomorrow"))
-    for metric, device_class, unit, precision, icon in (
+    for metric, device_class, unit, precision in (
         (
             "maximum_temperature",
             SensorDeviceClass.TEMPERATURE,
             UnitOfTemperature.CELSIUS,
             1,
-            "mdi:thermometer-high",
         ),
         (
             "minimum_temperature",
             SensorDeviceClass.TEMPERATURE,
             UnitOfTemperature.CELSIUS,
             1,
-            "mdi:thermometer-low",
         ),
         (
             "precipitation",
             SensorDeviceClass.PRECIPITATION,
             UnitOfPrecipitationDepth.MILLIMETERS,
             1,
-            "mdi:weather-rainy",
         ),
-        ("probability", None, PERCENTAGE, 0, "mdi:weather-pouring"),
+        ("probability", None, PERCENTAGE, 0),
     )
 )
 
@@ -753,7 +749,6 @@ class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntit
             device_class=None,
             state_class=SensorStateClass.MEASUREMENT,
             native_unit_of_measurement="°C·d",
-            icon="mdi:thermostat",
         )
 
     def _daily_mean(self) -> float | None:
@@ -804,7 +799,6 @@ MS_POLLEN_SENSOR_DESCRIPTIONS: Final[tuple[MS_PollenSensorDescription, ...]] = (
         key="ms_pollen_birch",
         translation_key="ms_pollen_birch",
         name="Birch Pollen (Measured)",
-        icon="mdi:tree",
         pollen_type="birch",
         pollen_type_name="Birch",
     ),
@@ -812,7 +806,6 @@ MS_POLLEN_SENSOR_DESCRIPTIONS: Final[tuple[MS_PollenSensorDescription, ...]] = (
         key="ms_pollen_alder",
         translation_key="ms_pollen_alder",
         name="Alder Pollen (Measured)",
-        icon="mdi:pine-tree",
         pollen_type="alder",
         pollen_type_name="Alder",
     ),
@@ -820,7 +813,6 @@ MS_POLLEN_SENSOR_DESCRIPTIONS: Final[tuple[MS_PollenSensorDescription, ...]] = (
         key="ms_pollen_hazel",
         translation_key="ms_pollen_hazel",
         name="Hazel Pollen (Measured)",
-        icon="mdi:tree-outline",
         pollen_type="hazel",
         pollen_type_name="Hazel",
     ),
@@ -828,7 +820,6 @@ MS_POLLEN_SENSOR_DESCRIPTIONS: Final[tuple[MS_PollenSensorDescription, ...]] = (
         key="ms_pollen_grass",
         translation_key="ms_pollen_grass",
         name="Grass Pollen (Measured)",
-        icon="mdi:grass",
         pollen_type="grass",
         pollen_type_name="Grass",
     ),
@@ -836,7 +827,6 @@ MS_POLLEN_SENSOR_DESCRIPTIONS: Final[tuple[MS_PollenSensorDescription, ...]] = (
         key="ms_pollen_beech",
         translation_key="ms_pollen_beech",
         name="Beech Pollen (Measured)",
-        icon="mdi:tree-outline",
         pollen_type="beech",
         pollen_type_name="Beech",
     ),
@@ -844,7 +834,6 @@ MS_POLLEN_SENSOR_DESCRIPTIONS: Final[tuple[MS_PollenSensorDescription, ...]] = (
         key="ms_pollen_ash",
         translation_key="ms_pollen_ash",
         name="Ash Pollen (Measured)",
-        icon="mdi:leaf",
         pollen_type="ash",
         pollen_type_name="Ash",
     ),
@@ -852,7 +841,6 @@ MS_POLLEN_SENSOR_DESCRIPTIONS: Final[tuple[MS_PollenSensorDescription, ...]] = (
         key="ms_pollen_oak",
         translation_key="ms_pollen_oak",
         name="Oak Pollen (Measured)",
-        icon="mdi:tree-outline",
         pollen_type="oak",
         pollen_type_name="Oak",
     ),
