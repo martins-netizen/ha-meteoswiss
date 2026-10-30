@@ -124,7 +124,11 @@ async def test_transport_retry_policy_and_private_errors(
     assert "47.451234" not in logs
     assert "8.561234" not in logs
     assert "latitude=" not in logs
-    assert "Failed to fetch Open-Meteo forecast" in logs
+    assert source.last_exception.translation_key == "forecast_unavailable"
+    assert any(
+        record.levelno >= logging.ERROR and record.name == source.logger.name
+        for record in caplog.records
+    )
 
 
 async def test_zero_partial_numeric_and_daily_values_keep_their_meaning(
