@@ -1,14 +1,19 @@
 # Stable 8.3.2: short HACS update check
 
-**Protocol version:** 1.0 · **Prepared:** 27 October 2026
+**Protocol version:** 1.1 · **Updated:** 30 October 2026
+
+**Completed:** stable 8.3.2 was published on 28 October. On **30 October** the
+operator confirmed its actual HACS download, HA restart and working operation.
+This closes the requested short update check. See [release evidence](RELEASE_EVIDENCE_8.3.2.md).
+The steps below retain the completed method; they are not another test request.
 
 The operator reported all five 8.3.2b1 existing-entry steps positive on
 **HA Core 2026.10.4**. This closes the focused beta acceptance. Stable 8.3.2
 retains that runtime with only two version changes. Its actual later download
 is separate evidence from beta acceptance or GitHub publication.
 
-Use only announced published **8.3.2** through the existing maintained-fork
-HACS repository. At preparation it is not published; latest stable is **8.3.1**.
+Use published **8.3.2** through the existing maintained-fork HACS repository.
+It is latest stable; the source/notes and separate HA acceptance are recorded.
 
 1. Keep the configured entry, intended settings and existing backup. After
    publication, refresh HACS repository information if needed, then actually

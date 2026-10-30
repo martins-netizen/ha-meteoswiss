@@ -7,7 +7,9 @@
 **5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**. The operator subsequently
 reported all five focused steps positive on **HA Core 2026.10.4**. The original
 package scope below and published release body remain unchanged. Stable
-[8.3.2](RELEASE_8.3.2.md) is prepared, not published; normal stable is **8.3.1**.
+[8.3.2](RELEASE_8.3.2.md) was published on 28 October and its actual
+HACS download/restart/operation was confirmed on 30 October. See
+[stable evidence](RELEASE_EVIDENCE_8.3.2.md); the beta body below is historical.
 
 This community fork builds on [LNKtwo/ha-meteoswiss](https://github.com/LNKtwo/ha-meteoswiss)
 and retains its MIT licence and attribution. It is not an official MeteoSwiss

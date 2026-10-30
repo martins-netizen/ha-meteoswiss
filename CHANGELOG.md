@@ -2,16 +2,19 @@
 
 ## [Unreleased]
 
-No additional runtime changes beyond the stable-promotion package below.
+Reconcile the actual stable 8.3.2 publication and reported HACS update in
+user guides and quality evidence. No additional runtime changes.
 
-## [8.3.2] — prepared stable promotion of accepted 8.3.2b1
+## [8.3.2] — 2026-10-28 · published stable promotion of accepted 8.3.2b1
 
-Prepared 27 October 2026 from published and operator-accepted beta
+Published 28 October 2026 at 12:21:19 UTC, release **426633496**, from
+**aea4c5eab0534a6e675a4f564bde7521df193c58**. It retains published and operator-accepted beta
 **5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**. Only the two component
 version files change; 38 other files, HACS/CH, workflows and security guards
 match. [Release notes](docs/RELEASE_8.3.2.md) and the
-[short stable update](docs/ACCEPTANCE_8.3.2.md) define the scope. Publication
-remains separate; **8.3.1** is latest stable.
+[short stable update](docs/ACCEPTANCE_8.3.2.md) define the scope. **8.3.2**
+is latest stable. On 30 October the operator confirmed the actual download,
+HA restart and working operation; see [evidence](docs/RELEASE_EVIDENCE_8.3.2.md).
 
 - Retain the accepted complete Configure/Reconfigure transaction, retry-choice
   preservation, independent location roles and four-language confirmation.
@@ -29,7 +32,8 @@ five focused steps positive on **HA Core 2026.10.4**. Original packaging retaine
 reviewed PR #76 source **d6ae2a0b1ae9c195c9647f6b416d347891f91a74**: 38 component
 files match; only manifest.json/version.py become 8.3.2b1. Add the fixed
 V1.5 publisher, an eighth publication test profile and the
-[focused acceptance](docs/ACCEPTANCE_8.3.2b1.md). Stable 8.3.1 remains latest.
+[focused acceptance](docs/ACCEPTANCE_8.3.2b1.md). Stable 8.3.1 remained latest
+at beta publication; stable 8.3.2 followed on 28 October.
 See [candidate notes](docs/RELEASE_8.3.2b1.md).
 
 - Make the entry menu's Reconfigure route offer the same weather station/base

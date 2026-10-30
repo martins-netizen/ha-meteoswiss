@@ -10,8 +10,9 @@ reported acceptance, not an independent registry/statistic audit, separate
 clean-install test or proof of an independently inspected UTM environment.
 
 The steps below retain the accepted protocol, not a request to repeat it.
-The [stable 8.3.2 update check](ACCEPTANCE_8.3.2.md) records a later actual
-stable download. Normal stable remains **8.3.1** until that publication.
+The [stable 8.3.2 update check](ACCEPTANCE_8.3.2.md) now records the
+completed stable download/restart/operation report of 30 October. Published
+8.3.2 is normal stable; the beta steps below remain completed history.
 
 1. **Install the announced version.** After publication is confirmed, use the
    maintained-fork HACS entry → Download/Redownload → **8.3.2b1**. Refresh its

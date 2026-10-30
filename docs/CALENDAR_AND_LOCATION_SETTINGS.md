@@ -6,7 +6,7 @@
 Use the [announced release](RELEASE_8.3.0.md); earlier beta notes describe their
 historical scopes, not instructions to reinstall an older beta.
 
-**From published 8.3.2b1 (retained for prepared stable 8.3.2):** the complete settings transaction also serves
+**In stable 8.3.2 (introduced in 8.3.2b1):** the complete settings transaction also serves
 the entry menu's Reconfigure route, with the same source checks, cancellation
 and concurrency protection. See [current route guidance](FORECAST_LOCATION_SETUP.md#existing-entry).
 The original 8.3.0 acceptance and numerical evidence below retain their scope.
@@ -72,8 +72,8 @@ observation/postcode change to keep duplicate detection correct. Entity unique
 IDs are retained. Duplicate entries and concurrent edits are rejected without
 partially applying the pending settings.
 
-In the accepted **8.3.0/8.3.1** runtime, the older **three-dot menu → Reconfigure**
-path remains forecast-only. Published 8.3.2b1 makes that route use the
+In **8.3.0/8.3.1**, the older **three-dot menu → Reconfigure** path is
+forecast-only. Stable **8.3.2**, introduced in 8.3.2b1, makes that route use the
 same complete dialog; Configure already includes forecast selection.
 
 ## Complete Swiss calendar days

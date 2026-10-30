@@ -1,6 +1,6 @@
 # Quality evidence and remaining work
 
-**Runtime assessment:** 24 October 2026. **Documentation updated:** 27 October 2026.
+**Runtime assessment:** 24 October 2026. **Documentation updated:** 30 October 2026.
 **Scope:** the 8.3 runtime accepted as
 published b4 at **a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5**. Stable packaging
 changes only two component version files. The operator confirmed b3 calendar-day
@@ -41,7 +41,10 @@ routes and providers. The operator reported all five
 [focused HA steps](ACCEPTANCE_8.3.2b1.md) positive on **Core 2026.10.4**.
 This closes the requested existing-entry acceptance, without an independent
 registry/statistic audit or separate UTM inspection. Stable
-[8.3.2](RELEASE_8.3.2.md) retains that runtime and is prepared, not published.
+[8.3.2](RELEASE_8.3.2.md) was published on 28 October, retaining that runtime.
+On 30 October the operator confirmed the actual stable HACS download, restart
+and working operation. [Release evidence](RELEASE_EVIDENCE_8.3.2.md) separates
+that short update report from the earlier five-step Core 2026.10.4 acceptance.
 Earlier 8.3/8.3.1 evidence keeps its own scope; full Gold is still incomplete.
 
 **Reading the result:** all applicable technical Bronze rules and applicable
@@ -90,7 +93,7 @@ short; these tables retain the qualifications and release scope.
 | `log-when-unavailable` | Evidence | Coordinator transition logs avoid repeated outages, raw coordinate/postcode URLs and payloads; separate cached UV status has its own outage/recovery transition. Tests inspect formatted error chains too. |
 | `parallel-updates` | Evidence | sensor.py uses 1 for diagnostic polling; coordinator-driven weather/binary/pollen platforms use 0. These values do not assert zero network requests. |
 | `reauthentication-flow` | Exempt | No provider accounts or credentials. |
-| `test-coverage` | Evidence | Accepted 8.3.1b1 passes 1,729 tests plus 63 subtests on each local HA 2026.8.3/2026.10.3, including 280 publisher-profile cases. Combined coverage is 99.977698%: 3,503/3,504 statements and 980/980 branches. Every module exceeds 95%; strict source/flow/repair gates remain 100%. Four exclusions and all thresholds are unchanged. Stable packaging adds its own publication profile; exact results are in RELEASE_READINESS.md. CI also covers 2026.10.1. These are local pytest coverage results, not a SonarCloud coverage import. |
+| `test-coverage` | Evidence | Stable 8.3.2 actual-merge CI passes **1,983 tests plus 83 subtests** on each HA 2026.8.3/2026.10.1. Coverage **3,516/3,517 statements, 974/974 branches**, combined **99.977733%**; full flow coverage and all stricter gates/four exclusions remain. Local HA 2026.10.3 regression evidence is separate. See RELEASE_EVIDENCE_8.3.2.md and RELEASE_READINESS.md for version/security boundaries. These are pytest results, not a SonarCloud coverage import. |
 
 The original audit's interval, field-help, common-layout, UV/catalogue and
 per-module coverage findings are implemented in the reviewed tree. Their old
@@ -117,7 +120,7 @@ engineering work.
 | `entity-category` | Evidence | Diagnostic helpers stay diagnostic; measured/modelled pollen and AQ stay ordinary sensors, with registry tests. |
 | `entity-device-class` | Partial | Numeric metadata and HA conversion tests exist; review legacy Foehn/code and derived HGT metadata before a complete Gold assertion. |
 | `entity-disabled-by-default` | Open | Legacy diagnostic defaults are retained. Decide new-install defaults separately without changing existing user registry choices. |
-| `entity-translations` | Partial | Four complete 180-key UI catalogues and ordinary entity translations exist; strings.json matches English. Legacy diagnostic/device/attribute compatibility names remain; authoritative provider place-name aliases are separate future work. |
+| `entity-translations` | Partial | Four complete 200-key UI catalogues in stable 8.3.2 and ordinary entity translations exist; strings.json matches English. Legacy diagnostic/device/attribute compatibility names remain; authoritative provider place-name aliases are separate future work. |
 | `exception-translations` | Partial | Setup/selection errors are translated; remaining fixed HA update-error messages have not all moved to translated exceptions. |
 | `icon-translations` | Implemented candidate, not released | Unreleased ICON_TRANSLATIONS.md maps all 24 previous custom icons to icons.json, retaining device-class defaults and user registry overrides. Native HA tests cover translation-key linkage and custom-icon persistence after reload; Hassfest validates the schema. Stable 8.3.2 keeps its previous code icons until a later tested release. |
 | `reconfiguration-flow` | Automated and reported focused evidence in accepted 8.3.2b1 | Native Reconfigure and Configure share the complete weather station/base-coordinate, measured-pollen, forecast and warning-postcode transaction. Tests cover both providers/routes, explicit confirmation, cancellation at each stage, source retry with retained choices, duplicate/concurrent-edit rejection, translations and retained entity IDs with a single loaded-entry reload. The original setup confirmation remains separate. This extends stable 8.3.1's forecast-only shortcut. The operator reported all five configured-source steps positive on Core 2026.10.4; no separate registry audit or manual test of every provider is inferred. |

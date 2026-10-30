@@ -1,12 +1,17 @@
 # Publish the maintained fork
 
-**Procedure version:** 1.8 · **Updated:** 27 October 2026
+**Procedure version:** 1.9 · **Updated:** 30 October 2026
 
 <a id="stable-832-prepared"></a>
 
-## Stable 8.3.2 (prepared)
+## Stable 8.3.2 (completed)
 
-[8.3.2](RELEASE_8.3.2.md) is prepared, **not published**. It retains accepted
+[8.3.2](RELEASE_8.3.2.md), ID **426633496**, was published on **28 October 2026
+at 12:21:19 UTC**, from **aea4c5eab0534a6e675a4f564bde7521df193c58**, and is
+latest stable. The operator confirmed its HACS download, HA restart and working
+operation on **30 October**. See [the source/check/acceptance evidence](RELEASE_EVIDENCE_8.3.2.md).
+The following fixed procedure is completed history; do not repeat publication
+or the accepted beta tests. It retains accepted
 beta **5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**, whose five focused steps
 were reported positive on **Core 2026.10.4**. All 38 non-version component
 files match; only manifest.json/version.py change. HACS/CH, workflows, security
@@ -50,7 +55,8 @@ retains reviewed PR #76 at **d6ae2a0b1ae9c195c9647f6b416d347891f91a74**,
 tree **489d818a27e58c45428085ab3d917b25ac694dbf**. Of 40 component files,
 38 non-version files match; only manifest.json/version.py become 8.3.2b1.
 HACS/CH, workflows and security guards are retained, with 200 translation keys
-per language. Stable **8.3.1 / ID 424249153** remains latest.
+per language. Stable **8.3.1 / ID 424249153** remained latest at beta
+publication; stable 8.3.2 replaced it on 28 October.
 
 1. Review and regularly merge the packaging PR. Confirm the actual tree and
    successful merge checks: tests, HA 2026.8.3, HA 2026.10.1, hassfest,
@@ -85,7 +91,8 @@ Earlier fixed publishers and immutable releases are unchanged.
 
 [Stable 8.3.1](RELEASE_8.3.1.md), ID **424249153**, was published on
 **26 October 2026 at 12:54:24 UTC** from
-**fa298ca72bf62da727797f9bfcacf95c83ffeaf1** and is latest stable. Its receipt
+**fa298ca72bf62da727797f9bfcacf95c83ffeaf1**. It was latest until 8.3.2
+was published on 28 October. Its receipt
 and independent GitHub reads confirm publication, version-only source, tags and
 checks. Actual stable HACS installation remains separate. The fixed procedure
 below is historical evidence; do not repeat it for 8.3.2b1. The operator
