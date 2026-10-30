@@ -1,31 +1,40 @@
-# Release readiness: accepted 8.3.3b1 and prepared stable 8.3.3
+# Release readiness: published and accepted stable 8.3.3
 
-**Document version:** 2.15 · **Updated:** 30 October 2026
+**Document version:** 2.16 · **Updated:** 30 October 2026
 
 <a id="prepared-stable-833"></a>
 
-## Prepared stable 8.3.3
+## Published and accepted stable 8.3.3
 
-**Prepared, not published.** [Stable 8.3.3](RELEASE_8.3.3.md) promotes the
-accepted published beta below. Stable **8.3.2 / ID 426633496** remains latest
-and the normal installation/recovery route until verified promotion.
+[Stable 8.3.3](RELEASE_8.3.3.md), release **429354633**, was published on
+**30 October 2026 at 18:21:55 UTC** from
+**3d4fad2330c89f134eba208e8b2db55705177e7d**, tree
+**b53df969640e8b15df690de59a95639f3735e05c**. It is latest stable, immutable,
+draft=false and prerelease=false. Publisher receipt/log and independent
+release/tag/notes/source/latest verification agree. All thirteen older tags
+remain unchanged; the published body matches the approved export, SHA-256
+**62d7b02e39bec84162e0cc5b3770600c4c87109b83be473f803fd59c5f877de0**.
 
-- **Accepted source:** published beta **d9fbc3fd49220b0ecc019d2babe0c173c46986f5**,
-  tree **80802d36d46fd21ee2d5b04c981ce657b6bbf87f**, release **429321251**.
-- **Version-only boundary:** of 41 component files, 39 non-version files
-  remain identical. Only manifest.json/version.py become **8.3.3**. HACS/CH,
-  minimum HA, workflows, security guards, icons.json and four 219-key
-  catalogues with English/source parity remain.
-- **Publication boundary:** fixed Stable Publisher V1.6 continues Stable V1.5,
-  adds an eleventh regression profile and requires the accepted beta, previous
-  stable **426633496**, all thirteen older tags, exact protected head and
-  successful checks with expected apps. Matching retries only verify.
-- **Separate gates:** exact-head checks, user approval, regular merge, actual
-  merge checks and independently confirmed publication precede installation.
-  Source/beta success is not a claim that these new package gates already ran.
-- **Remaining HA evidence:** only the [short actual stable update](ACCEPTANCE_8.3.3.md)
-  follows publication. Accepted icon, settings, first-install and restore checks
-  remain closed; no forced failure or new blanket 24-hour wait.
+The operator subsequently confirmed **8.3.3 installed and normal operation OK**
+on **30 October**, completing the [short actual stable update](ACCEPTANCE_8.3.3.md).
+This report does not restate Core/OS/Python or provide an independent registry
+audit. Beta icons/personal choices on Core 2026.10.4 / HA OS 18.4, earlier shared
+settings, clean-install and restore checks remain complete within their scopes.
+
+All **39 non-version component files** of the 41-file package match accepted
+published beta **d9fbc3fd49220b0ecc019d2babe0c173c46986f5 / ID 429321251**;
+only manifest.json/version.py become 8.3.3. Four 219-key catalogues,
+English/source parity, icons.json, HACS/CH, workflows and security guards match.
+No runtime addition follows the accepted beta.
+
+All seven actual merge checks pass: CI **41105597207**, CodeQL **41105597266**,
+HACS **41105597240**, with SonarCloud Code Analysis. Actual HA 2026.8.3/2026.10.1
+jobs pass **2,096 tests plus 83 subtests** each (43.83 s / 71.36 s).
+Fixed Stable Publisher V1.6 retains the version-only/accepted-publication/check
+boundaries and adds the eleventh publication test profile. The
+[complete evidence](RELEASE_EVIDENCE_8.3.3.md) separates source, environment,
+publication and the bounded operator report. No further HA acceptance or
+blanket observation wait is pending for this release. Full Gold remains open.
 
 <a id="prepared-833b1-test-candidate"></a>
 
@@ -65,7 +74,8 @@ live HA Python image. Remaining Gold work is separate.
 
 [Stable 8.3.2](RELEASE_8.3.2.md), ID **426633496**, was published **28 October
 2026 at 12:21:19 UTC** from **aea4c5eab0534a6e675a4f564bde7521df193c58**.
-It is latest stable, immutable and not a prerelease. The exact published
+It was latest until 8.3.3 on 30 October, and remains immutable and not a
+prerelease. The exact published
 source/notes and all eleven prior tags were independently checked. Actual
 merge checks pass **1,983 tests plus 83 subtests** on each hosted HA fixture;
 see [the complete release evidence](RELEASE_EVIDENCE_8.3.2.md).

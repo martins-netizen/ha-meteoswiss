@@ -1,17 +1,23 @@
 # Publish the maintained fork
 
-**Procedure version:** 1.11 · **Updated:** 30 October 2026
+**Procedure version:** 1.12 · **Updated:** 30 October 2026
 
 <a id="stable-833-prepared"></a>
 
-## Stable 8.3.3 (prepared)
+## Stable 8.3.3 (completed)
 
-[8.3.3](RELEASE_8.3.3.md) promotes accepted published beta
-**d9fbc3fd49220b0ecc019d2babe0c173c46986f5 / ID 429321251**. It is **prepared,
-not published**. Of 41 component files, 39 non-version files match; only two
-version files become 8.3.3. The operator's beta icon/personal-choice and normal
-operation report on **Core 2026.10.4 / HA OS 18.4** closes that focused check.
-Stable **8.3.2 / ID 426633496** remains latest until this separate promotion.
+[8.3.3](RELEASE_8.3.3.md), ID **429354633**, was published on **30 October
+2026 at 18:21:55 UTC** from **3d4fad2330c89f134eba208e8b2db55705177e7d**,
+latest stable and immutable. Receipt/log and actual release/tag/notes/latest
+checks agree; all thirteen older tags were retained. The operator subsequently
+confirmed **8.3.3 installed and normal operation OK**. See the
+[release evidence](RELEASE_EVIDENCE_8.3.3.md) and [completed short update](ACCEPTANCE_8.3.3.md).
+
+This promotion retains accepted beta
+**d9fbc3fd49220b0ecc019d2babe0c173c46986f5 / ID 429321251**: 39 non-version
+component files match and only two version files change. The earlier beta icon
+report on **Core 2026.10.4 / HA OS 18.4** keeps its own scope. The fixed
+procedure below is completed history, not a new publication or test request.
 
 1. Review and regularly merge the packaging PR. Verify its exact tree and
    successful actual merge checks, including both HA jobs, Hassfest, HACS,
@@ -85,7 +91,8 @@ Historical helpers and existing published release bodies stay unchanged.
 
 [8.3.2](RELEASE_8.3.2.md), ID **426633496**, was published on **28 October 2026
 at 12:21:19 UTC**, from **aea4c5eab0534a6e675a4f564bde7521df193c58**, and is
-latest stable. The operator confirmed its HACS download, HA restart and working
+latest stable until 8.3.3 on 30 October. The operator confirmed its HACS
+download, HA restart and working
 operation on **30 October**. See [the source/check/acceptance evidence](RELEASE_EVIDENCE_8.3.2.md).
 The following fixed procedure is completed history; do not repeat publication
 or the accepted beta tests. It retains accepted

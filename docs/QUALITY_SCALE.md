@@ -53,8 +53,13 @@ was published on **30 October 2026 at 17:42:37 UTC** from
 choices and normal operation OK on **HA Core 2026.10.4 / HA OS 18.4**;
 see the [bounded acceptance](ACCEPTANCE_8.3.3b1.md). All 19 exception keys are
 loaded by native tests in DE/EN/FR/IT; no manual exercise of every failure is
-claimed. [Stable 8.3.3](RELEASE_8.3.3.md) is a prepared version-only promotion,
-not yet published. Full Gold remains incomplete.
+claimed. [Stable 8.3.3](RELEASE_8.3.3.md), release **429354633**, was published
+on **30 October at 18:21:55 UTC** with those 39 non-version component files
+unchanged. The operator subsequently confirmed **8.3.3 installed and normal
+operation OK**, closing the [short stable update](ACCEPTANCE_8.3.3.md).
+The [release evidence](RELEASE_EVIDENCE_8.3.3.md) separates these reports from
+automated coverage; no new Core/Python security claim is inferred. Full Gold
+remains incomplete.
 
 **Reading the result:** all applicable technical Bronze rules and applicable
 Silver rules have recorded evidence below. Bundled branding follows the custom
@@ -129,9 +134,9 @@ engineering work.
 | `entity-category` | Evidence | Diagnostic helpers stay diagnostic; measured/modelled pollen and AQ stay ordinary sensors, with registry tests. |
 | `entity-device-class` | Partial | Numeric metadata and HA conversion tests exist; review legacy Foehn/code and derived HGT metadata before a complete Gold assertion. |
 | `entity-disabled-by-default` | Open | Legacy diagnostic defaults are retained. Decide new-install defaults separately without changing existing user registry choices. |
-| `entity-translations` | Partial | Stable 8.3.2 has four 200-key UI catalogues; accepted 8.3.3b1 adds 19 exception keys for 219 per language. Ordinary entity translations and English/source parity remain. Legacy diagnostic/device/attribute compatibility names remain; authoritative provider place-name aliases are separate future work. |
-| `exception-translations` | Automated evidence in accepted published 8.3.3b1 | EXCEPTION_TRANSLATIONS.md records all 21 UpdateFailed sites using 19 keys in DE/EN/FR/IT. Native HA tests load every message; safe causes, retry/availability and recovery remain. The operator reported normal operation, without manually triggering all failures. Stable 8.3.3 is prepared; latest 8.3.2 retains earlier messages. |
-| `icon-translations` | Automated and reported focused evidence in accepted published 8.3.3b1 | ICON_TRANSLATIONS.md maps all 24 previous custom icons to icons.json, retaining device-class defaults and personal registry overrides. Native HA tests cover key linkage and override persistence after reload; Hassfest validates the schema. The operator reported icons/personal choices OK on Core 2026.10.4 / HA OS 18.4 within the acceptance scope. Stable 8.3.3 is prepared, not published. |
+| `entity-translations` | Partial | Stable 8.3.2 had four 200-key UI catalogues; stable 8.3.3 retains the accepted beta's 19 additional exception keys for 219 per language. Ordinary entity translations and English/source parity remain. Legacy diagnostic/device/attribute compatibility names remain; authoritative provider place-name aliases are separate future work. |
+| `exception-translations` | Automated evidence in accepted published 8.3.3b1 | EXCEPTION_TRANSLATIONS.md records all 21 UpdateFailed sites using 19 keys in DE/EN/FR/IT. Native HA tests load every message; safe causes, retry/availability and recovery remain. The operator reported normal operation, without manually triggering all failures. Stable 8.3.3 now delivers this runtime and its actual installation/operation is operator-confirmed; no manual exercise of all errors is claimed. |
+| `icon-translations` | Automated and reported focused evidence in accepted published 8.3.3b1 | ICON_TRANSLATIONS.md maps all 24 previous custom icons to icons.json, retaining device-class defaults and personal registry overrides. Native HA tests cover key linkage and override persistence after reload; Hassfest validates the schema. The operator reported icons/personal choices OK on Core 2026.10.4 / HA OS 18.4 within the acceptance scope. Stable 8.3.3 now delivers the same runtime and its actual installation/operation is operator-confirmed. |
 | `reconfiguration-flow` | Automated and reported focused evidence in accepted 8.3.2b1 | Native Reconfigure and Configure share the complete weather station/base-coordinate, measured-pollen, forecast and warning-postcode transaction. Tests cover both providers/routes, explicit confirmation, cancellation at each stage, source retry with retained choices, duplicate/concurrent-edit rejection, translations and retained entity IDs with a single loaded-entry reload. The original setup confirmation remains separate. This extends stable 8.3.1's forecast-only shortcut. The operator reported all five configured-source steps positive on Core 2026.10.4; no separate registry audit or manual test of every provider is inferred. |
 | `repair-issues` | Evidence in accepted 8.3.1b1 | Invalid offline saved forecast selections raise a translated entry-specific notice linking to the existing settings. Confirmed correction/reset clears it; cancellation/failed validation retains it. Reloads preserve ignored state; disablement/removal cleans up that entry. Provider outages create no configuration notice. Native entry/settings and four-language tests cover these boundaries; the operator confirmed the requested version/visual check, without a separately reported deliberate-corruption test. Stable 8.3.1 retains that runtime. |
 | `stale-devices` | Open | Review removal of obsolete grouping after measured-pollen station changes without deleting wanted registry/history data. |

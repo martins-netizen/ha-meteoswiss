@@ -1,10 +1,14 @@
 # Stable 8.3.3: short HACS update check
 
-**Protocol version:** 1.0 · **Prepared:** 30 October 2026
+**Protocol version:** 1.1 · **Updated:** 30 October 2026
 
-**Status:** pending actual stable publication and download. Stable **8.3.2**
-remains latest. Do not install a feature branch or treat a merged package as
-a published release.
+**Completed within the reported scope.** Following independently verified
+stable publication (release **429354633**, source
+**3d4fad2330c89f134eba208e8b2db55705177e7d**), the operator confirmed
+**8.3.3 installed and normal operation OK** on **30 October 2026**. This closes
+the requested short stable update; no independent file/registry audit or new
+Core/OS/Python version is inferred. See [release evidence](RELEASE_EVIDENCE_8.3.3.md).
+The steps below retain the completed method, not another test request.
 
 Published **8.3.3b1 / ID 429321251** has the operator's positive icon/personal
 choice and normal-operation report on **HA Core 2026.10.4 / HA OS 18.4**;

@@ -13,7 +13,8 @@ retains that runtime with only two version changes. Its actual later download
 is separate evidence from beta acceptance or GitHub publication.
 
 Use published **8.3.2** through the existing maintained-fork HACS repository.
-It is latest stable; the source/notes and separate HA acceptance are recorded.
+It was latest until stable 8.3.3 on 30 October. Its source/notes and separate
+HA acceptance remain recorded history, not another download request.
 
 1. Keep the configured entry, intended settings and existing backup. After
    publication, refresh HACS repository information if needed, then actually

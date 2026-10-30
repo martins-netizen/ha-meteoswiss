@@ -3,8 +3,9 @@
 **Scope:** implemented in #81 and published in [8.3.3b1](RELEASE_8.3.3b1.md)
 on 30 October 2026. The operator reported normal operation OK on **Core
 2026.10.4 / HA OS 18.4**. This does not claim manual triggering of every
-translated failure. Stable [8.3.3](RELEASE_8.3.3.md) is prepared, not published;
-latest stable 8.3.2 retains its earlier messages.
+translated failure. Stable [8.3.3](RELEASE_8.3.3.md) is now published and its
+actual installation/normal operation is confirmed; see
+[release evidence](RELEASE_EVIDENCE_8.3.3.md). Earlier 8.3.2 retains its old messages.
 
 All 21 user-facing `UpdateFailed` sites use 19 stable keys in the integration's
 `exceptions` catalogue, with English, German, French and Italian messages.

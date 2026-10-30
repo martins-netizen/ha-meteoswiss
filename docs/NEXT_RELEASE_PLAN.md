@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.34 · **Updated:** 30 October 2026
+**Plan version:** 1.35 · **Updated:** 30 October 2026
 **Status:** The agreed architecture, catalogue/POI, forecast-display, shared-settings
 and station-condition scope is released in stable 8.3.0. B4 runtime acceptance,
 stable publication and HACS default-catalogue admission are complete. The operator
@@ -24,16 +24,22 @@ twelve earlier tags were independently checked. The operator reported
 **icons/personal choices OK and normal operation OK** on **Core 2026.10.4 /
 HA OS 18.4**; the [short check](ACCEPTANCE_8.3.3b1.md) is closed within its scope.
 
-**Next bounded work:** review the [stable 8.3.3 package](RELEASE_8.3.3.md),
-which retains all 39 non-version component files of that accepted beta.
-Regular merge, actual checks and separate publication precede only the
-[short actual stable download](ACCEPTANCE_8.3.3.md). Stable 8.3.2 remains latest
-until publication. Preserve DE/EN/FR/IT, native HA checks, personal choices,
-identities and history; no repeated beta/settings/restore tests or new soak.
-Diagnostic defaults, device metadata/classes, stale grouping and rule-specific
-exemptions remain later Gold scopes. Authoritative multilingual locality
-aliases remain a separate provider-evidence task. Earlier sections preserve
-planning at their stated dates.
+**Completed stable 8.3.3:** published on **30 October 2026 at 18:21:55 UTC**,
+release **429354633**, from **3d4fad2330c89f134eba208e8b2db55705177e7d**.
+It retains the accepted beta's 39 non-version component files. The operator
+subsequently confirmed **8.3.3 installed and normal operation OK**, closing the
+[short stable update](ACCEPTANCE_8.3.3.md). [Release evidence](RELEASE_EVIDENCE_8.3.3.md)
+separates actual merge checks, publication and the bounded operator report.
+All release/HA acceptance gates are complete within their stated scopes.
+
+**Next bounded work:** diagnostic defaults, device metadata/classes, stale
+grouping and rule-specific exemptions remain later Gold scopes. Authoritative
+multilingual locality aliases remain a separate provider-evidence task.
+Preserve DE/EN/FR/IT, native HA checks, personal choices, identities and history.
+No repeated beta/settings/first-install/restore test or new blanket soak is
+required for the closed release. Future engineering changes need their own
+scope and review; no new feature or release date is approved by this update.
+Earlier sections preserve planning at their stated dates.
 
 ## Historical agreed scope and b1/b2 sequence — 23–24 October 2026
 

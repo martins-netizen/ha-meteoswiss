@@ -4,7 +4,9 @@
 on 30 October 2026. The operator reported icons/personal choices and normal
 operation OK on **Core 2026.10.4 / HA OS 18.4**; see
 [acceptance limits](ACCEPTANCE_8.3.3b1.md). Stable [8.3.3](RELEASE_8.3.3.md)
-is prepared, not published; latest stable 8.3.2 retains its previous implementation.
+is now published and its actual installation/normal operation is confirmed;
+see [release evidence](RELEASE_EVIDENCE_8.3.3.md). Earlier stable 8.3.2 retains
+its previous implementation.
 
 All 24 existing custom entity icons move from Python descriptions to
 `custom_components/meteoswiss/icons.json`, using the entities' existing

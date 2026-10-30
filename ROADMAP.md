@@ -4,44 +4,34 @@ This describes current fork work. Historical upstream release claims remain in
 the changelog as history; they are not current certifications. Check the
 [release status](README.md#release-status) before installing.
 
-## Stable 8.3.2 published and accepted
+## Stable 8.3.3 published and accepted
 
-[Stable 8.3.2](docs/RELEASE_8.3.2.md), ID **426633496**, was published on
-**28 October 2026 at 12:21:19 UTC** from
-**aea4c5eab0534a6e675a4f564bde7521df193c58** and is latest stable.
-The [publication and acceptance record](docs/RELEASE_EVIDENCE_8.3.2.md) confirms
-the exact source, immutable notes, seven successful merge checks and preserved
-old tags. On **30 October** the operator confirmed the HACS download, HA
-restart and working operation. This closes the short stable update.
+[Stable 8.3.3](docs/RELEASE_8.3.3.md), ID **429354633**, was published on
+**30 October 2026 at 18:21:55 UTC** from
+**3d4fad2330c89f134eba208e8b2db55705177e7d** and is latest stable.
+The [release evidence](docs/RELEASE_EVIDENCE_8.3.3.md) confirms the exact
+source/immutable notes, all seven actual merge checks and thirteen retained
+old tags. On **30 October**, the operator confirmed **8.3.3 installed and normal
+operation OK**. The [short stable update](docs/ACCEPTANCE_8.3.3.md) is complete.
 
-Both Configure and Reconfigure share complete weather/pollen/forecast/warning
-settings, source retry and concurrent-edit protection. The five-step beta
-acceptance on Core 2026.10.4 and earlier repair/map, first-install and restore
-evidence stay closed within their recorded scopes.
+It retains all 39 non-version component files of accepted beta 8.3.3b1:
+native icons, personal overrides and 19 translated source-error categories.
+Only two version files change. The beta icon check on **Core 2026.10.4 /
+HA OS 18.4** remains separate evidence from the later stable version/operation
+report. Shared settings, first-install and restore acceptance stay closed.
 
-## Accepted 8.3.3b1, prepared stable 8.3.3 and remaining Gold work
+## Remaining Gold and provider-evidence work
 
-The combined #80/#81 runtime was published as
-[8.3.3b1](docs/RELEASE_8.3.3b1.md), ID **429321251**, on **30 October 2026 at
-17:42:37 UTC**, from **d9fbc3fd49220b0ecc019d2babe0c173c46986f5**. The actual
-release/tag/notes and twelve earlier tags were independently checked. Seven
-actual merge checks pass with **2,045 tests plus 83 subtests** on each hosted
-HA fixture. The operator reported icons/personal choices and normal operation
-OK on **HA Core 2026.10.4 / HA OS 18.4**; the
-[short beta check](docs/ACCEPTANCE_8.3.3b1.md) is complete within its scope.
+Review diagnostic defaults for new entities, device metadata/classes, stale
+grouping and rule-specific exemptions in separate bounded scopes. Obtain
+authoritative multilingual locality aliases before adding provider name
+translations. Preserve personal registry choices, identities, history,
+four-language catalogues and existing quality/security gates.
 
-1. Review and regularly merge the [stable 8.3.3 package](docs/RELEASE_8.3.3.md).
-   It retains all 39 non-version component files of the accepted beta. Verify
-   exact-head and actual merge checks, then publish separately.
-2. After confirmed publication, complete only the
-   [short actual stable download](docs/ACCEPTANCE_8.3.3.md). Earlier icon,
-   settings, clean-install and restore checks remain closed.
-3. Review diagnostic defaults for new entities, device metadata/classes,
-   stale grouping and rule-specific exemptions in separate later scopes.
-
-Stable 8.3.2 remains latest until the separate promotion. Preserve personal
-registry choices, identities and history. The [Gold matrix](docs/QUALITY_SCALE.md)
-retains the remaining requirements; the two delivered features do not complete Gold.
+The [Gold matrix](docs/QUALITY_SCALE.md) retains these requirements. Native
+icons and translated update failures are released and accepted; they do not
+complete the full checklist. No new feature, HA test or release is approved by
+this status reconciliation.
 
 ## Implemented and released in 8.3.0
 
@@ -93,7 +83,7 @@ custom integrations.
 | Scope | Decision still needed |
 |---|---|
 | Locality names in other languages | Obtain authoritative aliases; preserve provider identities and avoid invented translations or duplicate places. |
-| Remaining Gold engineering work | Review device metadata, diagnostic defaults, stale-device handling and proposed exemptions; icon/error translations are published in accepted 8.3.3b1 and prepared for stable 8.3.3; preserve existing user choices and history. Shared-Reconfigure focused acceptance is completed within its reported scope. |
+| Remaining Gold engineering work | Review device metadata, diagnostic defaults, stale-device handling and proposed exemptions; icon/error translations are delivered in published and operator-accepted stable 8.3.3; preserve existing user choices and history. Shared-Reconfigure focused acceptance is completed within its reported scope. |
 | External contributor CodeQL | The unprivileged route is implemented; retain evidence from the first actual external-fork run. A skipped analysis is not completed analysis. |
 | Processed local-forecast data | Assess provider payloads, resource limits and compatibility separately from the already released catalogue-based ICON selection. |
 | New sources/entities | Scope and test separately; no new device actions/sources in a documentation or release change. |
