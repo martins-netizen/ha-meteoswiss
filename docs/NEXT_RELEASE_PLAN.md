@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.31 · **Updated:** 27 October 2026
+**Plan version:** 1.32 · **Updated:** 30 October 2026
 **Status:** The agreed architecture, catalogue/POI, forecast-display, shared-settings
 and station-condition scope is released in stable 8.3.0. B4 runtime acceptance,
 stable publication and HACS default-catalogue admission are complete. The operator
@@ -10,16 +10,20 @@ The current next-work overview is
 as planning history, not new instructions to repeat completed work.
 This document does not approve a new feature, installation or release.
 
-**Next bounded package:** [stable 8.3.2](RELEASE_8.3.2.md), prepared and not
-published, promotes accepted [8.3.2b1](RELEASE_8.3.2b1.md) at
-**5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**. Beta ID **425962004** was
-published on 27 October at 20:40:42 UTC; all five focused existing-entry steps
-were reported positive on **Core 2026.10.4**. Only two component version files
-change for stable. The [short stable update](ACCEPTANCE_8.3.2.md) records the
-later actual download; do not repeat accepted beta/clean-install/restore tests.
-Stable **8.3.1 / ID 424249153** remains latest until actual publication.
-Remaining Gold work and authoritative multilingual locality aliases retain
-their separate scopes. Earlier sections preserve planning at their stated dates.
+**Completed stable 8.3.2:** published on **28 October 2026 at 12:21:19 UTC**,
+ID **426633496**, from **aea4c5eab0534a6e675a4f564bde7521df193c58**. The
+operator confirmed its actual HACS download, HA restart and working operation
+on **30 October**. [Release evidence](RELEASE_EVIDENCE_8.3.2.md) retains the
+accepted beta, version-only source, successful merge checks and report limits.
+The stable check and earlier beta/clean-install/restore steps remain closed.
+
+**Next bounded work:** documentation reconciliation, icon translations in one
+focused PR, then translated update exceptions in a separate PR. Preserve
+DE/EN/FR/IT, native HA checks, personal registry choices, identities and history.
+Diagnostic defaults, device metadata/classes, stale grouping and rule-specific
+exemptions remain later Gold scopes. Authoritative multilingual locality
+aliases remain a separate provider-evidence task. Earlier sections preserve
+planning at their stated dates.
 
 ## Historical agreed scope and b1/b2 sequence — 23–24 October 2026
 

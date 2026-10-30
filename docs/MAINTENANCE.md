@@ -25,9 +25,10 @@
    and history persist and that active/upcoming warning consumers use the
    verified catalogue and preserve the provider's concrete event text.
 5. Update manifest.json, version.py and CHANGELOG.md together when preparing a
-   release. Stable `8.3.1` was published on 26 October 2026. Shared-settings
-   `8.3.2b1` is published and its five-step Core 2026.10.4 check is accepted;
-   stable `8.3.2` is prepared with only version changes. Later development changes
+   release. Stable `8.3.2` was published on 28 October 2026; its HACS download,
+   HA restart and working operation were operator-confirmed on 30 October. The
+   shared-settings beta check is also complete. See
+   [the evidence](RELEASE_EVIDENCE_8.3.2.md). Later development changes
    remain unreleased until separately packaged and accepted. Tag only
    the approved tested commit on `development`, not the upstream mirror `main`;
    preserve existing immutable stable/beta tags. HACS must point at

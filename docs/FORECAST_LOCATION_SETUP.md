@@ -61,13 +61,13 @@ remain. A loaded entry reloads once after a confirmed change without a Core
 restart. Keeping the current forecast leaves that role unchanged; other settings
 are still applied if deliberately changed and confirmed.
 
-**From published 8.3.2b1 (also retained for prepared stable 8.3.2):** **three-dot menu → Reconfigure** opens the same
+**In stable 8.3.2 (introduced in 8.3.2b1):** **three-dot menu → Reconfigure** opens the same
 complete settings dialog. You can change weather observations, measured pollen,
 forecast point and warning postcode together through either route. A failed
 source check retains the chosen search/reset for the retry. If another dialog
 saves settings first, the older dialog aborts without overwriting them; reopen
-it to review the current values. The stable 8.3.1 Reconfigure shortcut remains
-forecast-only until a release containing this follow-up is installed. The
+it to review the current values. Stable 8.3.1 and older versions keep the
+forecast-only shortcut; download stable 8.3.2 and restart HA for the shared route. The
 [focused protocol](ACCEPTANCE_8.3.2b1.md) records its completed reported acceptance.
 
 To undo a forecast move choose **Return to the original base coordinates** and

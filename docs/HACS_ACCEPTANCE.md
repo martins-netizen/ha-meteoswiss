@@ -1,6 +1,6 @@
 # HACS acceptance of the maintained fork
 
-**Updated: 27 October 2026 · Plan and evidence V1.13**
+**Updated: 30 October 2026 · Plan and evidence V1.14**
 
 ## HACS catalogue admission
 
@@ -27,20 +27,22 @@ checklist; HACS admission does not assign a Home Assistant quality tier.
 
 ## Release and operator evidence
 
-Stable **[8.3.1](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.1)**,
-ID **424249153**, was published on **26 October 2026 at 12:54:24 UTC** from
-**fa298ca72bf62da727797f9bfcacf95c83ffeaf1** and is latest stable. It retains
-the operator-accepted b1 runtime. A later actual stable HACS download remains
-unconfirmed here; publication or CI does not establish that installation.
-Published [8.3.2b1](RELEASE_8.3.2b1.md), ID **425962004**, was released
-on **27 October 2026 at 20:40:42 UTC** from
-**5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**, without changing latest stable.
-The operator reported all five [focused steps](ACCEPTANCE_8.3.2b1.md) positive
-on **HA Core 2026.10.4**. This closes that requested existing-entry acceptance,
-not a new independent registry audit or clean-install test. Prepared stable
-[8.3.2](RELEASE_8.3.2.md) retains that runtime; its later actual download uses
-the [short stable check](ACCEPTANCE_8.3.2.md). An unreported intermediate 8.3.1
-download is not a prerequisite for that update.
+Stable **[8.3.2](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.2)**,
+ID **426633496**, was published on **28 October 2026 at 12:21:19 UTC** from
+**aea4c5eab0534a6e675a4f564bde7521df193c58** and is latest stable. It retains
+the accepted beta's 38 non-version component files. On **30 October** the
+operator confirmed its actual HACS download, HA restart and working operation.
+This closes the [short stable check](ACCEPTANCE_8.3.2.md); see
+[independent publication and reported acceptance evidence](RELEASE_EVIDENCE_8.3.2.md).
+No new independent file/registry/statistic audit or Core/Python version follows
+from that short report.
+
+Published [8.3.2b1](RELEASE_8.3.2b1.md), ID **425962004**, was released on
+27 October at 20:40:42 UTC from **5a39c3cdbf31f0807f52bcb4acb26190cc1e8423**.
+All five [focused steps](ACCEPTANCE_8.3.2b1.md) were reported positive on
+**Core 2026.10.4**. That existing-entry acceptance stays closed. Stable 8.3.1
+was latest at beta publication; an unreported intermediate 8.3.1 download is
+not a prerequisite and is not requested retrospectively.
 
 Test [8.3.1b1](RELEASE_8.3.1b1.md), ID **423899845**, was published on
 26 October 2026 at **05:54:44 UTC** from
