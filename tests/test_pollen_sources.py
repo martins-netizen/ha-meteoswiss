@@ -558,7 +558,9 @@ async def test_real_entities_start_failure_recovery_and_unload(
         hazel_id = registry.async_get_entity_id(
             "sensor", DOMAIN, f"{DOMAIN}_{entry.entry_id}_ms_pollen_hazel"
         )
-        assert hass.states.get(hazel_id).attributes["icon"] == "mdi:tree-outline"
+        assert "icon" not in hass.states.get(hazel_id).attributes
+        icons = json.loads((Path(__file__).parents[1] / "custom_components" / DOMAIN / "icons.json").read_text())
+        assert icons["entity"]["sensor"]["ms_pollen_hazel"]["default"] == "mdi:tree-outline"
         saved = runtime.pollen_coordinator.data
         measured_saved = runtime.meteoswiss_pollen_coordinator.data
         clear_all_caches()
