@@ -148,8 +148,9 @@ async def test_empty_parser_output_is_unavailable(hass):
     source = station(hass)
     source._async_get_station_data_url = AsyncMock(return_value=CSV_URL)
     source._async_download_and_parse_csv = AsyncMock(return_value={})
-    with pytest.raises(UpdateFailed, match="parse station data"):
+    with pytest.raises(UpdateFailed) as caught:
         await source._async_update_data()
+    assert caught.value.translation_key == "station_data_empty"
     assert source._consecutive_failures == 1
 
 

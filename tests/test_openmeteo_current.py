@@ -189,8 +189,9 @@ async def test_invalid_response_fails_once_without_cache_or_state_mutation(
     source = coordinator(hass)
     source.weather_code = 63
     aioclient_mock.get(OPENMETEO_BASE_URL, text=json.dumps(data))
-    with pytest.raises(UpdateFailed, match="current weather"):
+    with pytest.raises(UpdateFailed) as caught:
         await source._async_update_data()
+    assert caught.value.translation_key == "current_model_unavailable"
     assert len(aioclient_mock.mock_calls) == 1
     assert get_current_weather_cache().get(CACHE_KEY) is None
     assert source.weather_code == 63
@@ -230,7 +231,11 @@ async def test_transport_errors_are_bounded_and_private(
     assert "47.451234" not in logs
     assert "8.561234" not in logs
     assert "latitude=" not in logs
-    assert "Failed to fetch Open-Meteo current weather" in logs
+    assert source.last_exception.translation_key == "current_model_unavailable"
+    assert any(
+        record.levelno >= logging.ERROR and record.name == source.logger.name
+        for record in caplog.records
+    )
 
 
 async def test_missing_session_and_cancellation(hass, aioclient_mock):
@@ -265,8 +270,9 @@ async def test_cache_age_original_ttl_and_circuit_recovery(
         with pytest.raises(UpdateFailed):
             await source._async_update_data()
     clear_all_caches()
-    with pytest.raises(UpdateFailed, match="Circuit breaker"):
+    with pytest.raises(UpdateFailed) as caught:
         await source._async_update_data()
+    assert caught.value.translation_key == "source_temporarily_paused"
     assert len(aioclient_mock.mock_calls) == 2
     freezer.tick(timedelta(minutes=6))
     assert await source._async_update_data() == original

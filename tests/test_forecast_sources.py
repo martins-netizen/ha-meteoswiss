@@ -124,7 +124,11 @@ async def test_transport_retry_policy_and_private_errors(
     assert "47.451234" not in logs
     assert "8.561234" not in logs
     assert "latitude=" not in logs
-    assert "Failed to fetch Open-Meteo forecast" in logs
+    assert source.last_exception.translation_key == "forecast_unavailable"
+    assert any(
+        record.levelno >= logging.ERROR and record.name == source.logger.name
+        for record in caplog.records
+    )
 
 
 async def test_zero_partial_numeric_and_daily_values_keep_their_meaning(
@@ -276,8 +280,9 @@ async def test_circuit_breaker_defers_requests_and_recovers(
         await source.async_refresh()
     assert not source.last_update_success
     assert len(aioclient_mock.mock_calls) == 5
-    with pytest.raises(UpdateFailed, match="Circuit breaker open"):
+    with pytest.raises(UpdateFailed) as caught:
         await source._async_update_data()
+    assert caught.value.translation_key == "source_temporarily_paused"
     assert len(aioclient_mock.mock_calls) == 5
     freezer.move_to(NOW + timedelta(minutes=5))
     aioclient_mock.clear_requests()

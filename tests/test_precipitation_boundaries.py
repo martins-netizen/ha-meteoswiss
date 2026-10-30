@@ -8,9 +8,10 @@ from unittest.mock import AsyncMock, Mock, patch
 
 import aiohttp
 import pytest
+
 from homeassistant.helpers.update_coordinator import UpdateFailed
 
-from custom_components.meteoswiss.const import API_BASE, STAC_COLLECTION
+from custom_components.meteoswiss.const import API_BASE, DOMAIN, STAC_COLLECTION
 from custom_components.meteoswiss.coordinator import (
     MeteoSwissHourlyPrecipitationCoordinator,
 )
@@ -129,10 +130,10 @@ async def test_direct_source_cancellation_propagates_without_retry(source, stage
 @pytest.mark.parametrize(
     "stage,message",
     [
-        ("metadata", "Hourly precipitation metadata unavailable"),
-        ("urls", "Could not find hourly precipitation URLs"),
-        ("data", "No valid hourly precipitation data"),
-        ("queue", "Could not queue hourly precipitation statistics"),
+        ("metadata", "precipitation_metadata_unavailable"),
+        ("urls", "precipitation_downloads_missing"),
+        ("data", "precipitation_data_empty"),
+        ("queue", "precipitation_queue_failed"),
     ],
 )
 async def test_coordinator_retains_each_failure_message_and_hides_queue_errors(
@@ -155,11 +156,13 @@ async def test_coordinator_retains_each_failure_message_and_hides_queue_errors(
             "custom_components.meteoswiss.precipitation_recorder.async_add_external_statistics",
             side_effect=ValueError("private_queue_marker"),
         ) as queue,
-        pytest.raises(UpdateFailed, match="^" + message + "$") as caught,
+        pytest.raises(UpdateFailed) as caught,
     ):
         if stage == "metadata":
             urls.side_effect = PrecipitationSourceError()
         await coordinator._async_update_data()
+    assert caught.value.translation_domain == DOMAIN
+    assert caught.value.translation_key == message
     assert "private_queue_marker" not in "".join(
         traceback.format_exception(caught.value)
     )
