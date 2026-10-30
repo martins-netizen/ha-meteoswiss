@@ -1,6 +1,6 @@
 # Entity icon translations
 
-**Scope:** unreleased development candidate, after stable 8.3.2.
+**Scope:** implemented in #80 and included in prepared [8.3.3b1](RELEASE_8.3.3b1.md), not yet published. Stable 8.3.2 retains its previous icon implementation.
 
 All 24 existing custom entity icons move from Python descriptions to
 `custom_components/meteoswiss/icons.json`, using the entities' existing

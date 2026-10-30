@@ -170,6 +170,12 @@ scope; the stable update report supplies no new Core/Python version.
 earlier clean-install/restore checks and the 8.2-to-8.3 update are complete.
 The [readiness record](docs/RELEASE_READINESS.md) retains their evidence.
 
+**Prepared test package:** [8.3.3b1](docs/RELEASE_8.3.3b1.md) bundles native
+icon translations and translated source-update errors from reviewed PRs #80/#81.
+It is **not yet published**. Stable 8.3.2 remains the normal installation route;
+the short [visual check](docs/ACCEPTANCE_8.3.3b1.md) starts only after an actual
+prerelease announcement. This package does not complete the Gold checklist.
+
 ## Data and compatibility
 
 - SwissMetNet observations and hourly precipitation statistics.

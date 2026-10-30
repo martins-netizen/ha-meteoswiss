@@ -2,8 +2,26 @@
 
 ## [Unreleased]
 
-Reconcile the actual stable 8.3.2 publication and reported HACS update in
-user guides and quality evidence. No additional runtime changes.
+Future work remains separate from the prepared package below.
+
+## [8.3.3b1] — prepared native-icons and translated-errors test package
+
+**Prepared 30 October 2026; not published or accepted on HA yet.** Bundle reviewed
+PRs [#80](https://github.com/martins-netizen/ha-meteoswiss/pull/80) and
+[#81](https://github.com/martins-netizen/ha-meteoswiss/pull/81), whose combined
+source is **c7c64d64e0efa582873d2e8e492531deb2aa6112**. Packaging changes only
+two component version files; 39 other component files match that source.
+
+- Resolve all 24 previous custom icons through native icons.json while retaining
+  the same symbols and personal registry overrides. Backend states need not
+  repeat a frontend-resolved default icon attribute.
+- Translate 21 source-update failure sites through 19 stable DE/EN/FR/IT keys,
+  preserving independent source failure, safe error chains and recovery.
+- Add fixed Beta Publisher V1.6 and a tenth regression profile. Preserve all
+  twelve earlier tags and latest stable 8.3.2; publication is a separate step.
+- Keep the [release scope](docs/RELEASE_8.3.3b1.md) and
+  [three-step visual check](docs/ACCEPTANCE_8.3.3b1.md) distinct from completed
+  settings, first-install and restore acceptance. Remaining Gold work stays open.
 
 ## [8.3.2] — 2026-10-28 · published stable promotion of accepted 8.3.2b1
 
