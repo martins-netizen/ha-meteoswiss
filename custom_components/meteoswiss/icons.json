@@ -1,0 +1,80 @@
+{
+  "entity": {
+    "sensor": {
+      "forecast_maximum_temperature_today": {
+        "default": "mdi:thermometer-high"
+      },
+      "forecast_maximum_temperature_tomorrow": {
+        "default": "mdi:thermometer-high"
+      },
+      "forecast_minimum_temperature_today": {
+        "default": "mdi:thermometer-low"
+      },
+      "forecast_minimum_temperature_tomorrow": {
+        "default": "mdi:thermometer-low"
+      },
+      "forecast_precipitation_today": {
+        "default": "mdi:weather-rainy"
+      },
+      "forecast_precipitation_tomorrow": {
+        "default": "mdi:weather-rainy"
+      },
+      "forecast_probability_today": {
+        "default": "mdi:weather-pouring"
+      },
+      "forecast_probability_tomorrow": {
+        "default": "mdi:weather-pouring"
+      },
+      "heating_degree_days": {
+        "default": "mdi:thermostat"
+      },
+      "ms_pollen_alder": {
+        "default": "mdi:pine-tree"
+      },
+      "ms_pollen_ash": {
+        "default": "mdi:leaf"
+      },
+      "ms_pollen_beech": {
+        "default": "mdi:tree-outline"
+      },
+      "ms_pollen_birch": {
+        "default": "mdi:tree"
+      },
+      "ms_pollen_grass": {
+        "default": "mdi:grass"
+      },
+      "ms_pollen_hazel": {
+        "default": "mdi:tree-outline"
+      },
+      "ms_pollen_oak": {
+        "default": "mdi:tree-outline"
+      },
+      "pollen_alder": {
+        "default": "mdi:pine-tree"
+      },
+      "pollen_ambrosia": {
+        "default": "mdi:sprout"
+      },
+      "pollen_birch": {
+        "default": "mdi:tree"
+      },
+      "pollen_grass": {
+        "default": "mdi:grass"
+      },
+      "pollen_mugwort": {
+        "default": "mdi:flower"
+      }
+    },
+    "binary_sensor": {
+      "any_alert": {
+        "default": "mdi:alert"
+      },
+      "critical_alert": {
+        "default": "mdi:alert-octagram"
+      },
+      "upcoming_alert": {
+        "default": "mdi:alert-outline"
+      }
+    }
+  }
+}
