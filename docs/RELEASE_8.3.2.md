@@ -3,7 +3,8 @@
 **Notes version:** 1.1 · **Status updated:** 30 October 2026
 
 **Published:** 28 October 2026 at **12:21:19 UTC**, release **426633496**,
-from **aea4c5eab0534a6e675a4f564bde7521df193c58**, latest stable and immutable.
+from **aea4c5eab0534a6e675a4f564bde7521df193c58**, immutable and latest until
+stable [8.3.3](RELEASE_8.3.3.md) was published on 30 October.
 On **30 October** the operator confirmed its HACS download, HA restart and
 working operation. See [the current evidence](RELEASE_EVIDENCE_8.3.2.md).
 The published release body below is retained verbatim as historical text;

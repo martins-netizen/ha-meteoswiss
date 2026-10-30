@@ -4,8 +4,10 @@
 
 [Stable 8.3.2](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.2),
 release ID **426633496**, was published on **28 October 2026 at 12:21:19 UTC**.
-It is an immutable, published stable release, not a draft or prerelease, and
-the latest-stable endpoint selects that same ID.
+It is an immutable, published stable release, not a draft or prerelease.
+The latest-stable endpoint selected this ID at its publication verification;
+stable [8.3.3](RELEASE_EVIDENCE_8.3.3.md) superseded it on 30 October.
+The evidence below remains valid for the earlier release.
 
 ## Source and published text
 

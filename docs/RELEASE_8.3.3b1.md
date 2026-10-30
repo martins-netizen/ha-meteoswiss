@@ -8,8 +8,8 @@ The immutable release/tag/notes and twelve earlier tags were independently
 verified. The operator subsequently reported icons/personal choices and normal
 operation OK on **HA Core 2026.10.4 / HA OS 18.4**; see the
 [completed short check](ACCEPTANCE_8.3.3b1.md). The published body below is
-retained verbatim. Stable 8.3.2 remains latest; [8.3.3](RELEASE_8.3.3.md) is
-prepared, not yet published.
+retained verbatim. Stable [8.3.3](RELEASE_8.3.3.md) subsequently became latest
+on 30 October; its actual installation and normal operation are also confirmed.
 
 This community fork builds on [LNKtwo/ha-meteoswiss](https://github.com/LNKtwo/ha-meteoswiss)
 and retains its MIT licence and attribution. It is not an official MeteoSwiss

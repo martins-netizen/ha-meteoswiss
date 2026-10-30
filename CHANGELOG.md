@@ -2,11 +2,14 @@
 
 ## [Unreleased]
 
-Future work remains separate from the prepared package below.
+Future work remains separate from the published release below.
 
-## [8.3.3] — prepared stable promotion of accepted 8.3.3b1
+## [8.3.3] — 2026-10-30 · published and accepted stable release
 
-**Prepared 30 October 2026; not published.** Retain published and operator-accepted
+Published **30 October 2026 at 18:21:55 UTC**, release **429354633**, from
+**3d4fad2330c89f134eba208e8b2db55705177e7d**, latest stable and immutable.
+The operator subsequently confirmed **8.3.3 installed and normal operation OK**;
+see [release evidence](docs/RELEASE_EVIDENCE_8.3.3.md). Retain published and operator-accepted
 beta **d9fbc3fd49220b0ecc019d2babe0c173c46986f5 / ID 429321251**. Only two
 component version files become 8.3.3; 39 others, HACS/CH, workflows, security
 guards and four 219-key catalogues match. See [release scope](docs/RELEASE_8.3.3.md)
@@ -49,7 +52,7 @@ Published 28 October 2026 at 12:21:19 UTC, release **426633496**, from
 version files change; 38 other files, HACS/CH, workflows and security guards
 match. [Release notes](docs/RELEASE_8.3.2.md) and the
 [short stable update](docs/ACCEPTANCE_8.3.2.md) define the scope. **8.3.2**
-is latest stable. On 30 October the operator confirmed the actual download,
+was latest until 8.3.3 on 30 October. The operator confirmed the actual download,
 HA restart and working operation; see [evidence](docs/RELEASE_EVIDENCE_8.3.2.md).
 
 - Retain the accepted complete Configure/Reconfigure transaction, retry-choice
@@ -90,7 +93,7 @@ Prepared 26 October 2026 from published and operator-accepted b1 at
 files change; 38 others, HACS metadata and workflows match. [Release notes](docs/RELEASE_8.3.1.md)
 and the [short stable update check](docs/ACCEPTANCE_8.3.1.md) define the scope.
 Published **26 October 2026 at 12:54:24 UTC**, release ID **424249153**,
-from **fa298ca72bf62da727797f9bfcacf95c83ffeaf1**; it is the latest stable.
+from **fa298ca72bf62da727797f9bfcacf95c83ffeaf1**; it was latest until 8.3.2.
 The operator's actual stable HACS download is a separate evidence item.
 
 - Promote the accepted repair notices and language-matched station-map help

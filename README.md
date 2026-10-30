@@ -142,46 +142,36 @@ and working operation. See [the bounded evidence](docs/RELEASE_EVIDENCE_8.3.2.md
 
 ## Release status
 
-**[Stable 8.3.2](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.2)
-is published and is the normal installation route.** Release ID **426633496**,
-published **28 October 2026 at 12:21:19 UTC**, from
-**aea4c5eab0534a6e675a4f564bde7521df193c58**. It retains the accepted 8.3.2b1
-runtime, changing only two component version files. Both Configure and
-Reconfigure offer the complete location-settings transaction.
+**[Stable 8.3.3](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.3)
+is published and is the normal installation route.** Release ID **429354633**,
+published **30 October 2026 at 18:21:55 UTC**, from
+**3d4fad2330c89f134eba208e8b2db55705177e7d**. It delivers native entity icons
+and translated source-update errors in German, English, French and Italian,
+retaining the accepted beta runtime with only two component version changes.
 
-The operator reported the five focused beta steps positive on **HA Core
-2026.10.4**, then confirmed the actual **8.3.2 HACS download, HA restart and
-working operation on 30 October**. The [release evidence](docs/RELEASE_EVIDENCE_8.3.2.md)
-separates those reports from source, CI and publication checks. The
-[short stable protocol](docs/ACCEPTANCE_8.3.2.md) is complete for that installation;
-other users follow the normal update guide without repeating our earlier tests.
+On **30 October**, the operator confirmed **8.3.3 installed and normal operation
+OK**, closing the [short stable update](docs/ACCEPTANCE_8.3.3.md).
+The [release evidence](docs/RELEASE_EVIDENCE_8.3.3.md) distinguishes the actual
+published source/notes, successful checks and bounded operator report.
+The earlier beta icon/personal-choice check, shared-settings tests,
+clean installation and restore remain complete within their recorded scopes.
 
 The [latest stable release page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
 is authoritative for normal installation. Select a published release in HACS;
 refreshing repository information alone does not download files. Existing users
-retain their configured entry. Earlier 8.3.1/beta releases and their immutable
-notes remain history; an intermediate 8.3.1 download is not required.
+retain their configured entry. Earlier releases and their immutable published
+notes remain history; an intermediate beta or older stable download is not required.
 
 Minimum supported HA is **2026.8.3**. Hosted CI also covers **2026.10.1**;
-additional local regression tests cover **2026.10.3**. Operator reports on
-2026.10.2/2026.10.3 and the five-step beta report on 2026.10.4 keep their own
-scope; the stable update report supplies no new Core/Python version.
-[HACS default-catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-catalogue-admission),
+earlier local regression tests cover **2026.10.3**. The accepted beta icon check
+was reported on **HA Core 2026.10.4 / HA OS 18.4**. The later stable update
+report confirms version/operation without restating Core/OS or proving a live
+Python security update. [HACS catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-catalogue-admission),
 earlier clean-install/restore checks and the 8.2-to-8.3 update are complete.
 The [readiness record](docs/RELEASE_READINESS.md) retains their evidence.
 
-**Accepted test prerelease:** [8.3.3b1](docs/RELEASE_8.3.3b1.md), release
-**429321251**, was published on **30 October 2026 at 17:42:37 UTC** from
-**d9fbc3fd49220b0ecc019d2babe0c173c46986f5**. It bundles native icon translations
-and translated source-update errors. The operator reported icons/personal choices
-and normal operation OK on **HA Core 2026.10.4 / HA OS 18.4**; the
-[focused check](docs/ACCEPTANCE_8.3.3b1.md) is complete within that report's scope.
-
-**Prepared stable promotion:** [8.3.3](docs/RELEASE_8.3.3.md) retains those
-39 non-version component files, changing only two version files. It is **not
-yet published**; stable **8.3.2** remains the normal installation route.
-Publication and the [short actual stable download](docs/ACCEPTANCE_8.3.3.md)
-are separate gates. Earlier acceptance stays closed; full Gold remains incomplete.
+Native icon/error translations are delivered in stable 8.3.3; the
+[Gold checklist](docs/QUALITY_SCALE.md) still has separate remaining work.
 
 ## Data and compatibility
 

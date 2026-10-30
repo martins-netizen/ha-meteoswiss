@@ -1,10 +1,14 @@
 # 8.3.3 — native icons and translated update errors
 
-**Notes version:** 1.0 · **Prepared:** 30 October 2026
+**Notes version:** 1.1 · **Status updated:** 30 October 2026
 
-**Status:** prepared stable promotion, not published. Stable **8.3.2** remains
-the normal installation route until actual publication is independently
-confirmed. This package retains the accepted 8.3.3b1 runtime.
+**Published and accepted:** release **429354633**, published **30 October 2026
+at 18:21:55 UTC**, from **3d4fad2330c89f134eba208e8b2db55705177e7d**,
+latest stable and immutable. The operator subsequently confirmed **8.3.3
+installed and normal operation OK**, closing the [short update](ACCEPTANCE_8.3.3.md).
+See [source/publication/check evidence](RELEASE_EVIDENCE_8.3.3.md).
+The originally published body below is retained verbatim; its publication and
+short stable update are now complete.
 
 This community fork builds on [LNKtwo/ha-meteoswiss](https://github.com/LNKtwo/ha-meteoswiss)
 and retains its MIT licence and attribution. It is not an official MeteoSwiss
