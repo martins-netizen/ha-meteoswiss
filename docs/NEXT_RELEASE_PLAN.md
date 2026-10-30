@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.33 · **Updated:** 30 October 2026
+**Plan version:** 1.34 · **Updated:** 30 October 2026
 **Status:** The agreed architecture, catalogue/POI, forecast-display, shared-settings
 and station-condition scope is released in stable 8.3.0. B4 runtime acceptance,
 stable publication and HACS default-catalogue admission are complete. The operator
@@ -17,12 +17,19 @@ on **30 October**. [Release evidence](RELEASE_EVIDENCE_8.3.2.md) retains the
 accepted beta, version-only source, successful merge checks and report limits.
 The stable check and earlier beta/clean-install/restore steps remain closed.
 
-**Next bounded work:** documentation reconciliation (#79), native icon
-translations (#80) and translated update exceptions (#81) are integrated.
-The combined [8.3.3b1 test package](RELEASE_8.3.3b1.md) is prepared but not
-published. Regular packaging review/merge, actual checks and publication precede
-the [short visual check](ACCEPTANCE_8.3.3b1.md). Preserve DE/EN/FR/IT, native HA
-checks, personal registry choices, identities and history.
+**Completed 8.3.3b1:** native icons (#80) and translated update failures (#81)
+were published as **release 429321251** on **30 October 2026 at 17:42:37 UTC**,
+from **d9fbc3fd49220b0ecc019d2babe0c173c46986f5**. The source/tag/notes and
+twelve earlier tags were independently checked. The operator reported
+**icons/personal choices OK and normal operation OK** on **Core 2026.10.4 /
+HA OS 18.4**; the [short check](ACCEPTANCE_8.3.3b1.md) is closed within its scope.
+
+**Next bounded work:** review the [stable 8.3.3 package](RELEASE_8.3.3.md),
+which retains all 39 non-version component files of that accepted beta.
+Regular merge, actual checks and separate publication precede only the
+[short actual stable download](ACCEPTANCE_8.3.3.md). Stable 8.3.2 remains latest
+until publication. Preserve DE/EN/FR/IT, native HA checks, personal choices,
+identities and history; no repeated beta/settings/restore tests or new soak.
 Diagnostic defaults, device metadata/classes, stale grouping and rule-specific
 exemptions remain later Gold scopes. Authoritative multilingual locality
 aliases remain a separate provider-evidence task. Earlier sections preserve

@@ -30,8 +30,9 @@ ROOT = Path(__file__).resolve().parents[1]
         ("v1.5", "8.3.1", "8.3.2b1", "d6ae2a0b1ae9c195c9647f6b416d347891f91a74"),
         ("stable-v1.5", "8.3.2b1", "8.3.2", "5a39c3cdbf31f0807f52bcb4acb26190cc1e8423"),
         ("v1.6", "8.3.2", "8.3.3b1", "c7c64d64e0efa582873d2e8e492531deb2aa6112"),
+        ("stable-v1.6", "8.3.3b1", "8.3.3", "d9fbc3fd49220b0ecc019d2babe0c173c46986f5"),
     ],
-    ids=["beta1", "beta2", "beta3", "beta4", "stable", "beta831", "stable831", "beta832", "stable832", "beta833"],
+    ids=["beta1", "beta2", "beta3", "beta4", "stable", "beta831", "stable831", "beta832", "stable832", "beta833", "stable833"],
 )
 def publisher(request):
     """Exercise each historical/follow-up boundary independently."""
@@ -48,6 +49,8 @@ def publisher(request):
         script = ROOT / "scripts/veroeffentliche_meteoswiss_stable_v1.5.sh"
     elif tag == "8.3.3b1":
         script = ROOT / "scripts/publish_meteoswiss_833_beta_v1.6.sh"
+    elif tag == "8.3.3":
+        script = ROOT / "scripts/publish_meteoswiss_833_stable_v1.6.sh"
     else:
         script = ROOT / f"scripts/publish_meteoswiss_830_beta_{revision}.sh"
     payload = (
@@ -58,9 +61,9 @@ def publisher(request):
     assert module.TAG == tag and module.REVIEWED_SOURCE == reviewed
     module._script = script
     module._source_version = source_version
-    module._is_stable = tag in {"8.3.0", "8.3.1", "8.3.2"}
+    module._is_stable = tag in {"8.3.0", "8.3.1", "8.3.2", "8.3.3"}
     module._identical_files = {
-        "8.3.0b4": 37, "8.3.0": 37, "8.3.1b1": 38, "8.3.1": 38, "8.3.2b1": 38, "8.3.2": 38, "8.3.3b1": 39
+        "8.3.0b4": 37, "8.3.0": 37, "8.3.1b1": 38, "8.3.1": 38, "8.3.2b1": 38, "8.3.2": 38, "8.3.3b1": 39, "8.3.3": 39
     }.get(tag, 36)
     return module
 
@@ -71,6 +74,7 @@ STABLE831_PROFILE = ("stable-v1.4", "8.3.1b1", "8.3.1", "c7b20c78d4273a33ba8c6f0
 BETA832_PROFILE = ("v1.5", "8.3.1", "8.3.2b1", "d6ae2a0b1ae9c195c9647f6b416d347891f91a74")
 STABLE832_PROFILE = ("stable-v1.5", "8.3.2b1", "8.3.2", "5a39c3cdbf31f0807f52bcb4acb26190cc1e8423")
 BETA833_PROFILE = ("v1.6", "8.3.2", "8.3.3b1", "c7c64d64e0efa582873d2e8e492531deb2aa6112")
+STABLE833_PROFILE = ("stable-v1.6", "8.3.3b1", "8.3.3", "d9fbc3fd49220b0ecc019d2babe0c173c46986f5")
 
 
 COMMIT = "a" * 40
@@ -95,11 +99,11 @@ class GitHub:
         files = json.loads(
             (ROOT / "tests/fixtures/release_830_component_paths.json").read_text()
         )
-        if publisher.TAG in {"8.3.0b4", "8.3.0", "8.3.1b1", "8.3.1", "8.3.2b1", "8.3.2", "8.3.3b1"}:
+        if publisher.TAG in {"8.3.0b4", "8.3.0", "8.3.1b1", "8.3.1", "8.3.2b1", "8.3.2", "8.3.3b1", "8.3.3"}:
             files.append(PREFIX + "station_condition.py")
-        if publisher.TAG in {"8.3.1b1", "8.3.1", "8.3.2b1", "8.3.2", "8.3.3b1"}:
+        if publisher.TAG in {"8.3.1b1", "8.3.1", "8.3.2b1", "8.3.2", "8.3.3b1", "8.3.3"}:
             files.append(PREFIX + "repair_issues.py")
-        if publisher.TAG == "8.3.3b1":
+        if publisher.TAG in {"8.3.3b1", "8.3.3"}:
             files.append(PREFIX + "icons.json")
         self.candidate = {
             path: ("100644", blob((ROOT / path).read_bytes())) for path in files
@@ -154,6 +158,7 @@ class GitHub:
                 "8.3.2b1": "8.3.1",
                 "8.3.2": "8.3.1",
                 "8.3.3b1": "8.3.2",
+                "8.3.3": "8.3.2",
             }.get(publisher.TAG, "8.2.0"),
             draft=False,
             prerelease=False,
@@ -162,6 +167,7 @@ class GitHub:
         accepted_sources = {
             "8.3.1": (423899845, "8.3.1b1"),
             "8.3.2": (425962004, "8.3.2b1"),
+            "8.3.3": (429321251, "8.3.3b1"),
         }
         source_id, source_tag = accepted_sources.get(publisher.TAG, (422790421, "8.3.0b4"))
         self.source_release = {
@@ -569,7 +575,7 @@ def test_shell_guard_runs_before_any_external_command(publisher, args, status):
 
 
 def test_profiles_preserve_the_preceding_published_betas(publisher):
-    if publisher.TAG == "8.3.3b1":
+    if publisher.TAG in {"8.3.3b1", "8.3.3"}:
         expected = {
             "8.2.0b1": "abbb6b7701134ac2573f35b425ab3f0697a80540",
             "8.2.0b2": "80bf9195ecc3d42d9e4d1beb4ce8143e2c2df2c8",
@@ -584,6 +590,9 @@ def test_profiles_preserve_the_preceding_published_betas(publisher):
             "8.3.2b1": "5a39c3cdbf31f0807f52bcb4acb26190cc1e8423",
             "8.3.2": "aea4c5eab0534a6e675a4f564bde7521df193c58",
         }
+        if publisher.TAG == "8.3.3":
+            expected["8.3.3b1"] = "d9fbc3fd49220b0ecc019d2babe0c173c46986f5"
+            assert publisher.SOURCE_RELEASE_ID == 429321251
         assert publisher.PRESERVED_TAGS == expected
         assert publisher.STABLE_RELEASE_ID == 426633496
         return
@@ -618,7 +627,7 @@ def test_profiles_preserve_the_preceding_published_betas(publisher):
         assert publisher.STABLE_RELEASE_ID == 420392277
 
 
-@pytest.mark.parametrize("publisher", [STABLE_PROFILE, STABLE831_PROFILE, STABLE832_PROFILE], indirect=True)
+@pytest.mark.parametrize("publisher", [STABLE_PROFILE, STABLE831_PROFILE, STABLE832_PROFILE, STABLE833_PROFILE], indirect=True)
 def test_stable_profile_retains_accepted_beta_and_marks_the_latest_release(publisher):
     assert publisher.PRESERVED_TAGS[publisher._source_version] == publisher.REVIEWED_SOURCE
     fake = GitHub(publisher)
@@ -637,7 +646,7 @@ def test_stable_profile_retains_accepted_beta_and_marks_the_latest_release(publi
     ("source_release", "draft", True),
     ("source_release", "prerelease", False),
 ])
-@pytest.mark.parametrize("publisher", [STABLE_PROFILE, STABLE831_PROFILE, STABLE832_PROFILE], indirect=True)
+@pytest.mark.parametrize("publisher", [STABLE_PROFILE, STABLE831_PROFILE, STABLE832_PROFILE, STABLE833_PROFILE], indirect=True)
 def test_stable_profile_requires_actual_unchanged_accepted_publications(publisher, area, key, value):
     fake = GitHub(publisher)
     getattr(fake, area)[key] = value
@@ -646,7 +655,7 @@ def test_stable_profile_requires_actual_unchanged_accepted_publications(publishe
     assert not fake.writes()
 
 
-@pytest.mark.parametrize("publisher", [STABLE_PROFILE, BETA831_PROFILE, STABLE831_PROFILE, BETA832_PROFILE, STABLE832_PROFILE, BETA833_PROFILE], indirect=True)
+@pytest.mark.parametrize("publisher", [STABLE_PROFILE, BETA831_PROFILE, STABLE831_PROFILE, BETA832_PROFILE, STABLE832_PROFILE, BETA833_PROFILE, STABLE833_PROFILE], indirect=True)
 def test_publication_profile_rechecks_latest_immediately_before_creation(publisher):
     fake = GitHub(publisher)
     latest_reads = 0

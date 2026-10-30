@@ -1,6 +1,10 @@
 # Entity icon translations
 
-**Scope:** implemented in #80 and included in prepared [8.3.3b1](RELEASE_8.3.3b1.md), not yet published. Stable 8.3.2 retains its previous icon implementation.
+**Scope:** implemented in #80 and published in [8.3.3b1](RELEASE_8.3.3b1.md)
+on 30 October 2026. The operator reported icons/personal choices and normal
+operation OK on **Core 2026.10.4 / HA OS 18.4**; see
+[acceptance limits](ACCEPTANCE_8.3.3b1.md). Stable [8.3.3](RELEASE_8.3.3.md)
+is prepared, not published; latest stable 8.3.2 retains its previous implementation.
 
 All 24 existing custom entity icons move from Python descriptions to
 `custom_components/meteoswiss/icons.json`, using the entities' existing
@@ -22,6 +26,7 @@ not assume a default `icon` attribute is always present.
 Validation checks the mapping against the earlier custom icons, links every
 key to an active description and all four catalogues, and exercises a personal
 name/icon through a native HA entry reload. Hassfest validates icons.json.
-The existing minimum/current HA jobs and quality gates still apply. No new
-release or manual HA installation is performed by this change; a later
-candidate needs a short visual check before stable publication.
+The existing minimum/current HA jobs and quality gates still apply.
+The published beta has the reported short visual check; stable promotion
+retains the same icon catalogue and runtime. No repeat visual test is required
+for that version-only promotion.

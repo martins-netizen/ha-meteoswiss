@@ -1,45 +1,65 @@
-# Release readiness: stable 8.3.2 and prepared 8.3.3b1
+# Release readiness: accepted 8.3.3b1 and prepared stable 8.3.3
 
-**Document version:** 2.14 · **Updated:** 30 October 2026
+**Document version:** 2.15 · **Updated:** 30 October 2026
+
+<a id="prepared-stable-833"></a>
+
+## Prepared stable 8.3.3
+
+**Prepared, not published.** [Stable 8.3.3](RELEASE_8.3.3.md) promotes the
+accepted published beta below. Stable **8.3.2 / ID 426633496** remains latest
+and the normal installation/recovery route until verified promotion.
+
+- **Accepted source:** published beta **d9fbc3fd49220b0ecc019d2babe0c173c46986f5**,
+  tree **80802d36d46fd21ee2d5b04c981ce657b6bbf87f**, release **429321251**.
+- **Version-only boundary:** of 41 component files, 39 non-version files
+  remain identical. Only manifest.json/version.py become **8.3.3**. HACS/CH,
+  minimum HA, workflows, security guards, icons.json and four 219-key
+  catalogues with English/source parity remain.
+- **Publication boundary:** fixed Stable Publisher V1.6 continues Stable V1.5,
+  adds an eleventh regression profile and requires the accepted beta, previous
+  stable **426633496**, all thirteen older tags, exact protected head and
+  successful checks with expected apps. Matching retries only verify.
+- **Separate gates:** exact-head checks, user approval, regular merge, actual
+  merge checks and independently confirmed publication precede installation.
+  Source/beta success is not a claim that these new package gates already ran.
+- **Remaining HA evidence:** only the [short actual stable update](ACCEPTANCE_8.3.3.md)
+  follows publication. Accepted icon, settings, first-install and restore checks
+  remain closed; no forced failure or new blanket 24-hour wait.
 
 <a id="prepared-833b1-test-candidate"></a>
 
-## Prepared 8.3.3b1: native icons and translated update failures
+## Published and accepted 8.3.3b1: native icons and translated errors
 
-**Prepared, not published and not yet visually accepted.** The
-[release scope](RELEASE_8.3.3b1.md) bundles reviewed #80/#81 without adding a
-new source or settings migration. The [three-step HA check](ACCEPTANCE_8.3.3b1.md)
-starts only after actual publication. Stable 8.3.2 remains latest and accepted.
+[8.3.3b1](RELEASE_8.3.3b1.md), ID **429321251**, was published on **30 October
+2026 at 17:42:37 UTC** from **d9fbc3fd49220b0ecc019d2babe0c173c46986f5**.
+It is an immutable prerelease. Publisher receipt/log and independent actual
+release/tag/notes/latest checks agree; all twelve earlier tags remained
+unchanged and stable 8.3.2 stayed latest. The published body matches the
+approved immutable-source export, SHA-256
+**4124b1dbe4250345bc2019763f0e4db43cfb165aa84f25f1cb3ced32e9903ca1**.
 
-- **Reviewed source complete:** actual #81 merge
-  **c7c64d64e0efa582873d2e8e492531deb2aa6112**, tree
-  **43fc687bc766bbaf4fafd845b5a95449aea85713**, incorporates #80 through a
-  normal feature merge. Only the adjacent Gold-matrix rows needed conflict
-  resolution; approved code contents were preserved. Eight combined PR checks
-  and seven actual merge checks pass. Actual source-merge CI passes **1,996
-  tests plus 83 subtests** on each HA 2026.8.3/2026.10.1.
-- **Packaging boundary:** 41 component files, 39 non-version files identical
-  to that source, two version files changed to 8.3.3b1. The four 219-key
-  catalogues, icons.json, HACS/CH, workflows and security guards are retained.
-  Fixed Beta Publisher V1.6 adds a tenth publication regression profile.
-- **Packaging gates:** exact-head native HA, Hassfest, HACS, CodeQL and
-  SonarCloud checks must pass, followed by actual regular-merge checks.
-  Source results above do not claim these candidate checks already ran.
-- **Publication gate:** the fixed publisher requires the approved protected
-  development head and all twelve earlier tags. It creates only prerelease
-  8.3.3b1 and preserves latest stable **8.3.2 / ID 426633496**. Receipt and
-  independent actual release/tag/notes checks precede an install announcement.
-- **Manual boundary:** the short version/icon/normal-operation check remains
-  pending. Native tests already load all 19 exception keys in DE/EN/FR/IT;
-  no manufactured outage, settings retest, new installation or restore is needed.
+The operator subsequently reported **icons/personal choices OK and normal
+operation OK** on **HA Core 2026.10.4 / HA OS 18.4**. This closes the
+[short focused check](ACCEPTANCE_8.3.3b1.md) within that reported scope.
+No independent registry/statistic inventory or manual triggering of every
+translated failure is inferred. The reply did not restate the integration
+version; it directly follows the requested 8.3.3b1 check.
 
-Source coverage remains **406/406 flow statements and 146/146 branches**,
-**3,516/3,517 whole-component statements and 974/974 branches**, with unchanged
-gates/four exclusions. Hosted source CI uses **Python 3.14.10 / pip 26.2.2 /
-certifi 2026.10.23 / UV_OFFLINE=true**. Historical HA uv pins remain explicitly
-unpatched offline exceptions. Packaging results will retain their own exact
-head/environment evidence; local Python 3.12 checks do not claim native HA
-validation. Full Gold and live HA/Python security remain separate assessments.
+Reviewed #80/#81 source is **c7c64d64e0efa582873d2e8e492531deb2aa6112**,
+tree **43fc687bc766bbaf4fafd845b5a95449aea85713**. The beta retains all 39
+non-version files; only manifest.json/version.py become 8.3.3b1. The actual
+packaging merge has all seven checks successful: CI **41075487719**, CodeQL
+**41075487573**, HACS **41075487638**. Both hosted HA 2026.8.3/2026.10.1 jobs
+pass **2,045 tests plus 83 subtests** (52.19 s / 52.84 s respectively).
+
+Hosted checks use **Python 3.14.10 / pip 26.2.2 / certifi 2026.10.23 /
+UV_OFFLINE=true**. Historical HA uv pins remain explicit unpatched offline
+compatibility exceptions. Flow coverage remains **406/406 statements and
+146/146 branches**; whole component **3,516/3,517 statements and 974/974
+branches**, with all strict gates and four exclusions unchanged. Local
+Python 3.12 checks do not claim native HA validation. CI does not patch a
+live HA Python image. Remaining Gold work is separate.
 
 ## Published and accepted stable 8.3.2
 
