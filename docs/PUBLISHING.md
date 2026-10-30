@@ -1,12 +1,55 @@
 # Publish the maintained fork
 
-**Procedure version:** 1.10 · **Updated:** 30 October 2026
+**Procedure version:** 1.11 · **Updated:** 30 October 2026
+
+<a id="stable-833-prepared"></a>
+
+## Stable 8.3.3 (prepared)
+
+[8.3.3](RELEASE_8.3.3.md) promotes accepted published beta
+**d9fbc3fd49220b0ecc019d2babe0c173c46986f5 / ID 429321251**. It is **prepared,
+not published**. Of 41 component files, 39 non-version files match; only two
+version files become 8.3.3. The operator's beta icon/personal-choice and normal
+operation report on **Core 2026.10.4 / HA OS 18.4** closes that focused check.
+Stable **8.3.2 / ID 426633496** remains latest until this separate promotion.
+
+1. Review and regularly merge the packaging PR. Verify its exact tree and
+   successful actual merge checks, including both HA jobs, Hassfest, HACS,
+   CodeQL and SonarCloud. Source/beta checks do not replace package checks.
+2. Download **scripts/publish_meteoswiss_833_stable_v1.6.sh** from that approved
+   merge and use existing `gh` authentication with its full SHA:
+
+   ```bash
+   bash publish_meteoswiss_833_stable_v1.6.sh --check FULL_APPROVED_PACKAGING_MERGE_SHA
+   bash publish_meteoswiss_833_stable_v1.6.sh --publish FULL_APPROVED_PACKAGING_MERGE_SHA
+   ```
+
+   Check is read-only and optional; publish repeats every gate. The sole remote
+   write creates **8.3.3**, draft=false, prerelease=false, make_latest=true.
+3. Retain JSON/log and independently verify actual release/tag/notes/latest.
+   Only then announce the [short actual stable download](ACCEPTANCE_8.3.3.md).
+   Completed beta icon, earlier settings, clean-install and restore checks
+   remain closed. Do not add a blanket new wait or force provider failures.
+
+Stable V1.6 continues fixed Stable V1.5. It pins the accepted beta, previous
+stable, all **thirteen** earlier tags, version-only source boundary, expected
+check apps and protected development head. Latest must be 8.3.2 before creation
+and the exact new release afterwards. Matching retries only verify; conflicts
+stop and uncertain writes stay unconfirmed. No HA connection, installation,
+restart or device call occurs. Historical publishers and immutable bodies remain.
 
 <a id="833b1-test-candidate-prepared"></a>
 
-## 8.3.3b1 native-icons and translated-errors test package (prepared)
+## 8.3.3b1 native-icons and translated-errors test package (completed)
 
-[8.3.3b1](RELEASE_8.3.3b1.md) is prepared, **not published**. It retains the
+[8.3.3b1](RELEASE_8.3.3b1.md), ID **429321251**, was published on **30 October
+2026 at 17:42:37 UTC** from **d9fbc3fd49220b0ecc019d2babe0c173c46986f5**.
+Actual release/tag/notes and the twelve previous tags were independently
+verified. The operator reported icons/personal choices and normal operation
+OK on **Core 2026.10.4 / HA OS 18.4**. The
+[focused check](ACCEPTANCE_8.3.3b1.md) is complete within its reported scope.
+The procedure below is completed history, not a new publication request.
+It retains the
 combined reviewed #80/#81 source **c7c64d64e0efa582873d2e8e492531deb2aa6112**,
 tree **43fc687bc766bbaf4fafd845b5a95449aea85713**. Within the 41-file component,
 39 non-version files match; only manifest.json/version.py become **8.3.3b1**.

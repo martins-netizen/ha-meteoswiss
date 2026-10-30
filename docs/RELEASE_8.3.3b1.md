@@ -1,10 +1,15 @@
 # 8.3.3b1 — native icons and translated update errors test prerelease
 
-**Notes version:** 1.0 · **Prepared:** 30 October 2026
+**Notes version:** 1.1 · **Status updated:** 30 October 2026
 
-**Status:** prepared, not published and not yet accepted on HA. Stable 8.3.2
-remains the normal installation route. Packaging review, actual merge checks
-and confirmed publication precede the short visual check below.
+**Published and accepted:** release **429321251**, published **30 October 2026
+at 17:42:37 UTC**, from **d9fbc3fd49220b0ecc019d2babe0c173c46986f5**.
+The immutable release/tag/notes and twelve earlier tags were independently
+verified. The operator subsequently reported icons/personal choices and normal
+operation OK on **HA Core 2026.10.4 / HA OS 18.4**; see the
+[completed short check](ACCEPTANCE_8.3.3b1.md). The published body below is
+retained verbatim. Stable 8.3.2 remains latest; [8.3.3](RELEASE_8.3.3.md) is
+prepared, not yet published.
 
 This community fork builds on [LNKtwo/ha-meteoswiss](https://github.com/LNKtwo/ha-meteoswiss)
 and retains its MIT licence and attribution. It is not an official MeteoSwiss

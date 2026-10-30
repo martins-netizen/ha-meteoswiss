@@ -4,9 +4,27 @@
 
 Future work remains separate from the prepared package below.
 
-## [8.3.3b1] — prepared native-icons and translated-errors test package
+## [8.3.3] — prepared stable promotion of accepted 8.3.3b1
 
-**Prepared 30 October 2026; not published or accepted on HA yet.** Bundle reviewed
+**Prepared 30 October 2026; not published.** Retain published and operator-accepted
+beta **d9fbc3fd49220b0ecc019d2babe0c173c46986f5 / ID 429321251**. Only two
+component version files become 8.3.3; 39 others, HACS/CH, workflows, security
+guards and four 219-key catalogues match. See [release scope](docs/RELEASE_8.3.3.md)
+and the [short actual stable update](docs/ACCEPTANCE_8.3.3.md).
+
+- Deliver native icons and translated source-update errors from reviewed #80/#81.
+- Record the positive beta icon/personal-choice and operation report on
+  HA Core 2026.10.4 / HA OS 18.4 without repeating earlier acceptance.
+- Add fixed Stable Publisher V1.6 and an eleventh regression profile;
+  preserve all thirteen older tags and every earlier publisher.
+- Keep full Gold and other future engineering scopes separate.
+
+## [8.3.3b1] — 2026-10-30 · published and accepted test prerelease
+
+Published **30 October 2026 at 17:42:37 UTC**, release **429321251**, from
+**d9fbc3fd49220b0ecc019d2babe0c173c46986f5**. The operator subsequently
+reported icons/personal choices and normal operation OK on **HA Core 2026.10.4 /
+HA OS 18.4**; see [acceptance](docs/ACCEPTANCE_8.3.3b1.md). Bundle reviewed
 PRs [#80](https://github.com/martins-netizen/ha-meteoswiss/pull/80) and
 [#81](https://github.com/martins-netizen/ha-meteoswiss/pull/81), whose combined
 source is **c7c64d64e0efa582873d2e8e492531deb2aa6112**. Packaging changes only
@@ -18,7 +36,7 @@ two component version files; 39 other component files match that source.
 - Translate 21 source-update failure sites through 19 stable DE/EN/FR/IT keys,
   preserving independent source failure, safe error chains and recovery.
 - Add fixed Beta Publisher V1.6 and a tenth regression profile. Preserve all
-  twelve earlier tags and latest stable 8.3.2; publication is a separate step.
+  twelve earlier tags and latest stable 8.3.2, independently verified after publication.
 - Keep the [release scope](docs/RELEASE_8.3.3b1.md) and
   [three-step visual check](docs/ACCEPTANCE_8.3.3b1.md) distinct from completed
   settings, first-install and restore acceptance. Remaining Gold work stays open.

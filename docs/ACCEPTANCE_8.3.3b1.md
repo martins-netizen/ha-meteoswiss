@@ -1,8 +1,17 @@
 # 8.3.3b1: short version and icon check
 
-**Protocol version:** 1.0 · **Prepared:** 30 October 2026
+**Protocol version:** 1.1 · **Updated:** 30 October 2026
 
-**Status:** not started. Run only after actual 8.3.3b1 publication is confirmed.
+**Completed within the reported scope.** After verified 8.3.3b1 publication
+(release **429321251**, source **d9fbc3fd49220b0ecc019d2babe0c173c46986f5**),
+the operator reported **icons/personal choices OK and normal operation OK** on
+**HA Core 2026.10.4 / HA OS 18.4**. This closes the requested focused visual
+and operation check. No separate inventory of inspected entity families,
+independent file/registry audit or manual triggering of all error translations
+is inferred. The integration version was not restated in that response;
+the report follows the requested 8.3.3b1 check.
+
+The steps below retain the completed method; they are not a repeat test request.
 Stable 8.3.2 and earlier settings, first-install and restore acceptance remain
 complete within their recorded scope.
 

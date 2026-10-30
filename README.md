@@ -170,11 +170,18 @@ scope; the stable update report supplies no new Core/Python version.
 earlier clean-install/restore checks and the 8.2-to-8.3 update are complete.
 The [readiness record](docs/RELEASE_READINESS.md) retains their evidence.
 
-**Prepared test package:** [8.3.3b1](docs/RELEASE_8.3.3b1.md) bundles native
-icon translations and translated source-update errors from reviewed PRs #80/#81.
-It is **not yet published**. Stable 8.3.2 remains the normal installation route;
-the short [visual check](docs/ACCEPTANCE_8.3.3b1.md) starts only after an actual
-prerelease announcement. This package does not complete the Gold checklist.
+**Accepted test prerelease:** [8.3.3b1](docs/RELEASE_8.3.3b1.md), release
+**429321251**, was published on **30 October 2026 at 17:42:37 UTC** from
+**d9fbc3fd49220b0ecc019d2babe0c173c46986f5**. It bundles native icon translations
+and translated source-update errors. The operator reported icons/personal choices
+and normal operation OK on **HA Core 2026.10.4 / HA OS 18.4**; the
+[focused check](docs/ACCEPTANCE_8.3.3b1.md) is complete within that report's scope.
+
+**Prepared stable promotion:** [8.3.3](docs/RELEASE_8.3.3.md) retains those
+39 non-version component files, changing only two version files. It is **not
+yet published**; stable **8.3.2** remains the normal installation route.
+Publication and the [short actual stable download](docs/ACCEPTANCE_8.3.3.md)
+are separate gates. Earlier acceptance stays closed; full Gold remains incomplete.
 
 ## Data and compatibility
 
