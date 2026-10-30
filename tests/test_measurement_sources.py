@@ -151,8 +151,8 @@ async def test_sparse_fallback_skips_invalid_values_and_preserves_older_zero(has
 @pytest.mark.parametrize(
     "content,expected",
     [
-        ("station_abbr;reference_timestamp;tre200s0\n", "parse station data"),
-        (csv_rows(row(station_abbr="OTHER")), "different or missing station"),
+        ("station_abbr;reference_timestamp;tre200s0\n", "station_data_unreadable"),
+        (csv_rows(row(station_abbr="OTHER")), "station_mismatch"),
         (
             csv_rows(
                 {
@@ -161,12 +161,12 @@ async def test_sparse_fallback_skips_invalid_values_and_preserves_older_zero(has
                     m.PARAM_TEMPERATURE: "nan",
                 }
             ),
-            "no valid measured observations",
+            "station_invalid_observations",
         ),
         (
             "station_abbr;reference_timestamp;tre200s0\nKLO;16.10.2026 07:40;"
             + "x" * 150000,
-            "parse station data",
+            "station_data_unreadable",
         ),
     ],
 )
@@ -175,8 +175,9 @@ async def test_invalid_csv_cannot_become_a_successful_refresh(
 ):
     aioclient_mock.get(STATION_URL, json=assets())
     aioclient_mock.get(CSV_URL, text=content)
-    with pytest.raises(UpdateFailed, match=expected):
+    with pytest.raises(UpdateFailed) as caught:
         await station(hass)._async_update_data()
+    assert caught.value.translation_key == expected
     assert len(aioclient_mock.mock_calls) == 2
 
 
@@ -256,8 +257,9 @@ async def test_source_cache_expiry_and_breaker_recovery(hass, aioclient_mock, fr
         await source.async_refresh()
     assert not source.last_update_success
     calls = len(aioclient_mock.mock_calls)
-    with pytest.raises(UpdateFailed, match="Circuit breaker"):
+    with pytest.raises(UpdateFailed) as caught:
         await source._async_update_data()
+    assert caught.value.translation_key == "source_temporarily_paused"
     assert len(aioclient_mock.mock_calls) == calls
     freezer.move_to("2026-10-16T07:55:00+00:00")
     aioclient_mock.clear_requests()

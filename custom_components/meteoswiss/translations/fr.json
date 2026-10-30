@@ -434,5 +434,64 @@
       "title": "Vérifier le lieu de prévision de {entry_title}",
       "description": "Le lieu de prévision enregistré ne peut pas être lu. Les prévisions de cette entrée sont indisponibles ; les mesures météo, le pollen et les avertissements conservent leurs propres paramètres.\n\n[Ouvrir les paramètres MeteoSwiss]({configuration_url}) et choisir **Configurer** pour **{entry_title}**. Choisir un autre lieu de prévision ou revenir explicitement aux coordonnées de base d’origine, puis confirmer la modification. Cet avis disparaît après l’enregistrement de paramètres valides.\n\nConserver l’entrée d’intégration existante."
     }
+  },
+  "exceptions": {
+    "station_mismatch": {
+      "message": "Les mesures téléchargées proviennent d’une autre station ou ne précisent pas la station."
+    },
+    "station_no_observations": {
+      "message": "Aucune mesure n’est actuellement disponible pour cette station."
+    },
+    "station_invalid_observations": {
+      "message": "La station n’a fourni aucune mesure exploitable."
+    },
+    "source_temporarily_paused": {
+      "message": "La source de données est temporairement suspendue après plusieurs échecs. Une nouvelle tentative sera effectuée."
+    },
+    "station_download_missing": {
+      "message": "Le téléchargement des mesures de cette station est introuvable."
+    },
+    "station_data_unreadable": {
+      "message": "Les mesures de la station n’ont pas pu être lues."
+    },
+    "station_data_empty": {
+      "message": "La station a renvoyé une réponse sans mesure."
+    },
+    "observations_unavailable": {
+      "message": "Les mesures météorologiques n’ont pas pu être actualisées."
+    },
+    "warnings_unavailable": {
+      "message": "Les alertes météorologiques et de dangers naturels n’ont pas pu être actualisées."
+    },
+    "measured_pollen_unavailable": {
+      "message": "Les données polliniques mesurées n’ont pas pu être actualisées."
+    },
+    "measured_pollen_empty": {
+      "message": "Aucune mesure pollinique exploitable n’est disponible."
+    },
+    "current_model_unavailable": {
+      "message": "Les données météorologiques actuelles modélisées n’ont pas pu être actualisées."
+    },
+    "station_condition_unavailable": {
+      "message": "L’état météorologique modélisé pour la station de mesure n’a pas pu être actualisé."
+    },
+    "forecast_unavailable": {
+      "message": "Les prévisions météorologiques n’ont pas pu être actualisées."
+    },
+    "modelled_pollen_air_quality_unavailable": {
+      "message": "Les données modélisées de pollen et de qualité de l’air n’ont pas pu être actualisées."
+    },
+    "precipitation_metadata_unavailable": {
+      "message": "L’archive des précipitations horaires est introuvable."
+    },
+    "precipitation_downloads_missing": {
+      "message": "Aucun téléchargement de précipitations n’est disponible pour la station sélectionnée."
+    },
+    "precipitation_data_empty": {
+      "message": "Aucune donnée de précipitations horaires exploitable n’est disponible."
+    },
+    "precipitation_queue_failed": {
+      "message": "Les statistiques de précipitations horaires n’ont pas pu être mises en attente de traitement."
+    }
   }
 }

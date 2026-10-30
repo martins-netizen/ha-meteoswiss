@@ -434,5 +434,64 @@
       "title": "Check the forecast location for {entry_title}",
       "description": "The saved forecast location cannot be read. Forecasts for this entry are unavailable; weather measurements, pollen and warnings keep their own settings.\n\n[Open MeteoSwiss settings]({configuration_url}) and choose **Configure** for **{entry_title}**. Select another forecast location or explicitly return to the original base coordinates, then confirm the change. This notice disappears after valid settings are saved.\n\nKeep the existing integration entry."
     }
+  },
+  "exceptions": {
+    "station_mismatch": {
+      "message": "The downloaded measurements belong to a different station or do not identify a station."
+    },
+    "station_no_observations": {
+      "message": "No measured values are currently available from this station."
+    },
+    "station_invalid_observations": {
+      "message": "The station returned no usable measured values."
+    },
+    "source_temporarily_paused": {
+      "message": "The data source is temporarily paused after repeated failures. It will be retried."
+    },
+    "station_download_missing": {
+      "message": "The measurement download for this station could not be found."
+    },
+    "station_data_unreadable": {
+      "message": "The station measurements could not be read."
+    },
+    "station_data_empty": {
+      "message": "The station returned an empty measurement response."
+    },
+    "observations_unavailable": {
+      "message": "The weather measurements could not be updated."
+    },
+    "warnings_unavailable": {
+      "message": "The weather and natural-hazard warnings could not be updated."
+    },
+    "measured_pollen_unavailable": {
+      "message": "The measured pollen source could not be updated."
+    },
+    "measured_pollen_empty": {
+      "message": "No usable measured pollen values are available."
+    },
+    "current_model_unavailable": {
+      "message": "The current modelled weather data could not be updated."
+    },
+    "station_condition_unavailable": {
+      "message": "The modelled condition for the measurement station could not be updated."
+    },
+    "forecast_unavailable": {
+      "message": "The weather forecast could not be updated."
+    },
+    "modelled_pollen_air_quality_unavailable": {
+      "message": "The modelled pollen and air quality could not be updated."
+    },
+    "precipitation_metadata_unavailable": {
+      "message": "The hourly precipitation archive could not be located."
+    },
+    "precipitation_downloads_missing": {
+      "message": "No precipitation downloads are available for the selected station."
+    },
+    "precipitation_data_empty": {
+      "message": "No usable hourly precipitation data are available."
+    },
+    "precipitation_queue_failed": {
+      "message": "The hourly precipitation statistics could not be queued for processing."
+    }
   }
 }

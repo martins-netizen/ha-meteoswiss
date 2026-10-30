@@ -265,8 +265,9 @@ async def test_cache_age_original_ttl_and_circuit_recovery(
         with pytest.raises(UpdateFailed):
             await source._async_update_data()
     clear_all_caches()
-    with pytest.raises(UpdateFailed, match="Circuit breaker"):
+    with pytest.raises(UpdateFailed) as caught:
         await source._async_update_data()
+    assert caught.value.translation_key == "source_temporarily_paused"
     assert len(aioclient_mock.mock_calls) == 2
     freezer.tick(timedelta(minutes=6))
     assert await source._async_update_data() == original

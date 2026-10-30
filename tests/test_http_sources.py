@@ -258,8 +258,9 @@ async def test_measured_pollen_limit_is_a_source_failure_without_retry(
         hass, "PZH", session=async_get_clientsession(hass)
     )
     with patch("custom_components.meteoswiss.pollen_meteoswiss.MAX_CSV_BYTES", 50):
-        with pytest.raises(UpdateFailed, match="source unavailable"):
+        with pytest.raises(UpdateFailed) as caught:
             await source._async_update_data()
+        assert caught.value.translation_key == "measured_pollen_unavailable"
     assert len(aioclient_mock.mock_calls) == 1
 
 

@@ -237,7 +237,7 @@ async def test_transport_failures_are_bounded_and_private(
         and "46.88" not in formatted
         and "private payload" not in formatted
     )
-    assert "Station model condition unavailable" in formatted
+    assert source.last_exception.translation_key == "station_condition_unavailable"
 
 
 async def test_missing_session_is_a_source_failure():
@@ -291,8 +291,9 @@ async def test_no_station_metadata_never_borrows_home_or_poi(
     hass, catalogue, aioclient_mock, station
 ):
     catalogue._stations = {"alt": station} if station else {}
-    with pytest.raises(UpdateFailed, match="Station model condition unavailable"):
+    with pytest.raises(UpdateFailed) as caught:
         await station_source(hass)._async_update_data()
+    assert caught.value.translation_key == "station_condition_unavailable"
     assert not aioclient_mock.mock_calls
 
 

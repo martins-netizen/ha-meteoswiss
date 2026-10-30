@@ -121,8 +121,9 @@ async def test_zero_is_a_real_observation_and_rain_only_stations_work(
 
 
 async def test_all_empty_source_is_a_failed_update(hass, aioclient_mock):
-    with pytest.raises(UpdateFailed, match="no measured observations"):
+    with pytest.raises(UpdateFailed) as caught:
         await download(hass, aioclient_mock, HEADER + "KLO;15.10.2026 17:40;;;;;;\n")
+    assert caught.value.translation_key == "station_no_observations"
 
 
 async def test_old_observation_behind_fresh_placeholder_still_fails_freshness_check(

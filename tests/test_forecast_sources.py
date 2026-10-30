@@ -276,8 +276,9 @@ async def test_circuit_breaker_defers_requests_and_recovers(
         await source.async_refresh()
     assert not source.last_update_success
     assert len(aioclient_mock.mock_calls) == 5
-    with pytest.raises(UpdateFailed, match="Circuit breaker open"):
+    with pytest.raises(UpdateFailed) as caught:
         await source._async_update_data()
+    assert caught.value.translation_key == "source_temporarily_paused"
     assert len(aioclient_mock.mock_calls) == 5
     freezer.move_to(NOW + timedelta(minutes=5))
     aioclient_mock.clear_requests()

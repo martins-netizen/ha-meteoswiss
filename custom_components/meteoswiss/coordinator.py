@@ -209,7 +209,10 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             (row.get("station_abbr") or "").strip().lower() != self.station_id
             for row in all_rows
         ):
-            raise UpdateFailed("CSV contains a different or missing station")
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="station_mismatch",
+            )
 
         # The provider may publish a final partial row (often rain=0
         # with all instantaneous observations still blank).
@@ -262,7 +265,10 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             None,
         )
         if observation_index is None:
-            raise UpdateFailed("CSV contains no measured observations")
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="station_no_observations",
+            )
         recent_rows = newest_first[observation_index : observation_index + 5]
         result = self._parse_csv_row_with_fallback(recent_rows)
         measured_keys = (
@@ -280,7 +286,10 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             SENSOR_FOEHN_INDEX,
         )
         if not any(result.get(key) is not None for key in measured_keys):
-            raise UpdateFailed("CSV contains no valid measured observations")
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="station_invalid_observations",
+            )
         result["source_status"] = (
             "partial_update" if observation_index else "current"
         )
@@ -498,7 +507,10 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         """Fetch data from API with caching."""
         # Circuit breaker check
         if self._circuit_open_until and datetime.now(UTC) < self._circuit_open_until:
-            raise UpdateFailed("Circuit breaker open — API temporarily unavailable")
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="source_temporarily_paused",
+            )
 
         try:
             _LOGGER.debug("Fetching data for station observations")
@@ -523,7 +535,10 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
             if csv_url is None:
                 _LOGGER.debug("Failed to find station data URL")
-                raise UpdateFailed("Could not find station data URL")
+                raise UpdateFailed(
+                    translation_domain=DOMAIN,
+                    translation_key="station_download_missing",
+                )
 
             _LOGGER.debug("Fetching station measurements")
 
@@ -532,11 +547,17 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
             if parsed_data is None:
                 _LOGGER.debug("Parsed data is None!")
-                raise UpdateFailed("Failed to parse station data: parsed_data is None")
+                raise UpdateFailed(
+                    translation_domain=DOMAIN,
+                    translation_key="station_data_unreadable",
+                )
 
             if not parsed_data:
                 _LOGGER.debug("Parsed data is empty!")
-                raise UpdateFailed("Failed to parse station data: parsed_data is empty")
+                raise UpdateFailed(
+                    translation_domain=DOMAIN,
+                    translation_key="station_data_empty",
+                )
 
             _LOGGER.debug("Station measurements decoded")
 
@@ -563,7 +584,10 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 )
             if isinstance(err, UpdateFailed):
                 raise err from None
-            raise UpdateFailed("Weather data source unavailable") from None
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="observations_unavailable",
+            ) from None
 
     async def async_close(self) -> None:
         """Close is handled centrally by the integration setup."""
@@ -599,7 +623,10 @@ class MeteoSwissAlertsCoordinator(DataUpdateCoordinator[list[WeatherAlert]]):
         try:
             alerts = await self._alerts_api.get_alerts(self._alerts_api.postal_code)
         except (aiohttp.ClientError, TimeoutError, ValueError, UnicodeError):
-            raise UpdateFailed("Weather warnings could not be updated") from None
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="warnings_unavailable",
+            ) from None
 
         self.last_successful_update = dt_util.utcnow()
 
@@ -635,9 +662,15 @@ class MeteoSwissPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         try:
             return await self.client.async_get_data()
         except MeasuredPollenUnavailable:
-            raise UpdateFailed("Measured pollen source unavailable") from None
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="measured_pollen_unavailable",
+            ) from None
         except InvalidMeasuredPollenData:
-            raise UpdateFailed("No valid measured pollen values") from None
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="measured_pollen_empty",
+            ) from None
 
 
 class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
@@ -681,7 +714,10 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
     async def _async_update_data(self) -> dict[str, Any]:
         """Commit only valid, current data; HA logs failure/recovery transitions."""
         if self._circuit_open_until and datetime.now(UTC) < self._circuit_open_until:
-            raise UpdateFailed("Circuit breaker open — API temporarily unavailable")
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="source_temporarily_paused",
+            )
         try:
             cache = get_current_weather_cache()
             cache_key = f"openmeteo:v2:{self.latitude},{self.longitude}"
@@ -710,7 +746,10 @@ class OpenMeteoDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             if self._consecutive_failures >= 5:
                 self._circuit_open_until = datetime.now(UTC) + timedelta(minutes=5)
             # Raw HTTP causes may contain coordinates, even in HA's debug log.
-            raise UpdateFailed("Failed to fetch Open-Meteo current weather") from None
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="current_model_unavailable",
+            ) from None
 
     async def async_close(self) -> None:
         """The borrowed session is owned and closed by Home Assistant."""
@@ -788,7 +827,10 @@ class MeteoSwissStationConditionCoordinator(DataUpdateCoordinator[dict[str, Any]
             RuntimeError,
         ):
             self.update_interval = timedelta(seconds=STATION_CONDITION_INTERVAL)
-            raise UpdateFailed("Station model condition unavailable") from None
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="station_condition_unavailable",
+            ) from None
 
 
 class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]]):
@@ -838,7 +880,10 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
         """Fetch forecast data from Open-Meteo API with caching."""
         # Circuit breaker check
         if self._circuit_open_until and datetime.now(UTC) < self._circuit_open_until:
-            raise UpdateFailed("Circuit breaker open — API temporarily unavailable")
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="source_temporarily_paused",
+            )
 
         _LOGGER.debug("Fetching forecast from Open-Meteo API")
 
@@ -884,7 +929,10 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
                 self._circuit_open_until = datetime.now(UTC) + timedelta(minutes=5)
             # HA logs availability transitions. Suppress raw HTTP exception chains,
             # including coordinate URLs, even when coordinator debug logs are on.
-            raise UpdateFailed("Failed to fetch Open-Meteo forecast") from None
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="forecast_unavailable",
+            ) from None
 
     @property
     def data_source(self) -> str:
@@ -954,7 +1002,10 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         try:
             data = await self.client.async_get_data()
         except OpenMeteoPollenError:
-            raise UpdateFailed("Pollen and air quality source unavailable") from None
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="modelled_pollen_air_quality_unavailable",
+            ) from None
         self._log_uv_availability(data["uv_available"])
         cache.set(cache_key, data, ttl=1800.0)
         return data
@@ -1000,12 +1051,22 @@ class MeteoSwissHourlyPrecipitationCoordinator(DataUpdateCoordinator[dict[str, A
         try:
             return await self.importer.async_import()
         except HourlyPrecipitationMetadataError:
-            raise UpdateFailed("Hourly precipitation metadata unavailable") from None
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="precipitation_metadata_unavailable",
+            ) from None
         except HourlyPrecipitationURLsMissing:
-            raise UpdateFailed("Could not find hourly precipitation URLs") from None
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="precipitation_downloads_missing",
+            ) from None
         except HourlyPrecipitationDataMissing:
-            raise UpdateFailed("No valid hourly precipitation data") from None
+            raise UpdateFailed(
+                translation_domain=DOMAIN,
+                translation_key="precipitation_data_empty",
+            ) from None
         except HourlyPrecipitationQueueError:
             raise UpdateFailed(
-                "Could not queue hourly precipitation statistics"
+                translation_domain=DOMAIN,
+                translation_key="precipitation_queue_failed",
             ) from None
