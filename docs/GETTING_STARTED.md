@@ -27,52 +27,73 @@ most accurate model in every situation. A failed warning feed is not an all-clea
 ## 1. Check prerequisites
 
 - Home Assistant **2026.8.3 or newer**, with internet access.
-- HACS installed; otherwise follow its [official installation guide](https://www.hacs.xyz/docs/use/download/download/).
+- **HA 2026.11+:** built-in **Settings → Marketplace**; no separate HACS installation.
+- **Older HA:** HACS installed using its [official installation guide](https://www.hacs.xyz/docs/use/download/download/).
 - Check the [latest stable release](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
   and [8.3.0 notes](RELEASE_8.3.0.md). A development branch is not a release.
 - Create a full HA backup, download a copy and retain its recovery key securely.
 
-## 2. Download through HACS
+<a id="2-download-through-hacs"></a>
 
-The maintained fork is in the **HACS default catalogue**, following
-[approval on 24 October 2026](HACS_ACCEPTANCE.md#hacs-catalogue-admission).
-If this fork is already downloaded, open its existing HACS entry.
-If MeteoSwiss is configured from another source, use [migration](MIGRATION.md).
+## 2. Install a published release
 
-1. Open **HACS** in the sidebar.
-2. Search for **MeteoSwiss**. Open the result and check that its repository is
-   **martins-netizen/ha-meteoswiss**, rather than the upstream project or the
-   separate radar integration.
-3. Open **Download**. Under **Need a different
-   version? → Release**, choose the announced stable release shown on the latest-stable page.
-   If it is missing, refresh repository information and check the release page;
-   do not substitute a development branch or commit.
-4. Download the selected version, then restart HA and wait for it to return.
+The maintained fork is in the community catalogue following
+[admission on 24 October 2026](HACS_ACCEPTANCE.md#hacs-catalogue-admission).
+Verify **martins-netizen/ha-meteoswiss**, rather than the upstream project or
+separate radar integration. Already configured from another source? Follow
+[migration](MIGRATION.md) before replacing files.
 
-**Update information** refreshes metadata; it does not install component files.
-Downloading installs software; the next step chooses its data locations.
+### HA 2026.11 and newer: Marketplace
+
+1. Open **Settings → Marketplace** and acknowledge the community-code notice
+   if prompted. Search for **MeteoSwiss** and verify the repository above.
+2. Select the announced published stable release, then choose **Install**.
+   A development branch is not a release.
+3. On a first installation, Marketplace opens setup and can load this integration
+   without restarting HA. Continue with the location choices below. If setup
+   does not open, use **Settings → Devices & services → Add integration**.
+4. For an **existing installation**, keep the configured entry. Updates appear
+   under **Settings → Updates** and still require an HA restart; follow the
+   repair notice after installing. Do not create a second entry.
+
+Upgrading HA to 2026.11 migrates existing HACS repositories automatically.
+Do not reinstall HACS, re-add the repository or recreate the integration just
+because the menu moved. Catalogue installs and updates do not require a GitHub
+connection. See the [official Marketplace guide](https://www.home-assistant.io/integrations/marketplace/).
+
+### Older HA: HACS
+
+1. Open **HACS** in the sidebar, search for **MeteoSwiss** and verify the owner.
+2. Open **Download/Redownload → Need a different version? → Release** and choose
+   the announced stable release on the latest-stable page.
+3. If it is missing, refresh repository information and check the release page.
+   **Update information** refreshes metadata; it does not install files.
+4. Actually download the selected release, restart HA and wait for it to return.
+   New users then add **MeteoSwiss** under **Settings → Devices & services**;
+   existing users keep their entry.
 
 ### If the repository is not listed
 
-Let HACS refresh its catalogue, reload the HACS page and search again. If the
-maintained fork is still absent, the following custom-repository route remains
-available as a fallback, including during a source switch from the upstream
-version:
+First refresh the catalogue/page and search again. Custom registration is a
+fallback; it is normally unnecessary for this listed fork.
 
-1. In **HACS**, open the top-right **three-dot menu → Custom repositories**.
-2. Add `https://github.com/martins-netizen/ha-meteoswiss`, type **Integration**.
-3. Return to the HACS list, open the maintained fork and continue with the
-   release selection and download above.
+- **HA 2026.11+:** open **Settings → Marketplace → Add from link**. Connect
+  GitHub if prompted (required for custom repositories), enter
+  `https://github.com/martins-netizen/ha-meteoswiss` and choose **Add**.
+  The type is detected automatically; choose **Integration** only if asked.
+- **Older HA:** open **HACS → three-dot menu → Custom repositories**. Add the
+  same URL with type **Integration**.
 
-If HACS reports that the repository is already in the default catalogue, close
-the custom-repository dialog and find it in the main HACS list. Adding a URL
-does not download the integration. An existing upstream installation must follow
-the [source-switch procedure](MIGRATION.md#4-switch-hacs-software-ownership);
-keep its configured HA entry and use one software owner for `meteoswiss`.
+Return to the catalogue, open the fork and install the selected release as
+above. If it is already listed, use that listing. Adding a URL alone does not
+install files. An upstream source switch follows the
+[source-switch procedure](MIGRATION.md#4-switch-hacs-software-ownership);
+keep the configured HA entry and one software owner for `meteoswiss`.
 
 ## 3. Select pollen, weather and warning locations
 
-Open **Settings → Devices & services → Add integration → MeteoSwiss**.
+Continue the setup opened by Marketplace, or open
+**Settings → Devices & services → Add integration → MeteoSwiss** for a new entry.
 
 For Swiss measurements, choose **MeteoSwiss STAC API (Swiss Stations)** and
 explicitly select a **Station for measured pollen**. You might want a pollen
@@ -171,4 +192,5 @@ for confidential vulnerabilities. Never post backups or credentials.
 
 Further references: [settings](USAGE.md), [migration](MIGRATION.md),
 [acceptance evidence](RELEASE_READINESS.md) and
-[official HACS controls](https://www.hacs.xyz/docs/use/repositories/dashboard/).
+[official Marketplace guide](https://www.home-assistant.io/integrations/marketplace/) (HA 2026.11+) and
+[legacy HACS controls](https://www.hacs.xyz/docs/use/repositories/dashboard/).
