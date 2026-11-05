@@ -31,7 +31,7 @@
    [the evidence](RELEASE_EVIDENCE_8.3.2.md). Later development changes
    remain unreleased until separately packaged and accepted. Tag only
    the approved tested commit on `development`, not the upstream mirror `main`;
-   preserve existing immutable stable/beta tags. HACS must point at
+   preserve existing immutable stable/beta tags. Marketplace (HACS on older HA) must point at
    `martins-netizen/ha-meteoswiss` and the selected tested release; never infer
    the installation's source or change it without checking the live state.
 6. Review HA breaking changes before upgrades. Review dependencies, GitHub
@@ -48,8 +48,10 @@ Do not record tokens, account data or full private diagnostic payloads.
 Follow [the publication checklist](PUBLISHING.md) for repository metadata,
 the official HACS validation, local brand assets and explicit release selection.
 [HACS catalogue admission](HACS_ACCEPTANCE.md#hacs-catalogue-admission) is complete.
-Keep the catalogue's normal HACS-search installation route first in user guides,
-with custom registration as a fallback. HACS checks and admission remain separate
+Keep **Settings → Marketplace** first in user guides for HA 2026.11+, with
+HACS as the older-HA route and custom registration as a fallback. Preserve
+historical HACS evidence and technical `hacs.json`/validation names; UI wording
+does not establish a new live acceptance result. HACS checks and admission remain separate
 from live acceptance and the [Quality Scale engineering checklist](QUALITY_SCALE.md).
 
 ## Local tool input boundaries

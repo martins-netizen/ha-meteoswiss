@@ -13,10 +13,13 @@ This is an independent community project, not an official MeteoSwiss product.
 
 **Start with the [latest published stable release](https://github.com/martins-netizen/ha-meteoswiss/releases/latest).**
 This guide describes the **8.3 series**; [8.3.0 release notes](docs/RELEASE_8.3.0.md)
-explain the changes from 8.2.0. Use a published HACS release, not a branch.
+explain the changes from 8.2.0. Use a published release, not a branch.
 
-**Available in the HACS default catalogue.** Search for **MeteoSwiss** in HACS
-and check that the repository is **martins-netizen/ha-meteoswiss**.
+**Available in the community catalogue.** On HA **2026.11 or newer**, open
+**Settings → Marketplace** and search for **MeteoSwiss**. On older HA versions,
+use HACS. Check that the repository is **martins-netizen/ha-meteoswiss**.
+Existing HACS installations migrate automatically when HA upgrades to 2026.11;
+do not reinstall HACS or recreate the MeteoSwiss entry.
 
 ## Four places: what each one is used for
 
@@ -157,7 +160,7 @@ The earlier beta icon/personal-choice check, shared-settings tests,
 clean installation and restore remain complete within their recorded scopes.
 
 The [latest stable release page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
-is authoritative for normal installation. Select a published release in HACS;
+is authoritative for normal installation. Select a published release in Marketplace (HACS on older HA);
 refreshing repository information alone does not download files. Existing users
 retain their configured entry. Earlier releases and their immutable published
 notes remain history; an intermediate beta or older stable download is not required.
@@ -213,19 +216,23 @@ For installation or update:
 
 1. Back up Home Assistant and keep the recovery key. Existing users first read
    the [migration and warning-consumer checks](docs/MIGRATION.md).
-2. Open **HACS**, search for **MeteoSwiss** and choose the entry whose repository
-   is **martins-netizen/ha-meteoswiss**. If this fork is already downloaded, open
-   that entry. For a different installed source, follow the migration guide
-   first. [Custom-repository steps](docs/GETTING_STARTED.md#if-the-repository-is-not-listed)
-   are a fallback when the catalogue entry is not yet visible.
-3. Open **Download/Redownload → Need a different version? → Release** and select
-   the announced stable release. Refresh repository information if needed;
-   then actually download it and restart HA. Do not keep two HACS repositories
-   managing the same `meteoswiss` directory.
-4. **New users only:** add **MeteoSwiss** in **Settings → Devices & services**.
-   Choose the current-weather source and a measured-pollen station, then the
-   observation station/base coordinates and the independent warning postcode.
-   Choose whether to keep the base forecast location or search for a town/POI.
+2. On **HA 2026.11+**, open **Settings → Marketplace**, acknowledge the community-code
+   notice if prompted, and search for **MeteoSwiss**. Verify
+   **martins-netizen/ha-meteoswiss**. On older HA, open **HACS** instead.
+   For a different installed source, follow migration first. The
+   [custom-repository fallback](docs/GETTING_STARTED.md#if-the-repository-is-not-listed)
+   explains **Add from link** and the older HACS menu.
+3. Select the announced published stable release and install it. For an **update**,
+   use **Settings → Updates** on HA 2026.11+, then restart through the resulting
+   repair notice. In older HACS use **Download/Redownload → Need a different
+   version? → Release**, download and restart. Refreshing metadata alone does
+   not install files. Keep one software owner for `meteoswiss`.
+4. **New users only:** Marketplace opens setup after the first installation;
+   no restart is normally needed for an integration not previously loaded.
+   Alternatively use **Settings → Devices & services → Add integration → MeteoSwiss**.
+   On older HA, restart after the HACS download before adding the integration.
+   Choose weather source, measured-pollen station, observation station/base
+   coordinates, warning postcode and the independent forecast town/POI.
 5. Existing users retain their HA entry. **Configure** edits the three MeteoSwiss
    location choices together; the HA home location remains in HA's own settings.
 

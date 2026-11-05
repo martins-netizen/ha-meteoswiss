@@ -15,9 +15,9 @@ the retired legacy season-HGT entity. This page is the detailed reference.
 | Forecast or AQ describes a different location | Forecast: check any explicit catalogue selection, otherwise the original HA/configured base location. AQ/pollen keep the base location. See the [display follow-up](FORECAST_DISPLAY.md) for a named forecast device and card targets after 8.3.0b1. |
 | Measured pollen is from another station | Choose the pollen station independently in Configure; it is not selected from the weather station. |
 | A warning card uses an old label or misses Wind/Drought | Review the actual dashboard/automation dictionaries and filters using the migration guide. |
-| The integration is missing after a new HACS download | Restart HA, then reload the browser. Existing users must not create a second entry. |
-| HACS search does not show this fork | Let HACS refresh its catalogue, reload the page and verify the repository name. Use the [documented fallback](GETTING_STARTED.md#if-the-repository-is-not-listed) if needed. |
-| HACS shows no newer version | Open the maintained fork, refresh its repository information and check the published release. Refreshing metadata does not download files; an actual download and restart are separate. |
+| The integration is missing after installation | On HA 2026.11+, continue Marketplace setup or add a new entry through Devices & services. Restart after updates or an older HACS download, then reload the browser. Existing users must not create a second entry. |
+| Marketplace/HACS search does not show this fork | Refresh the catalogue/page and verify the repository name. Use the [documented fallback](GETTING_STARTED.md#if-the-repository-is-not-listed) if needed. |
+| No newer version is offered | On HA 2026.11+ check Settings → Updates and the installed Marketplace repository; on older HA refresh its HACS information. Compare the published release. Refreshing metadata does not install files; updates still require an actual install and restart. |
 | A repair notice names an invalid saved forecast location | From 8.3.1b1, use its settings link to correct or explicitly reset that entry's forecast choice. See [the repair guide](REPAIRS.md). Temporary provider outages do not trigger this notice. |
 
 Do not delete/re-add the integration to troubleshoot. Report installed version,
@@ -32,11 +32,12 @@ and Open-Meteo is required. HA's TLS verification remains enabled. Observation,
 forecast, warning and pollen services can fail independently.
 
 Use the approved release and the installation/update procedure in the README.
-Search for **MeteoSwiss** in HACS and verify **martins-netizen/ha-meteoswiss**;
+Search for **MeteoSwiss** in **Settings → Marketplace** on HA 2026.11+
+(or HACS on older HA) and verify **martins-netizen/ha-meteoswiss**;
 the maintained fork is in the default catalogue. Existing upstream installations
 follow the migration guide before switching software ownership. Custom-repository
 registration is a [fallback](GETTING_STARTED.md#if-the-repository-is-not-listed).
-A prepared development PR is not a tested HACS release. Existing installations
+A prepared development PR is not a tested published release. Existing installations
 must retain their config entry, domain, entity unique IDs and statistic IDs.
 
 ## Refresh interval and shared location settings
@@ -386,8 +387,9 @@ private cache or every network request in the integration.
 
 In **Settings → Devices & services → MeteoSwiss**, open the relevant entry's menu
 and choose **Delete**. Remove or adjust automations and dashboards referring to
-its entities. To uninstall the custom component afterwards, remove it in HACS
-and restart HA. Existing Recorder retention/purging remains governed by HA;
+its entities. To uninstall the custom component afterwards, remove its software
+in **Settings → Marketplace** (HA 2026.11+) or HACS (older HA), then restart HA.
+Marketplace provides a restart repair for removal. Existing Recorder retention/purging remains governed by HA;
 uninstalling is not an instruction to delete historical statistics or backups.
 Do not use removal/re-addition as an update or troubleshooting procedure.
 

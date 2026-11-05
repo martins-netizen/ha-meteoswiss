@@ -1,6 +1,13 @@
 # Publish the maintained fork
 
-**Procedure version:** 1.12 · **Updated:** 30 October 2026
+**Procedure version:** 1.13 · **Updated:** 5 November 2026
+
+**Distribution UI:** On HA 2026.11+, use built-in **Settings → Marketplace**;
+older HA uses HACS. Follow [current installation/update steps](GETTING_STARTED.md).
+Existing HACS repositories migrate automatically. Historical publication and
+acceptance instructions below retain their recorded UI/version context.
+The `hacs/default` catalogue, `hacs.json` and HACS validation names remain.
+A documentation update is not a Marketplace live acceptance result.
 
 <a id="stable-833-prepared"></a>
 

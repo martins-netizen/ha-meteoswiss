@@ -1,6 +1,12 @@
 # HACS acceptance of the maintained fork
 
-**Updated: 30 October 2026 · Plan and evidence V1.14**
+**Updated: 5 November 2026 · Plan and evidence V1.15**
+
+**UI version note:** HA 2026.11+ uses built-in **Settings → Marketplace** and
+migrates HACS automatically. The recorded October HACS checks below remain
+historical evidence; they do not prove a Marketplace live installation test.
+For current installation/update steps use [getting started](GETTING_STARTED.md).
+The `hacs/default` catalogue and HACS validation retain their technical names.
 
 ## HACS catalogue admission
 
@@ -17,7 +23,8 @@ repository** label was set. With JSON schema, Sorted and JQ from the original
 run, all **13 distinct latest check results** succeeded on submission head
 **eb64488d53f6b631f2b793b328b318c622457a5c**. The old skips are historical results.
 
-New users search for **MeteoSwiss** in HACS and verify the repository owner.
+New users search for **MeteoSwiss** in Marketplace (HACS on older HA)
+and verify the repository owner.
 The [custom-repository route](GETTING_STARTED.md#if-the-repository-is-not-listed)
 remains a fallback, including for upstream source switches. Existing users keep
 their configured entry and one software owner. Catalogue admission requires no

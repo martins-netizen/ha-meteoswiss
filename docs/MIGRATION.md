@@ -32,16 +32,19 @@ and switching does not promise more accurate forecasts from the same stated mode
 
 | Existing source | Route |
 |---|---|
-| This maintained fork, already in HACS | Download only the approved update after reading its notes; do not add a second repository. |
-| LNKtwo/ha-meteoswiss through HACS | Use the software-source switch below. |
+| This maintained fork, already in Marketplace/HACS | Download only the approved update after reading its notes; do not add a second repository. |
+| LNKtwo/ha-meteoswiss through Marketplace/HACS | Use the software-source switch below. |
 | Manual files, local patches or uncertain provenance | Establish source and changes before overwriting. |
 
 The maintained fork is now in the [HACS default catalogue](HACS_ACCEPTANCE.md#hacs-catalogue-admission).
 Users who already downloaded it, including through a custom repository, keep
-that HACS entry. Catalogue admission alone requires no reinstallation or new HA
-configuration entry.
+that software entry. HA 2026.11 migrates it from HACS to **Settings → Marketplace**
+automatically. Neither this migration nor catalogue admission requires a new HA
+configuration entry or reinstalling HACS.
 
-In **HACS → three-dot menu → Repository**, record the source and version.
+On HA **2026.11+**, open the installed entry in **Settings → Marketplace**
+and record its repository and installed version. On older HA use
+**HACS → three-dot menu → Repository**.
 Matching version strings do not prove identical manually patched code.
 If provenance is unclear, stop and ask in the
 [fork issue tracker](https://github.com/martins-netizen/ha-meteoswiss/issues).
@@ -125,31 +128,33 @@ If numeric filters are unclear, have them reviewed first. Outage handling depend
 on your installation; **unavailable is not permission to open an awning**.
 Do not actuate devices merely to test migration.
 
-## 4. Switch HACS software ownership
+<a id="4-switch-hacs-software-ownership"></a>
+
+## 4. Switch software ownership
 
 When moving from `LNKtwo/ha-meteoswiss`:
 
-1. Remove its old software entry through the **HACS three-dot menu**. This removes
-   managed component files; it is not deletion of the configured integration
-   under **Devices & services**.
-2. Search for **MeteoSwiss** in the main HACS list and select the entry whose
-   repository is **martins-netizen/ha-meteoswiss**. If it is not yet visible,
-   use the [custom-repository fallback](GETTING_STARTED.md#if-the-repository-is-not-listed).
-3. Open the maintained fork and **Download/Redownload**.
-   Under **Need a different version? → Release**, explicitly select the
-   announced published stable version from the latest-stable page.
-   Verify the announced version before download. If the target is missing
-   or HACS rejects the switch, stop;
+1. On **HA 2026.11+**, use the old repository's removal action in
+   **Settings → Marketplace**. On older HA use the **HACS three-dot menu**.
+   This removes managed files, not the configured integration under
+   **Devices & services**. Keep that HA entry.
+2. Search the same catalogue for **MeteoSwiss** and verify
+   **martins-netizen/ha-meteoswiss**. If absent, use the
+   [custom-repository fallback](GETTING_STARTED.md#if-the-repository-is-not-listed).
+3. Install the announced published stable release of the maintained fork.
+   In older HACS use **Download/Redownload → Need a different version? → Release**.
+   If the target is missing or the manager rejects replacing the source, stop;
    do not delete HA configuration or edit hidden storage files.
-4. Check the paired warning changes, then restart HA **once**. No extra restart
-   is intended between removing and replacing software.
+4. Check the paired warning changes, then restart HA **once** after replacement.
+   On HA 2026.11+, follow the restart repair after the new files are installed.
+   No extra restart is intended between removing and replacing software.
 
 The [HACS acceptance precheck](HACS_ACCEPTANCE.md) distinguishes version
 selection from actual replacement. Confirm backup, recovery and target before
 removing the old software entry.
 
 Both repositories manage the same `meteoswiss` directory. Keep exactly one
-active software owner. Switching HACS source intentionally retains measurement
+active software owner. Switching software source intentionally retains measurement
 history but replaces component files; resolve local code/translation patches first.
 
 ## 5. Check the result
@@ -213,7 +218,7 @@ POI's condition. [Source and failure limits](STATION_WEATHER_CONDITION.md).
 
 B4 was the accepted runtime for stable 8.3.0; only its two component version files
 changed. Keep the existing entry and intended locations. After the stable release
-is published, refresh HACS information, actually download it, restart once and
+is published, refresh Marketplace/HACS information, actually install it, restart once and
 confirm the version, availability and current card targets. Do not repeat a
 completed first-install/restore rehearsal or invent a new 24-hour window for
 the identical runtime. Redownloading older software does not undo user settings
