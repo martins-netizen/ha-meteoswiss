@@ -2,7 +2,25 @@
 
 ## [Unreleased]
 
-Future work beyond the published test package remains separate.
+Future work beyond the prepared stable package remains separate.
+
+## [8.3.4] — prepared stable package, not published
+
+**Why upgrade from 8.3.3:** verified HA 2026.11 compatibility with the matching
+official HA test package and reproducible dependency locks; a cleaner first
+setup with optional technical helpers initially disabled; clearer current-source
+labels/attribution and virtual data-service grouping. Existing diagnostic
+choices, names, icons and IDs are retained. See the
+[practical release benefits](docs/RELEASE_8.3.4.md).
+
+Promote published and operator-accepted **8.3.4b1 / ID 437718127**, source
+`1e5c5d1a7fc1c18d520e99189ae4dd5894621706`. Retain all 39 non-version component
+files; only manifest.json/version.py become 8.3.4. Add fixed Stable Publisher
+V1.7 and the thirteenth publication profile, protecting all fifteen older tags,
+the exact accepted beta body and latest-stable selection. The HGT behaviour
+change in PR #92 stays outside this package. Review, actual package-merge
+checks, publication and the [short stable update](docs/ACCEPTANCE_8.3.4.md)
+remain separate pending steps.
 
 ## [8.3.4b1] — 2026-11-07 · published test prerelease; short operation check complete
 

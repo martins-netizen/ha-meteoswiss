@@ -1,6 +1,6 @@
 # Publish the maintained fork
 
-**Procedure version:** 1.15 · **Updated:** 7 November 2026
+**Procedure version:** 1.16 · **Updated:** 7 November 2026
 
 **Distribution UI:** On HA 2026.11+, use built-in **Settings → Marketplace**;
 older HA uses HACS. Follow [current installation/update steps](GETTING_STARTED.md).
@@ -8,6 +8,43 @@ Existing HACS repositories migrate automatically. Historical publication and
 acceptance instructions below retain their recorded UI/version context.
 The `hacs/default` catalogue, `hacs.json` and HACS validation names remain.
 A documentation update is not a Marketplace live acceptance result.
+
+<a id="stable-834-prepared"></a>
+
+## Prepared stable 8.3.4: promote the accepted 8.3.4b1 runtime
+
+[8.3.4](RELEASE_8.3.4.md) is prepared, not published or installed. Its practical
+benefits over 8.3.3 are verified HA 2026.11 support with the official test package,
+cleaner first-registration defaults and transparent source/service metadata.
+Published/accepted beta **8.3.4b1 / ID 437718127** supplies the exact runtime at
+**1e5c5d1a7fc1c18d520e99189ae4dd5894621706**. Retain 39 non-version component
+files and change only the two version files. PR #92 HGT behaviour stays separate.
+
+1. Review and regularly merge the stable packaging PR. Verify its exact tree and
+   all successful actual merge checks, including both HA jobs, tests, Hassfest,
+   Analyze Python, HACS, SonarCloud and any additional check.
+2. After that merge and publication approval, download
+   **scripts/publish_meteoswiss_834_stable_v1.7.sh** from the approved merge and
+   use its full SHA with the existing gh authentication:
+
+   ```bash
+   bash publish_meteoswiss_834_stable_v1.7.sh --check FULL_APPROVED_PACKAGING_MERGE_SHA
+   bash publish_meteoswiss_834_stable_v1.7.sh --publish FULL_APPROVED_PACKAGING_MERGE_SHA
+   ```
+
+   Check is read-only and optional; publish repeats all gates. Its sole remote
+   write creates **8.3.4**, draft=false, prerelease=false, make_latest=true.
+3. Retain the receipt/log and independently confirm actual release/tag/body,
+   source, all fifteen older tags and latest stable. Only then perform the
+   [short actual stable update](ACCEPTANCE_8.3.4.md).
+
+Fixed Stable Publisher V1.7 continues Stable V1.6. It pins accepted beta
+publication **437718127**, previous stable **8.3.3 / ID 429354633**, the beta's
+exact published-body SHA-256, version-only component boundary, expected check
+provenance and protected development head. Matching retries verify; conflicts
+stop and uncertain writes stay unconfirmed. Earlier publishers/bodies remain
+unchanged. It makes no HA connection, installation, restart or device call.
+Earlier accepted checks stay closed; no extra source switch or blanket wait.
 
 <a id="834b1-test-candidate-prepared"></a>
 
