@@ -70,7 +70,8 @@ checks:
 ```sh
 export UV_OFFLINE=true
 python scripts/check_ci_security.py bootstrap
-python -m pip install --disable-pip-version-check --constraint requirements_ci_security.txt -r requirements_test.txt
+python -m pip install --disable-pip-version-check --require-hashes --constraint requirements_ci_security.txt -r requirements_test.txt
+python -m pip check
 python scripts/check_ci_security.py installed --ha-version 2026.11.0
 python -m compileall -q custom_components/meteoswiss tests
 python scripts/check_translations.py
@@ -97,6 +98,35 @@ the station change.
 These checks do not update the separately pinned validator containers, an
 installed Home Assistant instance, or existing local environments. Those
 runtimes and certificate stores need their own security review.
+
+## Test dependency lockfiles
+
+`requirements_test.in` and `requirements_test_min.in` declare the current and
+minimum fixture inputs. Their corresponding `.txt` files are generated universal
+lockfiles: direct and transitive test dependencies have exact versions and
+SHA-256 hashes, with platform markers where required. CI and the local recipe
+install these lockfiles using pip's `--require-hashes` and verify the installed
+graph with `pip check`. The separate certifi security constraint still applies.
+The bootstrap pip version remains controlled by the pre-installation security
+check; it is not supplied by either fixture lockfile.
+
+Regenerate deliberately in an isolated maintenance environment with a patched
+uv (at least 0.13.4; generated and verified with 0.13.6), outside the frozen
+minimum fixture. These commands need network access; CI tests retain
+`UV_OFFLINE=true` throughout:
+
+```sh
+UV_OFFLINE=false uv pip compile --universal --python-version 3.14.10 --generate-hashes --output-file requirements_test.txt requirements_test.in
+UV_OFFLINE=false uv pip compile --universal --python-version 3.14.10 --generate-hashes --output-file requirements_test_min.txt requirements_test_min.in
+```
+
+An existing lockfile retains its resolved versions by default. For an intended
+dependency update, add `--upgrade-package NAME` and review every resulting
+change. Commit changed inputs and regenerated lockfiles together, then install
+both into fresh environments and run the complete compatibility/coverage
+recipe. Do not hand-edit hashes, remove upstream HA pins or automatically
+advance the frozen minimum HA/test-plugin pair. Keep private index URLs,
+credentials and machine-specific paths out of the generated files.
 
 ## Branch policy
 
