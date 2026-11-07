@@ -15,7 +15,10 @@ from .forecast_location_config import ForecastTarget
 
 from .const import (
     ATTRIBUTION,
+    DATA_SOURCE_METEOSWISS,
+    DATA_SOURCE_OPENMETEO,
     DOMAIN,
+    OPENMETEO_CURRENT_ATTRIBUTION,
     OPENMETEO_AIR_QUALITY_DEVICE_NAME,
     OPENMETEO_AIR_QUALITY_MANUFACTURER,
     OPENMETEO_AIR_QUALITY_MODEL,
@@ -35,8 +38,27 @@ class MeteoSwissCoordinatorEntity[CoordinatorT: DataUpdateCoordinator[Any]](
     """Retain HA coordinator availability, polling and listener lifecycle."""
 
 
-def weather_device_info(entry_id: str, station_name: str) -> DeviceInfo:
-    """One existing weather device shared by observations and weather entity."""
+def current_weather_attribution(data_source: str) -> str:
+    """Name the selected current source, independently of forecast/pollen."""
+    return (
+        OPENMETEO_CURRENT_ATTRIBUTION
+        if data_source == DATA_SOURCE_OPENMETEO
+        else ATTRIBUTION
+    )
+
+
+def weather_device_info(
+    entry_id: str, station_name: str, *, data_source: str = DATA_SOURCE_METEOSWISS
+) -> DeviceInfo:
+    """Keep one current-weather identity with provider-specific default labels."""
+    if data_source == DATA_SOURCE_OPENMETEO:
+        return DeviceInfo(
+            entry_type=DeviceEntryType.SERVICE,
+            identifiers={(DOMAIN, entry_id)},
+            name="Open-Meteo Current Weather",
+            manufacturer="Open-Meteo",
+            model="Weather Forecast API",
+        )
     return DeviceInfo(
         entry_type=DeviceEntryType.SERVICE,
         identifiers={(DOMAIN, entry_id)},

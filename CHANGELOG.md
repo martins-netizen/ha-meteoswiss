@@ -4,6 +4,13 @@
 
 Future work remains separate from the published release below.
 
+- Label the alternative current-weather group as Open-Meteo / Weather Forecast
+  API and attribute its current weather/sensor values to modelled Open-Meteo
+  data. Keep the existing group identity and personal registry choices.
+- Add native Configure/Reconfigure station round trips for both current-weather
+  providers: pollen groups and entity bindings are reused, without deleting
+  devices or entities. See [provider metadata](docs/PROVIDER_METADATA.md).
+
 - Register the station-catalogue and cache-statistics helpers disabled by default
   only when first created. Preserve existing enabled/disabled choices, IDs,
   personal names and icons. Users can still enable either helper.

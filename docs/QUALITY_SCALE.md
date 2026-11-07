@@ -1,6 +1,6 @@
 # Quality evidence and remaining work
 
-**Runtime assessment:** 24 October 2026. **Documentation updated:** 30 October 2026.
+**Runtime assessment:** 24 October 2026. **Documentation updated:** 7 November 2026.
 **Scope:** the 8.3 runtime accepted as
 published b4 at **a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5**. Stable packaging
 changes only two component version files. The operator confirmed b3 calendar-day
@@ -119,7 +119,7 @@ engineering work.
 
 | Rule | Assessment | Current evidence or next decision |
 |---|---|---|
-| `devices` | Partial, with unreleased service-metadata evidence | All seven virtual data-service groups now declare `DeviceEntryType.SERVICE`; native HA tests cover registration and retained personal device names/IDs on setup and reload. Legacy manufacturer/model labels are retained. Provider-specific labels for the alternative current-weather source still need separate review. See DIAGNOSTIC_DEFAULTS.md; not delivered in published 8.3.3. |
+| `devices` | Bounded automated evidence in unreleased development | All seven virtual groups declare `DeviceEntryType.SERVICE`. Current weather/sensors now label and attribute Open-Meteo separately from SwissMetNet; other groups retain their provenance. Native setup/reload tests preserve device IDs, personal names and entity registry choices. See PROVIDER_METADATA.md and DIAGNOSTIC_DEFAULTS.md; not delivered in published 8.3.3 and not a complete historical metadata audit. |
 | `diagnostics` | Evidence | Safe unloaded-entry exports, status/timestamps, aggregate cache counts and whole saved-location redaction; no raw payload or network load. |
 | `discovery` | Exemption candidate | This is a manually selected public cloud service, not a discoverable local device. Record the rule-specific applicability reason in this engineering assessment. |
 | `discovery-update-info` | Exemption candidate | No discovered network address; assess with discovery above. |
@@ -139,7 +139,7 @@ engineering work.
 | `icon-translations` | Automated and reported focused evidence in accepted published 8.3.3b1 | ICON_TRANSLATIONS.md maps all 24 previous custom icons to icons.json, retaining device-class defaults and personal registry overrides. Native HA tests cover key linkage and override persistence after reload; Hassfest validates the schema. The operator reported icons/personal choices OK on Core 2026.10.4 / HA OS 18.4 within the acceptance scope. Stable 8.3.3 now delivers the same runtime and its actual installation/operation is operator-confirmed. |
 | `reconfiguration-flow` | Automated and reported focused evidence in accepted 8.3.2b1 | Native Reconfigure and Configure share the complete weather station/base-coordinate, measured-pollen, forecast and warning-postcode transaction. Tests cover both providers/routes, explicit confirmation, cancellation at each stage, source retry with retained choices, duplicate/concurrent-edit rejection, translations and retained entity IDs with a single loaded-entry reload. The original setup confirmation remains separate. This extends stable 8.3.1's forecast-only shortcut. The operator reported all five configured-source steps positive on Core 2026.10.4; no separate registry audit or manual test of every provider is inferred. |
 | `repair-issues` | Evidence in accepted 8.3.1b1 | Invalid offline saved forecast selections raise a translated entry-specific notice linking to the existing settings. Confirmed correction/reset clears it; cancellation/failed validation retains it. Reloads preserve ignored state; disablement/removal cleans up that entry. Provider outages create no configuration notice. Native entry/settings and four-language tests cover these boundaries; the operator confirmed the requested version/visual check, without a separately reported deliberate-corruption test. Stable 8.3.1 retains that runtime. |
-| `stale-devices` | Open | Review removal of obsolete grouping after measured-pollen station changes without deleting wanted registry/history data. |
+| `stale-devices` | Bounded station-change evidence; historical orphan review open | Native Configure/Reconfigure pollen-station round trips for both current providers retain all seven device groups and every entity binding without removal calls. Entry-owned group IDs do not accumulate station-specific devices. No cleanup is needed for those tested changes; historical orphans from earlier versions have not been independently inventoried. See PROVIDER_METADATA.md. |
 
 The Gold engineering checklist therefore remains incomplete. Strict typing
 and the async/source-library requirements associated with Platinum need their

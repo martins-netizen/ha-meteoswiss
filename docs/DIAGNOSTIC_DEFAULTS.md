@@ -30,12 +30,13 @@ redacted integration diagnostics remain available independently of these helpers
 
 These groups organise data services in HA rather than user-owned physical
 devices. Each `DeviceInfo` now explicitly sets `DeviceEntryType.SERVICE`.
-Existing manufacturer/model labels and identifiers are retained, including
-the deliberate distinction between observed weather and ICON forecasts.
+Identifiers are retained, including the deliberate distinction between current
+weather and ICON forecasts. The later unreleased [provider-metadata follow-up](PROVIDER_METADATA.md)
+corrects the alternative current source's labels without creating another group.
 
 | Group | Existing identifier suffix | Manufacturer | Existing model label |
 |---|---|---|---|
-| Observed/current weather | Entry ID | MeteoSwiss | SwissMetNet |
+| Observed/current weather | Entry ID | MeteoSwiss or Open-Meteo, matching the selected current source | SwissMetNet or Weather Forecast API |
 | Forecasts and HGT | `calculated_<entry_id>` | MeteoSwiss | ICON Seamless via Open-Meteo |
 | Modelled pollen and air quality | `pollen_<entry_id>` | Open-Meteo | Air Quality API |
 | Measured pollen | `ms_pollen_<entry_id>` | MeteoSwiss | Pollen Station |
@@ -48,11 +49,12 @@ describe existing source/grouping metadata, not newly asserted hardware models.
 No hardware revision, firmware version or serial number is invented. Personal
 device names and device IDs survive the service-metadata update and reload.
 
-The legacy observed/current-weather group also retains its MeteoSwiss/SwissMetNet
-labels when the alternative Open-Meteo current source is selected. Accurate
-provider-specific labelling needs a separate review; this change does not alter
-device names or provider selection. The `devices` assessment therefore remains
-partial rather than claiming a complete metadata audit.
+The initial diagnostic-defaults change retained all legacy provider labels.
+The follow-up now labels the alternative current source as Open-Meteo, including
+its current-data attribution. It retains the same device/unique identifiers and
+personal names; provider selection and other source groups do not change.
+Published stable 8.3.3 still has the old labels. The quality assessment remains
+bounded rather than claiming a complete metadata audit.
 
 ## Regression scope
 

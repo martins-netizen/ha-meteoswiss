@@ -86,6 +86,9 @@ CONDITION_SUNNY = "sunny"
 
 # Source attribution
 ATTRIBUTION: Final = "Source: MeteoSwiss"
+OPENMETEO_CURRENT_ATTRIBUTION: Final = (
+    "Source: Open-Meteo Weather Forecast API (modelled current conditions)"
+)
 
 # Pollen station configuration
 CONF_POLLEN_STATION: Final = "pollen_station"
