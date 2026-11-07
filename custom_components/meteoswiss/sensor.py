@@ -757,8 +757,10 @@ class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntit
         self.entity_description = SensorEntityDescription(
             key="heating_degree_days",
             translation_key="heating_degree_days",
+            # A full-day prediction is neither a temperature nor a measurement.
+            # Keep its existing unit/identity, without generating measured LTS.
             device_class=None,
-            state_class=SensorStateClass.MEASUREMENT,
+            state_class=None,
             native_unit_of_measurement="°C·d",
         )
 

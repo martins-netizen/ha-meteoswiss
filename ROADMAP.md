@@ -47,8 +47,15 @@ and personal choices. Native pollen-station round trips reuse all seven groups;
 no cleanup is needed for those tested changes. Historical orphaned groups have
 not been independently inventoried and are not deleted by this change.
 
-Review remaining device classes, historical stale grouping and rule-specific
-exemptions in separate bounded scopes. Obtain
+The unreleased [Foehn/HGT metadata review](docs/SENSOR_METADATA.md) retains their
+numeric contracts without inventing device classes. It corrects the HGT
+forecast's measurement state class, keeping old statistics and ordinary history
+while stopping new forecast measurement statistics. Native Recorder tests cover
+the boundary and registry preservation. This is not included in 8.3.4b1.
+
+Wind-direction circular statistics need a separate migration policy for the
+existing arithmetic series. Review that, historical stale grouping and
+rule-specific exemptions in separate bounded scopes. Obtain
 authoritative multilingual locality aliases before adding provider name
 translations. Preserve personal registry choices, identities, history,
 four-language catalogues and existing quality/security gates.

@@ -176,6 +176,13 @@ than four hours is rejected on refresh.
 ## Daily heating degree days
 
 `heating_degree_days` is a **forecast-based HGT 12/20 estimate for today**.
+
+**Unreleased metadata correction:** the current source omits the HGT measurement
+state class. Current values, IDs and ordinary history continue, and existing
+statistic rows are retained; new forecasts no longer enter measured long-term
+statistics. Existing HGT statistics charts stop gaining points. Published
+8.3.4b1 retains the earlier declaration. See the [metadata review and history
+boundary](SENSOR_METADATA.md) before adopting that follow-up.
 At a forecast daily mean of at most 12 °C, the result is **20 minus that mean**;
 above 12 °C it is zero. A mean of 10 °C gives 10 °C·d, not 2 °C·d. Missing or
 invalid temperatures stay unknown. Attributes identify the forecast/calculation;

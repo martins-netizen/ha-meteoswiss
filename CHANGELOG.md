@@ -2,7 +2,13 @@
 
 ## [Unreleased]
 
-Future work beyond the published test package remains separate.
+- Correct forecast-based HGT metadata: omit the measurement state class so new
+  predictions do not enter measured long-term statistics. Retain numeric values,
+  units, IDs, personal choices, raw history and existing statistic rows. Native
+  Recorder tests cover fresh compilation and retained history across reload.
+  [Foehn/HGT review and chart impact](docs/SENSOR_METADATA.md) document why both
+  keep no device class and why wind-direction migration remains separate.
+  This source follow-up is not included in published 8.3.4b1.
 
 ## [8.3.4b1] — 2026-11-07 · published test prerelease; short operation check complete
 
