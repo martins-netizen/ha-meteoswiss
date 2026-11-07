@@ -31,8 +31,9 @@ ROOT = Path(__file__).resolve().parents[1]
         ("stable-v1.5", "8.3.2b1", "8.3.2", "5a39c3cdbf31f0807f52bcb4acb26190cc1e8423"),
         ("v1.6", "8.3.2", "8.3.3b1", "c7c64d64e0efa582873d2e8e492531deb2aa6112"),
         ("stable-v1.6", "8.3.3b1", "8.3.3", "d9fbc3fd49220b0ecc019d2babe0c173c46986f5"),
+        ("v1.7", "8.3.3", "8.3.4b1", "5a7eae00963d47294281da8812cb1ede35713b7f"),
     ],
-    ids=["beta1", "beta2", "beta3", "beta4", "stable", "beta831", "stable831", "beta832", "stable832", "beta833", "stable833"],
+    ids=["beta1", "beta2", "beta3", "beta4", "stable", "beta831", "stable831", "beta832", "stable832", "beta833", "stable833", "beta834"],
 )
 def publisher(request):
     """Exercise each historical/follow-up boundary independently."""
@@ -51,6 +52,8 @@ def publisher(request):
         script = ROOT / "scripts/publish_meteoswiss_833_beta_v1.6.sh"
     elif tag == "8.3.3":
         script = ROOT / "scripts/publish_meteoswiss_833_stable_v1.6.sh"
+    elif tag == "8.3.4b1":
+        script = ROOT / "scripts/publish_meteoswiss_834_beta_v1.7.sh"
     else:
         script = ROOT / f"scripts/publish_meteoswiss_830_beta_{revision}.sh"
     payload = (
@@ -63,7 +66,7 @@ def publisher(request):
     module._source_version = source_version
     module._is_stable = tag in {"8.3.0", "8.3.1", "8.3.2", "8.3.3"}
     module._identical_files = {
-        "8.3.0b4": 37, "8.3.0": 37, "8.3.1b1": 38, "8.3.1": 38, "8.3.2b1": 38, "8.3.2": 38, "8.3.3b1": 39, "8.3.3": 39
+        "8.3.0b4": 37, "8.3.0": 37, "8.3.1b1": 38, "8.3.1": 38, "8.3.2b1": 38, "8.3.2": 38, "8.3.3b1": 39, "8.3.3": 39, "8.3.4b1": 39
     }.get(tag, 36)
     return module
 
@@ -99,11 +102,11 @@ class GitHub:
         files = json.loads(
             (ROOT / "tests/fixtures/release_830_component_paths.json").read_text()
         )
-        if publisher.TAG in {"8.3.0b4", "8.3.0", "8.3.1b1", "8.3.1", "8.3.2b1", "8.3.2", "8.3.3b1", "8.3.3"}:
+        if publisher.TAG in {"8.3.0b4", "8.3.0", "8.3.1b1", "8.3.1", "8.3.2b1", "8.3.2", "8.3.3b1", "8.3.3", "8.3.4b1"}:
             files.append(PREFIX + "station_condition.py")
-        if publisher.TAG in {"8.3.1b1", "8.3.1", "8.3.2b1", "8.3.2", "8.3.3b1", "8.3.3"}:
+        if publisher.TAG in {"8.3.1b1", "8.3.1", "8.3.2b1", "8.3.2", "8.3.3b1", "8.3.3", "8.3.4b1"}:
             files.append(PREFIX + "repair_issues.py")
-        if publisher.TAG in {"8.3.3b1", "8.3.3"}:
+        if publisher.TAG in {"8.3.3b1", "8.3.3", "8.3.4b1"}:
             files.append(PREFIX + "icons.json")
         self.candidate = {
             path: ("100644", blob((ROOT / path).read_bytes())) for path in files
@@ -159,6 +162,7 @@ class GitHub:
                 "8.3.2": "8.3.1",
                 "8.3.3b1": "8.3.2",
                 "8.3.3": "8.3.2",
+                "8.3.4b1": "8.3.3",
             }.get(publisher.TAG, "8.2.0"),
             draft=False,
             prerelease=False,
@@ -575,7 +579,7 @@ def test_shell_guard_runs_before_any_external_command(publisher, args, status):
 
 
 def test_profiles_preserve_the_preceding_published_betas(publisher):
-    if publisher.TAG in {"8.3.3b1", "8.3.3"}:
+    if publisher.TAG in {"8.3.3b1", "8.3.3", "8.3.4b1"}:
         expected = {
             "8.2.0b1": "abbb6b7701134ac2573f35b425ab3f0697a80540",
             "8.2.0b2": "80bf9195ecc3d42d9e4d1beb4ce8143e2c2df2c8",
@@ -593,8 +597,11 @@ def test_profiles_preserve_the_preceding_published_betas(publisher):
         if publisher.TAG == "8.3.3":
             expected["8.3.3b1"] = "d9fbc3fd49220b0ecc019d2babe0c173c46986f5"
             assert publisher.SOURCE_RELEASE_ID == 429321251
+        if publisher.TAG == "8.3.4b1":
+            expected["8.3.3b1"] = "d9fbc3fd49220b0ecc019d2babe0c173c46986f5"
+            expected["8.3.3"] = "3d4fad2330c89f134eba208e8b2db55705177e7d"
         assert publisher.PRESERVED_TAGS == expected
-        assert publisher.STABLE_RELEASE_ID == 426633496
+        assert publisher.STABLE_RELEASE_ID == (429354633 if publisher.TAG == "8.3.4b1" else 426633496)
         return
     if publisher.TAG in {"8.3.0b2", "8.3.0b3", "8.3.0b4", "8.3.0", "8.3.1b1", "8.3.1", "8.3.2b1", "8.3.2"}:
         assert (

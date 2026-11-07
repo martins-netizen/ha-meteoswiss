@@ -1,6 +1,32 @@
-# Release readiness: published and accepted stable 8.3.3
+# Release readiness: stable 8.3.3 and prepared 8.3.4b1
 
-**Document version:** 2.16 · **Updated:** 30 October 2026
+**Document version:** 2.17 · **Updated:** 7 November 2026
+
+<a id="prepared-834b1-test-candidate"></a>
+
+## Prepared 8.3.4b1: publication and operator acceptance pending
+
+[8.3.4b1](RELEASE_8.3.4b1.md) bundles regularly merged #88/#89 from
+`5a7eae00963d47294281da8812cb1ede35713b7f`, tree
+`dded226f403b4425f02034d40c7f849572b1a401`. Eight PR-head checks and seven actual
+source-merge checks passed; the source local suites each passed 2,126 tests plus
+83 subtests on HA 2026.11.0 and minimum HA 2026.8.3. Source combined integration
+coverage is 99.977812% (3,530/3,531 statements and 976/976 branches).
+
+The package changes only the two version fields within the 41-file component;
+39 non-version files, four 219-key catalogues, HACS/CH, workflows and test locks
+are retained from that source. Fixed Publisher V1.7 and the twelfth publication
+profile preserve fourteen existing tags and latest stable 8.3.3. Packaging
+requires its own full suites and successful exact-head and actual merge checks;
+source results do not assert those checks have run.
+
+This is neither publication nor an installation report. After approved packaging
+and verified publication, the [focused check](ACCEPTANCE_8.3.4b1.md) asks for
+actual versions, retained registry choices and ordinary operation. Existing
+helper choices must stay as they were; new-registration defaults are covered by
+native tests. Alternative-source inspection is conditional on an existing entry,
+without a forced source switch. Earlier accepted settings/icons/install/restore
+checks stay closed. Historical orphans and full Gold remain separate.
 
 <a id="prepared-stable-833"></a>
 

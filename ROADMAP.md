@@ -20,6 +20,16 @@ Only two version files change. The beta icon check on **Core 2026.10.4 /
 HA OS 18.4** remains separate evidence from the later stable version/operation
 report. Shared settings, first-install and restore acceptance stay closed.
 
+## Prepared 8.3.4b1 test package
+
+[8.3.4b1](docs/RELEASE_8.3.4b1.md) packages the regularly merged diagnostic-default
+and provider-metadata changes from #88/#89. Its 39 non-version component files
+match reviewed merge `5a7eae00963d47294281da8812cb1ede35713b7f`; only two version
+files change. The fixed V1.7 publisher preserves all fourteen existing tags and
+latest stable 8.3.3. Packaging checks, publication and the
+[focused operator check](docs/ACCEPTANCE_8.3.4b1.md) are still separate pending
+steps. This preparation is not a published or installed version.
+
 ## Remaining Gold and provider-evidence work
 
 The unreleased [diagnostic-defaults and service-metadata change](docs/DIAGNOSTIC_DEFAULTS.md)

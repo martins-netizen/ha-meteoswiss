@@ -2,7 +2,16 @@
 
 ## [Unreleased]
 
-Future work remains separate from the published release below.
+Future work beyond the prepared test package remains separate.
+
+## [8.3.4b1] — prepared test prerelease, not published
+
+Prepared from regularly merged #88/#89 source `5a7eae00963d47294281da8812cb1ede35713b7f`.
+Retain all 39 non-version component files; only manifest.json/version.py become
+8.3.4b1. Add fixed Beta Publisher V1.7, a twelfth publication regression profile
+and [focused acceptance](docs/ACCEPTANCE_8.3.4b1.md). Preserve all fourteen
+existing tags, latest stable 8.3.3, CI/dependency locks and earlier publishers.
+Publication and actual HA acceptance remain pending.
 
 - Label the alternative current-weather group as Open-Meteo / Weather Forecast
   API and attribute its current weather/sensor values to modelled Open-Meteo

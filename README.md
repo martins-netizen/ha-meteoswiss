@@ -145,6 +145,8 @@ and working operation. See [the bounded evidence](docs/RELEASE_EVIDENCE_8.3.2.md
 
 ## Release status
 
+**[8.3.4b1 is prepared for review](docs/RELEASE_8.3.4b1.md), not published or installed.** It bundles diagnostic defaults, virtual service metadata and accurate alternative-provider labels from reviewed #88/#89. Stable 8.3.3 remains the normal installation target. Publication and the [focused test check](docs/ACCEPTANCE_8.3.4b1.md) follow the regular packaging merge and its actual successful checks.
+
 **[Stable 8.3.3](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.3)
 is published and is the normal installation route.** Release ID **429354633**,
 published **30 October 2026 at 18:21:55 UTC**, from
@@ -165,8 +167,10 @@ refreshing repository information alone does not download files. Existing users
 retain their configured entry. Earlier releases and their immutable published
 notes remain history; an intermediate beta or older stable download is not required.
 
-Minimum supported HA is **2026.8.3**. Hosted CI also covers **2026.10.1**;
-earlier local regression tests cover **2026.10.3**. The accepted beta icon check
+Minimum supported HA is **2026.8.3**. Current hosted CI covers **2026.11.0**
+with the matching official pytest-homeassistant package, plus an independent
+complete minimum-HA fixture. Older recorded release checks retain their stated
+HA versions; earlier local regression tests cover **2026.10.3**. The accepted beta icon check
 was reported on **HA Core 2026.10.4 / HA OS 18.4**. The later stable update
 report confirms version/operation without restating Core/OS or proving a live
 Python security update. [HACS catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-catalogue-admission),
