@@ -12,6 +12,7 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntityDescription,
 )
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.device_registry import DeviceEntryType
 from homeassistant.helpers.entity import DeviceInfo
 
 from .alerts import WeatherAlert
@@ -130,6 +131,7 @@ class MeteoSwissAlertsBinarySensor(MeteoSwissCoordinatorEntity, BinarySensorEnti
         self.entity_description = description
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_{description.key}"
         self._attr_device_info = DeviceInfo(
+            entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, f"alerts_{entry.entry_id}")},
             name=f"MeteoSwiss Alerts - {postal_code}",
             manufacturer="MeteoSwiss",
