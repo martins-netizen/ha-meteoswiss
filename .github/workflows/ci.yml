@@ -55,8 +55,12 @@ jobs:
       - name: Install test dependencies
         run: >-
           python -m pip install --disable-pip-version-check
+          --require-hashes
           --constraint requirements_ci_security.txt
           -r "${{ matrix.requirements }}"
+
+      - name: Check installed test dependency graph
+        run: python -m pip check
 
       - name: Check installed security baseline and offline uv policy
         run: python scripts/check_ci_security.py installed --ha-version "${{ matrix.ha }}"

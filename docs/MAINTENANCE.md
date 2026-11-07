@@ -13,12 +13,17 @@
    and `requirements_test.txt` (HA 2026.11.0 with the matching official test
    package). Keep the legacy test package only in the isolated minimum fixture.
    Apply the Python/pip bootstrap,
-   certifi constraint and installed-version check, and offline uv policy before
+   hash-checked generated lockfiles, `pip check`, certifi constraint,
+   installed-version check and offline uv policy before
    running the complete translations/tests/coverage sequence. Add regression
    tests for real failures. Retain `scripts/check_quality_coverage.py` and review
    the per-module report and
    `docs/QUALITY_SCALE.md` before making any quality-level claim. Review Hassfest and
    CodeQL results; do not suppress a failed check to obtain a release.
+   For dependency maintenance, update the `.in` inputs and regenerate their
+   universal SHA-256 lockfiles together using the
+   [documented maintenance environment](../DEVELOPMENT.md#test-dependency-lockfiles).
+   Preserve the frozen minimum fixture and review transitive updates explicitly.
 4. Before release, verify the installed source/commit and create a restorable
    backup including the integration and affected dashboard configuration.
    Run a live read-only check of observations, forecasts, active/upcoming alerts,
