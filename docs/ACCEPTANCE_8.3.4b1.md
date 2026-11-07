@@ -1,11 +1,26 @@
 # 8.3.4b1: focused version, registry and source-label check
 
-**Protocol version:** 1.0 · **Prepared:** 7 November 2026
+**Protocol version:** 1.1 · **Updated:** 7 November 2026
 
-**Pending publication and actual operator acceptance.** Do not start this check
-from a local branch or a metadata-refresh notification. First verify actual
-publication of the approved packaging merge. Stable 8.3.3 and earlier accepted
-settings, icon/error, first-install and restore checks retain their scope.
+**The agreed short operation check is complete.** After verified publication,
+the operator reported normal operation OK, **HA Core 2026.11.0 / HA OS 18.4**,
+and that everything works. This answers the immediately preceding 8.3.4b1
+check request; the reply does not separately restate the integration version
+or identify the instance as production hardware or a test VM. No additional
+list of names/IDs, repeat download/restart or observation window is required.
+
+This is a bounded operator report, not an independent registry/Recorder audit,
+a separate alternative-source inspection or manual proof of first-registration
+defaults. Those automated paths retain their own evidence. See
+[publication and acceptance evidence](RELEASE_EVIDENCE_8.3.4b1.md).
+Stable 8.3.3 and earlier accepted settings, icon/error, first-install and restore
+checks retain their scope.
+
+## Original focused checklist (reference, not a repeat request)
+
+The checklist below records the original requested scope. It is not a new
+installation, registry inventory or provider-switch request. Publication was
+verified before the reported operation check.
 
 1. **Install and report the actual versions.** Prefer the existing test HA and
    entry. In Marketplace (HACS on older HA), make prereleases visible, select

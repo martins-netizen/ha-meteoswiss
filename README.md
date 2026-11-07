@@ -116,7 +116,7 @@ Silver and Gold below identify the rules we use to guide improvements.
 |---|---|---|
 | **Bronze: a sound foundation** | Setup in HA, stable entity identities, tested setup and clear instructions. | The checklist records setup/configuration tests, identity checks, installation guides and valid bundled brand images. |
 | **Silver: reliable operation** | Clear unavailable states, recovery from source failures, clean unloading and a maintained support route. | All applicable Silver rules have recorded evidence, including more than 95% coverage per module. The checklist also records the underlying Bronze rules; focused b4 HA acceptance is operator-confirmed. |
-| **Gold: a more complete user experience** | Easier configuration, useful diagnostics, translations and actionable help. | The shared location dialog and actionable repair notices have bounded evidence; the repair/map follow-up was accepted in 8.3.1b1. Remaining work includes icon/error translations, diagnostic defaults, metadata and stale-device handling, plus review of proposed exemptions. The five-step shared-Reconfigure check was reported positive on Core 2026.10.4. |
+| **Gold: a more complete user experience** | Easier configuration, useful diagnostics, translations and actionable help. | The shared location dialog and actionable repair notices have bounded evidence; the repair/map follow-up was accepted in 8.3.1b1. Icons/error translations are released in 8.3.3; diagnostic defaults and bounded provider/service metadata are released in 8.3.4b1. Remaining work includes device classes, historical stale-device handling and review of proposed exemptions. The five-step shared-Reconfigure check was reported positive on Core 2026.10.4. |
 
 The [rule-by-rule assessment](docs/QUALITY_SCALE.md) links the scope, test evidence
 and remaining work. [HACS catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-catalogue-admission)
@@ -145,7 +145,7 @@ and working operation. See [the bounded evidence](docs/RELEASE_EVIDENCE_8.3.2.md
 
 ## Release status
 
-**[8.3.4b1 is prepared for review](docs/RELEASE_8.3.4b1.md), not published or installed.** It bundles diagnostic defaults, virtual service metadata and accurate alternative-provider labels from reviewed #88/#89. Stable 8.3.3 remains the normal installation target. Publication and the [focused test check](docs/ACCEPTANCE_8.3.4b1.md) follow the regular packaging merge and its actual successful checks.
+**[8.3.4b1 is published](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4b1), with normal operation operator-confirmed on 7 November 2026.** The report gives **HA Core 2026.11.0 / HA OS 18.4** and closes the agreed [short check](docs/ACCEPTANCE_8.3.4b1.md). It bundles diagnostic defaults, virtual service metadata and accurate alternative-provider labels from reviewed #88/#89. See [publication and bounded acceptance evidence](docs/RELEASE_EVIDENCE_8.3.4b1.md). **Stable 8.3.3 remains the normal installation target**; no stable 8.3.4 has been published.
 
 **[Stable 8.3.3](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.3)
 is published and is the normal installation route.** Release ID **429354633**,

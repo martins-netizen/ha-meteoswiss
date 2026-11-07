@@ -1,6 +1,6 @@
 # Publish the maintained fork
 
-**Procedure version:** 1.14 · **Updated:** 7 November 2026
+**Procedure version:** 1.15 · **Updated:** 7 November 2026
 
 **Distribution UI:** On HA 2026.11+, use built-in **Settings → Marketplace**;
 older HA uses HACS. Follow [current installation/update steps](GETTING_STARTED.md).
@@ -11,13 +11,23 @@ A documentation update is not a Marketplace live acceptance result.
 
 <a id="834b1-test-candidate-prepared"></a>
 
-## Prepared 8.3.4b1: diagnostic defaults and provider metadata
+## 8.3.4b1: publication and short operation check completed
 
-[8.3.4b1](RELEASE_8.3.4b1.md) is prepared, not published or installed. Reviewed
-#88/#89 source is `5a7eae00963d47294281da8812cb1ede35713b7f`, tree
-`dded226f403b4425f02034d40c7f849572b1a401`; its seven actual merge checks passed.
-Of 41 component files, 39 non-version files match and only two version fields
-become 8.3.4b1. Packaging has its own full suite and exact-head/merge checks.
+[8.3.4b1](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4b1),
+release **437718127**, was published on **7 November 2026 at 17:12:54 UTC**
+from regularly merged packaging PR #90,
+**1e5c5d1a7fc1c18d520e99189ae4dd5894621706**, tree
+**de678c1b9ade03b1519ba091a787497d84e5bfd7**. All seven actual packaging
+merge checks succeeded; all fourteen older tags and latest stable 8.3.3 were
+retained. Source, published body and receipt were independently verified.
+
+The operator subsequently confirmed normal operation on **HA Core 2026.11.0 /
+HA OS 18.4**, closing the agreed [short check](ACCEPTANCE_8.3.4b1.md). See
+[the evidence and its limits](RELEASE_EVIDENCE_8.3.4b1.md). The procedure below
+is completed history, not a request to rerun the publisher or HA installation.
+It retains #88/#89 runtime from `5a7eae00963d47294281da8812cb1ede35713b7f`: of
+41 component files, 39 non-version files match and only two version fields
+become 8.3.4b1. No stable 8.3.4 promotion is included.
 
 1. Review and regularly merge the packaging PR. Verify the exact tree and all
    successful actual merge checks: HA 2026.11.0, HA 2026.8.3, tests, Hassfest,

@@ -2,16 +2,22 @@
 
 ## [Unreleased]
 
-Future work beyond the prepared test package remains separate.
+Future work beyond the published test package remains separate.
 
-## [8.3.4b1] — prepared test prerelease, not published
+## [8.3.4b1] — 2026-11-07 · published test prerelease; short operation check complete
 
 Prepared from regularly merged #88/#89 source `5a7eae00963d47294281da8812cb1ede35713b7f`.
 Retain all 39 non-version component files; only manifest.json/version.py become
 8.3.4b1. Add fixed Beta Publisher V1.7, a twelfth publication regression profile
 and [focused acceptance](docs/ACCEPTANCE_8.3.4b1.md). Preserve all fourteen
 existing tags, latest stable 8.3.3, CI/dependency locks and earlier publishers.
-Publication and actual HA acceptance remain pending.
+Published **7 November 2026 at 17:12:54 UTC**, release **437718127**, from
+**1e5c5d1a7fc1c18d520e99189ae4dd5894621706** after regular packaging PR #90
+and seven successful actual merge checks. The operator subsequently confirmed
+**normal operation OK on HA Core 2026.11.0 / HA OS 18.4**, completing the
+agreed short check. The reply follows the beta check request without separately
+restating the integration version; it is not an independent registry or
+alternative-provider audit. See [release evidence](docs/RELEASE_EVIDENCE_8.3.4b1.md).
 
 - Label the alternative current-weather group as Open-Meteo / Weather Forecast
   API and attribute its current weather/sensor values to modelled Open-Meteo

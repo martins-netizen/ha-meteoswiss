@@ -1,32 +1,38 @@
-# Release readiness: stable 8.3.3 and prepared 8.3.4b1
+# Release readiness: stable 8.3.3 and published 8.3.4b1
 
-**Document version:** 2.17 · **Updated:** 7 November 2026
+**Document version:** 2.18 · **Updated:** 7 November 2026
 
 <a id="prepared-834b1-test-candidate"></a>
 
-## Prepared 8.3.4b1: publication and operator acceptance pending
+## Published 8.3.4b1; agreed short operation check complete
 
-[8.3.4b1](RELEASE_8.3.4b1.md) bundles regularly merged #88/#89 from
-`5a7eae00963d47294281da8812cb1ede35713b7f`, tree
-`dded226f403b4425f02034d40c7f849572b1a401`. Eight PR-head checks and seven actual
-source-merge checks passed; the source local suites each passed 2,126 tests plus
-83 subtests on HA 2026.11.0 and minimum HA 2026.8.3. Source combined integration
-coverage is 99.977812% (3,530/3,531 statements and 976/976 branches).
+[8.3.4b1](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4b1),
+release **437718127**, was published on **7 November 2026 at 17:12:54 UTC**
+from regularly merged packaging PR #90,
+**1e5c5d1a7fc1c18d520e99189ae4dd5894621706**, tree
+**de678c1b9ade03b1519ba091a787497d84e5bfd7**. All seven actual package-merge
+checks succeeded. The package preserves 39 non-version component files from
+#88/#89 source `5a7eae00963d47294281da8812cb1ede35713b7f`; only the two
+version fields change. Local packaging suites each passed **2,171 tests plus
+83 subtests** on HA 2026.11.0 and 2026.8.3, with **99.977812%** coverage and
+unchanged strict gates. Twelve publisher profiles and their refusal/retry
+tests retain all prior publication boundaries.
 
-The package changes only the two version fields within the 41-file component;
-39 non-version files, four 219-key catalogues, HACS/CH, workflows and test locks
-are retained from that source. Fixed Publisher V1.7 and the twelfth publication
-profile preserve fourteen existing tags and latest stable 8.3.3. Packaging
-requires its own full suites and successful exact-head and actual merge checks;
-source results do not assert those checks have run.
+Publisher receipt and independent verification agree on actual release/tag,
+source, flags and exact exported body. All fourteen older tags remain unchanged;
+**8.3.3 / ID 429354633 remains latest stable**. Original published notes and
+the immutable tag are retained. See the
+[complete evidence](RELEASE_EVIDENCE_8.3.4b1.md).
 
-This is neither publication nor an installation report. After approved packaging
-and verified publication, the [focused check](ACCEPTANCE_8.3.4b1.md) asks for
-actual versions, retained registry choices and ordinary operation. Existing
-helper choices must stay as they were; new-registration defaults are covered by
-native tests. Alternative-source inspection is conditional on an existing entry,
-without a forced source switch. Earlier accepted settings/icons/install/restore
-checks stay closed. Historical orphans and full Gold remain separate.
+The operator subsequently reported normal operation OK, **HA Core 2026.11.0 /
+HA OS 18.4**, and that everything works. This completes the agreed
+[short check](ACCEPTANCE_8.3.4b1.md). The reply follows the beta check request;
+it does not separately restate the integration version, identify the instance
+as production hardware or a VM, independently audit registry/Recorder data,
+or separately report an alternative-source inspection. No further names/IDs,
+download/restart or blanket wait are requested. Earlier accepted checks remain
+closed. Historical orphans, device classes and full Gold remain separate;
+no stable 8.3.4 promotion is included.
 
 <a id="prepared-stable-833"></a>
 

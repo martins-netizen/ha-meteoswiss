@@ -1,6 +1,6 @@
 # Current-weather provenance and station-group preservation
 
-**Status:** Included in prepared [8.3.4b1](RELEASE_8.3.4b1.md), not published or installed. Stable 8.3.3 is unchanged.
+**Status:** Released in [8.3.4b1](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4b1) on 7 November 2026. The operator confirmed normal operation on HA Core 2026.11.0 / HA OS 18.4; see the [bounded evidence](RELEASE_EVIDENCE_8.3.4b1.md). Stable 8.3.3 remains latest stable.
 
 ## Correct the selected current source
 
@@ -51,9 +51,10 @@ metadata regression fails against the previous source before the correction.
 The original source, diagnostic-default and entity-identity tests remain active.
 No validation gate, warning rule, dependency pin or advertised HA minimum changes.
 
-After eventual publication, a focused alternative-source check should show the
-correct default provider labels and retained personal names/IDs. It does not
-require changing the production source, repeating completed acceptance or
-deleting devices. Publication, actual installation and operator acceptance are
-separate from automated tests. Remaining entity classes, translations and
-historical obsolete-group questions prevent a complete Gold claim.
+The operator-confirmed normal operation closes the agreed short beta check.
+A separate manual alternative-source inspection was not reported; the native
+source/registry tests above remain the evidence for that path. No production
+source switch, repeated acceptance or device deletion is requested. Publication
+and the bounded operator report remain separate from automated tests.
+Remaining entity classes, historical obsolete-group questions and rule-specific
+exemption review prevent a complete Gold claim.
