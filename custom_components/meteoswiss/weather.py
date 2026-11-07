@@ -21,7 +21,9 @@ from homeassistant.core import HomeAssistant, callback
 from homeassistant.util import dt as dt_util
 
 from .const import (
+    CONF_DATA_SOURCE,
     CONF_STATION_NAME,
+    DATA_SOURCE_METEOSWISS,
     DOMAIN,
     SENSOR_HUMIDITY,
     SENSOR_PRECIPITATION,
@@ -38,6 +40,7 @@ from .coordinator import (
 )
 from .entity import (
     MeteoSwissCoordinatorEntity,
+    current_weather_attribution,
     forecast_device_info,
     weather_device_info,
 )
@@ -324,7 +327,11 @@ class MeteoSwissWeather(
         self._forecast_coordinator = forecast_coordinator
         self._station_condition_coordinator = station_condition_coordinator
         self._forecast_target = resolve_forecast_target(entry.data, None, None)
-        self._attr_device_info = weather_device_info(entry.entry_id, station_name)
+        data_source = entry.data.get(CONF_DATA_SOURCE, DATA_SOURCE_METEOSWISS)
+        self._attr_device_info = weather_device_info(
+            entry.entry_id, station_name, data_source=data_source
+        )
+        self._attr_attribution = current_weather_attribution(data_source)
         self._attr_name = None
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_weather"
 

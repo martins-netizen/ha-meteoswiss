@@ -26,9 +26,14 @@ The unreleased [diagnostic-defaults and service-metadata change](docs/DIAGNOSTIC
 adds first-registration diagnostic defaults and explicit virtual service groups,
 with registry-preservation tests. Stable 8.3.3 does not include this change.
 
-Review provider-specific labels for the alternative current-weather group,
-remaining device classes, stale
-grouping and rule-specific exemptions in separate bounded scopes. Obtain
+The unreleased [provider-metadata follow-up](docs/PROVIDER_METADATA.md) corrects
+Open-Meteo current-weather labels and attribution while keeping group identity
+and personal choices. Native pollen-station round trips reuse all seven groups;
+no cleanup is needed for those tested changes. Historical orphaned groups have
+not been independently inventoried and are not deleted by this change.
+
+Review remaining device classes, historical stale grouping and rule-specific
+exemptions in separate bounded scopes. Obtain
 authoritative multilingual locality aliases before adding provider name
 translations. Preserve personal registry choices, identities, history,
 four-language catalogues and existing quality/security gates.
@@ -88,7 +93,7 @@ custom integrations.
 | Scope | Decision still needed |
 |---|---|
 | Locality names in other languages | Obtain authoritative aliases; preserve provider identities and avoid invented translations or duplicate places. |
-| Remaining Gold engineering work | First-registration diagnostic defaults and service metadata are implemented in unreleased development; review alternative-provider labels, device classes, stale-device handling and proposed exemptions separately. Icon/error translations are delivered in published and operator-accepted stable 8.3.3; preserve existing user choices and history. Shared-Reconfigure focused acceptance is completed within its reported scope. |
+| Remaining Gold engineering work | Diagnostic defaults, service metadata and alternative-provider labels are implemented in unreleased development. Native pollen-station changes reuse the existing groups; historical orphan review, device classes and proposed exemptions remain separate. Icon/error translations are delivered in published and operator-accepted stable 8.3.3; preserve existing user choices and history. Shared-Reconfigure focused acceptance is completed within its reported scope. |
 | External contributor CodeQL | The unprivileged route is implemented; retain evidence from the first actual external-fork run. A skipped analysis is not completed analysis. |
 | Processed local-forecast data | Assess provider payloads, resource limits and compatibility separately from the already released catalogue-based ICON selection. |
 | New sources/entities | Scope and test separately; no new device actions/sources in a documentation or release change. |

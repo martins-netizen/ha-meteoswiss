@@ -46,6 +46,7 @@ from .const import (
     CONF_POLLEN_STATION,
     CONF_STATION_NAME,
     DATA_SOURCE_OPENMETEO,
+    DATA_SOURCE_METEOSWISS,
     DEFAULT_POLLEN_STATION,
     DOMAIN,
     LEGACY_PRECIPITATION_CURRENT_HOUR,
@@ -75,6 +76,7 @@ from .entity import (
     MeteoSwissCoordinatorEntity,
     MeteoSwissEntity,
     air_quality_device_info,
+    current_weather_attribution,
     weather_device_info,
 )
 from .forecast_location_config import resolve_forecast_target
@@ -463,7 +465,11 @@ class MeteoSwissSensor(
             else description
         )
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_{description.key}"
-        self._attr_device_info = weather_device_info(entry.entry_id, station_name)
+        data_source = entry.data.get(CONF_DATA_SOURCE, DATA_SOURCE_METEOSWISS)
+        self._attr_device_info = weather_device_info(
+            entry.entry_id, station_name, data_source=data_source
+        )
+        self._attr_attribution = current_weather_attribution(data_source)
         self._attr_native_value = (
             coordinator.data.get(description.value_key) if coordinator.data else None
         )
