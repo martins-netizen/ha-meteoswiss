@@ -145,6 +145,16 @@ and working operation. See [the bounded evidence](docs/RELEASE_EVIDENCE_8.3.2.md
 
 ## Release status
 
+**[Stable 8.3.4 is prepared for review](docs/RELEASE_8.3.4.md), not yet published.**
+Compared with 8.3.3, it offers verified **HA 2026.11** support using the matching
+official HA test package, a cleaner first setup with optional diagnostic helpers
+initially disabled, and clearer modelled/observed source labels and data-service
+grouping. Existing personal settings, names, IDs and enabled helpers are retained.
+It promotes the accepted 8.3.4b1 runtime with only two component version changes;
+the HGT statistics follow-up stays separate. Read
+[what the update means for existing users](docs/RELEASE_8.3.4.md#why-upgrade-from-833).
+Until verified publication, **8.3.3 remains the normal stable installation target**.
+
 **[8.3.4b1 is published](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4b1), with normal operation operator-confirmed on 7 November 2026.** The report gives **HA Core 2026.11.0 / HA OS 18.4** and closes the agreed [short check](docs/ACCEPTANCE_8.3.4b1.md). It bundles diagnostic defaults, virtual service metadata and accurate alternative-provider labels from reviewed #88/#89. See [publication and bounded acceptance evidence](docs/RELEASE_EVIDENCE_8.3.4b1.md). **Stable 8.3.3 remains the normal installation target**; no stable 8.3.4 has been published.
 
 **[Stable 8.3.3](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.3)

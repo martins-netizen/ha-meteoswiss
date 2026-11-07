@@ -79,6 +79,13 @@ short check. The [bounded evidence](RELEASE_EVIDENCE_8.3.4b1.md) does not
 claim an independent registry audit or separate manual alternative-source
 inspection. Gold rows remain bounded; 8.3.3 remains latest stable.
 
+**Prepared stable 8.3.4:** the [stable package](RELEASE_8.3.4.md) promotes that
+accepted beta runtime with two component version changes and the same 39 other
+component files. It offers the official-package HA 2026.11 test baseline, cleaner
+first setup and clearer source metadata to stable users. Publication and the
+short stable update remain pending; 8.3.3 is still latest stable. PR #92 HGT
+behaviour and remaining Gold rules stay outside this package.
+
 ## Bronze: twenty rules
 
 | Rule | Assessment | Repository evidence or remaining boundary |

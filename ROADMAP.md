@@ -4,6 +4,22 @@ This describes current fork work. Historical upstream release claims remain in
 the changelog as history; they are not current certifications. Check the
 [release status](README.md#release-status) before installing.
 
+## Prepared stable 8.3.4: clearer setup and verified HA 2026.11 support
+
+[Stable 8.3.4](docs/RELEASE_8.3.4.md) is a maintenance/quality package from
+accepted published beta **8.3.4b1 / ID 437718127**, source
+**1e5c5d1a7fc1c18d520e99189ae4dd5894621706**. Its benefits over 8.3.3 are the
+official-package HA 2026.11 compatibility baseline, a cleaner initial sensor
+list and explicit source/service provenance. Existing choices and weather
+behaviour are retained; 39 component files match and only two version files
+change. All fifteen older tags and the beta's published body are protected.
+
+The HGT statistics change in [PR #92](https://github.com/martins-netizen/ha-meteoswiss/pull/92)
+is reserved for a later version with separate acceptance. Full Gold is not a
+prerequisite for this version-only stable promotion. Packaging review, successful
+actual merge checks, publication and the [short stable update](docs/ACCEPTANCE_8.3.4.md)
+are pending; this preparation does not assert a published or installed release.
+
 ## Stable 8.3.3 published and accepted
 
 [Stable 8.3.3](docs/RELEASE_8.3.3.md), ID **429354633**, was published on

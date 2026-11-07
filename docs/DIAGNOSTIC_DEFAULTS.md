@@ -1,6 +1,6 @@
 # Diagnostic defaults and virtual service metadata
 
-**Status:** Released in [8.3.4b1](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4b1) on 7 November 2026. The operator confirmed normal operation on HA Core 2026.11.0 / HA OS 18.4; see the [bounded evidence](RELEASE_EVIDENCE_8.3.4b1.md). Stable 8.3.3 remains latest stable.
+**Status:** Released in [8.3.4b1](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4b1) on 7 November 2026. The operator confirmed normal operation on HA Core 2026.11.0 / HA OS 18.4; see the [bounded evidence](RELEASE_EVIDENCE_8.3.4b1.md). Stable 8.3.3 remains latest stable. [Stable 8.3.4 packaging](RELEASE_8.3.4.md) retains this accepted runtime and is prepared for review; publication/update remain pending.
 
 ## Two optional diagnostic helpers
 

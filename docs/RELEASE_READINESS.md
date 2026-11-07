@@ -1,6 +1,37 @@
-# Release readiness: stable 8.3.3 and published 8.3.4b1
+# Release readiness: prepared stable 8.3.4 and accepted 8.3.4b1
 
-**Document version:** 2.18 · **Updated:** 7 November 2026
+**Document version:** 2.19 · **Updated:** 7 November 2026
+
+<a id="prepared-stable-834"></a>
+
+## Prepared stable 8.3.4; publication and actual stable update pending
+
+[Stable 8.3.4](RELEASE_8.3.4.md) makes the accepted beta's maintenance/quality
+improvements available through the stable update route: official-package HA
+2026.11 validation, cleaner first-setup diagnostic defaults and more accurate
+source/service labels. Existing names, IDs and enabled helpers remain in place.
+See [the benefits over 8.3.3](RELEASE_8.3.4.md#why-upgrade-from-833).
+
+Accepted published **8.3.4b1 / ID 437718127** at
+**1e5c5d1a7fc1c18d520e99189ae4dd5894621706** supplies all 39 non-version
+component files unchanged. Only manifest.json/version.py become 8.3.4. This
+candidate does not include the HGT state-class change in open PR #92 and keeps
+all fifteen earlier tags, published beta notes, workflows, dependencies, HACS/CH
+and four 219-key catalogues unchanged.
+
+Fixed Stable Publisher V1.7 and the thirteenth publication test profile retain
+the accepted-beta/version-only/check/tag/latest boundaries and additionally
+check the beta's exact published body. The candidate requires its own complete
+local suites, exact-head CI, regular merge and successful actual merge checks;
+beta results do not replace those package gates. No release/tag write or HA
+update is asserted by preparation.
+
+After approved publication and independent verification, perform only the
+[short actual stable update](ACCEPTANCE_8.3.4.md): actual download, one restart,
+installed version and normal operation. Earlier beta, settings, icons, first
+install and restore checks remain complete within their recorded scopes. No new
+name/ID list or blanket wait is needed. Until publication, latest stable remains
+**8.3.3 / ID 429354633**. Full Gold and deferred HGT/wind/history work stay separate.
 
 <a id="prepared-834b1-test-candidate"></a>
 
