@@ -69,6 +69,12 @@ explicit open/partial rules and proposed exemptions requiring review. The
 [README summary](../README.md#quality-goals-bronze-silver-and-gold) is intentionally
 short; these tables retain the qualifications and release scope.
 
+**Prepared 8.3.4b1:** the [test package](RELEASE_8.3.4b1.md) retains regularly
+merged #88/#89 runtime without further component changes except the two version
+fields. Diagnostic defaults/service metadata and current-provider provenance
+are included in this candidate. It is not published or operator-accepted; the
+Gold rows below remain bounded and published 8.3.3 keeps its own scope.
+
 ## Bronze: twenty rules
 
 | Rule | Assessment | Repository evidence or remaining boundary |

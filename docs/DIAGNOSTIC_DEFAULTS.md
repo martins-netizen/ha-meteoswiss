@@ -1,6 +1,6 @@
 # Diagnostic defaults and virtual service metadata
 
-**Status:** Unreleased development change. Published stable 8.3.3 is unchanged.
+**Status:** Included in prepared [8.3.4b1](RELEASE_8.3.4b1.md), not published or installed. Stable 8.3.3 is unchanged.
 
 ## Two optional diagnostic helpers
 
