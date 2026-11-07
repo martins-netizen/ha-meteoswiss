@@ -4,27 +4,33 @@ This describes current fork work. Historical upstream release claims remain in
 the changelog as history; they are not current certifications. Check the
 [release status](README.md#release-status) before installing.
 
-## Prepared stable 8.3.4: clearer setup and verified HA 2026.11 support
+## Published stable 8.3.4: clearer setup and verified HA 2026.11 support
 
-[Stable 8.3.4](docs/RELEASE_8.3.4.md) is a maintenance/quality package from
-accepted published beta **8.3.4b1 / ID 437718127**, source
-**1e5c5d1a7fc1c18d520e99189ae4dd5894621706**. Its benefits over 8.3.3 are the
-official-package HA 2026.11 compatibility baseline, a cleaner initial sensor
-list and explicit source/service provenance. Existing choices and weather
-behaviour are retained; 39 component files match and only two version files
-change. All fifteen older tags and the beta's published body are protected.
+[Stable 8.3.4](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4),
+release **437853341**, was published on **7 November 2026 at 21:24:27 UTC** from
+regular packaging PR #93 at **f4479897023fa35d7c2fcb4c4859c4de8861fdda**.
+Release/tag/English notes and selection as latest stable are independently
+confirmed; all fifteen older tags remain unchanged. See the
+[publication evidence](docs/RELEASE_EVIDENCE_8.3.4.md).
+
+This maintenance and quality release retains the accepted 8.3.4b1 runtime:
+39 non-version component files match; only two version fields change. Its
+benefits over 8.3.3 are the official-package HA 2026.11 compatibility baseline,
+a cleaner initial sensor list and explicit source/service provenance.
+Existing personal choices and weather behaviour are retained.
 
 The HGT statistics change in [PR #92](https://github.com/martins-netizen/ha-meteoswiss/pull/92)
-is reserved for a later version with separate acceptance. Full Gold is not a
-prerequisite for this version-only stable promotion. Packaging review, successful
-actual merge checks, publication and the [short stable update](docs/ACCEPTANCE_8.3.4.md)
-are pending; this preparation does not assert a published or installed release.
+is reserved for a later version. Full Gold is separate. Packaging merge,
+successful actual checks and publication are complete; the
+[short actual stable update](docs/ACCEPTANCE_8.3.4.md) is a distinct user action.
+Earlier beta and installation acceptance remain closed within their scopes.
 
 ## Stable 8.3.3 published and accepted
 
 [Stable 8.3.3](docs/RELEASE_8.3.3.md), ID **429354633**, was published on
 **30 October 2026 at 18:21:55 UTC** from
-**3d4fad2330c89f134eba208e8b2db55705177e7d** and is latest stable.
+**3d4fad2330c89f134eba208e8b2db55705177e7d**. It was latest until stable
+8.3.4 on 7 November and remains an immutable previous release.
 The [release evidence](docs/RELEASE_EVIDENCE_8.3.3.md) confirms the exact
 source/immutable notes, all seven actual merge checks and thirteen retained
 old tags. On **30 October**, the operator confirmed **8.3.3 installed and normal
@@ -45,19 +51,19 @@ files change. Packaging PR #90 was regularly merged at
 `1e5c5d1a7fc1c18d520e99189ae4dd5894621706`, with all seven actual merge
 checks successful. The fixed V1.7 publisher created release **437718127** on
 **7 November 2026 at 17:12:54 UTC**, retaining all fourteen older tags and
-latest stable 8.3.3. The operator subsequently confirmed normal operation
+then-latest stable 8.3.3. The operator subsequently confirmed normal operation
 on **HA Core 2026.11.0 / HA OS 18.4**, completing the agreed
 [short check](docs/ACCEPTANCE_8.3.4b1.md). See the
-[bounded evidence](docs/RELEASE_EVIDENCE_8.3.4b1.md); no further HA check
-or stable promotion follows from this documentation update.
+[bounded evidence](docs/RELEASE_EVIDENCE_8.3.4b1.md). This completed beta check
+is retained as provenance; the separate stable publication is recorded above.
 
 ## Remaining Gold and provider-evidence work
 
-The [diagnostic-defaults and service-metadata change](docs/DIAGNOSTIC_DEFAULTS.md), released in 8.3.4b1,
+The [diagnostic-defaults and service-metadata change](docs/DIAGNOSTIC_DEFAULTS.md), delivered in stable 8.3.4 after first shipping in 8.3.4b1,
 adds first-registration diagnostic defaults and explicit virtual service groups,
-with registry-preservation tests. Stable 8.3.3 does not include this change.
+with registry-preservation tests. Earlier stable 8.3.3 did not include this change.
 
-The [provider-metadata follow-up](docs/PROVIDER_METADATA.md), released in 8.3.4b1, corrects
+The [provider-metadata follow-up](docs/PROVIDER_METADATA.md), delivered in stable 8.3.4 after first shipping in 8.3.4b1, corrects
 Open-Meteo current-weather labels and attribution while keeping group identity
 and personal choices. Native pollen-station round trips reuse all seven groups;
 no cleanup is needed for those tested changes. Historical orphaned groups have
@@ -124,7 +130,7 @@ custom integrations.
 | Scope | Decision still needed |
 |---|---|
 | Locality names in other languages | Obtain authoritative aliases; preserve provider identities and avoid invented translations or duplicate places. |
-| Remaining Gold engineering work | Diagnostic defaults, service metadata and alternative-provider labels are implemented in unreleased development. Native pollen-station changes reuse the existing groups; historical orphan review, device classes and proposed exemptions remain separate. Icon/error translations are delivered in published and operator-accepted stable 8.3.3; preserve existing user choices and history. Shared-Reconfigure focused acceptance is completed within its reported scope. |
+| Remaining Gold engineering work | Diagnostic defaults, service metadata and alternative-provider labels are delivered in published stable 8.3.4. Native pollen-station changes reuse the existing groups; historical orphan review, device classes and proposed exemptions remain separate. Icon/error translations are delivered in published and operator-accepted stable 8.3.3; preserve existing user choices and history. Shared-Reconfigure focused acceptance is completed within its reported scope. |
 | External contributor CodeQL | The unprivileged route is implemented; retain evidence from the first actual external-fork run. A skipped analysis is not completed analysis. |
 | Processed local-forecast data | Assess provider payloads, resource limits and compatibility separately from the already released catalogue-based ICON selection. |
 | New sources/entities | Scope and test separately; no new device actions/sources in a documentation or release change. |

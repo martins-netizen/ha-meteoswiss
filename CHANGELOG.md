@@ -2,9 +2,9 @@
 
 ## [Unreleased]
 
-Future work beyond the prepared stable package remains separate.
+Future work beyond published stable 8.3.4 remains separate.
 
-## [8.3.4] — prepared stable package, not published
+## [8.3.4] — 2026-11-07 · published stable release
 
 **Why upgrade from 8.3.3:** verified HA 2026.11 compatibility with the matching
 official HA test package and reproducible dependency locks; a cleaner first
@@ -13,22 +13,28 @@ labels/attribution and virtual data-service grouping. Existing diagnostic
 choices, names, icons and IDs are retained. See the
 [practical release benefits](docs/RELEASE_8.3.4.md).
 
+Published **7 November 2026 at 21:24:27 UTC**, release **437853341**, tag/source
+**f4479897023fa35d7c2fcb4c4859c4de8861fdda**, after regular packaging PR #93.
+The actual release/tag/body and latest-stable selection were independently
+verified; all fifteen older tags, the accepted beta body and previous stable
+release are retained. See [publication evidence](docs/RELEASE_EVIDENCE_8.3.4.md).
+
 Promote published and operator-accepted **8.3.4b1 / ID 437718127**, source
-`1e5c5d1a7fc1c18d520e99189ae4dd5894621706`. Retain all 39 non-version component
-files; only manifest.json/version.py become 8.3.4. Add fixed Stable Publisher
-V1.7 and the thirteenth publication profile, protecting all fifteen older tags,
-the exact accepted beta body and latest-stable selection. The HGT behaviour
-change in PR #92 stays outside this package. Review, actual package-merge
-checks, publication and the [short stable update](docs/ACCEPTANCE_8.3.4.md)
-remain separate pending steps.
+`1e5c5d1a7fc1c18d520e99189ae4dd5894621706`. All 39 non-version component
+files match; only manifest.json/version.py become 8.3.4. Fixed Stable Publisher
+V1.7 and the thirteenth publication profile protect the accepted beta, version,
+check, tag and latest boundaries. The HGT behaviour change in PR #92 is excluded.
+Both actual merge jobs pass **2,225 tests plus 83 subtests** on HA 2026.11.0 and
+2026.8.3 with unchanged strict gates. The [short actual stable update](docs/ACCEPTANCE_8.3.4.md)
+remains distinct from publication and earlier completed acceptance.
 
 ## [8.3.4b1] — 2026-11-07 · published test prerelease; short operation check complete
 
 Prepared from regularly merged #88/#89 source `5a7eae00963d47294281da8812cb1ede35713b7f`.
 Retain all 39 non-version component files; only manifest.json/version.py become
 8.3.4b1. Add fixed Beta Publisher V1.7, a twelfth publication regression profile
-and [focused acceptance](docs/ACCEPTANCE_8.3.4b1.md). Preserve all fourteen
-existing tags, latest stable 8.3.3, CI/dependency locks and earlier publishers.
+and [focused acceptance](docs/ACCEPTANCE_8.3.4b1.md). The beta package preserved all fourteen
+existing tags, then-latest stable 8.3.3, CI/dependency locks and earlier publishers.
 Published **7 November 2026 at 17:12:54 UTC**, release **437718127**, from
 **1e5c5d1a7fc1c18d520e99189ae4dd5894621706** after regular packaging PR #90
 and seven successful actual merge checks. The operator subsequently confirmed
@@ -54,7 +60,8 @@ alternative-provider audit. See [release evidence](docs/RELEASE_EVIDENCE_8.3.4b1
 ## [8.3.3] — 2026-10-30 · published and accepted stable release
 
 Published **30 October 2026 at 18:21:55 UTC**, release **429354633**, from
-**3d4fad2330c89f134eba208e8b2db55705177e7d**, latest stable and immutable.
+**3d4fad2330c89f134eba208e8b2db55705177e7d**, then latest stable and immutable.
+It was superseded as latest by 8.3.4 on 7 November 2026.
 The operator subsequently confirmed **8.3.3 installed and normal operation OK**;
 see [release evidence](docs/RELEASE_EVIDENCE_8.3.3.md). Retain published and operator-accepted
 beta **d9fbc3fd49220b0ecc019d2babe0c173c46986f5 / ID 429321251**. Only two

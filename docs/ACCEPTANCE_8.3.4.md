@@ -1,14 +1,16 @@
 # Stable 8.3.4: short actual update check
 
-**Protocol version:** 1.0 · **Prepared:** 7 November 2026
+**Protocol version:** 1.1 · **Updated:** 7 November 2026
 
-**Pending actual stable publication and update.** Published 8.3.4b1 has the
+**Stable 8.3.4 is published and independently verified as latest stable.**
+See [publication evidence](RELEASE_EVIDENCE_8.3.4.md). Earlier 8.3.4b1 has the
 operator's positive normal-operation report on **Core 2026.11.0 / HA OS 18.4**;
-see the [bounded beta evidence](RELEASE_EVIDENCE_8.3.4b1.md). Stable 8.3.4 retains
-all 39 non-version component files and changes only the two version fields.
-The stable package has not yet been published or installed.
+see the [bounded beta evidence](RELEASE_EVIDENCE_8.3.4b1.md). Stable retains all
+39 non-version component files and changes only the two version fields.
+This protocol covers an actual stable update; publication does not assert an
+individual user's installation.
 
-1. After independently confirmed publication, keep the existing configured entry
+1. Keep the existing configured entry
    and backup. In the maintained-fork Marketplace entry (HACS on older HA),
    refresh information if needed, then actually Download/Redownload **8.3.4**.
 2. Restart HA once. Confirm the installed integration version is **8.3.4** and
