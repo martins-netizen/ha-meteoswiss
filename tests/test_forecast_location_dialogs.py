@@ -11,7 +11,7 @@ import voluptuous as vol
 from homeassistant.config_entries import SOURCE_RECONFIGURE, SOURCE_USER
 from homeassistant.data_entry_flow import UnknownFlow
 from homeassistant.helpers.translation import async_get_translations
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from ha_helpers import MockConfigEntry
 
 from custom_components.meteoswiss import async_setup_entry as actual_setup_entry
 from custom_components.meteoswiss.config_flow import MeteoSwissConfigFlow

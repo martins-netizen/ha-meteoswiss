@@ -7,7 +7,7 @@ from unittest.mock import patch
 import pytest
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.update_coordinator import UpdateFailed
-from pytest_homeassistant_custom_component.common import (
+from ha_helpers import (
     MockConfigEntry,
     async_fire_time_changed,
 )

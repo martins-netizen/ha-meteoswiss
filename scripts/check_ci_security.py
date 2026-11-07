@@ -13,7 +13,7 @@ MINIMUM_UV = (0, 13, 4)
 
 # Exact upstream HA test dependencies, allowed only with UV_OFFLINE=true.
 # Review this list whenever a compatibility job changes its HA version.
-OFFLINE_HA_UV = {"2026.8.3": "0.11.31", "2026.10.1": "0.12.23"}
+OFFLINE_HA_UV = {"2026.8.3": "0.11.31"}
 
 
 class SecurityBaselineError(ValueError):

@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 
 from homeassistant.components.sensor import SensorDeviceClass, SensorStateClass
 from homeassistant.const import UnitOfPrecipitationDepth
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from ha_helpers import MockConfigEntry
 
 from custom_components.meteoswiss.alerts import WeatherAlert
 from custom_components.meteoswiss.calc import calculate_heating_degree_days

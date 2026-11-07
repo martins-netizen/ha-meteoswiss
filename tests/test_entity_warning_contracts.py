@@ -14,7 +14,7 @@ import pytest
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from ha_helpers import MockConfigEntry
 
 from custom_components.meteoswiss.alerts import (
     METEOSWISS_APP_API_URL,

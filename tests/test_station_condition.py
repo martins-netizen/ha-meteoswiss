@@ -13,7 +13,7 @@ import pytest
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import UpdateFailed
-from pytest_homeassistant_custom_component.common import (
+from ha_helpers import (
     MockConfigEntry,
     async_fire_time_changed,
 )
@@ -467,7 +467,14 @@ async def test_loaded_failure_recovery_and_station_reload_preserve_ids_and_place
         "weather", DOMAIN, f"{DOMAIN}_{entry.entry_id}_forecast_weather"
     )
     measured = hass.states.get(weather_id)
-    assert measured.state == "cloudy" and measured.name == "My station"
+    # HA 2026.11 composes friendly names from device + entity. The stored
+    # personal entity name must survive independently of that HA display policy.
+    names_include_device = hasattr(er, "async_get_legacy_friendly_name")
+    assert er.async_get(hass).async_get(weather_id).name == "My station"
+    assert measured.state == "cloudy"
+    assert measured.name == (
+        "MeteoSwiss Altdorf My station" if names_include_device else "My station"
+    )
     assert measured.attributes["temperature"] == 7.8
     assert measured.attributes["condition_value_type"] == "modelled"
     assert hass.states.get(predicted_id).state == "snowy"
@@ -497,7 +504,11 @@ async def test_loaded_failure_recovery_and_station_reload_preserve_ids_and_place
     await hass.async_block_till_done()
     assert hass.states.get(weather_id).state == "rainy"
     assert hass.states.get(weather_id).attributes["temperature"] == 9.5
-    assert hass.states.get(weather_id).name == "My station"
+    assert er.async_get(hass).async_get(weather_id).name == "My station"
+    assert hass.states.get(weather_id).name == (
+        "MeteoSwiss Zürich / Kloten My station"
+        if names_include_device else "My station"
+    )
     assert hass.states.get(predicted_id).state == "snowy"
     assert aioclient_mock.mock_calls[0][1].query["latitude"] == str(KLO.latitude)
     assert len(aioclient_mock.mock_calls) == 1

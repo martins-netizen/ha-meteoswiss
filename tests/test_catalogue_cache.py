@@ -496,7 +496,7 @@ async def test_registered_catalogue_sensor_reports_unavailable_and_recovers(
 
     from homeassistant.components.sensor import DATA_COMPONENT
     from homeassistant.helpers import entity_registry as er
-    from pytest_homeassistant_custom_component.common import MockConfigEntry
+    from ha_helpers import MockConfigEntry
 
     from custom_components.meteoswiss.const import DOMAIN
     from custom_components.meteoswiss.diagnostics import (

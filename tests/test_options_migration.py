@@ -6,7 +6,7 @@ import pytest
 import voluptuous as vol
 from homeassistant.config_entries import SOURCE_USER
 from homeassistant.helpers import entity_registry as er
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from ha_helpers import MockConfigEntry
 
 import custom_components.meteoswiss as integration
 from custom_components.meteoswiss.const import (

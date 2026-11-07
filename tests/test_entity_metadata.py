@@ -4,7 +4,7 @@ import logging
 
 import pytest
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from ha_helpers import MockConfigEntry
 
 from custom_components.meteoswiss.binary_sensor import (
     ALERT_SENSOR_DESCRIPTIONS,

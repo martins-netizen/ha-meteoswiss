@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 import pytest
 from homeassistant.helpers.redact import REDACTED
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from ha_helpers import MockConfigEntry
 
 from custom_components.meteoswiss.cache import MeteoSwissCache
 from custom_components.meteoswiss.const import (

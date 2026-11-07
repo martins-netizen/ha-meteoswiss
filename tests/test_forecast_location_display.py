@@ -11,7 +11,7 @@ from homeassistant.components.weather.const import DATA_COMPONENT
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.translation import async_get_translations
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from ha_helpers import MockConfigEntry
 from test_forecast_summary import NOW, forecast_rows
 
 from custom_components.meteoswiss.const import CONF_FORECAST_LOCATION, DOMAIN

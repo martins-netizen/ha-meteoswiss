@@ -8,7 +8,7 @@ import pytest
 from homeassistant.components.recorder.statistics import statistics_during_period
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import UpdateFailed
-from pytest_homeassistant_custom_component.components.recorder.common import (
+from ha_helpers import (
     async_recorder_block_till_done,
 )
 

@@ -10,7 +10,7 @@ from homeassistant.data_entry_flow import InvalidData
 from homeassistant.config_entries import SOURCE_RECONFIGURE
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.translation import async_get_translations
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from ha_helpers import MockConfigEntry
 
 from custom_components.meteoswiss import async_setup_entry as actual_setup_entry
 from custom_components.meteoswiss.config_flow import MeteoSwissConfigFlow, MeteoSwissOptionsFlow

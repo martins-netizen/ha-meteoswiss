@@ -9,8 +9,8 @@ from homeassistant.components.recorder.statistics import statistics_during_perio
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.translation import async_get_translations
-from pytest_homeassistant_custom_component.common import MockConfigEntry
-from pytest_homeassistant_custom_component.components.recorder.common import (
+from ha_helpers import (
+    MockConfigEntry,
     async_recorder_block_till_done,
 )
 
