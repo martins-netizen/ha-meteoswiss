@@ -1,6 +1,6 @@
 # Publish the maintained fork
 
-**Procedure version:** 1.16 · **Updated:** 7 November 2026
+**Procedure version:** 1.17 · **Updated:** 7 November 2026
 
 **Distribution UI:** On HA 2026.11+, use built-in **Settings → Marketplace**;
 older HA uses HACS. Follow [current installation/update steps](GETTING_STARTED.md).
@@ -11,14 +11,21 @@ A documentation update is not a Marketplace live acceptance result.
 
 <a id="stable-834-prepared"></a>
 
-## Prepared stable 8.3.4: promote the accepted 8.3.4b1 runtime
+## Stable 8.3.4: publication completed
 
-[8.3.4](RELEASE_8.3.4.md) is prepared, not published or installed. Its practical
+[8.3.4](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4),
+release **437853341**, was published on **7 November 2026 at 21:24:27 UTC** from
+regular packaging PR #93 at **f4479897023fa35d7c2fcb4c4859c4de8861fdda**.
+Actual release/tag/English body/latest and all fifteen older tags were independently
+verified. See [publication evidence](RELEASE_EVIDENCE_8.3.4.md).
+The procedure below is completed history, not a request to rerun publication.
+Its practical
 benefits over 8.3.3 are verified HA 2026.11 support with the official test package,
 cleaner first-registration defaults and transparent source/service metadata.
 Published/accepted beta **8.3.4b1 / ID 437718127** supplies the exact runtime at
 **1e5c5d1a7fc1c18d520e99189ae4dd5894621706**. Retain 39 non-version component
-files and change only the two version files. PR #92 HGT behaviour stays separate.
+files; only the two version files changed. PR #92 HGT behaviour stays separate.
+For a user's actual download/restart, follow the [short stable protocol](ACCEPTANCE_8.3.4.md).
 
 1. Review and regularly merge the stable packaging PR. Verify its exact tree and
    all successful actual merge checks, including both HA jobs, tests, Hassfest,
@@ -64,7 +71,7 @@ HA OS 18.4**, closing the agreed [short check](ACCEPTANCE_8.3.4b1.md). See
 is completed history, not a request to rerun the publisher or HA installation.
 It retains #88/#89 runtime from `5a7eae00963d47294281da8812cb1ede35713b7f`: of
 41 component files, 39 non-version files match and only two version fields
-become 8.3.4b1. No stable 8.3.4 promotion is included.
+became 8.3.4b1. Stable 8.3.4 was subsequently published separately, as recorded above.
 
 1. Review and regularly merge the packaging PR. Verify the exact tree and all
    successful actual merge checks: HA 2026.11.0, HA 2026.8.3, tests, Hassfest,
@@ -99,7 +106,8 @@ stays closed; no entry deletion, source switch or blanket wait is requested.
 
 [8.3.3](RELEASE_8.3.3.md), ID **429354633**, was published on **30 October
 2026 at 18:21:55 UTC** from **3d4fad2330c89f134eba208e8b2db55705177e7d**,
-latest stable and immutable. Receipt/log and actual release/tag/notes/latest
+then latest stable and still immutable. It was superseded by 8.3.4 on 7 November.
+Receipt/log and actual release/tag/notes/latest
 checks agree; all thirteen older tags were retained. The operator subsequently
 confirmed **8.3.3 installed and normal operation OK**. See the
 [release evidence](RELEASE_EVIDENCE_8.3.3.md) and [completed short update](ACCEPTANCE_8.3.3.md).

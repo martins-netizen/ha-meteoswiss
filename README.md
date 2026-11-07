@@ -116,7 +116,7 @@ Silver and Gold below identify the rules we use to guide improvements.
 |---|---|---|
 | **Bronze: a sound foundation** | Setup in HA, stable entity identities, tested setup and clear instructions. | The checklist records setup/configuration tests, identity checks, installation guides and valid bundled brand images. |
 | **Silver: reliable operation** | Clear unavailable states, recovery from source failures, clean unloading and a maintained support route. | All applicable Silver rules have recorded evidence, including more than 95% coverage per module. The checklist also records the underlying Bronze rules; focused b4 HA acceptance is operator-confirmed. |
-| **Gold: a more complete user experience** | Easier configuration, useful diagnostics, translations and actionable help. | The shared location dialog and actionable repair notices have bounded evidence; the repair/map follow-up was accepted in 8.3.1b1. Icons/error translations are released in 8.3.3; diagnostic defaults and bounded provider/service metadata are released in 8.3.4b1. Remaining work includes device classes, historical stale-device handling and review of proposed exemptions. The five-step shared-Reconfigure check was reported positive on Core 2026.10.4. |
+| **Gold: a more complete user experience** | Easier configuration, useful diagnostics, translations and actionable help. | The shared location dialog and actionable repair notices have bounded evidence; the repair/map follow-up was accepted in 8.3.1b1. Icons/error translations are released in 8.3.3; diagnostic defaults and bounded provider/service metadata are delivered in stable 8.3.4, first introduced in the accepted 8.3.4b1 beta. Remaining work includes device classes, historical stale-device handling and review of proposed exemptions. The five-step shared-Reconfigure check was reported positive on Core 2026.10.4. |
 
 The [rule-by-rule assessment](docs/QUALITY_SCALE.md) links the scope, test evidence
 and remaining work. [HACS catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-catalogue-admission)
@@ -145,49 +145,51 @@ and working operation. See [the bounded evidence](docs/RELEASE_EVIDENCE_8.3.2.md
 
 ## Release status
 
-**[Stable 8.3.4 is prepared for review](docs/RELEASE_8.3.4.md), not yet published.**
-Compared with 8.3.3, it offers verified **HA 2026.11** support using the matching
-official HA test package, a cleaner first setup with optional diagnostic helpers
-initially disabled, and clearer modelled/observed source labels and data-service
-grouping. Existing personal settings, names, IDs and enabled helpers are retained.
-It promotes the accepted 8.3.4b1 runtime with only two component version changes;
-the HGT statistics follow-up stays separate. Read
-[what the update means for existing users](docs/RELEASE_8.3.4.md#why-upgrade-from-833).
-Until verified publication, **8.3.3 remains the normal stable installation target**.
+**[Stable 8.3.4 is published](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4)
+and is the normal installation and update target.** Publication on
+**7 November 2026 at 21:24:27 UTC** was independently verified, including the
+release tag, approved English notes and selection as latest stable. See the
+[publication evidence](docs/RELEASE_EVIDENCE_8.3.4.md).
 
-**[8.3.4b1 is published](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4b1), with normal operation operator-confirmed on 7 November 2026.** The report gives **HA Core 2026.11.0 / HA OS 18.4** and closes the agreed [short check](docs/ACCEPTANCE_8.3.4b1.md). It bundles diagnostic defaults, virtual service metadata and accurate alternative-provider labels from reviewed #88/#89. See [publication and bounded acceptance evidence](docs/RELEASE_EVIDENCE_8.3.4b1.md). **Stable 8.3.3 remains the normal installation target**; no stable 8.3.4 has been published.
+Compared with 8.3.3, this maintenance and quality release provides:
 
-**[Stable 8.3.3](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.3)
-is published and is the normal installation route.** Release ID **429354633**,
-published **30 October 2026 at 18:21:55 UTC**, from
-**3d4fad2330c89f134eba208e8b2db55705177e7d**. It delivers native entity icons
-and translated source-update errors in German, English, French and Italian,
-retaining the accepted beta runtime with only two component version changes.
+- **Verified HA 2026.11 support**, using the matching official HA test package
+  and reproducible dependency locks.
+- **A cleaner first setup**, with optional diagnostic helpers initially disabled.
+  Existing enabled helpers, personal settings, names, icons and IDs are retained.
+- **Clearer data-source information**, including modelled Open-Meteo current
+  conditions and explicit virtual data-service groups.
 
-On **30 October**, the operator confirmed **8.3.3 installed and normal operation
-OK**, closing the [short stable update](docs/ACCEPTANCE_8.3.3.md).
-The [release evidence](docs/RELEASE_EVIDENCE_8.3.3.md) distinguishes the actual
-published source/notes, successful checks and bounded operator report.
-The earlier beta icon/personal-choice check, shared-settings tests,
-clean installation and restore remain complete within their recorded scopes.
+Read [what the update means for existing users](docs/RELEASE_8.3.4.md#why-upgrade-from-833).
+Use **Settings → Marketplace** on HA 2026.11+, or HACS on older HA. Keep the
+existing configured entry, actually Download/Redownload **8.3.4** and restart HA
+once, following the [short stable update](docs/ACCEPTANCE_8.3.4.md). Refreshing
+repository information alone does not download files. The
+[latest stable page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
+is authoritative.
 
-The [latest stable release page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
-is authoritative for normal installation. Select a published release in Marketplace (HACS on older HA);
-refreshing repository information alone does not download files. Existing users
-retain their configured entry. Earlier releases and their immutable published
-notes remain history; an intermediate beta or older stable download is not required.
+**Earlier beta 8.3.4b1 is provenance, not the current installation target.**
+Its normal operation was operator-confirmed on **HA Core 2026.11.0 / HA OS 18.4**.
+Stable 8.3.4 retains all 39 non-version component files from that accepted beta;
+only two version fields change. Historical beta references and their
+[bounded evidence](docs/RELEASE_EVIDENCE_8.3.4b1.md) remain accurate. The HGT
+statistics follow-up stays outside this stable release.
+
+Earlier stable **8.3.3** remains an immutable previous release and recovery
+option. Its actual installation and normal operation were operator-confirmed
+on 30 October; see [that release's evidence](docs/RELEASE_EVIDENCE_8.3.3.md).
+Earlier beta, shared-settings, clean-install and restore checks remain complete
+within their recorded scopes. An intermediate beta or older stable download
+is not required.
 
 Minimum supported HA is **2026.8.3**. Current hosted CI covers **2026.11.0**
 with the matching official pytest-homeassistant package, plus an independent
-complete minimum-HA fixture. Older recorded release checks retain their stated
-HA versions; earlier local regression tests cover **2026.10.3**. The accepted beta icon check
-was reported on **HA Core 2026.10.4 / HA OS 18.4**. The later stable update
-report confirms version/operation without restating Core/OS or proving a live
-Python security update. [HACS catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-catalogue-admission),
-earlier clean-install/restore checks and the 8.2-to-8.3 update are complete.
-The [readiness record](docs/RELEASE_READINESS.md) retains their evidence.
+complete minimum-HA fixture. Both actual stable-package merge jobs passed
+**2,225 tests plus 83 subtests**. Historical release checks retain their stated
+HA versions. Publication and beta acceptance do not assert that every user has
+installed the stable release or independently audit a user's registry/history.
 
-Native icon/error translations are delivered in stable 8.3.3; the
+Native icons and translated errors are retained from stable 8.3.3. The
 [Gold checklist](docs/QUALITY_SCALE.md) still has separate remaining work.
 
 ## Data and compatibility

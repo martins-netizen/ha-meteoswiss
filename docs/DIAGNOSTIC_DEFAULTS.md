@@ -1,6 +1,6 @@
 # Diagnostic defaults and virtual service metadata
 
-**Status:** Released in [8.3.4b1](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4b1) on 7 November 2026. The operator confirmed normal operation on HA Core 2026.11.0 / HA OS 18.4; see the [bounded evidence](RELEASE_EVIDENCE_8.3.4b1.md). Stable 8.3.3 remains latest stable. [Stable 8.3.4 packaging](RELEASE_8.3.4.md) retains this accepted runtime and is prepared for review; publication/update remain pending.
+**Status:** Delivered in published [stable 8.3.4](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4), the current normal update target, on 7 November 2026. See [publication evidence](RELEASE_EVIDENCE_8.3.4.md). The behaviour first shipped in 8.3.4b1; its operator-confirmed normal operation on HA Core 2026.11.0 / HA OS 18.4 remains [bounded beta evidence](RELEASE_EVIDENCE_8.3.4b1.md). Stable retains that runtime unchanged apart from two version fields.
 
 ## Two optional diagnostic helpers
 
@@ -53,7 +53,7 @@ The initial diagnostic-defaults change retained all legacy provider labels.
 The follow-up now labels the alternative current source as Open-Meteo, including
 its current-data attribution. It retains the same device/unique identifiers and
 personal names; provider selection and other source groups do not change.
-Published stable 8.3.3 still has the old labels. The quality assessment remains
+Earlier stable 8.3.3 retained the old labels; stable 8.3.4 delivers this update. The quality assessment remains
 bounded rather than claiming a complete metadata audit.
 
 ## Regression scope
