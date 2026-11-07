@@ -472,7 +472,8 @@ async def _exercise_entry_lifecycle(hass, source, *, with_recorder, legacy_inter
         from homeassistant.helpers import entity_registry as er
         registry = er.async_get(hass)
         map_id = registry.async_get_entity_id("sensor", DOMAIN, f"{DOMAIN}_stations_map")
-        assert map_id and hass.states.get(map_id) is not None
+        assert map_id and registry.async_get(map_id).disabled_by is er.RegistryEntryDisabler.INTEGRATION
+        assert hass.states.get(map_id) is None
         has_statistics = with_recorder and source == "meteoswiss"
         importers = (
             entry.runtime_data.hourly_precipitation_coordinator,
@@ -525,7 +526,8 @@ async def _exercise_entry_lifecycle(hass, source, *, with_recorder, legacy_inter
             assert entry.runtime_data.precipitation_archive_coordinator._listeners
         assert registry_ids == {item.unique_id: item.entity_id for item in er.async_entries_for_config_entry(registry, entry.entry_id)}
         assert not session.closed
-        assert hass.states.get(map_id) is not None
+        assert registry.async_get(map_id).disabled_by is er.RegistryEntryDisabler.INTEGRATION
+        assert hass.states.get(map_id) is None
         final_runtime = entry.runtime_data
         assert await hass.config_entries.async_unload(entry.entry_id)
         await hass.async_block_till_done()

@@ -27,6 +27,7 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.device_registry import DeviceEntryType
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.event import async_track_point_in_utc_time
 from homeassistant.helpers.update_coordinator import (
@@ -505,12 +506,14 @@ class MeteoSwissStationsMapSensor(MeteoSwissEntity, SensorEntity):
     """Representation of a meteoswiss stations map sensor."""
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_entity_registry_enabled_default = False
 
     def __init__(self, stations_map: MeteoSwissStationsMap) -> None:
         """Initialize stations map sensor."""
         self._stations_map = stations_map
         self._attr_unique_id = f"{DOMAIN}_stations_map"
         self._attr_device_info = DeviceInfo(
+            entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, "stations_map")},
             name="MeteoSwiss Weather Stations",
             manufacturer="MeteoSwiss",
@@ -559,11 +562,13 @@ class MeteoSwissCacheStatsSensor(MeteoSwissEntity, SensorEntity):
     """Representation of cache statistics sensor."""
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
+    _attr_entity_registry_enabled_default = False
 
     def __init__(self) -> None:
         """Initialize cache stats sensor."""
         self._attr_unique_id = f"{DOMAIN}_cache_stats"
         self._attr_device_info = DeviceInfo(
+            entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, "cache_stats")},
             name="MeteoSwiss Cache Statistics",
             manufacturer="MeteoSwiss",
@@ -863,6 +868,7 @@ class MeteoSwissMeasuredPollenSensor(MeteoSwissCoordinatorEntity, SensorEntity):
             f"{DOMAIN}_{entry.entry_id}_ms_pollen_{description.pollen_type}"
         )
         self._attr_device_info = DeviceInfo(
+            entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, f"ms_pollen_{entry.entry_id}")},
             name=f"MeteoSwiss Pollen (Measured) - {pollen_station_label}",
             manufacturer="MeteoSwiss",

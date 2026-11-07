@@ -3,6 +3,7 @@
 import logging
 
 import pytest
+from homeassistant.helpers.device_registry import DeviceEntryType
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 from ha_helpers import MockConfigEntry
 
@@ -161,7 +162,7 @@ async def test_existing_entity_metadata_and_identity_contract(hass, family):
         else f"{DOMAIN}_{entry.entry_id}_{suffix}"
     )
     assert entity.unique_id == expected_id
-    assert entity.device_info == info
+    assert entity.device_info == {**info, "entry_type": DeviceEntryType.SERVICE}
     assert entity.has_entity_name is True
     assert entity.attribution == attribution
     assert entity.should_poll is (family in ("stations", "cache"))

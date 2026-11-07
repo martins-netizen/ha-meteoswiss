@@ -513,6 +513,11 @@ async def test_registered_catalogue_sensor_reports_unavailable_and_recovers(
         },
     )
     entry.add_to_hass(hass)
+    # This regression exercises an explicitly enabled, existing diagnostic.
+    er.async_get(hass).async_get_or_create(
+        "sensor", DOMAIN, f"{DOMAIN}_stations_map", config_entry=entry,
+        suggested_object_id="enabled_catalogue", disabled_by=None,
+    )
     aioclient_mock.get(STATIONS_METADATA_URL, content=catalogue())
     with ExitStack() as stack:
         for target, data in {

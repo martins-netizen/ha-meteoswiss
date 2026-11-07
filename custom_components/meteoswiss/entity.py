@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from homeassistant.helpers.device_registry import DeviceEntryType
 from homeassistant.helpers.entity import DeviceInfo, Entity
 from homeassistant.helpers.update_coordinator import (
     CoordinatorEntity,
@@ -37,6 +38,7 @@ class MeteoSwissCoordinatorEntity[CoordinatorT: DataUpdateCoordinator[Any]](
 def weather_device_info(entry_id: str, station_name: str) -> DeviceInfo:
     """One existing weather device shared by observations and weather entity."""
     return DeviceInfo(
+        entry_type=DeviceEntryType.SERVICE,
         identifiers={(DOMAIN, entry_id)},
         name=f"MeteoSwiss {station_name}",
         manufacturer="MeteoSwiss",
@@ -47,6 +49,7 @@ def weather_device_info(entry_id: str, station_name: str) -> DeviceInfo:
 def air_quality_device_info(entry_id: str) -> DeviceInfo:
     """Keep modelled pollen/AQ on their existing shared provider device."""
     return DeviceInfo(
+        entry_type=DeviceEntryType.SERVICE,
         identifiers={(DOMAIN, f"pollen_{entry_id}")},
         name=OPENMETEO_AIR_QUALITY_DEVICE_NAME,
         manufacturer=OPENMETEO_AIR_QUALITY_MANUFACTURER,
@@ -63,6 +66,7 @@ def forecast_device_info(entry_id: str, target: ForecastTarget) -> DeviceInfo:
         key = "forecast_base" if target.status == "legacy" else "forecast_invalid"
         placeholders = {}
     return DeviceInfo(
+        entry_type=DeviceEntryType.SERVICE,
         identifiers={(DOMAIN, f"calculated_{entry_id}")},
         manufacturer="MeteoSwiss",
         model="ICON Seamless via Open-Meteo",

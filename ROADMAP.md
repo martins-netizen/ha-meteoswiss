@@ -22,7 +22,12 @@ report. Shared settings, first-install and restore acceptance stay closed.
 
 ## Remaining Gold and provider-evidence work
 
-Review diagnostic defaults for new entities, device metadata/classes, stale
+The unreleased [diagnostic-defaults and service-metadata change](docs/DIAGNOSTIC_DEFAULTS.md)
+adds first-registration diagnostic defaults and explicit virtual service groups,
+with registry-preservation tests. Stable 8.3.3 does not include this change.
+
+Review provider-specific labels for the alternative current-weather group,
+remaining device classes, stale
 grouping and rule-specific exemptions in separate bounded scopes. Obtain
 authoritative multilingual locality aliases before adding provider name
 translations. Preserve personal registry choices, identities, history,
@@ -83,7 +88,7 @@ custom integrations.
 | Scope | Decision still needed |
 |---|---|
 | Locality names in other languages | Obtain authoritative aliases; preserve provider identities and avoid invented translations or duplicate places. |
-| Remaining Gold engineering work | Review device metadata, diagnostic defaults, stale-device handling and proposed exemptions; icon/error translations are delivered in published and operator-accepted stable 8.3.3; preserve existing user choices and history. Shared-Reconfigure focused acceptance is completed within its reported scope. |
+| Remaining Gold engineering work | First-registration diagnostic defaults and service metadata are implemented in unreleased development; review alternative-provider labels, device classes, stale-device handling and proposed exemptions separately. Icon/error translations are delivered in published and operator-accepted stable 8.3.3; preserve existing user choices and history. Shared-Reconfigure focused acceptance is completed within its reported scope. |
 | External contributor CodeQL | The unprivileged route is implemented; retain evidence from the first actual external-fork run. A skipped analysis is not completed analysis. |
 | Processed local-forecast data | Assess provider payloads, resource limits and compatibility separately from the already released catalogue-based ICON selection. |
 | New sources/entities | Scope and test separately; no new device actions/sources in a documentation or release change. |
