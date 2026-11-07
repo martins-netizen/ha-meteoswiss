@@ -10,7 +10,9 @@
    a skipped analysis is not a successful security scan.
 3. Follow the [local compatibility checks](../DEVELOPMENT.md#local-compatibility-checks)
    in separate environments for both `requirements_test_min.txt` (HA 2026.8.3)
-   and `requirements_test.txt` (HA 2026.10.1). Apply the Python/pip bootstrap,
+   and `requirements_test.txt` (HA 2026.11.0 with the matching official test
+   package). Keep the legacy test package only in the isolated minimum fixture.
+   Apply the Python/pip bootstrap,
    certifi constraint and installed-version check, and offline uv policy before
    running the complete translations/tests/coverage sequence. Add regression
    tests for real failures. Retain `scripts/check_quality_coverage.py` and review

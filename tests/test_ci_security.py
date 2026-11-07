@@ -23,8 +23,8 @@ def secure_environment(monkeypatch):
     versions = {
         "pip": "26.2.2",
         "certifi": "2026.10.19",
-        "homeassistant": "2026.10.1",
-        "uv": "0.12.23",
+        "homeassistant": "2026.11.0",
+        "uv": "0.13.6",
     }
 
     def installed_version(name):
@@ -65,7 +65,7 @@ def test_rejects_stale_wrong_minor_or_prerelease_python(secure_environment, monk
 def test_installed_rejects_stale_or_prerelease_ca_bundle(secure_environment, certifi):
     secure_environment["certifi"] = certifi
     with pytest.raises(security.SecurityBaselineError):
-        security.check_security("installed", "2026.10.1")
+        security.check_security("installed", "2026.11.0")
 
 
 @pytest.mark.parametrize("value", [None, "", "false", "0"])
@@ -77,10 +77,10 @@ def test_uv_requires_offline_mode_even_when_patched(secure_environment, monkeypa
     else:
         monkeypatch.setenv("UV_OFFLINE", value)
     with pytest.raises(security.SecurityBaselineError, match="UV_OFFLINE"):
-        security.check_security("installed", "2026.10.1")
+        security.check_security("installed", "2026.11.0")
 
 
-@pytest.mark.parametrize("ha,uv", [("2026.8.3", "0.11.31"), ("2026.10.1", "0.12.23")])
+@pytest.mark.parametrize("ha,uv", [("2026.8.3", "0.11.31")])
 def test_exact_legacy_ha_dependency_is_explicitly_offline_only(secure_environment, ha, uv):
     secure_environment.update(homeassistant=ha, uv=uv)
     report = security.check_security("installed", ha)
@@ -90,7 +90,13 @@ def test_exact_legacy_ha_dependency_is_explicitly_offline_only(secure_environmen
 
 @pytest.mark.parametrize(
     "ha,uv",
-    [("2026.8.3", "0.12.23"), ("2026.10.1", "0.11.31"), ("2026.9.3", "0.12.23")],
+    [
+        ("2026.8.3", "0.12.23"),
+        ("2026.11.0", "0.11.31"),
+        ("2026.10.1", "0.12.23"),
+        ("2026.11.0", "0.12.23"),
+        ("2026.9.3", "0.12.23"),
+    ],
 )
 def test_offline_exception_cannot_cover_other_legacy_dependencies(secure_environment, ha, uv):
     secure_environment.update(homeassistant=ha, uv=uv)
@@ -107,13 +113,19 @@ def test_installed_ha_must_match_the_matrix(secure_environment):
 def test_missing_required_distribution_fails_closed(secure_environment, name):
     del secure_environment[name]
     with pytest.raises(security.SecurityBaselineError, match="missing"):
-        security.check_security("installed", "2026.10.1")
+        security.check_security("installed", "2026.11.0")
+
+
+def test_current_ha_uses_patched_uv(secure_environment):
+    report = security.check_security("installed", "2026.11.0")
+    assert report["uv"] == "0.13.6"
+    assert report["UV_OFFLINE"] == "true"
 
 
 def test_newer_final_releases_are_accepted(secure_environment, monkeypatch):
     secure_environment.update(pip="27.0", certifi="2026.10.23", uv="0.13.5")
     monkeypatch.setattr(security.sys, "version_info", (3, 14, 11, "final", 0))
-    assert security.check_security("installed", "2026.10.1")["uv"] == "0.13.5"
+    assert security.check_security("installed", "2026.11.0")["uv"] == "0.13.5"
 
 
 def test_cli_failure_is_nonzero_and_does_not_expose_paths(secure_environment, monkeypatch, capsys):

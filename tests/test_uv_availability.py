@@ -9,7 +9,7 @@ from unittest.mock import patch
 import aiohttp
 import pytest
 from homeassistant.helpers import entity_registry as er
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from ha_helpers import MockConfigEntry
 
 from custom_components.meteoswiss.cache import clear_all_caches
 from custom_components.meteoswiss.const import DOMAIN

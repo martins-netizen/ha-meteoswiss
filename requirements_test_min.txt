@@ -1,2 +1,4 @@
+# Frozen compatibility fixture for the advertised HA 2026.8.3 minimum.
+# The official test package starts with HA 2026.11; do not mix the plugins.
 pytest-homeassistant-custom-component==0.13.357
 pytest-cov==7.1.0

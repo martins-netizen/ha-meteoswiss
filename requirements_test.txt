@@ -1,2 +1,4 @@
-pytest-homeassistant-custom-component==0.13.372
+# Keep the official test helpers and Home Assistant on the same release.
+homeassistant==2026.11.0
+pytest-homeassistant==2026.11.0
 pytest-cov==7.1.0

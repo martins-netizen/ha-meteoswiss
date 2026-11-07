@@ -2,7 +2,15 @@
 
 import pytest
 
-pytest_plugins = "pytest_homeassistant_custom_component"
+from ha_helpers import PYTEST_PLUGINS
+
+pytest_plugins = PYTEST_PLUGINS
+
+
+@pytest.fixture
+def hass_config_dir(hass_tmp_config_dir):
+    """Keep writable HA configuration isolated from the source checkout."""
+    return hass_tmp_config_dir
 
 
 @pytest.fixture(autouse=True)

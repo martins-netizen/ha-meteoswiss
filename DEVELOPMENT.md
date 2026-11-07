@@ -39,9 +39,12 @@ rejects outdated pip or certifi, verifies the selected HA version and reports
 the uv policy before tests run. Prerelease package versions fail this check.
 These floors follow the [Python security announcement](https://discuss.python.org/t/information-for-python-users-regarding-emudhra-emsign-ca-certificate-security-incident/109576).
 
-The supported HA versions keep their upstream dependency pins, including
-**uv 0.11.31 for HA 2026.8.3** and **uv 0.12.23 for HA 2026.10.1**. These uv
-versions are **not security-patched** and are restricted to offline test use.
+Both HA fixtures keep their upstream dependency pins. The current fixture uses
+**HA 2026.11.0** with the matching official **pytest-homeassistant 2026.11.0**
+and **uv 0.13.6**, which meets the uv security floor. The minimum fixture keeps
+**HA 2026.8.3**, **pytest-homeassistant-custom-component 0.13.357** and
+**uv 0.11.31**. That older uv is **not security-patched** and is restricted to
+offline test use.
 The compatibility job sets [`UV_OFFLINE=true`](https://docs.astral.sh/uv/reference/environment/#uv_offline)
 for all steps, including HA subprocesses. uv cannot fetch packages in this mode;
 the separate pip installation step supplies the test dependencies. The check
@@ -68,7 +71,7 @@ checks:
 export UV_OFFLINE=true
 python scripts/check_ci_security.py bootstrap
 python -m pip install --disable-pip-version-check --constraint requirements_ci_security.txt -r requirements_test.txt
-python scripts/check_ci_security.py installed --ha-version 2026.10.1
+python scripts/check_ci_security.py installed --ha-version 2026.11.0
 python -m compileall -q custom_components/meteoswiss tests
 python scripts/check_translations.py
 python -m pytest -q --cov=custom_components.meteoswiss --cov-branch --cov-report=term-missing --cov-report=json:coverage.json
@@ -76,6 +79,21 @@ python scripts/check_quality_coverage.py
 ```
 
 For the minimum-HA job, substitute `requirements_test_min.txt` and `2026.8.3`.
+Install each requirements file in its own fresh environment: the official and
+legacy test plugins supply overlapping fixtures and must not be installed
+together. The official package is published from
+[`home-assistant/core`](https://github.com/home-assistant/core/tree/2026.11.0/packages/pytest-homeassistant);
+its version must match HA. `tests/ha_helpers.py` selects the corresponding
+configuration-entry, clock and Recorder helpers without replacing HA APIs.
+Only the minimum fixture explicitly loads the legacy plugin; the official
+plugin registers itself. `pytest.ini` disables the separate respx plugin so
+HA can install its httpx alias first, and sets function-scoped asyncio fixtures.
+Writable HA test configuration uses a temporary directory in both fixtures.
+The station reload regression checks the personal name in HA's entity registry
+as well as the displayed friendly name: HA 2026.11 prefixes the entity name
+with its device name, while the minimum fixture retains the older display.
+Both fixtures still require the exact entity IDs and personal name to survive
+the station change.
 These checks do not update the separately pinned validator containers, an
 installed Home Assistant instance, or existing local environments. Those
 runtimes and certificate stores need their own security review.
