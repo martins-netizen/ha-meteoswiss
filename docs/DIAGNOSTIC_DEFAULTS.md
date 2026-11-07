@@ -1,6 +1,6 @@
 # Diagnostic defaults and virtual service metadata
 
-**Status:** Included in prepared [8.3.4b1](RELEASE_8.3.4b1.md), not published or installed. Stable 8.3.3 is unchanged.
+**Status:** Released in [8.3.4b1](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4b1) on 7 November 2026. The operator confirmed normal operation on HA Core 2026.11.0 / HA OS 18.4; see the [bounded evidence](RELEASE_EVIDENCE_8.3.4b1.md). Stable 8.3.3 remains latest stable.
 
 ## Two optional diagnostic helpers
 
@@ -31,7 +31,7 @@ redacted integration diagnostics remain available independently of these helpers
 These groups organise data services in HA rather than user-owned physical
 devices. Each `DeviceInfo` now explicitly sets `DeviceEntryType.SERVICE`.
 Identifiers are retained, including the deliberate distinction between current
-weather and ICON forecasts. The later unreleased [provider-metadata follow-up](PROVIDER_METADATA.md)
+weather and ICON forecasts. The [provider-metadata follow-up](PROVIDER_METADATA.md), included in the same beta,
 corrects the alternative current source's labels without creating another group.
 
 | Group | Existing identifier suffix | Manufacturer | Existing model label |

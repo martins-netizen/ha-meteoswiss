@@ -20,23 +20,28 @@ Only two version files change. The beta icon check on **Core 2026.10.4 /
 HA OS 18.4** remains separate evidence from the later stable version/operation
 report. Shared settings, first-install and restore acceptance stay closed.
 
-## Prepared 8.3.4b1 test package
+## Published 8.3.4b1 test package; short operation check complete
 
 [8.3.4b1](docs/RELEASE_8.3.4b1.md) packages the regularly merged diagnostic-default
 and provider-metadata changes from #88/#89. Its 39 non-version component files
 match reviewed merge `5a7eae00963d47294281da8812cb1ede35713b7f`; only two version
-files change. The fixed V1.7 publisher preserves all fourteen existing tags and
-latest stable 8.3.3. Packaging checks, publication and the
-[focused operator check](docs/ACCEPTANCE_8.3.4b1.md) are still separate pending
-steps. This preparation is not a published or installed version.
+files change. Packaging PR #90 was regularly merged at
+`1e5c5d1a7fc1c18d520e99189ae4dd5894621706`, with all seven actual merge
+checks successful. The fixed V1.7 publisher created release **437718127** on
+**7 November 2026 at 17:12:54 UTC**, retaining all fourteen older tags and
+latest stable 8.3.3. The operator subsequently confirmed normal operation
+on **HA Core 2026.11.0 / HA OS 18.4**, completing the agreed
+[short check](docs/ACCEPTANCE_8.3.4b1.md). See the
+[bounded evidence](docs/RELEASE_EVIDENCE_8.3.4b1.md); no further HA check
+or stable promotion follows from this documentation update.
 
 ## Remaining Gold and provider-evidence work
 
-The unreleased [diagnostic-defaults and service-metadata change](docs/DIAGNOSTIC_DEFAULTS.md)
+The [diagnostic-defaults and service-metadata change](docs/DIAGNOSTIC_DEFAULTS.md), released in 8.3.4b1,
 adds first-registration diagnostic defaults and explicit virtual service groups,
 with registry-preservation tests. Stable 8.3.3 does not include this change.
 
-The unreleased [provider-metadata follow-up](docs/PROVIDER_METADATA.md) corrects
+The [provider-metadata follow-up](docs/PROVIDER_METADATA.md), released in 8.3.4b1, corrects
 Open-Meteo current-weather labels and attribution while keeping group identity
 and personal choices. Native pollen-station round trips reuse all seven groups;
 no cleanup is needed for those tested changes. Historical orphaned groups have

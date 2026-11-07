@@ -69,11 +69,15 @@ explicit open/partial rules and proposed exemptions requiring review. The
 [README summary](../README.md#quality-goals-bronze-silver-and-gold) is intentionally
 short; these tables retain the qualifications and release scope.
 
-**Prepared 8.3.4b1:** the [test package](RELEASE_8.3.4b1.md) retains regularly
-merged #88/#89 runtime without further component changes except the two version
-fields. Diagnostic defaults/service metadata and current-provider provenance
-are included in this candidate. It is not published or operator-accepted; the
-Gold rows below remain bounded and published 8.3.3 keeps its own scope.
+**Published 8.3.4b1:** release **437718127** was published on **7 November 2026
+at 17:12:54 UTC** from regularly merged packaging PR #90 at
+**1e5c5d1a7fc1c18d520e99189ae4dd5894621706**. It retains #88/#89 runtime
+apart from two version fields. Diagnostic defaults/service metadata and
+current-provider provenance are released in this beta. The operator confirmed
+normal operation on **HA Core 2026.11.0 / HA OS 18.4**, closing the agreed
+short check. The [bounded evidence](RELEASE_EVIDENCE_8.3.4b1.md) does not
+claim an independent registry audit or separate manual alternative-source
+inspection. Gold rows remain bounded; 8.3.3 remains latest stable.
 
 ## Bronze: twenty rules
 
@@ -125,7 +129,7 @@ engineering work.
 
 | Rule | Assessment | Current evidence or next decision |
 |---|---|---|
-| `devices` | Bounded automated evidence in unreleased development | All seven virtual groups declare `DeviceEntryType.SERVICE`. Current weather/sensors now label and attribute Open-Meteo separately from SwissMetNet; other groups retain their provenance. Native setup/reload tests preserve device IDs, personal names and entity registry choices. See PROVIDER_METADATA.md and DIAGNOSTIC_DEFAULTS.md; not delivered in published 8.3.3 and not a complete historical metadata audit. |
+| `devices` | Bounded automated evidence released in 8.3.4b1 | All seven virtual groups declare `DeviceEntryType.SERVICE`. Current weather/sensors now label and attribute Open-Meteo separately from SwissMetNet; other groups retain their provenance. Native setup/reload tests preserve device IDs, personal names and entity registry choices. See PROVIDER_METADATA.md and DIAGNOSTIC_DEFAULTS.md; released in beta 8.3.4b1, not included in stable 8.3.3 and not a complete historical metadata audit. |
 | `diagnostics` | Evidence | Safe unloaded-entry exports, status/timestamps, aggregate cache counts and whole saved-location redaction; no raw payload or network load. |
 | `discovery` | Exemption candidate | This is a manually selected public cloud service, not a discoverable local device. Record the rule-specific applicability reason in this engineering assessment. |
 | `discovery-update-info` | Exemption candidate | No discovered network address; assess with discovery above. |
@@ -139,7 +143,7 @@ engineering work.
 | `dynamic-devices` | Exemption candidate | The selected sources expose a fixed entity set; no newly discovered physical devices are enumerated. |
 | `entity-category` | Evidence | Diagnostic helpers stay diagnostic; measured/modelled pollen and AQ stay ordinary sensors, with registry tests. |
 | `entity-device-class` | Partial | Numeric metadata and HA conversion tests exist; review legacy Foehn/code and derived HGT metadata before a complete Gold assertion. |
-| `entity-disabled-by-default` | Automated evidence in unreleased development | Only newly registered station-catalogue and cache-statistics helpers start disabled. Native HA tests cover both providers, no disabled-helper polling, retained enabled/user-disabled/integration-disabled choices, names/icons/IDs, reload and manual enablement. Ordinary environmental entities remain enabled. See DIAGNOSTIC_DEFAULTS.md; not delivered in published 8.3.3. |
+| `entity-disabled-by-default` | Automated evidence released in 8.3.4b1 | Only newly registered station-catalogue and cache-statistics helpers start disabled. Native HA tests cover both providers, no disabled-helper polling, retained enabled/user-disabled/integration-disabled choices, names/icons/IDs, reload and manual enablement. Ordinary environmental entities remain enabled. See DIAGNOSTIC_DEFAULTS.md; released in beta 8.3.4b1, not included in stable 8.3.3. The short operation report does not independently exercise fresh registration. |
 | `entity-translations` | Partial | Stable 8.3.2 had four 200-key UI catalogues; stable 8.3.3 retains the accepted beta's 19 additional exception keys for 219 per language. Ordinary entity translations and English/source parity remain. Legacy diagnostic/device/attribute compatibility names remain; authoritative provider place-name aliases are separate future work. |
 | `exception-translations` | Automated evidence in accepted published 8.3.3b1 | EXCEPTION_TRANSLATIONS.md records all 21 UpdateFailed sites using 19 keys in DE/EN/FR/IT. Native HA tests load every message; safe causes, retry/availability and recovery remain. The operator reported normal operation, without manually triggering all failures. Stable 8.3.3 now delivers this runtime and its actual installation/operation is operator-confirmed; no manual exercise of all errors is claimed. |
 | `icon-translations` | Automated and reported focused evidence in accepted published 8.3.3b1 | ICON_TRANSLATIONS.md maps all 24 previous custom icons to icons.json, retaining device-class defaults and personal registry overrides. Native HA tests cover key linkage and override persistence after reload; Hassfest validates the schema. The operator reported icons/personal choices OK on Core 2026.10.4 / HA OS 18.4 within the acceptance scope. Stable 8.3.3 now delivers the same runtime and its actual installation/operation is operator-confirmed. |
