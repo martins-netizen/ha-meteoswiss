@@ -4,6 +4,13 @@
 
 Future work remains separate from the published release below.
 
+- Register the station-catalogue and cache-statistics helpers disabled by default
+  only when first created. Preserve existing enabled/disabled choices, IDs,
+  personal names and icons. Users can still enable either helper.
+- Mark the seven virtual data-service device groups as services, retaining their
+  identifiers, manufacturer/model labels and personal device names. See
+  [diagnostic defaults and service metadata](docs/DIAGNOSTIC_DEFAULTS.md).
+
 ## [8.3.3] — 2026-10-30 · published and accepted stable release
 
 Published **30 October 2026 at 18:21:55 UTC**, release **429354633**, from

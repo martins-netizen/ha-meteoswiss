@@ -222,6 +222,17 @@ download a redacted technical summary.
 The [Cache Statistics guide](USAGE.md#cache-statistics-what-the-numbers-mean)
 explains hit rate, lookups, expiry and why these are not API-request counters.
 
+**Unreleased development change:** newly registered station-catalogue and cache
+helpers start disabled. Existing registry choices remain unchanged, including
+enabled helpers. To use a helper, open its entity settings under
+**Settings → Devices & services → Entities**, include disabled entities in the
+filter and enable it. This does not enable another weather station or change
+the source configuration. Ordinary weather, warning, forecast, pollen and air
+quality entities remain enabled by default. The virtual device groups are
+marked as services; their existing IDs and manufacturer/model labels remain.
+See [the scope and regression evidence](DIAGNOSTIC_DEFAULTS.md). This development
+change is not part of published stable 8.3.3.
+
 Camera/radar, standalone SLF and standalone BAFU clients were inactive
 placeholders in 8.2.0 and created no additional entities. The 8.3 runtime
 removes those unused files. Avalanche/flood warnings supplied through the
