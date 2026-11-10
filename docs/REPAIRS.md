@@ -48,8 +48,8 @@ entry removes its notice, including after an unsuccessful source startup.
 
 Home Assistant checks the saved selection again on startup. The repair notice
 does not fetch a catalogue, change a location, call a device, or reset the entry.
-Its existing settings link works with the supported HA minimum **2026.8.3**;
-this feature does not require a newer repair-flow API.
+The original tests verified its settings link on HA **2026.8.3**, the minimum
+supported at the time. See the [current support policy](../DEVELOPMENT.md#supported-home-assistant-versions).
 
 ## Evidence
 

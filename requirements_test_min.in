@@ -1,6 +1,5 @@
-# Frozen compatibility fixture for the advertised HA 2026.8.3 minimum.
-# Keep the legacy test plugin isolated from the current official package.
+# Minimum supported HA with the matching official test package.
 -c requirements_ci_security.txt
-homeassistant==2026.8.3
-pytest-homeassistant-custom-component==0.13.357
+homeassistant==2026.11.0
+pytest-homeassistant==2026.11.0
 pytest-cov==7.1.0

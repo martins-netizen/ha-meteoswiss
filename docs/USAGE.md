@@ -17,7 +17,7 @@ the retired legacy season-HGT entity. This page is the detailed reference.
 | A warning card uses an old label or misses Wind/Drought | Review the actual dashboard/automation dictionaries and filters using the migration guide. |
 | The integration is missing after installation | On HA 2026.11+, continue Marketplace setup or add a new entry through Devices & services. Restart after updates or an older HACS download, then reload the browser. Existing users must not create a second entry. |
 | Marketplace/HACS search does not show this fork | Refresh the catalogue/page and verify the repository name. Use the [documented fallback](GETTING_STARTED.md#if-the-repository-is-not-listed) if needed. |
-| No newer version is offered | On HA 2026.11+ check Settings → Updates and the installed Marketplace repository; on older HA refresh its HACS information. Compare the published release. Refreshing metadata does not install files; updates still require an actual install and restart. |
+| No newer version is offered | Check the release's HA requirement and the installed repository. For releases after 8.3.4, use HA 2026.11.0 or newer and check Settings → Updates. On older HA, check the published 8.3.4 release in HACS. |
 | A repair notice names an invalid saved forecast location | From 8.3.1b1, use its settings link to correct or explicitly reset that entry's forecast choice. See [the repair guide](REPAIRS.md). Temporary provider outages do not trigger this notice. |
 
 Do not delete/re-add the integration to troubleshoot. Report installed version,
@@ -26,15 +26,17 @@ Use private vulnerability reporting for security details, not a public issue.
 
 ## Before installing
 
-This fork targets HA 2026.8.3 or newer. It reads public HTTPS APIs without an
-account, API key or local device. Network access to MeteoSwiss/data.geo.admin.ch
+New releases require HA 2026.11.0 or newer. Published 8.3.4 declared HA 2026.8.3
+as its minimum. See the [version-specific installation guide](GETTING_STARTED.md).
+This integration reads public HTTPS APIs without an account, API key or local
+device. Network access to MeteoSwiss/data.geo.admin.ch
 and Open-Meteo is required. HA's TLS verification remains enabled. Observation,
 forecast, warning and pollen services can fail independently.
 
 Use the approved release and the installation/update procedure in the README.
 Search for **MeteoSwiss** in **Settings → Marketplace** on HA 2026.11+
-(or HACS on older HA) and verify **martins-netizen/ha-meteoswiss**;
-the maintained fork is in the default catalogue. Existing upstream installations
+or in HACS for 8.3.4 on older HA. Verify **martins-netizen/ha-meteoswiss**
+in the default catalogue. Existing upstream installations
 follow the migration guide before switching software ownership. Custom-repository
 registration is a [fallback](GETTING_STARTED.md#if-the-repository-is-not-listed).
 A prepared development PR is not a tested published release. Existing installations

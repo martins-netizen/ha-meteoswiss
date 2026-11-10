@@ -1,7 +1,8 @@
-"""Regression tests for CI installer and offline compatibility boundaries."""
+"""Regression tests for the CI security and HA compatibility baseline."""
 
 from importlib import metadata, util
 from http.server import BaseHTTPRequestHandler, HTTPServer
+import json
 import os
 from pathlib import Path
 import subprocess
@@ -9,6 +10,7 @@ import sys
 from threading import Thread
 
 import pytest
+import yaml
 
 SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "check_ci_security.py"
 SPEC = util.spec_from_file_location("check_ci_security", SCRIPT)
@@ -19,7 +21,7 @@ SPEC.loader.exec_module(security)
 
 @pytest.fixture
 def secure_environment(monkeypatch):
-    """Represent the current-HA fixture with patched installer and CA bundle."""
+    """Represent the minimum HA fixture with patched installer and CA bundle."""
     versions = {
         "pip": "26.2.2",
         "certifi": "2026.10.19",
@@ -80,33 +82,24 @@ def test_uv_requires_offline_mode_even_when_patched(secure_environment, monkeypa
         security.check_security("installed", "2026.11.0")
 
 
-@pytest.mark.parametrize("ha,uv", [("2026.8.3", "0.11.31")])
-def test_exact_legacy_ha_dependency_is_explicitly_offline_only(secure_environment, ha, uv):
-    secure_environment.update(homeassistant=ha, uv=uv)
-    report = security.check_security("installed", ha)
-    assert report["UV_OFFLINE"] == "true"
-    assert "not security-patched" in report["uv"]
-
-
 @pytest.mark.parametrize(
     "ha,uv",
     [
-        ("2026.8.3", "0.12.23"),
+        ("2026.8.3", "0.11.31"),
         ("2026.11.0", "0.11.31"),
-        ("2026.10.1", "0.12.23"),
         ("2026.11.0", "0.12.23"),
-        ("2026.9.3", "0.12.23"),
+        ("2026.11.1", "0.13.3"),
     ],
 )
-def test_offline_exception_cannot_cover_other_legacy_dependencies(secure_environment, ha, uv):
+def test_offline_uv_must_meet_security_floor(secure_environment, ha, uv):
     secure_environment.update(homeassistant=ha, uv=uv)
-    with pytest.raises(security.SecurityBaselineError, match="approved offline"):
+    with pytest.raises(security.SecurityBaselineError, match=r"uv>=0\.13\.4"):
         security.check_security("installed", ha)
 
 
 def test_installed_ha_must_match_the_matrix(secure_environment):
     with pytest.raises(security.SecurityBaselineError, match="does not match"):
-        security.check_security("installed", "2026.8.3")
+        security.check_security("installed", "2026.11.1")
 
 
 @pytest.mark.parametrize("name", ["pip", "certifi", "homeassistant", "uv"])
@@ -116,10 +109,30 @@ def test_missing_required_distribution_fails_closed(secure_environment, name):
         security.check_security("installed", "2026.11.0")
 
 
-def test_current_ha_uses_patched_uv(secure_environment):
+def test_installed_ha_uses_patched_uv(secure_environment):
     report = security.check_security("installed", "2026.11.0")
     assert report["uv"] == "0.13.6"
     assert report["UV_OFFLINE"] == "true"
+
+
+def test_advertised_minimum_matches_ci_and_fixture_pins():
+    root = SCRIPT.parents[1]
+    minimum = json.loads((root / "hacs.json").read_text(encoding="utf-8"))["homeassistant"]
+    workflow_path = root / ".github/workflows/ci.yml"
+    workflow = yaml.safe_load(workflow_path.read_text(encoding="utf-8"))
+    matrix = workflow["jobs"]["compatibility"]["strategy"]["matrix"]["include"]
+    fixtures = {case["requirements"]: case["ha"] for case in matrix}
+    assert len(matrix) == 2
+    assert fixtures["requirements_test_min.txt"] == minimum
+    assert security.stable_version(fixtures["requirements_test.txt"]) >= security.stable_version(minimum)
+    for lock_name, ha in fixtures.items():
+        for path in (root / lock_name, (root / lock_name).with_suffix(".in")):
+            pins = {
+                line.split(maxsplit=1)[0]
+                for line in path.read_text(encoding="utf-8").splitlines()
+                if line.strip()
+            }
+            assert {f"homeassistant=={ha}", f"pytest-homeassistant=={ha}"} <= pins
 
 
 def test_newer_final_releases_are_accepted(secure_environment, monkeypatch):

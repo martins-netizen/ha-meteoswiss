@@ -9,9 +9,9 @@
    protection. External PRs follow the [unprivileged CodeQL review procedure](CODEQL_FORK_REVIEW.md);
    a skipped analysis is not a successful security scan.
 3. Follow the [local compatibility checks](../DEVELOPMENT.md#local-compatibility-checks)
-   in separate environments for both `requirements_test_min.txt` (HA 2026.8.3)
-   and `requirements_test.txt` (HA 2026.11.0 with the matching official test
-   package). Keep the legacy test package only in the isolated minimum fixture.
+   in separate environments for `requirements_test_min.txt` (HA 2026.11.0)
+   and `requirements_test.txt` (HA 2026.11.1). Use the matching official test
+   package in both environments.
    Apply the Python/pip bootstrap,
    hash-checked generated lockfiles, `pip check`, certifi constraint,
    installed-version check and offline uv policy before
@@ -23,7 +23,8 @@
    For dependency maintenance, update the `.in` inputs and regenerate their
    universal SHA-256 lockfiles together using the
    [documented maintenance environment](../DEVELOPMENT.md#test-dependency-lockfiles).
-   Preserve the frozen minimum fixture and review transitive updates explicitly.
+   Keep the tested minimum aligned with `hacs.json` and review transitive
+   dependency updates explicitly.
 4. Before release, verify the installed source/commit and create a restorable
    backup including the integration and affected dashboard configuration.
    Run a live read-only check of observations, forecasts, active/upcoming alerts,
@@ -32,13 +33,12 @@
    and history persist and that active/upcoming warning consumers use the
    verified catalogue and preserve the provider's concrete event text.
 5. Update manifest.json, version.py and CHANGELOG.md together when preparing a
-   release. Stable `8.3.2` was published on 28 October 2026; its HACS download,
-   HA restart and working operation were operator-confirmed on 30 October. The
-   shared-settings beta check is also complete. See
-   [the evidence](RELEASE_EVIDENCE_8.3.2.md). Later development changes
-   remain unreleased until separately packaged and accepted. Tag only
-   the approved tested commit on `development`, not the upstream mirror `main`;
-   preserve existing immutable stable/beta tags. Marketplace (HACS on older HA) must point at
+   release. Align the minimum HA requirement, installation guidance and
+   release notes. Use the [release status](../README.md#release-status) and
+   [release evidence](RELEASE_READINESS.md) to distinguish published and
+   planned changes. Tag the approved tested commit on `development` and
+   preserve existing immutable stable/beta tags. Marketplace (HACS for 8.3.4
+   on older HA) must point at
    `martins-netizen/ha-meteoswiss` and the selected tested release; never infer
    the installation's source or change it without checking the live state.
 6. Review HA breaking changes before upgrades. Review dependencies, GitHub
@@ -56,7 +56,7 @@ Follow [the publication checklist](PUBLISHING.md) for repository metadata,
 the official HACS validation, local brand assets and explicit release selection.
 [HACS catalogue admission](HACS_ACCEPTANCE.md#hacs-catalogue-admission) is complete.
 Keep **Settings → Marketplace** first in user guides for HA 2026.11+, with
-HACS as the older-HA route and custom registration as a fallback. Preserve
+HACS guidance for 8.3.4 on older HA and custom registration as a fallback. Preserve
 historical HACS evidence and technical `hacs.json`/validation names; UI wording
 does not establish a new live acceptance result. HACS checks and admission remain separate
 from live acceptance and the [Quality Scale engineering checklist](QUALITY_SCALE.md).
