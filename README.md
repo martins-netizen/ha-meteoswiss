@@ -182,12 +182,16 @@ Earlier beta, shared-settings, clean-install and restore checks remain complete
 within their recorded scopes. An intermediate beta or older stable download
 is not required.
 
-Minimum supported HA is **2026.8.3**. Current hosted CI covers **2026.11.0**
-with the matching official pytest-homeassistant package, plus an independent
-complete minimum-HA fixture. Both actual stable-package merge jobs passed
-**2,225 tests plus 83 subtests**. Historical release checks retain their stated
-HA versions. Publication and beta acceptance do not assert that every user has
-installed the stable release or independently audit a user's registry/history.
+**Unreleased compatibility change.** New releases require **HA 2026.11.0 or
+newer**. This Core baseline brings fixes for known vulnerabilities in
+dependencies shipped with older Core releases. CI tests **2026.11.0** and
+**2026.11.1** with their matching official test packages.
+[Core security rationale](DEVELOPMENT.md#supported-home-assistant-versions)
+
+Published stable **8.3.4** declared **HA 2026.8.3** as its minimum. Its
+package-merge jobs passed **2,225 tests plus 83 subtests** on HA 2026.8.3 and
+2026.11.0. For installations on older HA, follow the
+[8.3.4 setup guide](https://github.com/martins-netizen/ha-meteoswiss/blob/8.3.4/docs/GETTING_STARTED.md).
 
 Native icons and translated errors are retained from stable 8.3.3. The
 [Gold checklist](docs/QUALITY_SCALE.md) still has separate remaining work.
@@ -234,15 +238,16 @@ For installation or update:
    the [migration and warning-consumer checks](docs/MIGRATION.md).
 2. On **HA 2026.11+**, open **Settings → Marketplace**, acknowledge the community-code
    notice if prompted, and search for **MeteoSwiss**. Verify
-   **martins-netizen/ha-meteoswiss**. On older HA, open **HACS** instead.
+   **martins-netizen/ha-meteoswiss**. For 8.3.4 on older HA, open **HACS**.
    For a different installed source, follow migration first. The
    [custom-repository fallback](docs/GETTING_STARTED.md#if-the-repository-is-not-listed)
    explains **Add from link** and the older HACS menu.
-3. Select the announced published stable release and install it. For an **update**,
+3. Select a published stable release that supports your HA version. For an **update**,
    use **Settings → Updates** on HA 2026.11+, then restart through the resulting
-   repair notice. In older HACS use **Download/Redownload → Need a different
-   version? → Release**, download and restart. Refreshing metadata alone does
-   not install files. Keep one software owner for `meteoswiss`.
+   repair notice. For 8.3.4 on older HA, use **Download/Redownload → Need a
+   different version? → Release** in HACS, then download and restart.
+   Refreshing metadata alone does not install files. Keep one software owner
+   for `meteoswiss`.
 4. **New users only:** Marketplace opens setup after the first installation;
    no restart is normally needed for an integration not previously loaded.
    Alternatively use **Settings → Devices & services → Add integration → MeteoSwiss**.

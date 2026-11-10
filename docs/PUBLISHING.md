@@ -1,6 +1,6 @@
 # Publish the maintained fork
 
-**Procedure version:** 1.17 · **Updated:** 7 November 2026
+**Procedure version:** 1.18 · **Updated:** 10 November 2026
 
 **Distribution UI:** On HA 2026.11+, use built-in **Settings → Marketplace**;
 older HA uses HACS. Follow [current installation/update steps](GETTING_STARTED.md).
@@ -8,6 +8,10 @@ Existing HACS repositories migrate automatically. Historical publication and
 acceptance instructions below retain their recorded UI/version context.
 The `hacs/default` catalogue, `hacs.json` and HACS validation names remain.
 A documentation update is not a Marketplace live acceptance result.
+
+For releases after 8.3.4, verify the **HA 2026.11.0** requirement in
+`hacs.json`, the minimum and current CI jobs, and the user-facing upgrade
+guidance before publishing. [Support and security rationale](../DEVELOPMENT.md#supported-home-assistant-versions)
 
 <a id="stable-834-prepared"></a>
 

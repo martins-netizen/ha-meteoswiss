@@ -26,9 +26,11 @@ most accurate model in every situation. A failed warning feed is not an all-clea
 
 ## 1. Check prerequisites
 
-- Home Assistant **2026.8.3 or newer**, with internet access.
-- **HA 2026.11+:** built-in **Settings → Marketplace**; no separate HACS installation.
-- **Older HA:** HACS installed using its [official installation guide](https://www.hacs.xyz/docs/use/download/download/).
+- For releases after 8.3.4, use Home Assistant **2026.11.0 or newer** with
+  internet access. See the [security rationale](../DEVELOPMENT.md#supported-home-assistant-versions).
+- **HA 2026.11 and newer** uses the built-in **Settings → Marketplace**.
+- Published **8.3.4** declared a minimum of **HA 2026.8.3**. Its HACS steps
+  below apply when using it on HA 2026.8.3 through 2026.10.x.
 - Check the [latest stable release](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
   and [8.3.0 notes](RELEASE_8.3.0.md). A development branch is not a release.
 - Create a full HA backup, download a copy and retain its recovery key securely.
@@ -63,10 +65,13 @@ connection. See the [official Marketplace guide](https://www.home-assistant.io/i
 
 ### Older HA: HACS
 
+These steps apply to the published 8.3.4 release. Upgrade HA to 2026.11.0 or
+later before moving to a newer MeteoSwiss release.
+
 1. Open **HACS** in the sidebar, search for **MeteoSwiss** and verify the owner.
 2. Open **Download/Redownload → Need a different version? → Release** and choose
-   the announced stable release on the latest-stable page.
-3. If it is missing, refresh repository information and check the release page.
+   [8.3.4](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4).
+3. If it is missing, refresh repository information and check the tagged release page.
    **Update information** refreshes metadata; it does not install files.
 4. Actually download the selected release, restart HA and wait for it to return.
    New users then add **MeteoSwiss** under **Settings → Devices & services**;

@@ -58,8 +58,8 @@ bounded rather than claiming a complete metadata audit.
 
 ## Regression scope
 
-Native HA tests run for the current 2026.11.0 and minimum 2026.8.3 environments
-with both MeteoSwiss and Open-Meteo configurations. They check:
+The 8.3.4 regression run used HA 2026.11.0 and 2026.8.3 with both MeteoSwiss
+and Open-Meteo configurations. The checks cover:
 
 - Fresh diagnostic entries are registered disabled and perform no polling.
 - Ordinary weather, measured pollen, temperature and warning entities stay
