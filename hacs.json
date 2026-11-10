@@ -1,6 +1,6 @@
 {
   "name": "MeteoSwiss (maintained fork)",
   "country": "CH",
-  "homeassistant": "2026.8.3",
+  "homeassistant": "2026.11.0",
   "hide_default_branch": true
 }

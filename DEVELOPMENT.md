@@ -18,6 +18,32 @@ their original spelling.
 
 Before merging a documentation PR, check language consistency, relative links
 and anchors, factual status against its evidence, and required GitHub checks.
+For changes to supported versions or setup steps, update the README, user
+guides and changelog together. Keep historical release evidence scoped to its
+published version.
+
+## Supported Home Assistant versions
+
+New releases require **HA 2026.11.0 or newer**. Published stable 8.3.4
+declared HA 2026.8.3 as its minimum. For HA 2026.8.3 through 2026.10.x, use
+the [8.3.4 release instructions](https://github.com/martins-netizen/ha-meteoswiss/blob/8.3.4/docs/GETTING_STARTED.md)
+and upgrade HA before moving to a newer MeteoSwiss release.
+
+Older Home Assistant Core releases pinned dependencies affected by published
+security advisories. Core 2026.10.4 still used Pillow 12.3.0, which is affected
+by several image-decoding vulnerabilities. Core 2026.11.0 provides a newer
+dependency set with fixes for these known issues.
+[Core 2026.8.3 pins](https://github.com/home-assistant/core/blob/2026.8.3/homeassistant/package_constraints.txt)
+· [Core 2026.10.4 pins](https://github.com/home-assistant/core/blob/2026.10.4/homeassistant/package_constraints.txt)
+· [Core 2026.11.0 pins](https://github.com/home-assistant/core/blob/2026.11.0/homeassistant/package_constraints.txt)
+
+| Dependency | Core 2026.8.3 | Core 2026.11.0 and 2026.11.1 | Example security advisory |
+|---|---:|---:|---|
+| Pillow | 12.3.0 | 13.0.0 | [GHSA-5x8w-8jj5-q52h](https://github.com/advisories/GHSA-5x8w-8jj5-q52h) |
+| PyJWT | 2.13.0 | 2.15.1 | [GHSA-ffc3-869f-jxw9](https://github.com/advisories/GHSA-ffc3-869f-jxw9) |
+| aiohttp | 3.14.3 | 3.14.5 | [GHSA-9xw5-w5jj-pvcg](https://github.com/advisories/GHSA-9xw5-w5jj-pvcg) |
+| cryptography | 48.0.1 | 50.0.2 | [GHSA-g6cj-pr64-35w5](https://github.com/advisories/GHSA-g6cj-pr64-35w5) |
+| uv | 0.11.31 | 0.13.6 | [GHSA-hq85-5cpj-mr62](https://github.com/advisories/GHSA-hq85-5cpj-mr62) |
 
 ## CI Python security baseline
 
@@ -39,18 +65,13 @@ rejects outdated pip or certifi, verifies the selected HA version and reports
 the uv policy before tests run. Prerelease package versions fail this check.
 These floors follow the [Python security announcement](https://discuss.python.org/t/information-for-python-users-regarding-emudhra-emsign-ca-certificate-security-incident/109576).
 
-Both HA fixtures keep their upstream dependency pins. The current fixture uses
-**HA 2026.11.0** with the matching official **pytest-homeassistant 2026.11.0**
-and **uv 0.13.6**, which meets the uv security floor. The minimum fixture keeps
-**HA 2026.8.3**, **pytest-homeassistant-custom-component 0.13.357** and
-**uv 0.11.31**. That older uv is **not security-patched** and is restricted to
-offline test use.
-The compatibility job sets [`UV_OFFLINE=true`](https://docs.astral.sh/uv/reference/environment/#uv_offline)
-for all steps, including HA subprocesses. uv cannot fetch packages in this mode;
-the separate pip installation step supplies the test dependencies. The check
-accepts older uv only for those exact HA/uv pairs, and rejects missing offline
-mode even with newer uv. Review this exception when changing the HA matrix.
-Do not use these legacy fixture environments for online uv operations.
+The minimum fixture uses **HA 2026.11.0** and the current fixture uses
+**HA 2026.11.1**. Both use the corresponding official **pytest-homeassistant**
+release and **uv 0.13.6**. The installed check requires **uv 0.13.4 or newer**
+in both jobs. The compatibility job sets
+[`UV_OFFLINE=true`](https://docs.astral.sh/uv/reference/environment/#uv_offline)
+for all steps, including HA subprocesses. A separate hash-checked pip step
+supplies the test dependencies.
 Regression tests probe the installed uv binary against a loopback-only index:
 offline mode must make no requests, while a local positive control proves the
 detector works. No public package index is used by this probe.
@@ -72,29 +93,24 @@ export UV_OFFLINE=true
 python scripts/check_ci_security.py bootstrap
 python -m pip install --disable-pip-version-check --require-hashes --constraint requirements_ci_security.txt -r requirements_test.txt
 python -m pip check
-python scripts/check_ci_security.py installed --ha-version 2026.11.0
+python scripts/check_ci_security.py installed --ha-version 2026.11.1
 python -m compileall -q custom_components/meteoswiss tests
 python scripts/check_translations.py
 python -m pytest -q --cov=custom_components.meteoswiss --cov-branch --cov-report=term-missing --cov-report=json:coverage.json
 python scripts/check_quality_coverage.py
 ```
 
-For the minimum-HA job, substitute `requirements_test_min.txt` and `2026.8.3`.
-Install each requirements file in its own fresh environment: the official and
-legacy test plugins supply overlapping fixtures and must not be installed
-together. The official package is published from
-[`home-assistant/core`](https://github.com/home-assistant/core/tree/2026.11.0/packages/pytest-homeassistant);
-its version must match HA. `tests/ha_helpers.py` selects the corresponding
-configuration-entry, clock and Recorder helpers without replacing HA APIs.
-Only the minimum fixture explicitly loads the legacy plugin; the official
-plugin registers itself. `pytest.ini` disables the separate respx plugin so
+For the minimum-HA job, substitute `requirements_test_min.txt` and `2026.11.0`.
+Install each requirements file in its own fresh environment. The official
+test package version must match HA. The plugin registers itself.
+[`home-assistant/core` test package](https://github.com/home-assistant/core/tree/2026.11.0/packages/pytest-homeassistant)
+`tests/ha_helpers.py` supplies configuration-entry, clock and Recorder helpers.
+`pytest.ini` disables the separate respx plugin so
 HA can install its httpx alias first, and sets function-scoped asyncio fixtures.
 Writable HA test configuration uses a temporary directory in both fixtures.
-The station reload regression checks the personal name in HA's entity registry
-as well as the displayed friendly name: HA 2026.11 prefixes the entity name
-with its device name, while the minimum fixture retains the older display.
-Both fixtures still require the exact entity IDs and personal name to survive
-the station change.
+The station reload regression checks that exact entity IDs and the personal
+name in HA's entity registry survive a station change. It also checks the
+friendly name, which includes the device name in both supported fixtures.
 These checks do not update the separately pinned validator containers, an
 installed Home Assistant instance, or existing local environments. Those
 runtimes and certificate stores need their own security review.
@@ -124,9 +140,10 @@ An existing lockfile retains its resolved versions by default. For an intended
 dependency update, add `--upgrade-package NAME` and review every resulting
 change. Commit changed inputs and regenerated lockfiles together, then install
 both into fresh environments and run the complete compatibility/coverage
-recipe. Do not hand-edit hashes, remove upstream HA pins or automatically
-advance the frozen minimum HA/test-plugin pair. Keep private index URLs,
-credentials and machine-specific paths out of the generated files.
+recipe. Keep generated hashes and upstream pins. When changing the minimum,
+update the advertised requirement, CI matrix and matching HA/test-package pins
+together. Keep private index URLs, credentials and machine-specific paths out
+of the generated files.
 
 ## Branch policy
 

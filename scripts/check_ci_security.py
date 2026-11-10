@@ -1,4 +1,4 @@
-"""Fail closed on stale CI installers, CA bundles, or online legacy uv."""
+"""Require patched CI dependencies and offline uv during tests."""
 
 import argparse
 from importlib import metadata
@@ -10,10 +10,6 @@ MINIMUM_PYTHON = (3, 14, 10)
 MINIMUM_PIP = (26, 2, 2)
 MINIMUM_CERTIFI = (2026, 10, 19)
 MINIMUM_UV = (0, 13, 4)
-
-# Exact upstream HA test dependencies, allowed only with UV_OFFLINE=true.
-# Review this list whenever a compatibility job changes its HA version.
-OFFLINE_HA_UV = {"2026.8.3": "0.11.31"}
 
 
 class SecurityBaselineError(ValueError):
@@ -72,13 +68,7 @@ def check_security(stage: str, expected_ha: str | None = None) -> dict[str, str]
     if ha != expected_ha:
         raise SecurityBaselineError("Installed HA does not match the compatibility job.")
     report["HA"] = ha
-    uv = package_version("uv")
-    if stable_version(uv) < MINIMUM_UV:
-        if OFFLINE_HA_UV.get(ha) != uv:
-            raise SecurityBaselineError("Legacy uv is not an approved offline HA test dependency.")
-        report["uv"] = f"{uv} (offline-only HA compatibility exception; not security-patched)"
-    else:
-        report["uv"] = uv
+    report["uv"] = require_minimum("uv", MINIMUM_UV)
     report["UV_OFFLINE"] = "true"
     return report
 

@@ -1,5 +1,5 @@
 # Current fixture: keep the official test helpers and HA on the same release.
 -c requirements_ci_security.txt
-homeassistant==2026.11.0
-pytest-homeassistant==2026.11.0
+homeassistant==2026.11.1
+pytest-homeassistant==2026.11.1
 pytest-cov==7.1.0

@@ -9,6 +9,12 @@
   [Foehn/HGT review and chart impact](docs/SENSOR_METADATA.md) document why both
   keep no device class and why wind-direction migration remains separate.
 
+### Home Assistant compatibility
+
+New releases require Home Assistant 2026.11.0 or newer. The new baseline
+uses updated Core dependencies that address published vulnerabilities
+in older Core releases. [Core security rationale](DEVELOPMENT.md#supported-home-assistant-versions)
+
 ## [8.3.4] — 2026-11-07 · published stable release
 
 **Why upgrade from 8.3.3:** verified HA 2026.11 compatibility with the matching

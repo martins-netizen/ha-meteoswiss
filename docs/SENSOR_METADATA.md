@@ -1,13 +1,13 @@
 # Foehn and HGT metadata: numeric codes, predictions and statistics
 
-**Review version:** 1.0 · **Reviewed:** 7 November 2026
+**Review version:** 1.1 · **Reviewed:** 10 November 2026
 **Status:** Unreleased source follow-up after published stable 8.3.4.
 
 ## Device classes must fit the quantity
 
 Home Assistant's [device-class rule](https://contributors.home-assistant.io/core/quality-scale/entity-device-class/)
 asks for a class wherever one fits. It does not require inventing a class for
-every numeric value. Both supported HA fixtures, **2026.8.3** and **2026.11.0**,
+every numeric value. Both supported HA fixtures, **2026.11.0** and **2026.11.1**,
 were inspected against their sensor class/unit definitions.
 
 | Entity | Existing contract | Device-class decision |
