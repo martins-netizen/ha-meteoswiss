@@ -1,6 +1,6 @@
 # Quality evidence and remaining work
 
-**Runtime assessment:** 24 October 2026. **Documentation updated:** 7 November 2026.
+**Runtime assessment:** 24 October 2026. **Documentation updated:** 10 November 2026.
 **Scope:** the 8.3 runtime accepted as
 published b4 at **a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5**. Stable packaging
 changes only two component version files. The operator confirmed b3 calendar-day
@@ -65,7 +65,7 @@ remains incomplete.
 Silver rules have recorded evidence below. Bundled branding follows the custom
 integration/HACS route; the separate Core branding requirement is not assessed.
 Gold has
-explicit open/partial rules and proposed exemptions requiring review. The
+explicit open/partial rules and reasoned discovery exemptions. The
 [README summary](../README.md#quality-goals-bronze-silver-and-gold) is intentionally
 short; these tables retain the qualifications and release scope.
 
@@ -142,8 +142,8 @@ engineering work.
 |---|---|---|
 | `devices` | Bounded automated evidence delivered in stable 8.3.4; first shipped in 8.3.4b1 | All seven virtual groups declare `DeviceEntryType.SERVICE`. Current weather/sensors now label and attribute Open-Meteo separately from SwissMetNet; other groups retain their provenance. Native setup/reload tests preserve device IDs, personal names and entity registry choices. See PROVIDER_METADATA.md and DIAGNOSTIC_DEFAULTS.md; released in beta 8.3.4b1, not included in stable 8.3.3 and not a complete historical metadata audit. |
 | `diagnostics` | Evidence | Safe unloaded-entry exports, status/timestamps, aggregate cache counts and whole saved-location redaction; no raw payload or network load. |
-| `discovery` | Exemption candidate | This is a manually selected public cloud service, not a discoverable local device. Record the rule-specific applicability reason in this engineering assessment. |
-| `discovery-update-info` | Exemption candidate | No discovered network address; assess with discovery above. |
+| `discovery` | Exempt; applicability reviewed | Public weather selection is a manually configured service without a discoverable local appliance, bus or account-owned device inventory. GOLD_APPLICABILITY.md links the official exception, source/config-flow evidence and reassessment triggers. Catalogue search is data selection, not network discovery. |
+| `discovery-update-info` | Exempt; applicability reviewed | No discovered device host/IP is stored to update; provider DNS and explicit station/forecast settings are separate concerns. GOLD_APPLICABILITY.md records the official exception and its service-specific reason. |
 | `docs-data-update` | Evidence | API_SOURCES.md distinguishes polling, cache, publication and measurement intervals; documents time/freshness and failure limits. |
 | `docs-examples` | Evidence | COORDINATOR_EXAMPLES.md, standard forecast usage and escaped warning-card example. Examples do not actuate devices. |
 | `docs-known-limitations` | Evidence | Provider availability, fixed-offset daily fields, interval completeness, separate warning postcode, name aliases and unimplemented feeds are explicit. |
@@ -151,7 +151,7 @@ engineering work.
 | `docs-supported-functions` | Evidence | SENSORS.md, FORECAST_SENSORS.md and source guide describe active families and retired entities. |
 | `docs-troubleshooting` | Evidence | USAGE.md covers missing data, outages, metadata refresh and retained-entry recovery. |
 | `docs-use-cases` | Evidence | README/getting-started plus ordinary forecast sensors/cards/automations and independent source examples. |
-| `dynamic-devices` | Exemption candidate | The selected sources expose a fixed entity set; no newly discovered physical devices are enumerated. |
+| `dynamic-devices` | Partial; bounded fixed-group evidence | The seven virtual service groups, including two shared diagnostic groups, are defined by the integration rather than enumerated from a hub/account inventory. Native setup/reload/station-change tests retain their IDs and bindings. The official single-fixed-device exception does not literally cover this layout; no blanket exemption or dynamic-addition test is claimed. See GOLD_APPLICABILITY.md. |
 | `entity-category` | Evidence | Diagnostic helpers stay diagnostic; measured/modelled pollen and AQ stay ordinary sensors, with registry tests. |
 | `entity-device-class` | Partial; bounded Foehn/HGT review in unreleased source | SENSOR_METADATA.md records why the retained numeric Foehn code and forecast HGT `°C·d` have no fitting standard class. The HGT follow-up removes its incorrect measurement state class; native Recorder tests retain raw history, old hourly statistics, metadata and registry choices across reload while excluding new predictions from measurement statistics. Published stable 8.3.4 retains the earlier HGT declaration. Wind direction still requires the supported wind/circular classes and an explicit migration policy for older arithmetic statistics; overall rule/Gold remains incomplete. |
 | `entity-disabled-by-default` | Automated evidence delivered in stable 8.3.4; first shipped in 8.3.4b1 | Only newly registered station-catalogue and cache-statistics helpers start disabled. Native HA tests cover both providers, no disabled-helper polling, retained enabled/user-disabled/integration-disabled choices, names/icons/IDs, reload and manual enablement. Ordinary environmental entities remain enabled. See DIAGNOSTIC_DEFAULTS.md; released in beta 8.3.4b1, not included in stable 8.3.3. The short operation report does not independently exercise fresh registration. |
@@ -160,7 +160,7 @@ engineering work.
 | `icon-translations` | Automated and reported focused evidence in accepted published 8.3.3b1 | ICON_TRANSLATIONS.md maps all 24 previous custom icons to icons.json, retaining device-class defaults and personal registry overrides. Native HA tests cover key linkage and override persistence after reload; Hassfest validates the schema. The operator reported icons/personal choices OK on Core 2026.10.4 / HA OS 18.4 within the acceptance scope. Stable 8.3.3 now delivers the same runtime and its actual installation/operation is operator-confirmed. |
 | `reconfiguration-flow` | Automated and reported focused evidence in accepted 8.3.2b1 | Native Reconfigure and Configure share the complete weather station/base-coordinate, measured-pollen, forecast and warning-postcode transaction. Tests cover both providers/routes, explicit confirmation, cancellation at each stage, source retry with retained choices, duplicate/concurrent-edit rejection, translations and retained entity IDs with a single loaded-entry reload. The original setup confirmation remains separate. This extends stable 8.3.1's forecast-only shortcut. The operator reported all five configured-source steps positive on Core 2026.10.4; no separate registry audit or manual test of every provider is inferred. |
 | `repair-issues` | Evidence in accepted 8.3.1b1 | Invalid offline saved forecast selections raise a translated entry-specific notice linking to the existing settings. Confirmed correction/reset clears it; cancellation/failed validation retains it. Reloads preserve ignored state; disablement/removal cleans up that entry. Provider outages create no configuration notice. Native entry/settings and four-language tests cover these boundaries; the operator confirmed the requested version/visual check, without a separately reported deliberate-corruption test. Stable 8.3.1 retains that runtime. |
-| `stale-devices` | Bounded station-change evidence; historical orphan review open | Native Configure/Reconfigure pollen-station round trips for both current providers retain all seven device groups and every entity binding without removal calls. Entry-owned group IDs do not accumulate station-specific devices. No cleanup is needed for those tested changes; historical orphans from earlier versions have not been independently inventoried. See PROVIDER_METADATA.md. |
+| `stale-devices` | Bounded station-change evidence; historical orphan review open | Native Configure/Reconfigure pollen-station round trips for both current providers retain all seven device groups and every entity binding without removal calls. No cleanup is needed for those tested changes; historical orphans from earlier versions have not been independently inventoried. There is no dedicated device-removal approval policy. The official single-device exception is not claimed for seven groups; see GOLD_APPLICABILITY.md and PROVIDER_METADATA.md. |
 
 The Gold engineering checklist therefore remains incomplete. Strict typing
 and the async/source-library requirements associated with Platinum need their

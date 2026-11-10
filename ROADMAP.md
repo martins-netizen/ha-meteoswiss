@@ -75,9 +75,14 @@ forecast's measurement state class, keeping old statistics and ordinary history
 while stopping new forecast measurement statistics. Native Recorder tests cover
 the boundary and registry preservation.
 
+The [applicability review](docs/GOLD_APPLICABILITY.md) records two reasoned
+discovery exemptions for this public weather service. Its seven virtual groups
+do not fit the official single-device exception; dynamic-device and historical
+stale-device assessments remain partial, with their evidence limits explicit.
+
 Wind-direction circular statistics need a separate migration policy for the
-existing arithmetic series. Review that, historical stale grouping and
-rule-specific exemptions in separate bounded scopes. Obtain
+existing arithmetic series. Review that, entity translations and historical
+stale grouping in separate bounded scopes. Obtain
 authoritative multilingual locality aliases before adding provider name
 translations. Preserve personal registry choices, identities, history,
 four-language catalogues and existing quality/security gates.
@@ -137,7 +142,7 @@ custom integrations.
 | Scope | Decision still needed |
 |---|---|
 | Locality names in other languages | Obtain authoritative aliases; preserve provider identities and avoid invented translations or duplicate places. |
-| Remaining Gold engineering work | Diagnostic defaults, service metadata and alternative-provider labels are delivered in published stable 8.3.4. Native pollen-station changes reuse the existing groups; historical orphan review, device classes and proposed exemptions remain separate. Icon/error translations are delivered in published and operator-accepted stable 8.3.3; preserve existing user choices and history. Shared-Reconfigure focused acceptance is completed within its reported scope. |
+| Remaining Gold engineering work | Diagnostic defaults, service metadata and alternative-provider labels are delivered in published stable 8.3.4. Native pollen-station changes reuse the existing groups; historical orphan review, device classes/wind statistics, entity translations and the fixed-group lifecycle assessment remain separate. Discovery exemptions have documented applicability reasons. Icon/error translations are delivered in published and operator-accepted stable 8.3.3; preserve existing user choices and history. Shared-Reconfigure focused acceptance is completed within its reported scope. |
 | External contributor CodeQL | The unprivileged route is implemented; retain evidence from the first actual external-fork run. A skipped analysis is not completed analysis. |
 | Processed local-forecast data | Assess provider payloads, resource limits and compatibility separately from the already released catalogue-based ICON selection. |
 | New sources/entities | Scope and test separately; no new device actions/sources in a documentation or release change. |

@@ -116,10 +116,12 @@ Silver and Gold below identify the rules we use to guide improvements.
 |---|---|---|
 | **Bronze: a sound foundation** | Setup in HA, stable entity identities, tested setup and clear instructions. | The checklist records setup/configuration tests, identity checks, installation guides and valid bundled brand images. |
 | **Silver: reliable operation** | Clear unavailable states, recovery from source failures, clean unloading and a maintained support route. | All applicable Silver rules have recorded evidence, including more than 95% coverage per module. The checklist also records the underlying Bronze rules; focused b4 HA acceptance is operator-confirmed. |
-| **Gold: a more complete user experience** | Easier configuration, useful diagnostics, translations and actionable help. | The shared location dialog and actionable repair notices have bounded evidence; the repair/map follow-up was accepted in 8.3.1b1. Icons/error translations are released in 8.3.3; diagnostic defaults and bounded provider/service metadata are delivered in stable 8.3.4, first introduced in the accepted 8.3.4b1 beta. Remaining work includes device classes, historical stale-device handling and review of proposed exemptions. The five-step shared-Reconfigure check was reported positive on Core 2026.10.4. |
+| **Gold: a more complete user experience** | Easier configuration, useful diagnostics, translations and actionable help. | The shared location dialog and actionable repair notices have bounded evidence; the repair/map follow-up was accepted in 8.3.1b1. Icons/error translations are released in 8.3.3; diagnostic defaults and bounded provider/service metadata are delivered in stable 8.3.4, first introduced in the accepted 8.3.4b1 beta. Remaining work includes device classes/wind statistics, entity translations and historical stale-device handling. The discovery-rule applicability review documents two service-specific exemptions and retains the limits of fixed-group lifecycle evidence. The five-step shared-Reconfigure check was reported positive on Core 2026.10.4. |
 
 The [rule-by-rule assessment](docs/QUALITY_SCALE.md) links the scope, test evidence
-and remaining work. [HACS catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-catalogue-admission)
+and remaining work; the [discovery and device-lifecycle review](docs/GOLD_APPLICABILITY.md)
+explains applicability and the seven virtual service groups.
+[HACS catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-catalogue-admission)
 is complete and provides a separate distribution/review milestone. We keep the
 quality checklist as a transparent engineering record, without an awarded-tier
 badge or manifest claim.

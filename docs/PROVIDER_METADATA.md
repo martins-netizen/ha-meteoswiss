@@ -56,5 +56,7 @@ A separate manual alternative-source inspection was not reported; the native
 source/registry tests above remain the evidence for that path. No production
 source switch, repeated acceptance or device deletion is requested. Publication
 and the bounded operator report remain separate from automated tests.
-Remaining entity classes, historical obsolete-group questions and rule-specific
-exemption review prevent a complete Gold claim.
+The [discovery and lifecycle review](GOLD_APPLICABILITY.md) records the two
+discovery exemptions and explains why seven service groups do not fit the
+single-device lifecycle exception. Remaining entity classes, translations and
+historical obsolete-group questions prevent a complete Gold claim.
