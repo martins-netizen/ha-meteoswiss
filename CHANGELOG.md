@@ -8,6 +8,10 @@
   Recorder tests cover fresh compilation and retained history across reload.
   [Foehn/HGT review and chart impact](docs/SENSOR_METADATA.md) document why both
   keep no device class and why wind-direction migration remains separate.
+- Document [Gold discovery applicability and service-group lifecycle](docs/GOLD_APPLICABILITY.md):
+  record the two discovery exemptions with their reasons and retain partial
+  dynamic/stale-device assessments for seven virtual groups. Component behaviour
+  and published releases are unchanged by this documentation review.
 
 ### Home Assistant compatibility
 
