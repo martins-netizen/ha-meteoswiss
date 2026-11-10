@@ -1,6 +1,39 @@
-# Release readiness: stable 8.3.3 and published 8.3.4b1
+# Release readiness: published stable 8.3.4 and accepted beta provenance
 
-**Document version:** 2.18 · **Updated:** 7 November 2026
+**Document version:** 2.20 · **Updated:** 7 November 2026
+
+<a id="prepared-stable-834"></a>
+
+## Published stable 8.3.4; actual update protocol remains separate
+
+[Stable 8.3.4](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4),
+release **437853341**, was published on **7 November 2026 at 21:24:27 UTC**.
+Its immutable tag points to regular packaging PR #93's merge
+**f4479897023fa35d7c2fcb4c4859c4de8861fdda**, tree
+**1657d5415c14653a81e2387f5e469a6c8deea4f8**. The publisher receipt and independent
+GitHub reads agree on the release, tag, exact approved English body and latest
+stable selection. All fifteen older tags, accepted beta body and previous stable
+8.3.3 remain unchanged. See [publication evidence](RELEASE_EVIDENCE_8.3.4.md).
+
+It makes the accepted beta's maintenance/quality improvements available through
+the stable route: official-package HA 2026.11 validation, cleaner first-setup
+diagnostic defaults and clearer source/service labels. Existing personal choices
+are retained. See [benefits over 8.3.3](RELEASE_8.3.4.md#why-upgrade-from-833).
+All 39 non-version component files match accepted beta
+**1e5c5d1a7fc1c18d520e99189ae4dd5894621706**; only two version fields change.
+
+Both actual package-merge jobs pass **2,225 tests plus 83 subtests** on HA
+2026.11.0 / 2026.8.3, including the matching official current-HA test package.
+Coverage is **99.977812%**, with all strict gates unchanged. All seven actual
+merge checks succeed. Fixed Stable Publisher V1.7 and thirteen publication
+profiles retain their accepted-source/body/version/check/tag/latest boundaries.
+
+For an actual stable update, use only the [short protocol](ACCEPTANCE_8.3.4.md):
+actual download, one restart, installed version and normal operation. Publication
+does not assert a user's installation. Earlier beta, settings, icons, first
+install and restore acceptance remain closed within their scopes; no extra
+names/IDs, source switch or blanket wait is required. HGT PR #92, wind/history
+migrations and remaining Gold work stay separate.
 
 <a id="prepared-834b1-test-candidate"></a>
 
@@ -20,7 +53,8 @@ tests retain all prior publication boundaries.
 
 Publisher receipt and independent verification agree on actual release/tag,
 source, flags and exact exported body. All fourteen older tags remain unchanged;
-**8.3.3 / ID 429354633 remains latest stable**. Original published notes and
+**8.3.3 / ID 429354633 remained latest stable at that beta publication**.
+The separate stable 8.3.4 publication is recorded above. Original published notes and
 the immutable tag are retained. See the
 [complete evidence](RELEASE_EVIDENCE_8.3.4b1.md).
 
@@ -31,8 +65,8 @@ it does not separately restate the integration version, identify the instance
 as production hardware or a VM, independently audit registry/Recorder data,
 or separately report an alternative-source inspection. No further names/IDs,
 download/restart or blanket wait are requested. Earlier accepted checks remain
-closed. Historical orphans, device classes and full Gold remain separate;
-no stable 8.3.4 promotion is included.
+closed. Historical orphans, device classes and full Gold remain separate.
+This beta record is provenance for the separately published stable 8.3.4.
 
 <a id="prepared-stable-833"></a>
 
@@ -41,7 +75,7 @@ no stable 8.3.4 promotion is included.
 [Stable 8.3.3](RELEASE_8.3.3.md), release **429354633**, was published on
 **30 October 2026 at 18:21:55 UTC** from
 **3d4fad2330c89f134eba208e8b2db55705177e7d**, tree
-**b53df969640e8b15df690de59a95639f3735e05c**. It is latest stable, immutable,
+**b53df969640e8b15df690de59a95639f3735e05c**. It was latest until 8.3.4 and remains immutable,
 draft=false and prerelease=false. Publisher receipt/log and independent
 release/tag/notes/source/latest verification agree. All thirteen older tags
 remain unchanged; the published body matches the approved export, SHA-256

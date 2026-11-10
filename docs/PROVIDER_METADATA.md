@@ -1,6 +1,6 @@
 # Current-weather provenance and station-group preservation
 
-**Status:** Released in [8.3.4b1](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4b1) on 7 November 2026. The operator confirmed normal operation on HA Core 2026.11.0 / HA OS 18.4; see the [bounded evidence](RELEASE_EVIDENCE_8.3.4b1.md). Stable 8.3.3 remains latest stable.
+**Status:** Delivered in published [stable 8.3.4](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4), the current normal update target, on 7 November 2026. See [publication evidence](RELEASE_EVIDENCE_8.3.4.md). The behaviour first shipped in 8.3.4b1; its operator-confirmed normal operation on HA Core 2026.11.0 / HA OS 18.4 remains [bounded beta evidence](RELEASE_EVIDENCE_8.3.4b1.md). Stable retains that runtime unchanged apart from two version fields.
 
 ## Correct the selected current source
 

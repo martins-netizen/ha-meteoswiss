@@ -1,8 +1,7 @@
 # Foehn and HGT metadata: numeric codes, predictions and statistics
 
 **Review version:** 1.0 · **Reviewed:** 7 November 2026
-**Status:** Unreleased source follow-up after published 8.3.4b1. No release,
-installation or new operator acceptance is asserted.
+**Status:** Unreleased source follow-up after published stable 8.3.4.
 
 ## Device classes must fit the quantity
 
