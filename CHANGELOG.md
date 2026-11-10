@@ -2,7 +2,12 @@
 
 ## [Unreleased]
 
-Future work beyond published stable 8.3.4 remains separate.
+- Correct forecast-based HGT metadata: omit the measurement state class so new
+  predictions do not enter measured long-term statistics. Retain numeric values,
+  units, IDs, personal choices, raw history and existing statistic rows. Native
+  Recorder tests cover fresh compilation and retained history across reload.
+  [Foehn/HGT review and chart impact](docs/SENSOR_METADATA.md) document why both
+  keep no device class and why wind-direction migration remains separate.
 
 ### Home Assistant compatibility
 

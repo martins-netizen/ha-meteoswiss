@@ -6,15 +6,29 @@ import asyncio
 import logging
 from contextlib import ExitStack
 from datetime import UTC, datetime, timedelta
+from functools import partial
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
 
 import aiohttp
 import pytest
+from homeassistant.components.recorder import get_instance
+from homeassistant.components.recorder.history import get_significant_states
+from homeassistant.components.recorder.models import StatisticMeanType
+from homeassistant.components.recorder.statistics import (
+    async_import_statistics,
+    get_metadata,
+    statistics_during_period,
+)
+from homeassistant.components.recorder.tasks import StatisticsTask
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
-from ha_helpers import MockConfigEntry
+from ha_helpers import (
+    MockConfigEntry,
+    async_recorder_block_till_done,
+    async_wait_recording_done,
+)
 
 from custom_components.meteoswiss.alerts import (
     METEOSWISS_APP_API_URL,
@@ -431,6 +445,114 @@ async def test_registered_measurement_empty_data_and_hgt_date_rollover(
     )
     assert hass.states.get(hgt).state == "unknown"
     assert hass.states.get(hgt).attributes["method"] == "HGT 12/20"
+
+
+async def test_hgt_forecast_records_history_without_measurement_statistics(
+    recorder_mock, hass, installed_entities, freezer
+):
+    """Exercise actual Recorder compilation with a measured control sensor."""
+    entry = installed_entities
+    registry = er.async_get(hass)
+    hgt = registry.async_get_entity_id(
+        "sensor", DOMAIN, f"{DOMAIN}_{entry.entry_id}_heating_degree_days"
+    )
+    temperature = registry.async_get_entity_id(
+        "sensor", DOMAIN, f"{DOMAIN}_{entry.entry_id}_temperature"
+    )
+    initial = hass.states.get(hgt)
+    assert initial.state == "20.0"
+    assert initial.attributes["unit_of_measurement"] == "°C·d"
+    assert initial.attributes["value_type"] == "forecast"
+    assert "state_class" not in initial.attributes
+    assert "device_class" not in initial.attributes
+
+    freezer.move_to(NOW + timedelta(minutes=2))
+    entry.runtime_data.forecast_coordinator.async_set_updated_data(
+        [{"local_date": "2026-10-16", "daily_temperature_mean": 12}]
+    )
+    assert hass.states.get(hgt).state == "8.0"
+    freezer.move_to(NOW + timedelta(minutes=6))
+    await async_wait_recording_done(hass)
+    get_instance(hass).queue_task(StatisticsTask(NOW, False))
+    await async_recorder_block_till_done(hass)
+
+    statistics = await hass.async_add_executor_job(
+        statistics_during_period, hass, NOW, None, {hgt, temperature},
+        "5minute", None, {"mean", "min", "max"}
+    )
+    assert statistics.get(hgt, []) == []
+    assert len(statistics[temperature]) == 1
+    assert statistics[temperature][0]["mean"] == 0
+    history = await hass.async_add_executor_job(
+        partial(get_significant_states, hass, NOW - timedelta(seconds=1),
+                NOW + timedelta(minutes=7), entity_ids=[hgt])
+    )
+    assert {s.state for s in history[hgt]} >= {"20.0", "8.0"}
+
+
+async def test_hgt_metadata_fix_keeps_existing_statistics_and_registry_after_reload(
+    recorder_mock, hass, installed_entities, freezer
+):
+    """Retain seeded old hourly rows while new predictions stay out of statistics."""
+    entry = installed_entities
+    registry = er.async_get(hass)
+    unique_id = f"{DOMAIN}_{entry.entry_id}_heating_degree_days"
+    hgt = registry.async_get_entity_id("sensor", DOMAIN, unique_id)
+    saved = registry.async_update_entity(
+        hgt, name="Retained HGT label", icon="mdi:chart-line", aliases={"HGT alias"}
+    )
+    old_start = NOW - timedelta(hours=1)
+    async_import_statistics(
+        hass,
+        {
+            "statistic_id": hgt, "source": "recorder", "name": None,
+            "unit_of_measurement": "°C·d", "unit_class": None,
+            "mean_type": StatisticMeanType.ARITHMETIC, "has_sum": False,
+        },
+        [{"start": old_start, "mean": 17.0, "min": 16.0, "max": 18.0}],
+    )
+    await async_recorder_block_till_done(hass)
+    metadata_before = await hass.async_add_executor_job(
+        partial(get_metadata, hass, statistic_ids={hgt})
+    )
+    rows_before = await hass.async_add_executor_job(
+        statistics_during_period, hass, old_start, NOW, {hgt},
+        "hour", None, {"mean", "min", "max"}
+    )
+    assert rows_before[hgt][0]["mean"] == 17.0
+
+    assert await hass.config_entries.async_reload(entry.entry_id)
+    await hass.async_block_till_done()
+    current = registry.async_get(hgt)
+    assert registry.async_get_entity_id("sensor", DOMAIN, unique_id) == hgt
+    assert current.id == saved.id and current.device_id == saved.device_id
+    assert (current.name, current.icon, current.aliases) == (
+        "Retained HGT label", "mdi:chart-line", {"HGT alias"}
+    )
+    assert "state_class" not in hass.states.get(hgt).attributes
+    freezer.move_to(NOW + timedelta(minutes=2))
+    entry.runtime_data.forecast_coordinator.async_set_updated_data(
+        [{"local_date": "2026-10-16", "daily_temperature_mean": 12}]
+    )
+    assert hass.states.get(hgt).state == "8.0"
+    freezer.move_to(NOW + timedelta(minutes=6))
+    await async_wait_recording_done(hass)
+    get_instance(hass).queue_task(StatisticsTask(NOW, False))
+    await async_recorder_block_till_done(hass)
+    metadata_after = await hass.async_add_executor_job(
+        partial(get_metadata, hass, statistic_ids={hgt})
+    )
+    rows_after = await hass.async_add_executor_job(
+        statistics_during_period, hass, old_start, NOW, {hgt},
+        "hour", None, {"mean", "min", "max"}
+    )
+    new_rows = await hass.async_add_executor_job(
+        statistics_during_period, hass, NOW, None, {hgt},
+        "5minute", None, {"mean", "min", "max"}
+    )
+    assert metadata_after == metadata_before
+    assert rows_after == rows_before
+    assert new_rows.get(hgt, []) == []
 
 
 @pytest.mark.parametrize("value", [True, False, "bad", "nan", float("inf"), None])

@@ -6,6 +6,7 @@ if find_spec("pytest_homeassistant") is not None:
     from pytest_homeassistant.common import MockConfigEntry, async_fire_time_changed
     from pytest_homeassistant.components.recorder.common import (
         async_recorder_block_till_done,
+        async_wait_recording_done,
     )
 
     # The official package registers its bootstrap plugin automatically.
@@ -17,6 +18,7 @@ else:
     )
     from pytest_homeassistant_custom_component.components.recorder.common import (
         async_recorder_block_till_done,
+        async_wait_recording_done,
     )
 
     PYTEST_PLUGINS = ("pytest_homeassistant_custom_component",)
@@ -26,4 +28,5 @@ __all__ = [
     "PYTEST_PLUGINS",
     "async_fire_time_changed",
     "async_recorder_block_till_done",
+    "async_wait_recording_done",
 ]
