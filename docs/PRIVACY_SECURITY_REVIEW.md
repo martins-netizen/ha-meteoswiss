@@ -1,6 +1,6 @@
 # Privacy, architecture and security: bounded review
 
-**Review:** 11 November 2026 · **Base:** `7a5481ad5a8f8c47a9e10cf582c8b10750ad4009`.
+**Review:** 11 November 2026 · **Base:** `11ef5eaf7cb93d28f1039216b05670750ad6de6a`.
 This source/configuration review is not an independent penetration test,
 regulatory certification or assurance that every deployment is secure.
 
@@ -8,7 +8,7 @@ regulatory certification or assurance that every deployment is secure.
 |---|---|---|
 | Privacy | No integration account/credential, analytics SDK or separate maintainer telemetry in the reviewed runtime. Location fields and saved forecast selections are redacted from diagnostics; raw payloads, cache keys and expected private error URLs are omitted. | Providers still receive station/postcode/coordinates and the public source IP. Retention is outside this integration's control. Ordinary state attributes, HA-wide debug logs and user-supplied cards need separate sharing review. |
 | Architecture | Typed entry-owned runtime, borrowed HA session, source/coordinator separation, bounded parsing and independent optional-source failures; native lifecycle tests. | Strict typing and a separately distributed client-library boundary are not fully established. Large coordinator/sensor/config-flow modules and shared diagnostic ownership retain maintenance costs and documented limits. Coverage is evidence, not architecture certification. |
-| Security | Fixed-host HTTPS/TLS, no redirects, wire/decompression limits, bounded timeouts/retries and cancellation tests. Hash-locked minimum/current fixtures, explicit Python/pip/certifi/uv floors, offline uv, pinned actions, least-privilege workflows and actual-merge verification. Exact PyPI vulnerability metadata checks returned no active advisories for either 138-pin test lock. | Current private alert state and some repository settings were inaccessible through the review connection. There is no complete security clearance or independent offensive assessment. Required approving reviews are zero; SonarCloud is checked in the project workflow but is not a ruleset-required check. |
+| Security | Fixed-host HTTPS/TLS, no redirects, wire/decompression limits, bounded timeouts/retries and cancellation tests. Hash-locked minimum/current fixtures, explicit Python/pip/certifi/uv floors, offline uv, pinned actions, least-privilege workflows and actual-merge verification. Exact PyPI vulnerability metadata checks returned no active advisories for either 138-pin test lock. | The owner-authenticated 11 November inventory below closes the previously inaccessible alert/settings check. This is a point-in-time inventory, not complete security clearance or an independent offensive assessment. Required approving reviews are zero; SonarCloud is checked in the project workflow but is not a ruleset-required check. |
 
 The engineering foundation is strong. An unqualified "top-level in every
 respect" statement would exceed this evidence. The [quality matrix](QUALITY_SCALE.md)
@@ -59,14 +59,37 @@ advisories, not malicious packages, unknown vulnerabilities, OS/container/action
 dependencies or an operator's installed environment. It does not substitute for
 the owner-only GitHub alert inventory or a recurring gate.
 
+## Owner-authenticated alert inventory
+
+The owner supplied a filtered, read-only GitHub report at **11 November 2026,
+07:05:03 UTC**. All query groups succeeded; reported counts match their arrays.
+This updates the earlier review connection's unknown alert state.
+
+| Check | Reported result |
+|---|---|
+| Dependabot open | 0 |
+| Dependabot closed | 67; all `fixed`, with `fixed_at` set and no dismissal reason |
+| Code-scanning open | 0 |
+| Secret-scanning open | 0 |
+| Secret scanning / push protection | Enabled |
+| Automatic security updates | Enabled, not paused |
+| Additional non-provider patterns / validity checks | Disabled |
+
+The 67 fixes were recorded on 10 November between 22:19:39 and 22:19:46 UTC.
+No alert was manually dismissed by this review. No secret values or raw error
+payloads were included in the supplied report. Optional scanning features were
+not enabled by this read-only assessment. A clean current inventory does not
+prove the absence of unknown vulnerabilities, unrecognised secret formats or
+exposure in every external artifact; the other scope limits above remain.
+
 ## Follow-up priorities
 
-1. Verify current Dependabot/CodeQL/secret-scanning alert counts and enabled
-   secret scanning/push protection with the owner's authenticated read access.
-   An inaccessible API is unknown, not an empty alert list.
-2. Review making SonarCloud required, dependency-update automation and a
+1. Review making SonarCloud required, dependency-update automation and a
    whole-lock vulnerability gate. Fixed floors do not detect every future advisory.
-3. Continue wind-statistics, translation and device-lifecycle work; obtain
-   independent review of data migrations and sensitive changes.
+2. Continue bounded translation and device-lifecycle work; obtain independent
+   review of migrations and sensitive changes. Wind PR #97 is merged; release
+   and operator database acceptance remain separate.
+3. Retain dated owner-authenticated inventories as the repository changes.
+   Future inaccessible APIs remain unknown, not empty alert lists.
 4. Verify HA account/network/backup controls separately. This repository review
    does not prove MFA, firewall rules, external exposure or restoration on a host.

@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+- Translate the station-catalogue and cache-statistics helper names and their
+  two shared service-device names in DE/EN/FR/IT. Keep personal names, IDs,
+  bindings, aliases, areas and enabled/disabled choices through reload and
+  language changes. Preserve diagnostic states/attributes and English defaults.
+  [Diagnostic naming and compatibility](docs/DIAGNOSTIC_TRANSLATIONS.md).
+- Refresh the bounded security review with the owner's 11 November snapshot:
+  no open Dependabot/code-scanning/secret-scanning alerts; all 67 closed
+  Dependabot alerts marked fixed. This is a dated inventory, not a security guarantee.
+
 - Prepare circular wind-direction statistics with HA's native wind device/state
   classes. Archive compatible arithmetic statistics through the supported
   Recorder metadata API, verify retention before continuing and keep the entity,

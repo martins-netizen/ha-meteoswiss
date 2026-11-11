@@ -331,6 +331,12 @@
       },
       "forecast_probability_tomorrow": {
         "name": "Probabilité horaire maximale de précipitations demain"
+      },
+      "stations_map": {
+        "name": "Stations météo"
+      },
+      "cache_stats": {
+        "name": "Statistiques du cache"
       }
     },
     "binary_sensor": {
@@ -427,6 +433,12 @@
     },
     "forecast_invalid": {
       "name": "MeteoSwiss Prévisions (lieu invalide)"
+    },
+    "stations_map": {
+      "name": "MeteoSwiss Stations météo"
+    },
+    "cache_stats": {
+      "name": "MeteoSwiss Statistiques du cache"
     }
   },
   "issues": {
