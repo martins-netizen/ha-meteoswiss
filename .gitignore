@@ -28,3 +28,20 @@ __pycache__/
 
 # Generated coverage reports
 coverage*.json
+
+# Local credentials, private keys and HA storage are never source artifacts.
+.env
+.env.*
+secrets.yaml
+secrets.yml
+*.key
+*.pem
+*.p12
+*.pfx
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+.storage/
+backups/
+*.backup

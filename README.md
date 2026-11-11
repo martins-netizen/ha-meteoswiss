@@ -126,6 +126,11 @@ is complete and provides a separate distribution/review milestone. We keep the
 quality checklist as a transparent engineering record, without an awarded-tier
 badge or manifest claim.
 
+The [privacy, architecture and security review](docs/PRIVACY_SECURITY_REVIEW.md)
+records verified controls and remaining checks. Providers receive the source IP
+and requested location; diagnostic redaction does not hide those requests from
+the provider. See [location privacy before setup](docs/GETTING_STARTED.md#location-privacy-before-setup).
+
 **Accepted 8.3.1b1 follow-up:** [actionable repair notices](docs/REPAIRS.md) guide
 users from an invalid saved forecast location to the existing settings. Official
 station-map links help find nearby SwissMetNet stations. The operator confirmed
@@ -197,6 +202,12 @@ package-merge jobs passed **2,225 tests plus 83 subtests** on HA 2026.8.3 and
 
 Native icons and translated errors are retained from stable 8.3.3. The
 [Gold checklist](docs/QUALITY_SCALE.md) still has separate remaining work.
+
+**Unreleased wind-statistics change.** Wind direction uses HA's circular angle
+statistics after a verified migration. Existing arithmetic statistics are kept
+under a separate archive ID; new circular statistics use the original sensor.
+Review [chart impact, repair notices and rollback](docs/WIND_STATISTICS_MIGRATION.md)
+before updating. Calm wind has no direction and is reported as unknown.
 
 ## Data and compatibility
 

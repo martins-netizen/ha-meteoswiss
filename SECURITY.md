@@ -13,6 +13,12 @@ Security fixes target the latest stable fork release. An explicitly announced
 prerelease is also in scope while it is being evaluated; older versions may
 need an update. This is a community project without a guaranteed response time.
 
+The [privacy, architecture and security review](docs/PRIVACY_SECURITY_REVIEW.md)
+records the reviewed controls, provider location processing and remaining
+verification gaps. Passing CI or a clean bounded scan is not a guarantee that
+every dependency or installation is secure. Do not commit local credentials,
+private keys, HA storage or backups; Git exclusions are only an additional guard.
+
 Use the [public issue tracker](https://github.com/martins-netizen/ha-meteoswiss/issues)
 for ordinary bugs and feature requests, with relevant redacted evidence. A
 provider outage, missing individual value or changed weather forecast can be

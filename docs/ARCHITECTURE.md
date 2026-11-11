@@ -12,6 +12,11 @@ recognisable. There is no new integration domain and no automatic migration of
 users' dashboards. `main` follows upstream; `development` integrates reviewed
 local changes. A release is an explicitly tested snapshot of `development`.
 
+**Unreleased exception for wind statistics:** the incompatible arithmetic
+statistic ID is archived through HA's supported metadata API before starting a
+new circular series at the retained sensor ID. Metadata/row identity is verified;
+the entity/unique/device IDs remain unchanged. See [chart and recovery impact](WIND_STATISTICS_MIGRATION.md).
+
 ## Responsibilities
 
 See the [coordinator examples](COORDINATOR_EXAMPLES.md) for the eight concrete
@@ -39,6 +44,13 @@ the single shared diagnostic devices. Weather forecast listeners are registered
 when the entity is added and removed with that entity. Configuration validates
 the chosen observation provider with the same coordinator contract, without
 listeners/polling, using HA's shared session and a 30-second total timeout.
+
+`wind_statistics.py` owns only the local Recorder metadata transition. The wind
+sensor stays without a state class until an entry-owned, post-startup task has
+verified the result; failure raises a local repair, rather than a provider outage.
+It neither downloads data nor changes historical mean algorithms in place.
+The [bounded review](PRIVACY_SECURITY_REVIEW.md) records privacy/security controls
+and the remaining architectural evidence limits.
 
 ## Scalar forecast projections
 

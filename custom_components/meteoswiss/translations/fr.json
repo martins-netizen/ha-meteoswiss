@@ -433,6 +433,10 @@
     "invalid_forecast_location": {
       "title": "Vérifier le lieu de prévision de {entry_title}",
       "description": "Le lieu de prévision enregistré ne peut pas être lu. Les prévisions de cette entrée sont indisponibles ; les mesures météo, le pollen et les avertissements conservent leurs propres paramètres.\n\n[Ouvrir les paramètres MeteoSwiss]({configuration_url}) et choisir **Configurer** pour **{entry_title}**. Choisir un autre lieu de prévision ou revenir explicitement aux coordonnées de base d’origine, puis confirmer la modification. Cet avis disparaît après l’enregistrement de paramètres valides.\n\nConserver l’entrée d’intégration existante."
+    },
+    "wind_statistics_blocked": {
+      "title": "Vérifier les statistiques du vent",
+      "description": "Les valeurs du vent restent disponibles, mais les statistiques circulaires n’ont pas pu être préparées en toute sécurité. L’historique et les statistiques existantes sont conservés. Consultez wind_statistics_status et le guide de migration. Résolvez le conflit ou le problème Recorder, puis rechargez l’intégration. Ne supprimez pas les anciennes statistiques pour masquer cet avis."
     }
   },
   "exceptions": {

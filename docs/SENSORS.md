@@ -68,7 +68,15 @@ on what the selected station actually measures.
 | `snow_depth` | Snow depth, if measured | cm | `htoauts0` |
 | `foehn_index` | Foehn index, if measured | Code | `wcc006s0` |
 
-Numeric observation descriptions have state class `measurement`. Attributes
+Numeric observation descriptions normally have state class `measurement`.
+**Unreleased wind follow-up:** wind direction uses device class `wind_direction`
+and state class `measurement_angle` only after verifying that Recorder can start
+a circular series. Older arithmetic statistics are archived without deleting
+rows; the entity ID stays the same. Preparation/conflicts leave the state class
+unset and expose a status/repair notice. A zero wind speed means direction is
+unknown; missing/invalid directions never become a false north. See
+[wind history and chart migration](WIND_STATISTICS_MIGRATION.md).
+Attributes
 include `measurement_time`, `source_status` and `pending_rows`. Missing fields
 stay unknown; a stale/failed whole source is unavailable. The station rain name
 is **Precipitation (10 minutes)**, with `measurement_interval_seconds=600` and

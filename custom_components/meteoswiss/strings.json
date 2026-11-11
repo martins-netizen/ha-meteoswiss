@@ -433,6 +433,10 @@
     "invalid_forecast_location": {
       "title": "Check the forecast location for {entry_title}",
       "description": "The saved forecast location cannot be read. Forecasts for this entry are unavailable; weather measurements, pollen and warnings keep their own settings.\n\n[Open MeteoSwiss settings]({configuration_url}) and choose **Configure** for **{entry_title}**. Select another forecast location or explicitly return to the original base coordinates, then confirm the change. This notice disappears after valid settings are saved.\n\nKeep the existing integration entry."
+    },
+    "wind_statistics_blocked": {
+      "title": "Wind statistics need attention",
+      "description": "Wind readings continue, but circular statistics could not be prepared safely. Existing history and statistics were retained. Check wind_statistics_status and the migration guide. Resolve the conflict or Recorder problem, then reload this integration. Do not delete old statistics to hide this notice."
     }
   },
   "exceptions": {

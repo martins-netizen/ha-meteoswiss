@@ -433,6 +433,10 @@
     "invalid_forecast_location": {
       "title": "Prognoseort für {entry_title} prüfen",
       "description": "Der gespeicherte Prognoseort kann nicht gelesen werden. Prognosen für diesen Eintrag sind nicht verfügbar; Wettermessungen, Pollen und Warnungen behalten ihre eigenen Einstellungen.\n\n[MeteoSwiss-Einstellungen öffnen]({configuration_url}) und bei **{entry_title}** auf **Konfigurieren** klicken. Einen anderen Prognoseort auswählen oder ausdrücklich zu den ursprünglichen Basiskoordinaten zurückkehren und die Änderung bestätigen. Nach dem Speichern gültiger Einstellungen verschwindet dieser Hinweis.\n\nDen bestehenden Integrationseintrag beibehalten."
+    },
+    "wind_statistics_blocked": {
+      "title": "Windstatistik benötigt eine Prüfung",
+      "description": "Die Windmesswerte werden weiterhin aktualisiert. Die kreisförmige Statistik konnte jedoch nicht sicher vorbereitet werden. Verlauf und bisherige Statistikdaten bleiben erhalten. Prüfe wind_statistics_status und die Migrationsanleitung. Behebe den Konflikt oder das Recorder-Problem und lade die Integration neu. Lösche keine alten Statistikdaten, um diesen Hinweis auszublenden."
     }
   },
   "exceptions": {

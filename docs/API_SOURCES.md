@@ -153,6 +153,13 @@ Provider text in the optional dashboard template is HTML-escaped. Review any
 user-supplied card separately. Normal state attributes still contain the
 selected public station/source details and should be reviewed before sharing.
 
+Provider processing is separate from local log redaction. Open-Meteo's
+[API privacy notice](https://open-meteo.com/en/terms#privacy) says technical logs
+may include IP addresses and coordinates and are deleted after 90 days. This
+is its published policy, not retention independently verified by this fork.
+Modelled pollen/AQ/UV keep HA/configured base coordinates even when a different
+weather-forecast point is selected. See the [bounded review](PRIVACY_SECURITY_REVIEW.md).
+
 Retain source attribution when presenting data: **MeteoSwiss**, **Open-Meteo**,
 and **Copernicus CAMS** where applicable. The fork's MIT software licence does
 not replace the providers' data/service terms. This is not an official

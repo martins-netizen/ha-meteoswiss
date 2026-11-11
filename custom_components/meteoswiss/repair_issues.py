@@ -8,6 +8,31 @@ from .forecast_location_config import resolve_forecast_target
 from .runtime_data import MeteoSwissConfigEntry
 
 INVALID_FORECAST_LOCATION = "invalid_forecast_location"
+WIND_STATISTICS_BLOCKED = "wind_statistics_blocked"
+
+
+@callback
+def async_sync_wind_statistics_issue(
+    hass: HomeAssistant, entry: MeteoSwissConfigEntry, blocked: bool
+) -> None:
+    """A local migration problem must not look like a provider outage."""
+    issue_id = f"{WIND_STATISTICS_BLOCKED}_{entry.entry_id}"
+    if not blocked:
+        ir.async_delete_issue(hass, DOMAIN, issue_id)
+        return
+    ir.async_create_issue(
+        hass,
+        DOMAIN,
+        issue_id,
+        is_fixable=False,
+        is_persistent=False,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key=WIND_STATISTICS_BLOCKED,
+        learn_more_url=(
+            "https://github.com/martins-netizen/ha-meteoswiss/"
+            "blob/development/docs/WIND_STATISTICS_MIGRATION.md"
+        ),
+    )
 
 
 @callback

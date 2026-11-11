@@ -433,6 +433,10 @@
     "invalid_forecast_location": {
       "title": "Controlla il luogo di previsione per {entry_title}",
       "description": "Il luogo di previsione salvato non può essere letto. Le previsioni per questa voce non sono disponibili; misurazioni meteo, polline e allerte mantengono le proprie impostazioni.\n\n[Apri le impostazioni MeteoSwiss]({configuration_url}) e scegli **Configura** per **{entry_title}**. Seleziona un altro luogo di previsione oppure torna esplicitamente alle coordinate di base originali, quindi conferma la modifica. Questo avviso scompare dopo il salvataggio di impostazioni valide.\n\nMantieni la voce di integrazione esistente."
+    },
+    "wind_statistics_blocked": {
+      "title": "Verificare le statistiche del vento",
+      "description": "I valori del vento restano disponibili, ma non è stato possibile preparare in sicurezza le statistiche circolari. Lo storico e le statistiche esistenti sono conservati. Consultare wind_statistics_status e la guida alla migrazione. Risolvere il conflitto o il problema di Recorder, quindi ricaricare l’integrazione. Non eliminare le vecchie statistiche per nascondere questo avviso."
     }
   },
   "exceptions": {
