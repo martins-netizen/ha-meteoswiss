@@ -2,12 +2,22 @@
 
 ## [Unreleased]
 
+- Prepare circular wind-direction statistics with HA's native wind device/state
+  classes. Archive compatible arithmetic statistics through the supported
+  Recorder metadata API, verify retention before continuing and keep the entity,
+  unique/device IDs and personal registry choices. Block ambiguous transitions
+  with a translated repair notice. Calm/invalid directions stay unknown.
+  [Migration, chart impact and rollback](docs/WIND_STATISTICS_MIGRATION.md).
+- Record the [privacy, architecture and security review](docs/PRIVACY_SECURITY_REVIEW.md),
+  provider IP/location processing and remaining verification boundaries. Exclude
+  common local credential/key files from Git; exclusions do not replace scanning.
+
 - Correct forecast-based HGT metadata: omit the measurement state class so new
   predictions do not enter measured long-term statistics. Retain numeric values,
   units, IDs, personal choices, raw history and existing statistic rows. Native
   Recorder tests cover fresh compilation and retained history across reload.
   [Foehn/HGT review and chart impact](docs/SENSOR_METADATA.md) document why both
-  keep no device class and why wind-direction migration remains separate.
+  keep no device class. The wind migration above is a separate bounded change.
 - Document [Gold discovery applicability and service-group lifecycle](docs/GOLD_APPLICABILITY.md):
   record the two discovery exemptions with their reasons and retain partial
   dynamic/stale-device assessments for seven virtual groups. Component behaviour

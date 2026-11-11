@@ -68,15 +68,18 @@ The older HGT boundary, missing-data, Swiss-date rollover, forecast routing,
 identity and official precipitation archive tests remain active. These are local
 automated tests, not an inventory of a user's database or a manual HA acceptance.
 
-## Remaining wind-direction work
+## Separate wind-direction follow-up
 
-Both supported HAs provide `WIND_DIRECTION` and `MEASUREMENT_ANGLE`. The legacy
-wind-direction sensor still uses no device class and arithmetic `measurement`.
+Both supported HAs provide `WIND_DIRECTION` and `MEASUREMENT_ANGLE`. Published
+stable 8.3.4 uses no wind device class and arithmetic `measurement`.
 A circular mean correctly handles the 360°/0° boundary, but HA deliberately
 [stops a series when its mean type changes](https://www.home-assistant.io/docs/configuration/long-term-statistics/#when-the-unit-or-the-state-class-changes).
 Silently reinterpreting older arithmetic means as circular means would be wrong.
 
-Wind direction therefore remains a separate migration task with an explicit
-policy for preserving the old series. This HGT follow-up does not alter wind
-metadata or statistics. The overall `entity-device-class` assessment stays
-partial; this review does not complete Gold or confer an official quality tier.
+The unreleased [wind follow-up](WIND_STATISTICS_MIGRATION.md) now implements a
+separate archival policy: retain arithmetic rows under an archive statistic ID,
+read back their identity/metadata and only then enable circular statistics under
+the unchanged sensor ID. It does not convert historical averages. Native Recorder
+tests cover both algorithms, conflicts, restart/reload and a preserving reverse
+sequence. Release and operator acceptance remain separate; this does not complete
+Gold or confer an official quality tier.

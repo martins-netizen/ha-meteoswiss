@@ -1,5 +1,14 @@
 # Set up MeteoSwiss
 
+## Location privacy before setup
+
+This is a cloud-polling integration. Providers receive the station, postcode or
+coordinates used by each request and can see the public source IP. Open-Meteo's
+[API privacy notice](https://open-meteo.com/en/terms#privacy) says technical logs
+may include coordinates and are deleted after 90 days. A weather-forecast point
+does not move modelled pollen/AQ/UV's HA home/configured base coordinates.
+Review the [source table](API_SOURCES.md) and [assessment](PRIVACY_SECURITY_REVIEW.md).
+
 This guide describes the **8.3 series** for readers without programming experience.
 You do not need an API key, MeteoSwiss account or terminal commands. Install
 only a published release. **Already using MeteoSwiss?** Follow

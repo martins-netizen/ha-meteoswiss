@@ -30,6 +30,7 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.device_registry import DeviceEntryType
 from homeassistant.helpers.entity import DeviceInfo, EntityCategory
 from homeassistant.helpers.event import async_track_point_in_utc_time
+from homeassistant.helpers.start import async_at_started
 from homeassistant.helpers.update_coordinator import (
     DataUpdateCoordinator,
 )
@@ -137,8 +138,8 @@ SENSOR_DESCRIPTIONS: Final[tuple[MeteoSwissSensorEntityDescription, ...]] = (
     MeteoSwissSensorEntityDescription(
         key=SENSOR_WIND_DIRECTION,
         translation_key="wind_direction",
-        device_class=None,
-        state_class=SensorStateClass.MEASUREMENT,
+        device_class=SensorDeviceClass.WIND_DIRECTION,
+        state_class=SensorStateClass.MEASUREMENT_ANGLE,
         native_unit_of_measurement="°",
         value_key=SENSOR_WIND_DIRECTION,
     ),
@@ -225,7 +226,8 @@ async def async_setup_entry(
     station_name = entry.data.get(CONF_STATION_NAME, "Unknown")
 
     entities = [
-        MeteoSwissSensor(coordinator, entry, description, station_name)
+        (MeteoSwissWindDirectionSensor if description.key == SENSOR_WIND_DIRECTION
+         else MeteoSwissSensor)(coordinator, entry, description, station_name)
         for description in SENSOR_DESCRIPTIONS
     ]
 
@@ -506,6 +508,85 @@ class MeteoSwissSensor(
                 "precipitation_interval_seconds"
             ]
         return attributes
+
+
+class MeteoSwissWindDirectionSensor(MeteoSwissSensor):
+    """Keep the existing sensor ID and separate incompatible old averages."""
+
+    def __init__(self, coordinator, entry, description, station_name) -> None:
+        super().__init__(coordinator, entry, description, station_name)
+        self._entry = entry
+        self.entity_description = replace(description, state_class=None)
+        self._wind_statistics_status = "pending"
+        self._wind_statistics_archive = None
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        from .repair_issues import async_sync_wind_statistics_issue
+
+        self.async_on_remove(
+            lambda: async_sync_wind_statistics_issue(self.hass, self._entry, False)
+        )
+        self.async_on_remove(async_at_started(self.hass, self._start_statistics))
+
+    @property
+    def state_class(self) -> SensorStateClass | None:
+        """The preparation transition must not cache the initial None value."""
+        return self.entity_description.state_class
+
+    @property
+    def native_value(self) -> float | None:
+        """Calm wind has no direction; do not turn invalid values into north."""
+        if weather_number((self.coordinator.data or {}).get(SENSOR_WIND_SPEED), 0) == 0:
+            return None
+        return weather_number(self._attr_native_value, 0, 360)
+
+    @callback
+    def _start_statistics(self, hass: HomeAssistant) -> None:
+        self._statistics_task = self._entry.async_create_background_task(
+            hass, self._prepare_statistics(), "MeteoSwiss wind statistics"
+        )
+
+    async def _prepare_statistics(self) -> None:
+        from .repair_issues import async_sync_wind_statistics_issue
+        from .wind_statistics import async_prepare_wind_statistics
+
+        registry_entry = er.async_get(self.hass).async_get(self.entity_id)
+        if registry_entry is None:
+            return
+        self.entity_description = replace(self.entity_description, state_class=None)
+        self._wind_statistics_status = "pending"
+        self.async_write_ha_state()
+        try:
+            result = await async_prepare_wind_statistics(
+                self.hass, self.entity_id, registry_entry.id
+            )
+        except Exception as err:
+            # Cancellation propagates; error details may contain private paths.
+            _LOGGER.warning("Wind statistics preparation failed (%s)", type(err).__name__)
+            self._wind_statistics_status = "blocked"
+        else:
+            self._wind_statistics_archive = result.archive_id
+            self._wind_statistics_status = "ready" if result.ready else "blocked"
+            if result.ready:
+                self.entity_description = replace(
+                    self.entity_description, state_class=SensorStateClass.MEASUREMENT_ANGLE
+                )
+        async_sync_wind_statistics_issue(
+            self.hass, self._entry, self._wind_statistics_status == "blocked"
+        )
+        er.async_get(self.hass).async_update_entity(
+            self.entity_id, capabilities=self.capability_attributes
+        )
+        self.async_write_ha_state()
+
+    @property
+    def extra_state_attributes(self) -> dict:
+        return {
+            **super().extra_state_attributes,
+            "wind_statistics_status": self._wind_statistics_status,
+            "arithmetic_statistics_archive": self._wind_statistics_archive,
+        }
 
 
 class MeteoSwissStationsMapSensor(MeteoSwissEntity, SensorEntity):

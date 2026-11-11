@@ -2,7 +2,7 @@
 
 **Availability:** included in published, operator-accepted
 [8.3.1b1](RELEASE_8.3.1b1.md). The [stable 8.3.1 package](RELEASE_8.3.1.md)
-promotes the same behaviour and is not yet published. Stable 8.3.0 does not
+promotes the same behaviour and is published. Stable 8.3.0 does not
 include this notice; use an announced release from the intended release track.
 
 ## What the notice means
@@ -60,3 +60,16 @@ supported at the time. See the [current support policy](../DEVELOPMENT.md#suppor
   both current-weather sources, retained IDs and independent failure/recovery.
 - [Engineering checklist](QUALITY_SCALE.md): the accepted b1 repair follow-up
   and remaining Gold work are recorded separately.
+
+## Wind-statistics preparation blocked (unreleased)
+
+An entry-specific warning means Recorder's arithmetic-to-circular transition
+could not be verified safely. Direction readings continue, while new statistics
+stay disabled for that sensor. Existing history/statistics are retained.
+
+Check `wind_statistics_status` and `arithmetic_statistics_archive` on the wind
+sensor, then follow [the migration guide](WIND_STATISTICS_MIGRATION.md). Resolve
+Recorder readiness or conflicting metadata before reloading the existing entry.
+Do not delete old statistics to remove the warning. The notice clears on a
+successful retry and is removed on unload. A provider outage alone is not this
+repair condition. The text is bundled and HA-loaded in DE/EN/FR/IT.
