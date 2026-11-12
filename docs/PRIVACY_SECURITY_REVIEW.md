@@ -125,3 +125,14 @@ change. Native tests verify that integration diagnostics still redact saved
 locations and do not export device translation placeholders. Personal registry
 choices and historical rows remain intact. This does not refresh the dated
 security inventory or establish operator acceptance, independent review or Gold.
+
+## Complete entity-name evidence
+
+The [name-inventory follow-up](ENTITY_NAME_TRANSLATIONS.md) adds tests and
+documentation only. It checks every exposed name and retained registry choice
+through HA's native DE/EN/FR/IT rendering, including both weather entities'
+device-name inheritance. Component files, translations, requests, dependencies,
+CI permissions, diagnostics and migrations remain unchanged. This adds no
+personal-data flow or renewed security inventory. The Gold naming rule's
+automated evidence is now explicit; release/operator UI acceptance and the
+overall architecture/security boundaries above still apply.

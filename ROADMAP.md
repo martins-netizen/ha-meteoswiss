@@ -85,13 +85,19 @@ preserves existing arithmetic rows under an archive ID before enabling circular
 statistics on the retained sensor. Release/operator acceptance remain open.
 The unreleased [diagnostic-name follow-up](docs/DIAGNOSTIC_TRANSLATIONS.md)
 translates both optional helper entities and their shared service groups while
-preserving IDs and personal registry choices. Technical state/attribute strings and
-full translation applicability remain separate. The later unreleased
+preserving IDs and personal registry choices. Technical state/attribute strings
+retain their compatibility contracts. The later unreleased
 [service-group naming follow-up](docs/SERVICE_GROUP_TRANSLATIONS.md) covers the
 remaining fixed group labels through native DE/EN/FR/IT device keys, retaining
 English defaults, provider/station text, IDs and personal choices. It adds
 native language-round-trip, diagnostics-redaction and Recorder evidence;
 technical strings, authoritative place aliases and operator acceptance remain separate.
+The [complete entity-name review](docs/ENTITY_NAME_TRANSLATIONS.md) now checks all
+45 registered entities per provider through native DE/EN/FR/IT naming, including
+personal choices and weather-device inheritance. It supplies automated evidence
+for every exposed name and distinguishes four retained inactive catalogue keys.
+Technical compatibility strings and place aliases are separate scopes rather
+than missing entity-name keys; release/operator naming acceptance remains open.
 Review historical stale grouping in a bounded scope. Obtain
 authoritative multilingual locality aliases before adding provider name
 translations. Preserve personal registry choices, identities, history,

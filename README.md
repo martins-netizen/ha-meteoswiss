@@ -154,6 +154,10 @@ warnings and measured pollen use native DE/EN/FR/IT labels. English defaults,
 raw station/postcode text, existing IDs and personal names remain intact.
 See [names, language changes and retained history](docs/SERVICE_GROUP_TRANSLATIONS.md).
 
+**Complete name coverage:** native tests verify all 45 registered entities per
+provider in DE/EN/FR/IT, including personal choices and device-name inheritance.
+See the [entity-name inventory and remaining acceptance](docs/ENTITY_NAME_TRANSLATIONS.md).
+
 **Accepted 8.3.1b1 follow-up:** [actionable repair notices](docs/REPAIRS.md) guide
 users from an invalid saved forecast location to the existing settings. Official
 station-map links help find nearby SwissMetNet stations. The operator confirmed
