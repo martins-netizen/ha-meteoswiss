@@ -145,6 +145,42 @@ update the advertised requirement, CI matrix and matching HA/test-package pins
 together. Keep private index URLs, credentials and machine-specific paths out
 of the generated files.
 
+## Scheduled dependency proposals
+
+`.github/dependabot.yml` schedules weekly GitHub Actions and Python dependency
+checks against the default `development` branch. The Python ecosystem is `pip`
+at `/`, matching the existing `.in`/`.txt` fixture files. There is no `uv.lock`
+project in this repository. Security alerts and security updates remain enabled
+independently of the version-update schedule.
+
+Python version proposals use `lockfile-only`, including transitive dependencies.
+They must fit the reviewed input constraints; they do not automatically raise
+the minimum HA version or independently update the matching HA/test-package
+pins. Exact direct tool pins also need an intentional input change. Security
+fixes that require a newer HA dependency set need a coordinated fixture and
+baseline PR rather than an override of HA's pins. There are no ignored packages
+or excluded fixture files in the Dependabot configuration.
+
+Dependabot's pip-compile updater does not use this repository's universal uv
+command. A separate read-only CI job therefore recompiles copies of both locks
+with their hash-pinned uv compiler and compares package selections, versions,
+extras, platform markers and hashes. It rejects a Linux-only lock even when
+the Linux compatibility tests pass. The existing `tests` merge gate requires
+this job as well as both HA fixtures and Hassfest. Network resolution is confined
+to this maintenance job; the HA test jobs keep `UV_OFFLINE=true` throughout.
+
+If an automated proposal fails the universal-lock check, inspect its intended
+update and regenerate both locks with the commands above before requesting
+review. Keep the resolved input versions, hashes and markers together. Do not
+merge a proposal by disabling this check, changing the advertised minimum to
+match an accidental update, or suppressing its security alert.
+
+The configuration PR alone does not prove the managed updater can create a PR.
+After it is merged, inspect the first real Dependabot update job and any created
+PR. A successful graph submission or an empty update check is not evidence of
+successful PR creation. Approval requires the actual proposal's exact head to
+pass all required checks; there is no automatic merge or HA installation.
+
 ## Branch policy
 
 The `development` branch is an integration branch for changes that have been
