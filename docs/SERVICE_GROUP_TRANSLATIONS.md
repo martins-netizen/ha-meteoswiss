@@ -75,3 +75,8 @@ The four catalogues retain English/source and placeholder parity. Existing
 strict coverage/security/lock gates still apply. Release and operator UI
 acceptance remain separate; technical compatibility strings, authoritative place
 aliases, historical inventory and full Gold require their own assessment.
+
+The later [complete entity-name review](ENTITY_NAME_TRANSLATIONS.md) supplies
+native name coverage for every exposed entity family, including weather
+device-name inheritance. Technical compatibility strings and place aliases
+remain separate scopes; release/operator UI acceptance is not inferred.

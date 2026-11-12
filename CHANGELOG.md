@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- Verify native DE/EN/FR/IT names for every exposed entity family, including
+  retained choices and a full language round trip. Document the complete name
+  inventory and separate technical compatibility strings from the Gold naming
+  rule; component behaviour and published releases are unchanged.
+
 - Use native DE/EN/FR/IT names for current-weather, modelled air-quality/pollen,
   warning and measured-pollen service groups. Retain English defaults, provider
   labels, raw station/postcode text, IDs, personal choices and Recorder history;

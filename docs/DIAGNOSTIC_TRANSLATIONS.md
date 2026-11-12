@@ -57,6 +57,11 @@ multilingual place aliases retain separate reviews. The later
 fixed group labels; shared ownership has its separate lifecycle scope below.
 See [the Gold matrix](QUALITY_SCALE.md) and [diagnostic defaults](DIAGNOSTIC_DEFAULTS.md).
 
+The later [complete entity-name review](ENTITY_NAME_TRANSLATIONS.md) verifies
+all exposed families through HA in the four languages. It distinguishes the
+Gold entity-name rule from unchanged technical state/attribute contracts and
+the separate task of obtaining authoritative place aliases.
+
 The separate unreleased [lifecycle follow-up](SHARED_DIAGNOSTIC_LIFECYCLE.md)
 now bounds shared ownership and handoff while retaining both entity/device
 identities and personal choices. Its failure/repair, concurrency and Recorder

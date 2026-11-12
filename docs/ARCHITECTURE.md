@@ -62,6 +62,13 @@ HA renders default labels during setup/reload, preserving user overrides. This
 adds no source request, language listener, peer reload or registry migration;
 integration diagnostics continue to redact location fields.
 
+The [complete entity-name inventory](ENTITY_NAME_TRANSLATIONS.md) verifies all
+45 registered entities per provider through native HA naming in DE/EN/FR/IT.
+Ordinary sensors and warnings use entity keys; both weather entities inherit
+their device's name. Tests retain user choices and bindings across language
+round trips. Technical state/attribute strings keep their API contracts. This
+test/documentation follow-up changes no component, source request or lifecycle.
+
 ## Manual service-group removal
 
 The unreleased `device_removal.py` classifier owns only read-only native
