@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- Allow HA's user-confirmed removal of an empty service shell whose known
+  entry-group identifier refers to an entry that no longer exists. Protect
+  current/disabled/shared/bound/linked/ambiguous records; never automatically
+  delete groups or Recorder data. See [the approval boundary](docs/DEVICE_REMOVAL.md).
+
 - Preserve the two shared diagnostic helpers across owner unload, disablement,
   removal and changed startup order. Keep entity/device registry identities and
   personal choices, including labels and disabled service groups; hand off via

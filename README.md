@@ -144,6 +144,11 @@ first. A loaded peer takes over through its existing platform; its weather
 coordinators are not reloaded. Ambiguous historical bindings raise a translated
 repair instead of being merged or deleted. See [ownership and recovery](docs/SHARED_DIAGNOSTIC_LIFECYCLE.md).
 
+**Unreleased manual device removal:** HA's normal device-page confirmation can
+remove an unambiguous empty service shell for an entry that no longer exists.
+Current, disabled, shared, bound or linked groups stay protected. This adds no
+automatic cleanup or production orphan claim; see [approval and limits](docs/DEVICE_REMOVAL.md).
+
 **Accepted 8.3.1b1 follow-up:** [actionable repair notices](docs/REPAIRS.md) guide
 users from an invalid saved forecast location to the existing settings. Official
 station-map links help find nearby SwissMetNet stations. The operator confirmed

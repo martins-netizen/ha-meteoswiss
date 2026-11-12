@@ -8,6 +8,7 @@ import logging
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+from homeassistant.helpers.device_registry import AnyDeviceEntry
 
 from .alerts import MeteoSwissAlertsAPI
 from .const import (
@@ -34,6 +35,7 @@ from .coordinator import (
     OpenMeteoDataUpdateCoordinator,
     OpenMeteoPollenCoordinator,
 )
+from .device_removal import DeviceRemovalStatus, async_device_removal_status
 from .forecast_location_config import resolve_forecast_target
 from .localization import async_load_warning_labels
 from .precipitation import (
@@ -307,6 +309,16 @@ async def async_unload_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) 
 async def async_remove_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -> None:
     """Remove an obsolete repair even when the entry never finished setup."""
     async_clear_forecast_location_issue(hass, entry)
+
+
+async def async_remove_config_entry_device(
+    hass: HomeAssistant, entry: MeteoSwissConfigEntry, device_entry: AnyDeviceEntry
+) -> bool:
+    """Allow only a user-confirmed, empty group for an entry that no longer exists."""
+    return (
+        async_device_removal_status(hass, entry, device_entry)
+        is DeviceRemovalStatus.EMPTY_RETIRED_GROUP
+    )
 
 
 async def async_reload_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -> None:

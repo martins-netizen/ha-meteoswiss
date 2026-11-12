@@ -104,3 +104,14 @@ raise a local translated repair; exception messages are not exported. Tests cove
 retained user choices, cancellation/shutdown, rollback and disposable Recorder
 history. Historical conflicts, operator acceptance and independent review remain
 separate. The dated security inventory above is not refreshed by these tests.
+
+## Unreleased manual device-removal scope
+
+The [bounded approval policy](DEVICE_REMOVAL.md) classifies native registry
+records locally. It adds no provider requests, telemetry, location export,
+credentials or integration permissions. Only HA's user-confirmed removal of an
+unambiguous empty retired service shell is allowed; active/shared/disabled
+groups, entity bindings and device relationships stay protected. No automatic
+cleanup or Recorder deletion is introduced. The source-history review is not a
+production inventory; native UI/Recorder tests do not establish independent
+security clearance, operator acceptance or completed Gold.
