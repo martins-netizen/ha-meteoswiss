@@ -92,6 +92,14 @@ authoritative multilingual locality aliases before adding provider name
 translations. Preserve personal registry choices, identities, history,
 four-language catalogues and existing quality/security gates.
 
+The unreleased [shared-diagnostic lifecycle fix](docs/SHARED_DIAGNOSTIC_LIFECYCLE.md)
+adds explicit ownership and native registry-preserving handoff for the two
+helpers. It covers ordinary entry departure, changed startup order and bounded
+failure/concurrency cases without reloading peer weather sources. Conflicting
+legacy records stop the transfer with a repair; historical cleanup and overall
+dynamic/stale-device applicability remain separate. Release/operator acceptance
+is not inferred from this source work.
+
 The [Gold matrix](docs/QUALITY_SCALE.md) retains these requirements. Native
 icons and translated update failures are released and accepted; they do not
 complete the full checklist. No new feature, HA test or release is approved by

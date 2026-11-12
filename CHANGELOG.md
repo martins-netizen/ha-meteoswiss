@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- Preserve the two shared diagnostic helpers across owner unload, disablement,
+  removal and changed startup order. Keep entity/device registry identities and
+  personal choices, including labels and disabled service groups; hand off via
+  an existing peer platform without reloading its weather sources. Bound pending
+  setup, cancellation, shutdown and write failures; ambiguous records raise a
+  four-language repair. Add native lifecycle and retained Recorder-history tests.
+  [Ownership, limits and recovery](docs/SHARED_DIAGNOSTIC_LIFECYCLE.md).
+
 - Schedule weekly GitHub Actions and pip dependency proposals with universal
   test-lock verification ([#99](https://github.com/martins-netizen/ha-meteoswiss/pull/99)).
   Record the completed managed PR-creation and merge checks in the

@@ -9,6 +9,25 @@ from .runtime_data import MeteoSwissConfigEntry
 
 INVALID_FORECAST_LOCATION = "invalid_forecast_location"
 WIND_STATISTICS_BLOCKED = "wind_statistics_blocked"
+SHARED_DIAGNOSTICS_BLOCKED = "shared_diagnostics_blocked"
+
+
+@callback
+def async_sync_shared_diagnostics_issue(hass: HomeAssistant, blocked: bool) -> None:
+    """Keep ambiguous helper ownership separate from provider availability."""
+    if not blocked:
+        ir.async_delete_issue(hass, DOMAIN, SHARED_DIAGNOSTICS_BLOCKED)
+        return
+    ir.async_create_issue(
+        hass, DOMAIN, SHARED_DIAGNOSTICS_BLOCKED,
+        is_fixable=False, is_persistent=False,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key=SHARED_DIAGNOSTICS_BLOCKED,
+        learn_more_url=(
+            "https://github.com/martins-netizen/ha-meteoswiss/"
+            "blob/development/docs/SHARED_DIAGNOSTIC_LIFECYCLE.md"
+        ),
+    )
 
 
 @callback

@@ -64,8 +64,17 @@ The same single-device exception appears in
 That rule also remains partial. Current station changes reuse the groups, but
 historical orphaned groups have not been independently inventoried. The
 integration does not implement a dedicated `async_remove_config_entry_device`
-approval policy. No automatic cleanup, deletion permission, registry migration
-or production inventory is introduced by this assessment.
+approval policy. The original applicability assessment introduced no automatic cleanup, deletion
+permission, registry migration or production inventory. The source follow-up
+below is a separate bounded registry-ownership change.
+
+The separate unreleased [shared-diagnostic lifecycle follow-up](SHARED_DIAGNOSTIC_LIFECYCLE.md)
+adds an explicit runtime owner and native registry-preserving handoff for the
+two helpers. Changed startup order retains their device IDs; peer source
+coordinators are not reloaded. Ambiguous legacy ownership blocks the optional
+helpers with a repair rather than deleting/merging records. This is additional
+bounded lifecycle evidence, not a historical orphan inventory or a broader
+dynamic/stale-device exemption.
 
 ## Evidence and remaining boundaries
 

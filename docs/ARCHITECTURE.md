@@ -610,3 +610,22 @@ warnings remain part of the existing App v3 feed; a separate radar integration
 is unaffected. Adding standalone radar/river/bulletin products would require
 new source contracts, not reinstating unimplemented modules. See the
 [dated quality follow-up](QUALITY_PROGRESS_2026-10-22.md).
+
+## Shared diagnostic ownership
+
+`diagnostic_lifecycle.py` owns the two shared helper registrations. A typed
+domain object retains native sensor-platform callbacks, one owner and temporary
+retention provenance while a peer completes setup. Helpers are added only for a
+loaded entry; native unload/failure callbacks and a separate HA-stop listener
+release references. No peer entry or provider coordinator is reloaded.
+
+Both native registry identities are preflighted before a synchronous owner move.
+Entity ownership changes before device-move cleanup; HA-derived disablement is
+recomputed while explicit user choices remain. Failed writes attempt snapshot
+restoration. Ambiguous bindings or failed rollback block the optional helpers
+with a translated repair instead of inventing a successful transfer.
+
+The [lifecycle contract](SHARED_DIAGNOSTIC_LIFECYCLE.md) records pending setup,
+cancellation, shutdown, conflicts and manual-removal limits. Native tests include
+retained Recorder rows; runtime code introduces no Recorder migration, SQL or
+automatic orphan deletion. Historical grouping and full Gold remain separate.

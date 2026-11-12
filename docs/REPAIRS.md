@@ -73,3 +73,13 @@ Recorder readiness or conflicting metadata before reloading the existing entry.
 Do not delete old statistics to remove the warning. The notice clears on a
 successful retry and is removed on unload. A provider outage alone is not this
 repair condition. The text is bundled and HA-loaded in DE/EN/FR/IT.
+
+## Shared diagnostic ownership needs review
+
+Unreleased follow-up: `shared_diagnostics_blocked` reports a local registration
+or ownership-transfer problem for the optional station-catalogue/cache helpers.
+Ordinary weather is independent. Resolve conflicting legacy ownership before
+removing an entry; HA still applies its normal entry-removal cleanup.
+[Scope and recovery](SHARED_DIAGNOSTIC_LIFECYCLE.md#ownership-repair) explain the
+retention checks, rollback limits and original-owner reload path. The notice is
+translated in DE/EN/FR/IT and contains no raw exception or location fields.

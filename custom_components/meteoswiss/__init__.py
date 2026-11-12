@@ -298,14 +298,6 @@ async def async_unload_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) 
 
     unload_ok = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
 
-    if unload_ok and hass.data[DOMAIN].get("diagnostic_owner") == entry.entry_id:
-        for key in (
-            "diagnostic_owner",
-            "stations_map_sensor_added",
-            "cache_stats_sensor_added",
-        ):
-            hass.data[DOMAIN].pop(key, None)
-
     if unload_ok and entry.disabled_by is not None:
         async_clear_forecast_location_issue(hass, entry)
 

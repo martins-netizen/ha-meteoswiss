@@ -32,6 +32,12 @@ Retained entries keep IDs, personal names/icons/aliases/areas and their enabled
 choice; ordinary state strings and technical attribute keys are preserved.
 See [diagnostic names and evidence](DIAGNOSTIC_TRANSLATIONS.md).
 
+**Unreleased lifecycle follow-up:** a typed shared owner hands these helpers to
+a loaded remaining entry without changing entity/device IDs, personal choices
+or the peer's weather coordinators. New helpers stay disabled; user-disabled
+service groups stay disabled. Conflicts require review rather than deletion.
+See [shared ownership and recovery](SHARED_DIAGNOSTIC_LIFECYCLE.md).
+
 ## Seven virtual device groups
 
 These groups organise data services in HA rather than user-owned physical

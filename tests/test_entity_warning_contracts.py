@@ -580,10 +580,9 @@ async def test_optional_sensor_platforms_skip_missing_families(hass, caplog):
         forecast_coordinator=None,
         meteoswiss_pollen_coordinator=None,
     )
-    hass.data[DOMAIN] = {
-        "stations_map_sensor_added": True,
-        "cache_stats_sensor_added": True,
-    }
+    # A direct platform probe never reaches LOADED. Shared diagnostics are
+    # registered only by the native entry lifecycle, not obsolete added flags.
+    hass.data[DOMAIN] = {}
     entities = []
     await setup_sensors(hass, entry, entities.extend)
     assert len(entities) == len(SENSOR_DESCRIPTIONS)
@@ -623,23 +622,6 @@ async def test_entry_platform_logs_omit_location(hass, installed_entities, caplo
     )
     assert "private_station_marker" not in logs
     assert "9997" not in logs
-
-
-async def test_failed_unload_preserves_shared_diagnostic_ownership(hass):
-    from custom_components.meteoswiss import async_unload_entry
-
-    entry = MockConfigEntry(domain=DOMAIN)
-    ownership = {
-        "diagnostic_owner": entry.entry_id,
-        "stations_map_sensor_added": True,
-        "cache_stats_sensor_added": True,
-    }
-    hass.data[DOMAIN] = dict(ownership)
-    with patch.object(
-        hass.config_entries, "async_unload_platforms", return_value=False
-    ):
-        assert await async_unload_entry(hass, entry) is False
-    assert hass.data[DOMAIN] == ownership
 
 
 @pytest.mark.parametrize("family", ["pollen", "measured"])

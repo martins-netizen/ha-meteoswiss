@@ -449,6 +449,10 @@
     "wind_statistics_blocked": {
       "title": "Windstatistik benötigt eine Prüfung",
       "description": "Die Windmesswerte werden weiterhin aktualisiert. Die kreisförmige Statistik konnte jedoch nicht sicher vorbereitet werden. Verlauf und bisherige Statistikdaten bleiben erhalten. Prüfe wind_statistics_status und die Migrationsanleitung. Behebe den Konflikt oder das Recorder-Problem und lade die Integration neu. Lösche keine alten Statistikdaten, um diesen Hinweis auszublenden."
+    },
+    "shared_diagnostics_blocked": {
+      "title": "Zuordnung der gemeinsamen Diagnose-Helfer prüfen",
+      "description": "Die gemeinsamen Diagnose-Helfer konnten nicht sicher übernommen werden. Wetterdaten bleiben verfügbar. Prüfe die Diagnosegruppen anhand der verlinkten Anleitung und lade den betroffenen Eintrag danach neu. Kläre die Zuordnung vor dem Entfernen eines Eintrags, damit persönliche Einstellungen erhalten bleiben."
     }
   },
   "exceptions": {
