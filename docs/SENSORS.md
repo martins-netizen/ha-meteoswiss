@@ -234,6 +234,11 @@ entity ID: station count, GeoJSON and catalogue status. It is not another weathe
 station and can stay disabled. `meteoswiss_cache_stats` is the shared cache
 helper's unique ID. Existing entity names can differ. Integration diagnostics
 download a redacted technical summary.
+
+**Unreleased naming follow-up:** both helper entity names and shared device
+labels are translated in DE/EN/FR/IT. Personal names, IDs, areas, aliases and
+enabled/disabled choices stay intact. Their technical string states and
+attributes remain unchanged; [compatibility and tests](DIAGNOSTIC_TRANSLATIONS.md).
 The [Cache Statistics guide](USAGE.md#cache-statistics-what-the-numbers-mean)
 explains hit rate, lookups, expiry and why these are not API-request counters.
 
