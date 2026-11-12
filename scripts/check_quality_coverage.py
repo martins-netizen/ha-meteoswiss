@@ -57,6 +57,7 @@ def validate() -> None:
         "cache.py",
         "diagnostics.py",
         "diagnostic_lifecycle.py",
+        "device_removal.py",
         "entity.py",
         "version.py",
         "stations_map.py",

@@ -63,8 +63,11 @@ The same single-device exception appears in
 [stale-devices](https://contributors.home-assistant.io/core/quality-scale/stale-devices/).
 That rule also remains partial. Current station changes reuse the groups, but
 historical orphaned groups have not been independently inventoried. The
-integration does not implement a dedicated `async_remove_config_entry_device`
-approval policy. The original applicability assessment introduced no automatic cleanup, deletion
+unreleased [native removal policy](DEVICE_REMOVAL.md) implements
+`async_remove_config_entry_device` only for an unambiguous empty service shell
+whose reviewed entry-group identifier refers to an entry that no longer exists.
+Current/shared groups and every registered entity binding remain protected.
+The original applicability assessment introduced no automatic cleanup, deletion
 permission, registry migration or production inventory. The source follow-up
 below is a separate bounded registry-ownership change.
 
@@ -74,7 +77,9 @@ two helpers. Changed startup order retains their device IDs; peer source
 coordinators are not reloaded. Ambiguous legacy ownership blocks the optional
 helpers with a repair rather than deleting/merging records. This is additional
 bounded lifecycle evidence, not a historical orphan inventory or a broader
-dynamic/stale-device exemption.
+dynamic/stale-device exemption. The later manual removal hook adds no automatic
+cleanup; its source-history and native UI/Recorder evidence retain the same
+historical-inventory and overall-Gold boundaries.
 
 ## Evidence and remaining boundaries
 

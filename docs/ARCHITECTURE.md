@@ -52,6 +52,15 @@ It neither downloads data nor changes historical mean algorithms in place.
 The [bounded review](PRIVACY_SECURITY_REVIEW.md) records privacy/security controls
 and the remaining architectural evidence limits.
 
+## Manual service-group removal
+
+The unreleased `device_removal.py` classifier owns only read-only native
+device-removal approval. The typed integration hook permits a user-confirmed
+empty retired service shell; it performs no registry write, await, source call
+or automatic cleanup. Current/shared groups, any entity bindings, device links
+and ambiguous ownership remain protected. HA performs approved deletion through
+its existing device page. See [the full boundary](DEVICE_REMOVAL.md).
+
 ## Scalar forecast projections
 
 The eight forecast sensors reuse the existing ICON coordinator; they add no

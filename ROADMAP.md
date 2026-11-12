@@ -100,6 +100,13 @@ legacy records stop the transfer with a repair; historical cleanup and overall
 dynamic/stale-device applicability remain separate. Release/operator acceptance
 is not inferred from this source work.
 
+The unreleased [manual device-removal policy](docs/DEVICE_REMOVAL.md) permits
+only an unambiguous empty service shell for a non-existing entry ID. Current,
+disabled, shared, bound or linked groups stay protected. Native device-page
+and Recorder tests bound the behaviour; source-history review establishes
+identifier forms, not production orphans. No automatic historical cleanup or
+full stale-device/Gold completion is claimed.
+
 The [Gold matrix](docs/QUALITY_SCALE.md) retains these requirements. Native
 icons and translated update failures are released and accepted; they do not
 complete the full checklist. No new feature, HA test or release is approved by
