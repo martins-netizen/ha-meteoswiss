@@ -449,6 +449,10 @@
     "wind_statistics_blocked": {
       "title": "Wind statistics need attention",
       "description": "Wind readings continue, but circular statistics could not be prepared safely. Existing history and statistics were retained. Check wind_statistics_status and the migration guide. Resolve the conflict or Recorder problem, then reload this integration. Do not delete old statistics to hide this notice."
+    },
+    "shared_diagnostics_blocked": {
+      "title": "Shared diagnostic ownership needs review",
+      "description": "The shared diagnostic helpers could not be transferred safely. Weather data remains available. Review the diagnostic groups using the linked guide, then reload the affected entry. Resolve the ownership before removing an entry so personal settings can be retained."
     }
   },
   "exceptions": {

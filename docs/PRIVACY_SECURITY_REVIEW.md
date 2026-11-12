@@ -7,7 +7,7 @@ regulatory certification or assurance that every deployment is secure.
 | Area | Verified strengths | Remaining boundary |
 |---|---|---|
 | Privacy | No integration account/credential, analytics SDK or separate maintainer telemetry in the reviewed runtime. Location fields and saved forecast selections are redacted from diagnostics; raw payloads, cache keys and expected private error URLs are omitted. | Providers still receive station/postcode/coordinates and the public source IP. Retention is outside this integration's control. Ordinary state attributes, HA-wide debug logs and user-supplied cards need separate sharing review. |
-| Architecture | Typed entry-owned runtime, borrowed HA session, source/coordinator separation, bounded parsing and independent optional-source failures; native lifecycle tests. | Strict typing and a separately distributed client-library boundary are not fully established. Large coordinator/sensor/config-flow modules and shared diagnostic ownership retain maintenance costs and documented limits. Coverage is evidence, not architecture certification. |
+| Architecture | Typed entry-owned runtime, borrowed HA session, source/coordinator separation, bounded parsing and independent optional-source failures; native lifecycle tests. | Strict typing and a separately distributed client-library boundary are not fully established. Large coordinator/sensor/config-flow modules retain maintenance costs. The unreleased typed shared-diagnostic lifecycle bounds ownership/handoff; ambiguous legacy groups still need review. Coverage is evidence, not architecture certification. |
 | Security | Fixed-host HTTPS/TLS, no redirects, wire/decompression limits, bounded timeouts/retries and cancellation tests. Hash-locked minimum/current fixtures, explicit Python/pip/certifi/uv floors, offline uv, pinned actions, least-privilege workflows and actual-merge verification. Exact PyPI vulnerability metadata checks returned no active advisories for either 138-pin test lock. | The owner-authenticated 11 November inventory below closes the previously inaccessible alert/settings check. This is a point-in-time inventory, not complete security clearance or an independent offensive assessment. Required approving reviews are zero; SonarCloud is checked in the project workflow but is not a ruleset-required check. |
 
 The engineering foundation is strong. An unqualified "top-level in every
@@ -93,3 +93,14 @@ exposure in every external artifact; the other scope limits above remain.
    Future inaccessible APIs remain unknown, not empty alert lists.
 4. Verify HA account/network/backup controls separately. This repository review
    does not prove MFA, firewall rules, external exposure or restoration on a host.
+
+## Unreleased shared-diagnostic lifecycle scope
+
+The [lifecycle follow-up](SHARED_DIAGNOSTIC_LIFECYCLE.md) explicitly retains the two
+shared helper identities across entry departure and startup order, with native
+registry operations and no peer-coordinator reload. It adds no provider endpoint,
+credential, telemetry or permissions. Ambiguous ownership and failed transfers
+raise a local translated repair; exception messages are not exported. Tests cover
+retained user choices, cancellation/shutdown, rollback and disposable Recorder
+history. Historical conflicts, operator acceptance and independent review remain
+separate. The dated security inventory above is not refreshed by these tests.

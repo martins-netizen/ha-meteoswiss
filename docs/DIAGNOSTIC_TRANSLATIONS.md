@@ -55,3 +55,9 @@ or a completed Gold checklist. Technical compatibility strings, other service
 group labels, historical shared-device ownership and authoritative multilingual
 place-name aliases retain their separate reviews. See [the Gold matrix](QUALITY_SCALE.md)
 and [diagnostic defaults](DIAGNOSTIC_DEFAULTS.md).
+
+The separate unreleased [lifecycle follow-up](SHARED_DIAGNOSTIC_LIFECYCLE.md)
+now bounds shared ownership and handoff while retaining both entity/device
+identities and personal choices. Its failure/repair, concurrency and Recorder
+tests do not turn the earlier naming tests into a complete historical orphan
+inventory or a claim of operator acceptance.

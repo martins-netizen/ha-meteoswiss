@@ -37,6 +37,7 @@ from homeassistant.helpers.update_coordinator import (
 from homeassistant.util import dt as dt_util
 
 from .cache import get_all_cache_stats
+from .diagnostic_lifecycle import async_register_shared_diagnostics
 from .calc import (
     HEATING_REFERENCE_TEMPERATURE,
     HEATING_THRESHOLD,
@@ -231,24 +232,6 @@ async def async_setup_entry(
         for description in SENSOR_DESCRIPTIONS
     ]
 
-    # Add stations map sensor (only once)
-    if not hass.data[DOMAIN].get("stations_map_sensor_added", False):
-        from .stations_map import get_stations_map
-
-        stations_map = await get_stations_map(load=False)
-        stations_map_sensor = MeteoSwissStationsMapSensor(stations_map)
-        entities.append(stations_map_sensor)
-        hass.data[DOMAIN]["stations_map_sensor_added"] = True
-        hass.data[DOMAIN]["diagnostic_owner"] = entry.entry_id
-        _LOGGER.debug("Added stations map sensor")
-
-    # Add cache stats sensor (only once)
-    if not hass.data[DOMAIN].get("cache_stats_sensor_added", False):
-        cache_stats_sensor = MeteoSwissCacheStatsSensor()
-        entities.append(cache_stats_sensor)
-        hass.data[DOMAIN]["cache_stats_sensor_added"] = True
-        _LOGGER.debug("Added cache stats sensor")
-
     # Add pollen sensors
     pollen_coordinator = entry.runtime_data.pollen_coordinator
     if pollen_coordinator:
@@ -310,6 +293,13 @@ async def async_setup_entry(
             len(MS_POLLEN_SENSOR_DESCRIPTIONS),
         )
 
+    from .stations_map import get_stations_map
+
+    stations_map = await get_stations_map(load=False)
+    async_register_shared_diagnostics(
+        hass, entry, async_add_entities,
+        lambda: (MeteoSwissStationsMapSensor(stations_map), MeteoSwissCacheStatsSensor()),
+    )
     async_add_entities(entities)
 
 

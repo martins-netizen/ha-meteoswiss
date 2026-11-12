@@ -449,6 +449,10 @@
     "wind_statistics_blocked": {
       "title": "Verificare le statistiche del vento",
       "description": "I valori del vento restano disponibili, ma non è stato possibile preparare in sicurezza le statistiche circolari. Lo storico e le statistiche esistenti sono conservati. Consultare wind_statistics_status e la guida alla migrazione. Risolvere il conflitto o il problema di Recorder, quindi ricaricare l’integrazione. Non eliminare le vecchie statistiche per nascondere questo avviso."
+    },
+    "shared_diagnostics_blocked": {
+      "title": "Verificare la diagnostica condivisa",
+      "description": "Non è stato possibile trasferire in modo sicuro gli strumenti di diagnostica condivisi. I dati meteo restano disponibili. Verifica i gruppi di diagnostica seguendo la guida collegata, poi ricarica la voce interessata. Chiarisci l’assegnazione prima di rimuovere una voce per conservare le impostazioni personali."
     }
   },
   "exceptions": {

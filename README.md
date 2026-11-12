@@ -138,6 +138,12 @@ states/attributes keep their compatibility format; see [names and limits](docs/D
 The [dated security inventory](docs/PRIVACY_SECURITY_REVIEW.md#owner-authenticated-alert-inventory)
 records no open alerts as of 11 November 2026; it is separate from Gold completion.
 
+**Unreleased shared-diagnostic lifecycle fix:** keep both helper entity/device
+IDs and personal settings when their owner unloads or another entry starts
+first. A loaded peer takes over through its existing platform; its weather
+coordinators are not reloaded. Ambiguous historical bindings raise a translated
+repair instead of being merged or deleted. See [ownership and recovery](docs/SHARED_DIAGNOSTIC_LIFECYCLE.md).
+
 **Accepted 8.3.1b1 follow-up:** [actionable repair notices](docs/REPAIRS.md) guide
 users from an invalid saved forecast location to the existing settings. Official
 station-map links help find nearby SwissMetNet stations. The operator confirmed
