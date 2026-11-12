@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+- Schedule weekly GitHub Actions and pip dependency proposals with universal
+  test-lock verification ([#99](https://github.com/martins-netizen/ha-meteoswiss/pull/99)).
+  Record the completed managed PR-creation and merge checks in the
+  [development guide](DEVELOPMENT.md#scheduled-dependency-proposals).
+- Update SHA-pinned setup-python to 7.1.0 and CodeQL Action to 4.39.3
+  ([#100](https://github.com/martins-netizen/ha-meteoswiss/pull/100)).
+- Update the CI test locks to bleak 3.1.0 and regex 2026.11.9 while retaining
+  all 138 universal selections per lock and their platform conditions
+  ([#101](https://github.com/martins-netizen/ha-meteoswiss/pull/101)). Keep
+  native uv regeneration and the existing security/coverage gates mandatory.
+
 - Translate the station-catalogue and cache-statistics helper names and their
   two shared service-device names in DE/EN/FR/IT. Keep personal names, IDs,
   bindings, aliases, areas and enabled/disabled choices through reload and

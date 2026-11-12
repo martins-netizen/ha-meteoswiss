@@ -175,11 +175,41 @@ review. Keep the resolved input versions, hashes and markers together. Do not
 merge a proposal by disabling this check, changing the advertised minimum to
 match an accidental update, or suppressing its security alert.
 
-The configuration PR alone does not prove the managed updater can create a PR.
-After it is merged, inspect the first real Dependabot update job and any created
-PR. A successful graph submission or an empty update check is not evidence of
-successful PR creation. Approval requires the actual proposal's exact head to
-pass all required checks; there is no automatic merge or HA installation.
+Review the actual managed update job and its proposal separately from graph
+submissions or empty update checks. Before merging, bring the proposal branch
+up to date with `development` and wait for all required checks on that exact
+head. The strict branch policy requires this base alignment even when an older
+head has green checks. Keep the required checks active and use the regular
+approved squash-merge process. There is no automatic merge or HA installation.
+
+### Verified managed proposals — 12 November 2026
+
+Version updates are enabled for this fork. The first managed GitHub Actions
+and pip jobs both reached the PR-creation endpoint successfully (HTTP 204),
+created their proposals and completed the reviewed merge path:
+
+| Ecosystem | Proposal | Merged update |
+|---|---|---|
+| GitHub Actions | [#100](https://github.com/martins-netizen/ha-meteoswiss/pull/100) | SHA-pinned setup-python 7.0.0 → 7.1.0 and CodeQL Action 4.37.9 → 4.39.3. |
+| pip / requirements | [#101](https://github.com/martins-netizen/ha-meteoswiss/pull/101) | bleak 3.0.2 → 3.1.0 and regex 2026.11.7 → 2026.11.9 in both universal test locks. |
+
+The initial Python proposal reduced each lock from 138 to 123 selections and
+changed platform markers/extras. The universal-lock guard and its regression
+test correctly rejected it. Both locks were regenerated with the native
+universal uv compiler before merge: all 138 selections and their platform
+conditions were restored, with only the two reviewed package versions and
+their hashes changed. This correction is a reviewed maintenance step; future
+pip-compile proposals still need the same universal-lock verification.
+
+Both actual merge commits passed the eight regular checks, including HA
+2026.11.0 and 2026.11.1 with 2,357 tests and 83 subtests each, the security and
+coverage gates, and both universal locks with 138 selections. See the merge CI
+for [#100](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/43218969192)
+and [#101](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/43226584044).
+The pip dependency-graph update after #101 also completed successfully; it is
+separate from the required merge checks. This acceptance covers the configured
+pip/requirements path; other package managers and lockfile formats require
+their own acceptance. Published releases and HA installations are separate.
 
 ## Branch policy
 
