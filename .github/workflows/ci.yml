@@ -17,6 +17,31 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  lockfiles:
+    name: Universal test locks
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7
+        with:
+          python-version: "3.14"
+          check-latest: true
+      - name: Check Python and pip before installing the compiler
+        run: python scripts/check_ci_security.py bootstrap
+      - name: Install only the hash-pinned lock compiler and parser
+        run: |
+          python scripts/check_test_lockfiles.py compiler > "$RUNNER_TEMP/meteoswiss-lock-compiler.txt"
+          python -m pip install --disable-pip-version-check --require-hashes --no-deps -r "$RUNNER_TEMP/meteoswiss-lock-compiler.txt"
+      # Network resolution happens only in this separate maintenance job.
+      # Both HA compatibility jobs keep UV_OFFLINE=true throughout.
+      - name: Verify both universal locks without changing the checkout
+        run: python scripts/check_test_lockfiles.py verify
+
   compatibility:
     name: HA ${{ matrix.ha }}
     strategy:
@@ -100,7 +125,7 @@ jobs:
   # Preserve the required branch-protection check name while testing both HAs.
   tests:
     if: always()
-    needs: [compatibility, hassfest]
+    needs: [compatibility, hassfest, lockfiles]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -108,4 +133,5 @@ jobs:
         env:
           COMPATIBILITY: ${{ needs.compatibility.result }}
           HASSFEST: ${{ needs.hassfest.result }}
-        run: test "$COMPATIBILITY" = success && test "$HASSFEST" = success
+          LOCKFILES: ${{ needs.lockfiles.result }}
+        run: test "$COMPATIBILITY" = success && test "$HASSFEST" = success && test "$LOCKFILES" = success
