@@ -131,6 +131,13 @@ records verified controls and remaining checks. Providers receive the source IP
 and requested location; diagnostic redaction does not hide those requests from
 the provider. See [location privacy before setup](docs/GETTING_STARTED.md#location-privacy-before-setup).
 
+**Unreleased diagnostic-name follow-up:** the two optional technical helpers
+and their shared service groups have translated default names in DE/EN/FR/IT.
+Existing IDs, personal names and enabled/disabled choices are retained. Technical
+states/attributes keep their compatibility format; see [names and limits](docs/DIAGNOSTIC_TRANSLATIONS.md).
+The [dated security inventory](docs/PRIVACY_SECURITY_REVIEW.md#owner-authenticated-alert-inventory)
+records no open alerts as of 11 November 2026; it is separate from Gold completion.
+
 **Accepted 8.3.1b1 follow-up:** [actionable repair notices](docs/REPAIRS.md) guide
 users from an invalid saved forecast location to the existing settings. Official
 station-map links help find nearby SwissMetNet stations. The operator confirmed

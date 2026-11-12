@@ -138,7 +138,7 @@ async def test_existing_entity_metadata_and_identity_contract(hass, family):
             "stations_map",
             {
                 "identifiers": {(DOMAIN, "stations_map")},
-                "name": "MeteoSwiss Weather Stations",
+                "translation_key": "stations_map",
                 "manufacturer": "MeteoSwiss",
                 "model": "SwissMetNet",
             },
@@ -150,7 +150,7 @@ async def test_existing_entity_metadata_and_identity_contract(hass, family):
             "cache_stats",
             {
                 "identifiers": {(DOMAIN, "cache_stats")},
-                "name": "MeteoSwiss Cache Statistics",
+                "translation_key": "cache_stats",
                 "manufacturer": "MeteoSwiss",
                 "model": "Intelligent Caching",
             },

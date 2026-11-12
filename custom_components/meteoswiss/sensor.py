@@ -594,6 +594,7 @@ class MeteoSwissStationsMapSensor(MeteoSwissEntity, SensorEntity):
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_entity_registry_enabled_default = False
+    _attr_translation_key = "stations_map"
 
     def __init__(self, stations_map: MeteoSwissStationsMap) -> None:
         """Initialize stations map sensor."""
@@ -602,11 +603,10 @@ class MeteoSwissStationsMapSensor(MeteoSwissEntity, SensorEntity):
         self._attr_device_info = DeviceInfo(
             entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, "stations_map")},
-            name="MeteoSwiss Weather Stations",
+            translation_key="stations_map",
             manufacturer="MeteoSwiss",
             model="SwissMetNet",
         )
-        self._attr_name = "Weather Stations"
         self._attr_native_value = None
         self._attr_available = False
 
@@ -650,6 +650,7 @@ class MeteoSwissCacheStatsSensor(MeteoSwissEntity, SensorEntity):
 
     _attr_entity_category = EntityCategory.DIAGNOSTIC
     _attr_entity_registry_enabled_default = False
+    _attr_translation_key = "cache_stats"
 
     def __init__(self) -> None:
         """Initialize cache stats sensor."""
@@ -657,11 +658,10 @@ class MeteoSwissCacheStatsSensor(MeteoSwissEntity, SensorEntity):
         self._attr_device_info = DeviceInfo(
             entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, "cache_stats")},
-            name="MeteoSwiss Cache Statistics",
+            translation_key="cache_stats",
             manufacturer="MeteoSwiss",
             model="Intelligent Caching",
         )
-        self._attr_name = "Cache Statistics"
         self._attr_native_value = "Running"
 
     async def async_update(self) -> None:

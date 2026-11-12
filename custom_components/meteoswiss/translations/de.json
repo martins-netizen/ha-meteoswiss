@@ -331,6 +331,12 @@
       },
       "forecast_probability_tomorrow": {
         "name": "Höchste stündliche Niederschlagswahrscheinlichkeit morgen"
+      },
+      "stations_map": {
+        "name": "Wetterstationen"
+      },
+      "cache_stats": {
+        "name": "Cache-Statistik"
       }
     },
     "binary_sensor": {
@@ -427,6 +433,12 @@
     },
     "forecast_invalid": {
       "name": "MeteoSwiss Prognose (ungültiger Ort)"
+    },
+    "stations_map": {
+      "name": "MeteoSwiss Wetterstationen"
+    },
+    "cache_stats": {
+      "name": "MeteoSwiss Cache-Statistik"
     }
   },
   "issues": {

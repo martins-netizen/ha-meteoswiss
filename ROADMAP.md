@@ -83,8 +83,11 @@ stale-device assessments remain partial, with their evidence limits explicit.
 The unreleased [wind-statistics follow-up](docs/WIND_STATISTICS_MIGRATION.md)
 preserves existing arithmetic rows under an archive ID before enabling circular
 statistics on the retained sensor. Release/operator acceptance remain open.
-Review entity translations and historical stale grouping in separate bounded
-scopes. Obtain
+The unreleased [diagnostic-name follow-up](docs/DIAGNOSTIC_TRANSLATIONS.md)
+translates both optional helper entities and their shared service groups while
+preserving IDs and personal registry choices. Technical state/attribute strings,
+other service-group wording and full translation applicability remain separate.
+Review historical stale grouping in a bounded scope. Obtain
 authoritative multilingual locality aliases before adding provider name
 translations. Preserve personal registry choices, identities, history,
 four-language catalogues and existing quality/security gates.

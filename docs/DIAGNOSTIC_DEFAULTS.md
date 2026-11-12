@@ -26,6 +26,12 @@ condition coordinator resolves its own catalogue through `get_stations_map`;
 it does not depend on the optional catalogue entity being enabled. The existing
 redacted integration diagnostics remain available independently of these helpers.
 
+**Unreleased naming follow-up:** the two helpers and their shared service groups
+use native DE/EN/FR/IT name translations. English defaults are unchanged.
+Retained entries keep IDs, personal names/icons/aliases/areas and their enabled
+choice; ordinary state strings and technical attribute keys are preserved.
+See [diagnostic names and evidence](DIAGNOSTIC_TRANSLATIONS.md).
+
 ## Seven virtual device groups
 
 These groups organise data services in HA rather than user-owned physical
