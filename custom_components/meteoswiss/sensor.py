@@ -949,7 +949,8 @@ class MeteoSwissMeasuredPollenSensor(MeteoSwissCoordinatorEntity, SensorEntity):
         self._attr_device_info = DeviceInfo(
             entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, f"ms_pollen_{entry.entry_id}")},
-            name=f"MeteoSwiss Pollen (Measured) - {pollen_station_label}",
+            translation_key="measured_pollen",
+            translation_placeholders={"station": str(pollen_station_label)},
             manufacturer="MeteoSwiss",
             model="Pollen Station",
         )

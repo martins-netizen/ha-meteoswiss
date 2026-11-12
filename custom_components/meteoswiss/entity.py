@@ -19,7 +19,6 @@ from .const import (
     DATA_SOURCE_OPENMETEO,
     DOMAIN,
     OPENMETEO_CURRENT_ATTRIBUTION,
-    OPENMETEO_AIR_QUALITY_DEVICE_NAME,
     OPENMETEO_AIR_QUALITY_MANUFACTURER,
     OPENMETEO_AIR_QUALITY_MODEL,
 )
@@ -55,14 +54,15 @@ def weather_device_info(
         return DeviceInfo(
             entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, entry_id)},
-            name="Open-Meteo Current Weather",
+            translation_key="current_openmeteo",
             manufacturer="Open-Meteo",
             model="Weather Forecast API",
         )
     return DeviceInfo(
         entry_type=DeviceEntryType.SERVICE,
         identifiers={(DOMAIN, entry_id)},
-        name=f"MeteoSwiss {station_name}",
+        translation_key="current_meteoswiss",
+        translation_placeholders={"station": str(station_name)},
         manufacturer="MeteoSwiss",
         model="SwissMetNet",
     )
@@ -73,7 +73,7 @@ def air_quality_device_info(entry_id: str) -> DeviceInfo:
     return DeviceInfo(
         entry_type=DeviceEntryType.SERVICE,
         identifiers={(DOMAIN, f"pollen_{entry_id}")},
-        name=OPENMETEO_AIR_QUALITY_DEVICE_NAME,
+        translation_key="modelled_air_quality",
         manufacturer=OPENMETEO_AIR_QUALITY_MANUFACTURER,
         model=OPENMETEO_AIR_QUALITY_MODEL,
     )

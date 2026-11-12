@@ -115,3 +115,13 @@ groups, entity bindings and device relationships stay protected. No automatic
 cleanup or Recorder deletion is introduced. The source-history review is not a
 production inventory; native UI/Recorder tests do not establish independent
 security clearance, operator acceptance or completed Gold.
+
+## Unreleased service-group naming scope
+
+The [native naming follow-up](SERVICE_GROUP_TRANSLATIONS.md) changes only local
+default labels. Station/postcode placeholders preserve text already present in
+the previous names; providers, requests, credentials and permissions do not
+change. Native tests verify that integration diagnostics still redact saved
+locations and do not export device translation placeholders. Personal registry
+choices and historical rows remain intact. This does not refresh the dated
+security inventory or establish operator acceptance, independent review or Gold.

@@ -52,6 +52,16 @@ It neither downloads data nor changes historical mean algorithms in place.
 The [bounded review](PRIVACY_SECURITY_REVIEW.md) records privacy/security controls
 and the remaining architectural evidence limits.
 
+## Native service-group names
+
+The unreleased [naming follow-up](SERVICE_GROUP_TRANSLATIONS.md) uses HA-native
+DeviceInfo translation keys for all current service-group families. Existing
+station/postcode text is passed as local display placeholders; provider
+identities, models, attribution and every registry identifier remain unchanged.
+HA renders default labels during setup/reload, preserving user overrides. This
+adds no source request, language listener, peer reload or registry migration;
+integration diagnostics continue to redact location fields.
+
 ## Manual service-group removal
 
 The unreleased `device_removal.py` classifier owns only read-only native
