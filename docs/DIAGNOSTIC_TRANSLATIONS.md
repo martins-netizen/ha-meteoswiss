@@ -51,10 +51,11 @@ Same entity IDs keep the ordinary history/statistic lookup identity; this
 naming change neither reads nor modifies an operator's Recorder database.
 
 This is bounded source/registry evidence, not a reported operator UI acceptance
-or a completed Gold checklist. Technical compatibility strings, other service
-group labels, historical shared-device ownership and authoritative multilingual
-place-name aliases retain their separate reviews. See [the Gold matrix](QUALITY_SCALE.md)
-and [diagnostic defaults](DIAGNOSTIC_DEFAULTS.md).
+or a completed Gold checklist. Technical compatibility strings and authoritative
+multilingual place aliases retain separate reviews. The later
+[service-group follow-up](SERVICE_GROUP_TRANSLATIONS.md) covers the remaining
+fixed group labels; shared ownership has its separate lifecycle scope below.
+See [the Gold matrix](QUALITY_SCALE.md) and [diagnostic defaults](DIAGNOSTIC_DEFAULTS.md).
 
 The separate unreleased [lifecycle follow-up](SHARED_DIAGNOSTIC_LIFECYCLE.md)
 now bounds shared ownership and handoff while retaining both entity/device

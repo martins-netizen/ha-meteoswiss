@@ -133,7 +133,8 @@ class MeteoSwissAlertsBinarySensor(MeteoSwissCoordinatorEntity, BinarySensorEnti
         self._attr_device_info = DeviceInfo(
             entry_type=DeviceEntryType.SERVICE,
             identifiers={(DOMAIN, f"alerts_{entry.entry_id}")},
-            name=f"MeteoSwiss Alerts - {postal_code}",
+            translation_key="warnings",
+            translation_placeholders={"postal_code": str(postal_code)},
             manufacturer="MeteoSwiss",
             model="Alerts",
         )

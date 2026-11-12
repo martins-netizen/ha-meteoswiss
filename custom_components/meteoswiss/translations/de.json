@@ -439,6 +439,21 @@
     },
     "cache_stats": {
       "name": "MeteoSwiss Cache-Statistik"
+    },
+    "current_meteoswiss": {
+      "name": "MeteoSwiss {station}"
+    },
+    "current_openmeteo": {
+      "name": "Open-Meteo Aktuelles Wetter"
+    },
+    "modelled_air_quality": {
+      "name": "Open-Meteo Luftqualität und Pollen"
+    },
+    "warnings": {
+      "name": "MeteoSwiss Wetterwarnungen - {postal_code}"
+    },
+    "measured_pollen": {
+      "name": "MeteoSwiss Pollen (gemessen) - {station}"
     }
   },
   "issues": {

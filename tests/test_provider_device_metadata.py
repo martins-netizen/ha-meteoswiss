@@ -73,12 +73,13 @@ async def test_current_group_and_attribution_match_selected_provider(hass, famil
     assert info["identifiers"] == {(DOMAIN, entry.entry_id)}
     assert info["entry_type"] is dr.DeviceEntryType.SERVICE
     if source == "openmeteo":
-        assert info["name"] == "Open-Meteo Current Weather"
+        assert info["translation_key"] == "current_openmeteo"
         assert info["manufacturer"] == "Open-Meteo"
         assert info["model"] == "Weather Forecast API"
         assert entity.attribution == "Source: Open-Meteo Weather Forecast API (modelled current conditions)"
     else:
-        assert info["name"] == "MeteoSwiss Example station"
+        assert info["translation_key"] == "current_meteoswiss"
+        assert info["translation_placeholders"] == {"station": "Example station"}
         assert info["manufacturer"] == "MeteoSwiss"
         assert info["model"] == "SwissMetNet"
         assert entity.attribution == "Source: MeteoSwiss"

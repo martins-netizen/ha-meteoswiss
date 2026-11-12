@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- Use native DE/EN/FR/IT names for current-weather, modelled air-quality/pollen,
+  warning and measured-pollen service groups. Retain English defaults, provider
+  labels, raw station/postcode text, IDs, personal choices and Recorder history;
+  see [service-group translations](docs/SERVICE_GROUP_TRANSLATIONS.md).
+
 - Allow HA's user-confirmed removal of an empty service shell whose known
   entry-group identifier refers to an entry that no longer exists. Protect
   current/disabled/shared/bound/linked/ambiguous records; never automatically

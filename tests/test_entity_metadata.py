@@ -58,13 +58,14 @@ async def test_existing_entity_metadata_and_identity_contract(hass, family):
     coordinator.data = {}
     weather = {
         "identifiers": {(DOMAIN, entry.entry_id)},
-        "name": "MeteoSwiss Example station",
+        "translation_key": "current_meteoswiss",
+        "translation_placeholders": {"station": "Example station"},
         "manufacturer": "MeteoSwiss",
         "model": "SwissMetNet",
     }
     aq = {
         "identifiers": {(DOMAIN, f"pollen_{entry.entry_id}")},
-        "name": "Open-Meteo Air Quality & Pollen",
+        "translation_key": "modelled_air_quality",
         "manufacturer": "Open-Meteo",
         "model": "Air Quality API",
     }
@@ -85,7 +86,8 @@ async def test_existing_entity_metadata_and_identity_contract(hass, family):
             "any_alert",
             {
                 "identifiers": {(DOMAIN, f"alerts_{entry.entry_id}")},
-                "name": "MeteoSwiss Alerts - 9997",
+                "translation_key": "warnings",
+                "translation_placeholders": {"postal_code": "9997"},
                 "manufacturer": "MeteoSwiss",
                 "model": "Alerts",
             },
@@ -113,7 +115,8 @@ async def test_existing_entity_metadata_and_identity_contract(hass, family):
             "ms_pollen_birch",
             {
                 "identifiers": {(DOMAIN, f"ms_pollen_{entry.entry_id}")},
-                "name": "MeteoSwiss Pollen (Measured) - Example pollen",
+                "translation_key": "measured_pollen",
+                "translation_placeholders": {"station": "Example pollen"},
                 "manufacturer": "MeteoSwiss",
                 "model": "Pollen Station",
             },

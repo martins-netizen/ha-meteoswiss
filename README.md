@@ -149,6 +149,11 @@ remove an unambiguous empty service shell for an entry that no longer exists.
 Current, disabled, shared, bound or linked groups stay protected. This adds no
 automatic cleanup or production orphan claim; see [approval and limits](docs/DEVICE_REMOVAL.md).
 
+**Unreleased service-group names:** current weather, modelled air quality/pollen,
+warnings and measured pollen use native DE/EN/FR/IT labels. English defaults,
+raw station/postcode text, existing IDs and personal names remain intact.
+See [names, language changes and retained history](docs/SERVICE_GROUP_TRANSLATIONS.md).
+
 **Accepted 8.3.1b1 follow-up:** [actionable repair notices](docs/REPAIRS.md) guide
 users from an invalid saved forecast location to the existing settings. Official
 station-map links help find nearby SwissMetNet stations. The operator confirmed

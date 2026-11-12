@@ -85,8 +85,13 @@ preserves existing arithmetic rows under an archive ID before enabling circular
 statistics on the retained sensor. Release/operator acceptance remain open.
 The unreleased [diagnostic-name follow-up](docs/DIAGNOSTIC_TRANSLATIONS.md)
 translates both optional helper entities and their shared service groups while
-preserving IDs and personal registry choices. Technical state/attribute strings,
-other service-group wording and full translation applicability remain separate.
+preserving IDs and personal registry choices. Technical state/attribute strings and
+full translation applicability remain separate. The later unreleased
+[service-group naming follow-up](docs/SERVICE_GROUP_TRANSLATIONS.md) covers the
+remaining fixed group labels through native DE/EN/FR/IT device keys, retaining
+English defaults, provider/station text, IDs and personal choices. It adds
+native language-round-trip, diagnostics-redaction and Recorder evidence;
+technical strings, authoritative place aliases and operator acceptance remain separate.
 Review historical stale grouping in a bounded scope. Obtain
 authoritative multilingual locality aliases before adding provider name
 translations. Preserve personal registry choices, identities, history,
