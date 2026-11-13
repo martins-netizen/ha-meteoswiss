@@ -1,6 +1,6 @@
 # Publish the maintained fork
 
-**Procedure version:** 1.19 · **Updated:** 13 November 2026
+**Procedure version:** 1.20 · **Updated:** 13 November 2026
 
 **Distribution UI:** On HA 2026.11+, use built-in **Settings → Marketplace**;
 older HA uses HACS. Follow [current installation/update steps](GETTING_STARTED.md).
@@ -13,31 +13,40 @@ For releases after 8.3.4, verify the **HA 2026.11.0** requirement in
 `hacs.json`, the minimum and current CI jobs, and the user-facing upgrade
 guidance before publishing. [Support and security rationale](../DEVELOPMENT.md#supported-home-assistant-versions)
 
-## Prepared 8.3.5b1: no publication performed
+<a id="prepared-835b1-no-publication-performed"></a>
+
+## 8.3.5b1: publication completed
 
 The [candidate](RELEASE_8.3.5b1.md) preserves all 42 non-version component files
 from reviewed source `b144a0b73d81358f27fd6ecd89a47120c8a0a1b9`. Only the two
-version fields become 8.3.5b1. Regularly merge the packaging PR and verify its
-exact tree and all actual checks before asking for a separate publication
-approval. Fixed `publish_meteoswiss_835_beta_v1.8.sh` requires the approved
+version fields become 8.3.5b1. Packaging PR #108 was regularly merged as
+`af1220249e672bd8a6742c73022a7c42aca2f20a` with ten head and nine actual merge
+checks successful. After separate publication approval, release **444798178**
+was published on **13 November 2026 at 22:21:10 UTC**. Independent checks
+confirm its immutable tag, exact approved body, sixteen unchanged older tags
+and stable 8.3.4 as latest; see [publication evidence](RELEASE_EVIDENCE_8.3.5b1.md).
+A second invocation returned `already_published_and_verified` without attempting
+a write. **Publication is complete; do not rerun the publisher.**
+
+The following records the completed publisher boundary. Fixed
+`publish_meteoswiss_835_beta_v1.8.sh` requires the approved
 protected-development merge, all nine expected push checks from their actual
 apps, unchanged workflows and all sixteen older tags. The stable selection
 must remain **8.3.4 / ID 437853341**. Existing bodies/tags are never rewritten.
 
-After publication approval, export the helper from that exact merge and use
-its full SHA. `--check` is read-only; `--publish` repeats every gate and creates
-only 8.3.5b1 with `prerelease=true` and `make_latest=false`. Matching retries
+The approved helper used that exact merge's full SHA. `--check` is read-only;
+`--publish` repeats every gate and can create only 8.3.5b1 with
+`prerelease=true` and `make_latest=false`. Matching retries
 verify; uncertain results remain unconfirmed until independently read back.
 Publication does not approve an HA installation. The
 [acceptance plan](ACCEPTANCE_8.3.5b1.md) explicitly covers the wind-history
 backup and non-automatic rollback boundary. The previous release records below
 retain their original scopes and are not requests to repeat old publishers.
 
-After verified publication, update the current README, changelog, roadmap,
-readiness and quality/security status with the actual release ID, immutable tag,
-source/check evidence and still-pending operator acceptance before giving update
-instructions. Keep preparation snapshots dated and historical accepted bodies
-unchanged. Later 8.3.5 stable promotion requires its own version-only review and
+Current documentation records the verified release, immutable tag, source/check
+evidence and still-pending operator acceptance. The original preparation
+snapshot in RELEASE_8.3.5b1.md and the published body remain unchanged. Later
+8.3.5 stable promotion requires its own version-only review and
 the accepted beta/runtime evidence; no stable release is created by this plan.
 
 <a id="stable-834-prepared"></a>
