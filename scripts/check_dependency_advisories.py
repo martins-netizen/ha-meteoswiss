@@ -133,7 +133,10 @@ def fetch_release(name: str, version: str, now: datetime) -> dict:
     url = f"https://pypi.org/pypi/{quote(name, safe='')}/{quote(version, safe='')}/json"
     # Keep the standard network/proxy policy and verified origin TLS. Add no
     # API authentication, cookies or redirects; never export proxy/error details.
-    opener = build_opener(NoRedirect(), HTTPSHandler(context=ssl.create_default_context()))
+    context = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH)
+    context.verify_mode = ssl.CERT_REQUIRED
+    context.check_hostname = True
+    opener = build_opener(NoRedirect(), HTTPSHandler(context=context, check_hostname=True))
     request = Request(url, headers={"Accept": "application/json", "Accept-Encoding": "identity",
                                     "User-Agent": "ha-meteoswiss-test-lock-audit/1"})
     for attempt in range(2):
@@ -192,25 +195,28 @@ def audit(root: Path) -> dict:
 def main(argv=None) -> int:
     """Emit bounded diagnostics and a machine-readable result; unknown is failure."""
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", type=Path)
+    parser.add_argument("--json", action="store_true", dest="json_report",
+                        help="emit the report on stdout and diagnostics on stderr")
     args = parser.parse_args(argv)
     try:
         check_security("bootstrap")
         report = audit(ROOT)
-        if args.output is not None:
-            args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     except (AuditError, SecurityBaselineError, OSError) as err:
-        code = str(err) if isinstance(err, AuditError) else "security_baseline_or_report_error"
+        code = str(err) if isinstance(err, AuditError) else "security_baseline_or_audit_error"
         print(f"Test-lock advisory audit failed: {code}", file=sys.stderr)
         return 1
+    if args.json_report:
+        print(json.dumps(report, indent=2))
+    diagnostics = sys.stderr if args.json_report else sys.stdout
     print(f"Test-lock advisory audit: {report['package_versions_checked']} package/version pairs; "
           f"{report['active_advisories']} active advisories; {report['unknown_results']} unknown results; "
-          f"{report['withdrawn_advisories']} withdrawn advisories.")
+          f"{report['withdrawn_advisories']} withdrawn advisories.", file=diagnostics)
     for row in report["packages"]:
         if "unknown" in row:
-            print(f"UNKNOWN {row['name']}=={row['version']}: {row['unknown']}")
+            print(f"UNKNOWN {row['name']}=={row['version']}: {row['unknown']}", file=diagnostics)
         elif row["active_advisories"]:
-            print(f"ACTIVE {row['name']}=={row['version']}: " + ", ".join(row["active_advisories"]))
+            print(f"ACTIVE {row['name']}=={row['version']}: " + ", ".join(row["active_advisories"]),
+                  file=diagnostics)
     return 0 if report["status"] == "passed" else 1
 
 

@@ -166,10 +166,12 @@ acceptance after merge.
 From a supported hash-installed maintenance environment:
 
 ```sh
-python -m scripts.check_dependency_advisories --output dependency-advisories.json
+python -m scripts.check_dependency_advisories --json > dependency-advisories.json
 ```
 
-The JSON records selected versions, both lock inventories, active/withdrawn IDs,
+The checker writes JSON to stdout and diagnostics to stderr, with no file-output
+argument. The shell owns the chosen report path; CI uses its fixed runner-temp
+path. The JSON records selected versions, both lock inventories, active/withdrawn IDs,
 unknown error codes and query start time. Only public package/version names are
 sent to PyPI. The [full contract](docs/DEPENDENCY_ADVISORIES.md) records transport
 bounds, proxy handling, response validation and limitations. A service outage

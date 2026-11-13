@@ -40,7 +40,7 @@ jobs:
           python scripts/check_test_lockfiles.py compiler > "$RUNNER_TEMP/meteoswiss-audit-parser.txt"
           python -m pip install --disable-pip-version-check --require-hashes --no-deps -r "$RUNNER_TEMP/meteoswiss-audit-parser.txt"
       - name: Check every package version in both universal locks
-        run: python -m scripts.check_dependency_advisories --output "$RUNNER_TEMP/meteoswiss-dependency-audit.json"
+        run: python -m scripts.check_dependency_advisories --json > "$RUNNER_TEMP/meteoswiss-dependency-audit.json"
 
   lockfiles:
     name: Universal test locks

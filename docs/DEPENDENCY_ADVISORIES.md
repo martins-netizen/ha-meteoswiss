@@ -30,6 +30,8 @@ There are no package exclusions, ignore lists or alternate-index switches.
 
 Requests use only `https://pypi.org/pypi/<project>/<version>/json`, with verified
 origin TLS, no redirects, a two-MiB response limit and a ten-second socket timeout.
+The client retains Python's secure default context and explicitly requires
+certificate validation and hostname checking, including at the HTTPS handler.
 Eight workers perform at most two attempts per pair. Only transient transport
 errors and selected transient HTTP statuses can retry, with one second of delay;
 an excessive/invalid Retry-After stops that pair. The job has a 15-minute bound.
@@ -37,6 +39,10 @@ Standard configured proxies remain supported; proxy settings, raw exception
 strings and response bodies never enter reports. No API credential or cookie is
 added. The report contains package/version identities, lock owners, advisory IDs,
 fixed error codes, aggregate counts and the query start time.
+The checker has no file-output argument or report-writing operation. `--json`
+emits the report on stdout and safe diagnostics on stderr; the CI shell redirects
+stdout to its fixed runner-temporary report path. CLI arguments cannot select
+or overwrite a file, traverse parent directories or follow an output symlink.
 
 The isolated job checks the existing Python/pip bootstrap floor and installs
 only the existing SHA-256-pinned compiler/parser subset. It does not execute uv
@@ -50,11 +56,12 @@ Use the patched, hash-installed maintenance environment from
 [DEVELOPMENT.md](../DEVELOPMENT.md#local-compatibility-checks):
 
 ```sh
-python -m scripts.check_dependency_advisories --output dependency-advisories.json
+python -m scripts.check_dependency_advisories --json > dependency-advisories.json
 ```
 
 The command returns nonzero for an active advisory, unknown result, invalid lock,
-outdated bootstrap or failed report write. Inspect its safe package/version/ID
+outdated bootstrap or audit error. Shell redirection owns the chosen output
+file; use a path intended for this report. Inspect its safe package/version/ID
 diagnostic and the JSON report. For a service outage, confirm recovery and rerun;
 do not change failure into success. For a real vulnerability, coordinate the
 matching HA/test-package inputs and regenerate both universal locks with their
@@ -69,10 +76,23 @@ Regression tests cover all-platform inventory, deduplication, unsafe inputs, exa
 release identity, active/withdrawn/invalid advisories, malformed/ambiguous JSON,
 TLS/redirect/body limits, bounded retries, unknown-result failure, redacted CLI
 errors and the aggregate gate for failed/skipped/cancelled advisory jobs.
+In-memory TLS handshakes using ephemeral local certificates accept a trusted,
+valid matching identity and reject an untrusted issuer, wrong hostname or
+expired certificate. CLI regressions reject file-output arguments and retain
+existing files and symlink targets without starting a query.
 The initial live check found 140/140 known results and no active advisories;
 its timestamped report is a point-in-time observation. A separate request of a
 known vulnerable old release checks the positive path without installing it.
-Actual new PR checks and scheduled-run acceptance remain separate.
+The initial PR #107 head passed its isolated advisory job and both HA jobs, but
+failed SonarCloud's security gate. This follow-up makes TLS verification explicit
+and removes arbitrary report-path handling. The corrected head still requires
+all ten hosted checks, including SonarCloud; local tests do not establish its
+security rating. Scheduled-run acceptance remains separate after merge.
+Corrective local validation passes all 72 checker cases and, on each HA
+2026.11.0/2026.11.1 fixture, 2,660 tests plus 83 subtests with five existing
+upstream warnings and all strict integration coverage gates. The corrected
+isolated job returns 140 known results, no active advisories and no unknowns;
+this remains a dated observation, not permanent security clearance.
 
 PyPI coverage and publication delay limit what this feed can establish. A clean
 result does not prove absence of unknown vulnerabilities, malicious packages,

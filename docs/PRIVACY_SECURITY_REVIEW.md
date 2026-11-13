@@ -86,7 +86,9 @@ exposure in every external artifact; the other scope limits above remain.
 
 1. Review making SonarCloud required and retain the accepted dependency-update
    workflow. The unreleased [whole-lock gate](DEPENDENCY_ADVISORIES.md) now has
-   bounded source/live evidence; new hosted/scheduled acceptance remains separate.
+   bounded source/live evidence. PR #107's initial advisory/HA jobs passed, but
+   its SonarCloud security gate failed; the corrected head and scheduled workflow
+   still require their own hosted acceptance.
    Fixed floors and this feed do not detect every future vulnerability.
 2. Continue bounded translation and device-lifecycle work; obtain independent
    review of migrations and sensitive changes. Wind PR #97 is merged; release
@@ -151,7 +153,9 @@ is read. Origin TLS stays verified; responses, retries and job time are bounded.
 No raw provider/exception/proxy details enter reports. Integration sources,
 dependencies, HA offline policy and workflow permissions stay unchanged.
 
-This closes the missing source implementation of a recurring whole-lock check,
-not its as-yet unrun hosted/scheduled acceptance. A live known-result inventory
+This supplies the missing source implementation of a recurring whole-lock check;
+the corrected PR head and the scheduled workflow still need hosted acceptance.
+TLS certificate/hostname validation is explicit; the checker emits JSON without
+accepting a report path or writing files. A live known-result inventory
 is dated evidence and does not refresh the owner-only GitHub alert/settings
 inventory or establish an independent security clearance or completed Gold.
