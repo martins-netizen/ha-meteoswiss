@@ -15,6 +15,14 @@ This is an independent community project, not an official MeteoSwiss product.
 This guide describes the **8.3 series**; [8.3.0 release notes](docs/RELEASE_8.3.0.md)
 explain the changes from 8.2.0. Use a published release, not a branch.
 
+**8.3.5 test line:** 8.3.5b1 packages reviewed history-preserving wind statistics,
+HGT metadata, translated defaults and diagnostic lifecycle changes. Select a
+test version only once it appears in the [published releases](https://github.com/martins-netizen/ha-meteoswiss/releases).
+Stable **8.3.4** is the latest confirmed stable as of 13 November 2026; the live
+release link above records publication status. See [candidate scope](docs/RELEASE_8.3.5b1.md) and the
+[focused acceptance plan](docs/ACCEPTANCE_8.3.5b1.md), including the wind-history
+backup and rollback boundary. The candidate requires HA **2026.11.0 or newer**.
+
 **Available in the community catalogue.** On HA **2026.11 or newer**, open
 **Settings → Marketplace** and search for **MeteoSwiss**. On older HA versions,
 use HACS. Check that the repository is **martins-netizen/ha-meteoswiss**.

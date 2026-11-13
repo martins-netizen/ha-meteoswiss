@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.35 · **Updated:** 30 October 2026
+**Plan version:** 1.36 · **Updated:** 13 November 2026
 **Status:** The agreed architecture, catalogue/POI, forecast-display, shared-settings
 and station-condition scope is released in stable 8.3.0. B4 runtime acceptance,
 stable publication and HACS default-catalogue admission are complete. The operator
@@ -32,13 +32,21 @@ subsequently confirmed **8.3.3 installed and normal operation OK**, closing the
 separates actual merge checks, publication and the bounded operator report.
 All release/HA acceptance gates are complete within their stated scopes.
 
-**Next bounded work:** diagnostic defaults, device metadata/classes, stale
-grouping and rule-specific exemptions remain later Gold scopes. Authoritative
-multilingual locality aliases remain a separate provider-evidence task.
-Preserve DE/EN/FR/IT, native HA checks, personal choices, identities and history.
-No repeated beta/settings/first-install/restore test or new blanket soak is
-required for the closed release. Future engineering changes need their own
-scope and review; no new feature or release date is approved by this update.
+**Current stable:** 8.3.4 was published on 7 November 2026, release 437853341,
+from regular packaging merge `f4479897023fa35d7c2fcb4c4859c4de8861fdda`.
+The older release records above retain their original acceptance scopes.
+
+**Next bounded work:** prepare [8.3.5b1](RELEASE_8.3.5b1.md) from reviewed
+merge `b144a0b73d81358f27fd6ecd89a47120c8a0a1b9`. It packages the merged
+wind/HGT metadata, translated entity/group names and diagnostic lifecycle/removal
+boundaries; all 42 non-version component files remain identical. The
+[focused protocol](ACCEPTANCE_8.3.5b1.md) adds the new wind-history/naming
+acceptance scope, without reopening earlier generic settings/install/restore
+checks. Publication and any installation need separate approval; stable 8.3.4
+remains latest. Actual cron execution, historical stale-device inventory,
+rule-specific applicability, authoritative locality aliases and independent
+security/architecture review remain separate. Preserve DE/EN/FR/IT, personal
+choices, identities/history and all security/hash/coverage/platform gates.
 Earlier sections preserve planning at their stated dates.
 
 ## Historical agreed scope and b1/b2 sequence — 23–24 October 2026

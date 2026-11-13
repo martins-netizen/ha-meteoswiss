@@ -1,6 +1,35 @@
-# Release readiness: published stable 8.3.4 and accepted beta provenance
+# Release readiness: prepared 8.3.5b1 and published stable 8.3.4
 
-**Document version:** 2.20 · **Updated:** 7 November 2026
+**Document version:** 2.21 · **Updated:** 13 November 2026
+
+## Prepared 8.3.5b1: reviewed source, publication and operator acceptance separate
+
+The [test candidate](RELEASE_8.3.5b1.md) packages regularly merged source
+`b144a0b73d81358f27fd6ecd89a47120c8a0a1b9`, including the reviewed HGT/wind
+statistics and diagnostic/name/lifecycle work after stable 8.3.4. Its 42
+non-version component files remain byte-identical; only manifest.json/version.py
+change. HA 2026.11.0 is the minimum; fixtures remain 2026.11.0/2026.11.1.
+
+Source PR #107 passed all ten head and nine actual merge checks. The separate
+manual Dependency audit [run 43389137603](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/43389137603)
+also passed on that exact source: 140 package/version pairs, no active advisories
+and no unknown results. This proves the manual hosted workflow; an actual cron
+execution and delivery of a failure notification have not been observed.
+
+Packaging validation, its exact-head/actual-merge checks, publication approval,
+release verification and HA installation/acceptance are separate gates. Stable
+8.3.4 stays latest; neither a prerelease tag nor a new installation is claimed.
+The [focused protocol](ACCEPTANCE_8.3.5b1.md) keeps a historical wind migration
+on a test/restored copy until its preservation boundary is accepted. A version
+rollback alone does not reverse Recorder metadata. Earlier accepted scopes stay
+closed; remaining Gold/lifecycle applicability and independent review stay open.
+
+Complete local packaging validation passes **2,715 tests plus 83 subtests** on
+each HA **2026.11.0/2026.11.1**, Python **3.14.10**, with five existing upstream
+warnings and all strict gates. Integration coverage remains **99.979883%**
+(3,884/3,885 statements and all 1,086 branches). Fourteen publication profiles
+retain prior boundaries; 55 new cases cover the new profile and its locked CI
+policy. Exact-head and actual-merge hosted checks remain pending for packaging.
 
 <a id="prepared-stable-834"></a>
 

@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+Future work beyond the prepared 8.3.5b1 test candidate remains separate.
+
+## [8.3.5b1] — 2026-11-13 · prepared test candidate
+
+Package regularly merged source `b144a0b73d81358f27fd6ecd89a47120c8a0a1b9`.
+All 42 non-version component files are identical; only manifest.json/version.py
+become 8.3.5b1. Published stable 8.3.4 remains unchanged. Publication and any
+HA installation need their own approval. The
+[focused acceptance plan](docs/ACCEPTANCE_8.3.5b1.md) separates retained wind
+history, HGT statistics, translated defaults and ordinary operation. Software
+rollback alone does not undo the wind Recorder metadata transition.
+
 - Check every selected package/version in both universal test locks against
   known PyPI advisories. Active advisories and unknown results fail the required
   `tests` gate; add the same read-only check on a daily schedule without ignore

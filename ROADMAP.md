@@ -63,8 +63,16 @@ The unreleased [complete test-lock advisory gate](docs/DEPENDENCY_ADVISORIES.md)
 adds the recurring vulnerability check identified by the security review.
 Every selected package/version across both universal locks is checked; active
 advisories and unknown results block the required `tests` aggregate. Daily/manual
-checks use identical read-only steps. Actual new hosted/scheduled acceptance,
-independent review and full Gold remain separate.
+checks use identical read-only steps. PR #107's exact head and actual merge
+checks passed; manual audit run 43389137603 also passed on the reviewed source.
+An actual cron execution, independent review and full Gold remain separate.
+
+The prepared [8.3.5b1 test candidate](docs/RELEASE_8.3.5b1.md) now packages the
+merged follow-ups below, retaining all 42 non-version component files. Its
+[focused acceptance plan](docs/ACCEPTANCE_8.3.5b1.md) separates wind/Recorder
+preservation from ordinary operation and translated names. Packaging checks,
+publication and operator acceptance still need their own evidence; stable 8.3.4
+is unchanged. No additional runtime capability is introduced by packaging.
 
 The [diagnostic-defaults and service-metadata change](docs/DIAGNOSTIC_DEFAULTS.md), delivered in stable 8.3.4 after first shipping in 8.3.4b1,
 adds first-registration diagnostic defaults and explicit virtual service groups,

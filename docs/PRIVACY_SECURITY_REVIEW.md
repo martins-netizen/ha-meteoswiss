@@ -87,8 +87,9 @@ exposure in every external artifact; the other scope limits above remain.
 1. Review making SonarCloud required and retain the accepted dependency-update
    workflow. The unreleased [whole-lock gate](DEPENDENCY_ADVISORIES.md) now has
    bounded source/live evidence. PR #107's initial advisory/HA jobs passed, but
-   its SonarCloud security gate failed; the corrected head and scheduled workflow
-   still require their own hosted acceptance.
+   its initial SonarCloud security gate failed. All corrected-head/actual-merge
+   checks now pass; manual audit run 43389137603 also passed on the reviewed
+   merge. Actual cron execution and failure-notification delivery remain separate.
    Fixed floors and this feed do not detect every future vulnerability.
 2. Continue bounded translation and device-lifecycle work; obtain independent
    review of migrations and sensitive changes. Wind PR #97 is merged; release
@@ -153,9 +154,26 @@ is read. Origin TLS stays verified; responses, retries and job time are bounded.
 No raw provider/exception/proxy details enter reports. Integration sources,
 dependencies, HA offline policy and workflow permissions stay unchanged.
 
-This supplies the missing source implementation of a recurring whole-lock check;
-the corrected PR head and the scheduled workflow still need hosted acceptance.
+This supplies the missing source implementation of a recurring whole-lock check.
+All ten corrected-head and nine actual-merge checks passed for PR #107,
+including SonarCloud without accepted issues. Manual workflow
+[run 43389137603](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/43389137603)
+also passed on the same reviewed merge: 140 package/version pairs, no active
+advisories and no unknown results. Actual cron execution and delivery of a
+failure notification have not been observed.
 TLS certificate/hostname validation is explicit; the checker emits JSON without
 accepting a report path or writing files. A live known-result inventory
 is dated evidence and does not refresh the owner-only GitHub alert/settings
 inventory or establish an independent security clearance or completed Gold.
+
+## Prepared 8.3.5b1 acceptance boundary
+
+The [test candidate](RELEASE_8.3.5b1.md) packages the reviewed source with only
+two component-version changes; all 42 non-version files remain identical.
+Publication and operator installation are pending. Its
+[focused acceptance plan](ACCEPTANCE_8.3.5b1.md) separates actual wind-history
+preservation, translated defaults and ordinary operation from automatic/native
+test evidence. Historical stale-device inventory, rule applicability and
+independent security/architecture review remain open. No operator DB read,
+device command, installation, cleanup or new security guarantee follows from
+this preparation. A software rollback alone does not reverse Recorder metadata.
