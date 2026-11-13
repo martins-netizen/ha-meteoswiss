@@ -2,14 +2,17 @@
 
 ## [Unreleased]
 
-Future work beyond the prepared 8.3.5b1 test candidate remains separate.
+Future work beyond the published 8.3.5b1 test version remains separate.
 
-## [8.3.5b1] — 2026-11-13 · prepared test candidate
+## [8.3.5b1] — 2026-11-13 · published test prerelease
 
 Package regularly merged source `b144a0b73d81358f27fd6ecd89a47120c8a0a1b9`.
 All 42 non-version component files are identical; only manifest.json/version.py
-become 8.3.5b1. Published stable 8.3.4 remains unchanged. Publication and any
-HA installation need their own approval. The
+become 8.3.5b1. Published from regular packaging merge
+`af1220249e672bd8a6742c73022a7c42aca2f20a` at 22:21:10 UTC,
+release **444798178**; [publication evidence](docs/RELEASE_EVIDENCE_8.3.5b1.md)
+confirms the immutable tag and exact approved body. Stable 8.3.4 remains latest.
+HA installation and focused operator acceptance are still pending. The
 [focused acceptance plan](docs/ACCEPTANCE_8.3.5b1.md) separates retained wind
 history, HGT statistics, translated defaults and ordinary operation. Software
 rollback alone does not undo the wind Recorder metadata transition.

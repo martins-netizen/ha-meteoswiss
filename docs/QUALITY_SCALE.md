@@ -1,6 +1,6 @@
 # Quality evidence and remaining work
 
-**Runtime assessment:** 24 October 2026. **Documentation updated:** 10 November 2026.
+**Runtime assessment:** 24 October 2026. **Documentation updated:** 13 November 2026.
 **Scope:** the 8.3 runtime accepted as
 published b4 at **a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5**. Stable packaging
 changes only two component version files. The operator confirmed b3 calendar-day
@@ -180,11 +180,12 @@ corrected-head and nine actual-merge checks passed, including SonarCloud.
 Manual audit run 43389137603 also passed on that reviewed source. This is
 separate from an actual cron execution or notification-delivery acceptance.
 
-The prepared [8.3.5b1 package](RELEASE_8.3.5b1.md) retains all 42 non-version
-component files from that source. Its [focused acceptance](ACCEPTANCE_8.3.5b1.md)
-targets the outstanding wind-history and translated-name operator evidence.
-Publication/installation have not occurred, and this packaging does not close
-the partial Gold rules or establish an independent security assessment.
+The published [8.3.5b1 package](RELEASE_EVIDENCE_8.3.5b1.md) retains all 42
+non-version component files from that source. Packaging and publication are
+verified; installation and [focused acceptance](ACCEPTANCE_8.3.5b1.md) remain
+pending for wind-history and translated-name operator evidence. Publication
+does not close the partial Gold rules or establish an independent security
+assessment.
 
 Use the [local compatibility checks](../DEVELOPMENT.md#local-compatibility-checks)
 in a separate isolated environment for each supported HA fixture. This shared

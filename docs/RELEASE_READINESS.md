@@ -1,8 +1,10 @@
-# Release readiness: prepared 8.3.5b1 and published stable 8.3.4
+# Release readiness: published test 8.3.5b1 and stable 8.3.4
 
-**Document version:** 2.21 · **Updated:** 13 November 2026
+**Document version:** 2.22 · **Updated:** 13 November 2026
 
-## Prepared 8.3.5b1: reviewed source, publication and operator acceptance separate
+<a id="prepared-835b1-reviewed-source-publication-and-operator-acceptance-separate"></a>
+
+## Published 8.3.5b1: operator acceptance remains pending
 
 The [test candidate](RELEASE_8.3.5b1.md) packages regularly merged source
 `b144a0b73d81358f27fd6ecd89a47120c8a0a1b9`, including the reviewed HGT/wind
@@ -16,9 +18,16 @@ also passed on that exact source: 140 package/version pairs, no active advisorie
 and no unknown results. This proves the manual hosted workflow; an actual cron
 execution and delivery of a failure notification have not been observed.
 
-Packaging validation, its exact-head/actual-merge checks, publication approval,
-release verification and HA installation/acceptance are separate gates. Stable
-8.3.4 stays latest; neither a prerelease tag nor a new installation is claimed.
+Packaging PR #108 was regularly merged as
+`af1220249e672bd8a6742c73022a7c42aca2f20a`, exact tree
+`d96f2c05190eb24050a7d61e3cb13f86f808bb92`. All ten head and nine actual merge
+checks passed. After separate publication approval, release **444798178** was
+published on **13 November 2026 at 22:21:10 UTC**, `prerelease=true`,
+`draft=false`. Independent reads confirm the immutable tag, exact approved body,
+all sixteen older tags and stable **8.3.4 / ID 437853341** as latest. A matching
+second publisher invocation verified the same release without another write;
+see [publication evidence](RELEASE_EVIDENCE_8.3.5b1.md).
+HA installation and focused operator acceptance remain pending.
 The [focused protocol](ACCEPTANCE_8.3.5b1.md) keeps a historical wind migration
 on a test/restored copy until its preservation boundary is accepted. A version
 rollback alone does not reverse Recorder metadata. Earlier accepted scopes stay
@@ -29,7 +38,7 @@ each HA **2026.11.0/2026.11.1**, Python **3.14.10**, with five existing upstream
 warnings and all strict gates. Integration coverage remains **99.979883%**
 (3,884/3,885 statements and all 1,086 branches). Fourteen publication profiles
 retain prior boundaries; 55 new cases cover the new profile and its locked CI
-policy. Exact-head and actual-merge hosted checks remain pending for packaging.
+policy. Both actual hosted HA merge jobs passed the same test counts and gates.
 
 <a id="prepared-stable-834"></a>
 

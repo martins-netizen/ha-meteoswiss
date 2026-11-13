@@ -1,12 +1,14 @@
 # 8.3.5b1: focused wind-history and default-name acceptance
 
-**Protocol version:** 1.0 · **Prepared:** 13 November 2026
+**Protocol version:** 1.1 · **Updated:** 13 November 2026
 
-**Not yet performed.** The source is reviewed; this candidate is not published
-or installed. Packaging checks, publication verification and installation need
-their own approval/evidence. No operator DB or registry has been read by this
-preparation. Earlier accepted settings, icons, clean-install and generic restore
-checks remain closed within their scopes.
+**Operator acceptance not yet performed.** [8.3.5b1 is published and verified](RELEASE_EVIDENCE_8.3.5b1.md)
+as test prerelease **444798178** from approved merge
+`af1220249e672bd8a6742c73022a7c42aca2f20a`. Packaging and publication are complete;
+installation and this focused protocol need separate approval/evidence. The
+publisher made no HA calls, restart or device commands. No new operator DB or
+registry read is claimed. Earlier accepted settings, icons, clean-install and
+generic restore checks remain closed within their scopes.
 
 ## Before installation
 

@@ -1,6 +1,8 @@
 # Privacy, architecture and security: bounded review
 
 **Review:** 11 November 2026 · **Base:** `11ef5eaf7cb93d28f1039216b05670750ad6de6a`.
+**Publication evidence updated:** 13 November 2026; the original review scope below is unchanged.
+
 This source/configuration review is not an independent penetration test,
 regulatory certification or assurance that every deployment is secure.
 
@@ -166,14 +168,17 @@ accepting a report path or writing files. A live known-result inventory
 is dated evidence and does not refresh the owner-only GitHub alert/settings
 inventory or establish an independent security clearance or completed Gold.
 
-## Prepared 8.3.5b1 acceptance boundary
+<a id="prepared-835b1-acceptance-boundary"></a>
+
+## Published 8.3.5b1 acceptance boundary
 
 The [test candidate](RELEASE_8.3.5b1.md) packages the reviewed source with only
 two component-version changes; all 42 non-version files remain identical.
-Publication and operator installation are pending. Its
+[Publication is verified](RELEASE_EVIDENCE_8.3.5b1.md), including a matching
+second invocation with no write attempt. Operator installation is pending. Its
 [focused acceptance plan](ACCEPTANCE_8.3.5b1.md) separates actual wind-history
 preservation, translated defaults and ordinary operation from automatic/native
 test evidence. Historical stale-device inventory, rule applicability and
 independent security/architecture review remain open. No operator DB read,
 device command, installation, cleanup or new security guarantee follows from
-this preparation. A software rollback alone does not reverse Recorder metadata.
+publication. A software rollback alone does not reverse Recorder metadata.
