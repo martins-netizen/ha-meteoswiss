@@ -84,15 +84,26 @@ The initial live check found 140/140 known results and no active advisories;
 its timestamped report is a point-in-time observation. A separate request of a
 known vulnerable old release checks the positive path without installing it.
 The initial PR #107 head passed its isolated advisory job and both HA jobs, but
-failed SonarCloud's security gate. This follow-up makes TLS verification explicit
-and removes arbitrary report-path handling. The corrected head still requires
-all ten hosted checks, including SonarCloud; local tests do not establish its
-security rating. Scheduled-run acceptance remains separate after merge.
+failed SonarCloud's security gate. Explicit TLS verification and removal of
+arbitrary report paths corrected those findings. All ten checks passed on head
+`c18c96ca693d0282c008ccaad9f377810d17230c`; all nine actual merge checks passed
+on `b144a0b73d81358f27fd6ecd89a47120c8a0a1b9`, including SonarCloud. No issues
+were accepted to pass the gate.
 Corrective local validation passes all 72 checker cases and, on each HA
 2026.11.0/2026.11.1 fixture, 2,660 tests plus 83 subtests with five existing
 upstream warnings and all strict integration coverage gates. The corrected
 isolated job returns 140 known results, no active advisories and no unknowns;
 this remains a dated observation, not permanent security clearance.
+
+The separate manual `Dependency audit` workflow
+[run 43389137603](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/43389137603)
+completed successfully on that exact merge on 13 November 2026. All steps
+passed; the job checked 140 package/version pairs with zero active advisories
+and zero unknown results. This accepts the hosted manual workflow, including
+its isolated bootstrap/parser installation. The default branch is development;
+the workflow declares a daily 05:17 UTC schedule. No actual cron run or failure
+notification delivery has been observed, and no alert/settings inventory is
+refreshed by a successful run.
 
 PyPI coverage and publication delay limit what this feed can establish. A clean
 result does not prove absence of unknown vulnerabilities, malicious packages,

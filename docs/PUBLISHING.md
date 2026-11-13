@@ -1,6 +1,6 @@
 # Publish the maintained fork
 
-**Procedure version:** 1.18 · **Updated:** 10 November 2026
+**Procedure version:** 1.19 · **Updated:** 13 November 2026
 
 **Distribution UI:** On HA 2026.11+, use built-in **Settings → Marketplace**;
 older HA uses HACS. Follow [current installation/update steps](GETTING_STARTED.md).
@@ -12,6 +12,33 @@ A documentation update is not a Marketplace live acceptance result.
 For releases after 8.3.4, verify the **HA 2026.11.0** requirement in
 `hacs.json`, the minimum and current CI jobs, and the user-facing upgrade
 guidance before publishing. [Support and security rationale](../DEVELOPMENT.md#supported-home-assistant-versions)
+
+## Prepared 8.3.5b1: no publication performed
+
+The [candidate](RELEASE_8.3.5b1.md) preserves all 42 non-version component files
+from reviewed source `b144a0b73d81358f27fd6ecd89a47120c8a0a1b9`. Only the two
+version fields become 8.3.5b1. Regularly merge the packaging PR and verify its
+exact tree and all actual checks before asking for a separate publication
+approval. Fixed `publish_meteoswiss_835_beta_v1.8.sh` requires the approved
+protected-development merge, all nine expected push checks from their actual
+apps, unchanged workflows and all sixteen older tags. The stable selection
+must remain **8.3.4 / ID 437853341**. Existing bodies/tags are never rewritten.
+
+After publication approval, export the helper from that exact merge and use
+its full SHA. `--check` is read-only; `--publish` repeats every gate and creates
+only 8.3.5b1 with `prerelease=true` and `make_latest=false`. Matching retries
+verify; uncertain results remain unconfirmed until independently read back.
+Publication does not approve an HA installation. The
+[acceptance plan](ACCEPTANCE_8.3.5b1.md) explicitly covers the wind-history
+backup and non-automatic rollback boundary. The previous release records below
+retain their original scopes and are not requests to repeat old publishers.
+
+After verified publication, update the current README, changelog, roadmap,
+readiness and quality/security status with the actual release ID, immutable tag,
+source/check evidence and still-pending operator acceptance before giving update
+instructions. Keep preparation snapshots dated and historical accepted bodies
+unchanged. Later 8.3.5 stable promotion requires its own version-only review and
+the accepted beta/runtime evidence; no stable release is created by this plan.
 
 <a id="stable-834-prepared"></a>
 

@@ -163,6 +163,12 @@ uses identical steps, `contents: read`, pinned actions and no persisted checkout
 credentials. Actual GitHub scheduling/notification behaviour needs its own
 acceptance after merge.
 
+Manual hosted acceptance passed on 13 November 2026 in
+[run 43389137603](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/43389137603),
+at reviewed merge `b144a0b73d81358f27fd6ecd89a47120c8a0a1b9`: all steps passed,
+140 package/version pairs, zero active advisories and zero unknown results.
+Actual cron execution and failure-notification delivery have not been observed.
+
 From a supported hash-installed maintenance environment:
 
 ```sh

@@ -175,8 +175,16 @@ run in an isolated CI job and daily/manual workflow; both HA fixtures retain
 offline uv. Active advisories and unknown results block the required aggregate.
 This supply-chain control does not complete any still-open Gold acceptance.
 PR #107's initial SonarCloud security gate failed. Explicit TLS verification
-and removal of arbitrary report paths address its two findings; all ten checks
-must pass on the corrected head before a merge can be approved.
+and removal of arbitrary report paths corrected its two findings: all ten
+corrected-head and nine actual-merge checks passed, including SonarCloud.
+Manual audit run 43389137603 also passed on that reviewed source. This is
+separate from an actual cron execution or notification-delivery acceptance.
+
+The prepared [8.3.5b1 package](RELEASE_8.3.5b1.md) retains all 42 non-version
+component files from that source. Its [focused acceptance](ACCEPTANCE_8.3.5b1.md)
+targets the outstanding wind-history and translated-name operator evidence.
+Publication/installation have not occurred, and this packaging does not close
+the partial Gold rules or establish an independent security assessment.
 
 Use the [local compatibility checks](../DEVELOPMENT.md#local-compatibility-checks)
 in a separate isolated environment for each supported HA fixture. This shared
