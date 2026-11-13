@@ -1,0 +1,39 @@
+name: Dependency audit
+
+on:
+  schedule:
+    - cron: "17 5 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dependency-audit-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  advisories:
+    name: Daily test-lock advisories
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      UV_OFFLINE: "true"
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - name: Set up Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: "3.14"
+          check-latest: true
+      - name: Check Python and pip before installing the parser
+        run: python scripts/check_ci_security.py bootstrap
+      - name: Install only the existing hash-pinned compiler and parser
+        run: |
+          python scripts/check_test_lockfiles.py compiler > "$RUNNER_TEMP/meteoswiss-audit-parser.txt"
+          python -m pip install --disable-pip-version-check --require-hashes --no-deps -r "$RUNNER_TEMP/meteoswiss-audit-parser.txt"
+      - name: Check every package version in both universal locks
+        run: python -m scripts.check_dependency_advisories --output "$RUNNER_TEMP/meteoswiss-dependency-audit.json"

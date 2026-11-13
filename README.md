@@ -138,6 +138,12 @@ states/attributes keep their compatibility format; see [names and limits](docs/D
 The [dated security inventory](docs/PRIVACY_SECURITY_REVIEW.md#owner-authenticated-alert-inventory)
 records no open alerts as of 11 November 2026; it is separate from Gold completion.
 
+**Unreleased dependency-security gate:** CI checks every package/version in both
+universal test locks against known advisories, including foreign-platform
+selections. Active advisories and unknown results fail the existing `tests`
+merge gate. A separate daily workflow uses the same read-only check; see
+[scope, failure handling and limits](docs/DEPENDENCY_ADVISORIES.md).
+
 **Unreleased shared-diagnostic lifecycle fix:** keep both helper entity/device
 IDs and personal settings when their owner unloads or another entry starts
 first. A loaded peer takes over through its existing platform; its weather

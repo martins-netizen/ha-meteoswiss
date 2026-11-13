@@ -169,6 +169,12 @@ agreed feature release.
 
 ## Reproduce and distinguish history
 
+The [complete test-lock advisory check](DEPENDENCY_ADVISORIES.md) supplements
+security floors and the existing regression/coverage gates. Its network queries
+run in an isolated CI job and daily/manual workflow; both HA fixtures retain
+offline uv. Active advisories and unknown results block the required aggregate.
+This supply-chain control does not complete any still-open Gold acceptance.
+
 Use the [local compatibility checks](../DEVELOPMENT.md#local-compatibility-checks)
 in a separate isolated environment for each supported HA fixture. This shared
 recipe checks Python and pip before downloads, constrains and verifies certifi,

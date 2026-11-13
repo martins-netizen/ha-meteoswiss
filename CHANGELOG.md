@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+- Check every selected package/version in both universal test locks against
+  known PyPI advisories. Active advisories and unknown results fail the required
+  `tests` gate; add the same read-only check on a daily schedule without ignore
+  lists, dependency overrides or changes to the HA offline test policy.
+
 - Verify native DE/EN/FR/IT names for every exposed entity family, including
   retained choices and a full language round trip. Document the complete name
   inventory and separate technical compatibility strings from the Gold naming
