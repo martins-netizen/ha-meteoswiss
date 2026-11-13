@@ -59,6 +59,13 @@ is retained as provenance; the separate stable publication is recorded above.
 
 ## Remaining Gold and provider-evidence work
 
+The unreleased [complete test-lock advisory gate](docs/DEPENDENCY_ADVISORIES.md)
+adds the recurring vulnerability check identified by the security review.
+Every selected package/version across both universal locks is checked; active
+advisories and unknown results block the required `tests` aggregate. Daily/manual
+checks use identical read-only steps. Actual new hosted/scheduled acceptance,
+independent review and full Gold remain separate.
+
 The [diagnostic-defaults and service-metadata change](docs/DIAGNOSTIC_DEFAULTS.md), delivered in stable 8.3.4 after first shipping in 8.3.4b1,
 adds first-registration diagnostic defaults and explicit virtual service groups,
 with registry-preservation tests. Earlier stable 8.3.3 did not include this change.

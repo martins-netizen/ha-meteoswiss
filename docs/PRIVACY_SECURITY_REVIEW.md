@@ -84,8 +84,12 @@ exposure in every external artifact; the other scope limits above remain.
 
 ## Follow-up priorities
 
-1. Review making SonarCloud required, dependency-update automation and a
-   whole-lock vulnerability gate. Fixed floors do not detect every future advisory.
+1. Review making SonarCloud required and retain the accepted dependency-update
+   workflow. The unreleased [whole-lock gate](DEPENDENCY_ADVISORIES.md) now has
+   bounded source/live evidence. PR #107's initial advisory/HA jobs passed, but
+   its SonarCloud security gate failed; the corrected head and scheduled workflow
+   still require their own hosted acceptance.
+   Fixed floors and this feed do not detect every future vulnerability.
 2. Continue bounded translation and device-lifecycle work; obtain independent
    review of migrations and sensitive changes. Wind PR #97 is merged; release
    and operator database acceptance remain separate.
@@ -136,3 +140,22 @@ CI permissions, diagnostics and migrations remain unchanged. This adds no
 personal-data flow or renewed security inventory. The Gold naming rule's
 automated evidence is now explicit; release/operator UI acceptance and the
 overall architecture/security boundaries above still apply.
+
+## Complete test-lock advisory gate
+
+The [CI follow-up](DEPENDENCY_ADVISORIES.md) checks all selections from both
+universal locks against release-specific PyPI vulnerability metadata. Active
+advisories and unknown results fail the existing required aggregate gate;
+the same isolated read-only steps are scheduled daily. Only public package
+names/versions and the CI runner's network address reach PyPI, possibly through
+its configured proxy. No HA location, state, credential or user configuration
+is read. Origin TLS stays verified; responses, retries and job time are bounded.
+No raw provider/exception/proxy details enter reports. Integration sources,
+dependencies, HA offline policy and workflow permissions stay unchanged.
+
+This supplies the missing source implementation of a recurring whole-lock check;
+the corrected PR head and the scheduled workflow still need hosted acceptance.
+TLS certificate/hostname validation is explicit; the checker emits JSON without
+accepting a report path or writing files. A live known-result inventory
+is dated evidence and does not refresh the owner-only GitHub alert/settings
+inventory or establish an independent security clearance or completed Gold.

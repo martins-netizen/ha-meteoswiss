@@ -602,6 +602,15 @@ inventory result, not a complete quality-tier or live acceptance claim.
 
 ## Verification and remaining limits
 
+The separate [test-lock advisory checker](DEPENDENCY_ADVISORIES.md) is a CI
+maintenance tool. It reuses the strict universal-lock parser, queries only public
+package/version metadata and fails closed on active advisories or unknowns.
+The required aggregate includes it; a separate daily/manual workflow runs the
+same check. It adds no HA source client, dependency, permission or runtime task.
+Verified default TLS is explicit at the context and HTTPS handler. JSON reports
+go to stdout, safe diagnostics to stderr; only the CI shell writes its fixed
+temporary report path. The checker accepts no arbitrary output path.
+
 The [official forecast-location catalogue foundation](FORECAST_LOCATION_CATALOGUE.md)
 adds a source-only client, immutable composite identities/provenance and pure
 local candidate search. Strict snapshots, borrowed-session HTTP limits,

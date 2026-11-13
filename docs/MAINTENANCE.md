@@ -25,6 +25,11 @@
    [documented maintenance environment](../DEVELOPMENT.md#test-dependency-lockfiles).
    Keep the tested minimum aligned with `hacs.json` and review transitive
    dependency updates explicitly.
+   The required `tests` gate also requires the complete
+   [test-lock advisory check](DEPENDENCY_ADVISORIES.md). Active advisories and
+   unknown results block it; the daily/manual audit uses identical steps.
+   Resolve service outages or coordinate a compatible input/lock update without
+   ignoring advisories, overriding HA pins or dropping platform selections.
 4. Before release, verify the installed source/commit and create a restorable
    backup including the integration and affected dashboard configuration.
    Run a live read-only check of observations, forecasts, active/upcoming alerts,

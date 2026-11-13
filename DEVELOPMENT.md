@@ -145,6 +145,40 @@ update the advertised requirement, CI matrix and matching HA/test-package pins
 together. Keep private index URLs, credentials and machine-specific paths out
 of the generated files.
 
+## Complete test-lock vulnerability gate
+
+The separate `Test dependency advisories` job queries known vulnerability
+metadata for every package/version selected by both universal locks, including
+foreign-platform markers. The existing required `tests` aggregate requires its
+success alongside both HA fixtures, Hassfest and universal-lock verification.
+Every active advisory and every unknown result fails the job; no package or
+advisory ignore switch exists. Fixed version floors remain necessary and do not
+replace this check.
+
+The isolated network job installs only the existing hash-pinned compiler/parser
+subset after the same bootstrap security check. It uses no integration data or
+GitHub/API secret and does not install an HA fixture. The HA compatibility
+jobs remain offline for uv. A separate daily/manual `Dependency audit` workflow
+uses identical steps, `contents: read`, pinned actions and no persisted checkout
+credentials. Actual GitHub scheduling/notification behaviour needs its own
+acceptance after merge.
+
+From a supported hash-installed maintenance environment:
+
+```sh
+python -m scripts.check_dependency_advisories --json > dependency-advisories.json
+```
+
+The checker writes JSON to stdout and diagnostics to stderr, with no file-output
+argument. The shell owns the chosen report path; CI uses its fixed runner-temp
+path. The JSON records selected versions, both lock inventories, active/withdrawn IDs,
+unknown error codes and query start time. Only public package/version names are
+sent to PyPI. The [full contract](docs/DEPENDENCY_ADVISORIES.md) records transport
+bounds, proxy handling, response validation and limitations. A service outage
+must recover before rerunning; a vulnerability needs a reviewed compatible
+input/lock update and both full suites. Do not override HA pins or weaken the
+aggregate/security gates. This check neither merges updates nor deploys HA.
+
 ## Scheduled dependency proposals
 
 `.github/dependabot.yml` schedules weekly GitHub Actions and Python dependency
