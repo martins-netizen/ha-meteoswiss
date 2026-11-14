@@ -2,6 +2,15 @@
 
 ## [Unreleased]
 
+Future Gold and independent-review work remains separate.
+
+## [8.3.5b2] — 2026-11-14 · HGT archive default test prerelease
+
+Package accepted PR #110 (`71c4c6269ea0c06cc5d2c43db9b0a24d8e6e9c08`): all 44 non-version
+component files remain identical; only two version fields change. See the
+[release notes](docs/RELEASE_8.3.5b2.md), [upgrade default](docs/UPGRADING_8.3.5.md)
+and [focused acceptance](docs/ACCEPTANCE_8.3.5b2.md).
+
 - Archive compatible historical HGT forecast statistics by default using HA’s
   native metadata API. Verify the same metadata primary key and every metadata
   field before completing; retain all linked long-/short-term data and the live
@@ -12,10 +21,7 @@
   archive IDs. Surface genuine archive/refresh conflicts in DE/EN/FR/IT.
 - Add explicit archive-and-keep upgrade guidance, diagnostic attributes, bounded
   startup/cancellation handling and native all-field history-preservation tests.
-  This follow-up requires a new reviewed test package; it is not retroactively
-  part of published 8.3.5b1.
-
-Future work beyond the published 8.3.5b1 test version remains separate.
+  This fix is included in 8.3.5b2; published 8.3.5b1 is unchanged.
 
 ## [8.3.5b1] — 2026-11-13 · published test prerelease
 
@@ -25,7 +31,8 @@ become 8.3.5b1. Published from regular packaging merge
 `af1220249e672bd8a6742c73022a7c42aca2f20a` at 22:21:10 UTC,
 release **444798178**; [publication evidence](docs/RELEASE_EVIDENCE_8.3.5b1.md)
 confirms the immutable tag and exact approved body. Stable 8.3.4 remains latest.
-HA installation and focused operator acceptance are still pending. The
+B1 installation/visual operation and a bounded wind readback are recorded;
+the separate HGT archival acceptance belongs to b2. The
 [focused acceptance plan](docs/ACCEPTANCE_8.3.5b1.md) separates retained wind
 history, HGT statistics, translated defaults and ordinary operation. Software
 rollback alone does not undo the wind Recorder metadata transition.

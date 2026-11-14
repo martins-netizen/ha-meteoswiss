@@ -15,21 +15,20 @@ This is an independent community project, not an official MeteoSwiss product.
 This guide describes the **8.3 series**; [8.3.0 release notes](docs/RELEASE_8.3.0.md)
 explain the changes from 8.2.0. Use a published release, not a branch.
 
-**Published test version:** [8.3.5b1](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b1)
-was published on 13 November 2026. It includes history-preserving wind
-statistics, HGT metadata, translated defaults and diagnostic lifecycle changes.
-**8.3.4 remains the latest stable release.** The beta requires HA
-**2026.11.0 or newer**; operator installation and focused acceptance are still
-pending. Before a beta update, read the [focused acceptance plan](docs/ACCEPTANCE_8.3.5b1.md),
-including its test-copy requirement for existing arithmetic wind statistics,
-backup and rollback boundary. See [publication evidence](docs/RELEASE_EVIDENCE_8.3.5b1.md)
-and the unchanged [release notes](docs/RELEASE_8.3.5b1.md).
+**8.3.5 test line:** [8.3.5b2](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b2)
+adds the automatic HGT **archive-and-keep default** and clears the resolved
+state-class Repair through native Core recomputation. Use it once it appears
+in the published release catalogue; the [release notes](docs/RELEASE_8.3.5b2.md)
+and [focused HGT check](docs/ACCEPTANCE_8.3.5b2.md) separate publication from
+installation/acceptance. **8.3.4 remains latest stable.** HA **2026.11.0 or
+newer** is required. B1 was published on 13 November; its production/visual and
+bounded wind/archive checks remain recorded, while its HGT Repair is fixed by b2.
 
-**Existing 8.3.4/8.3.5b1 users:** read the
-[archive-and-keep upgrade default](docs/UPGRADING_8.3.5.md). The prepared HGT
-follow-up preserves old statistics and clears the resolved state-class Repair
-through native HA recomputation. It is not yet included in published 8.3.5b1;
-no history deletion or reinstall of b1 is the update procedure.
+**Existing 8.3.4/8.3.5b1 users:** follow the
+[archive-and-keep upgrade guide](docs/UPGRADING_8.3.5.md). Keep your existing
+entry, identities, settings and history. The fixed package moves compatible
+old HGT statistics to an archive automatically; deleting statistics is not
+the update procedure. A software downgrade alone does not undo this metadata.
 
 **Available in the community catalogue.** On HA **2026.11 or newer**, open
 **Settings → Marketplace** and search for **MeteoSwiss**. On older HA versions,

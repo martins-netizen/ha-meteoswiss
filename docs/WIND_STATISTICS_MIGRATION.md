@@ -1,5 +1,9 @@
 # Wind direction: preserve arithmetic history, start circular statistics
 
+**Fixed HGT test package:** use [8.3.5b2](RELEASE_8.3.5b2.md) once published;
+follow the [archive-and-keep update](UPGRADING_8.3.5.md) and
+[focused HGT check](ACCEPTANCE_8.3.5b2.md). B1 does not contain this fix.
+
 **Status:** Published in test prerelease 8.3.5b1; stable 8.3.4 is unchanged.
 
 For concrete update actions, read the [archive-and-keep guide](UPGRADING_8.3.5.md).

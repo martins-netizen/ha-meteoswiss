@@ -57,6 +57,16 @@ on **HA Core 2026.11.0 / HA OS 18.4**, completing the agreed
 [bounded evidence](docs/RELEASE_EVIDENCE_8.3.4b1.md). This completed beta check
 is retained as provenance; the separate stable publication is recorded above.
 
+## 8.3.5b2: automatic HGT archive default
+
+The accepted [PR #110](https://github.com/martins-netizen/ha-meteoswiss/pull/110)
+runtime is packaged in [8.3.5b2](docs/RELEASE_8.3.5b2.md), retaining all 44
+non-version component files. The [recommended update](docs/UPGRADING_8.3.5.md)
+archives compatible old HGT statistics and clears the resolved native Repair.
+Regular package PR/checks/publication precede the
+[focused operator acceptance](docs/ACCEPTANCE_8.3.5b2.md). Earlier b1 scopes
+stay accepted; stable 8.3.4 and remaining Gold/independent review stay separate.
+
 ## Remaining Gold and provider-evidence work
 
 The [complete test-lock advisory gate](docs/DEPENDENCY_ADVISORIES.md), shipped in

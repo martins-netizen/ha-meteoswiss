@@ -1,10 +1,31 @@
-# Release readiness: published test 8.3.5b1 and stable 8.3.4
+# Release readiness: 8.3.5b2 test line and stable 8.3.4
 
-**Document version:** 2.23 · **Updated:** 14 November 2026
+**Document version:** 2.24 · **Updated:** 14 November 2026
 
 <a id="prepared-835b1-reviewed-source-publication-and-operator-acceptance-separate"></a>
 
-## Published 8.3.5b1: operator acceptance remains pending
+
+## 8.3.5b2: fixed HGT archive test package
+
+[8.3.5b2](RELEASE_8.3.5b2.md) packages accepted PR #110 at
+`71c4c6269ea0c06cc5d2c43db9b0a24d8e6e9c08`, with ten exact-head and nine actual
+merge checks successful. Both source HA jobs passed 2,753 tests + 83 subtests.
+All 44 non-version component files are identical to that source; only two
+version fields change. Package checks and actual publication retain their own
+evidence. The authorised controlled publication follows a regular packaging PR,
+successful exact-head/merge gates and a fixed V1.9 publisher. Stable 8.3.4 and
+all seventeen older tags/releases remain unchanged.
+
+The default preserves compatible historical HGT statistics and lets native Core
+recomputation clear the resolved live-HGT Repair. No data deletion or entry
+recreation is part of the update. See the [upgrade guide](UPGRADING_8.3.5.md)
+and [focused HGT acceptance](ACCEPTANCE_8.3.5b2.md). Earlier b1 installation,
+visual operation and bounded wind/archive readback stay accepted. B2 HGT
+archival has not been run on the operator's database by this packaging work;
+operator installation/acceptance and stable promotion remain separate.
+
+
+## Published 8.3.5b1: bounded acceptance recorded; HGT fixed in b2
 
 The [test candidate](RELEASE_8.3.5b1.md) packages regularly merged source
 `b144a0b73d81358f27fd6ecd89a47120c8a0a1b9`, including the reviewed HGT/wind
@@ -31,8 +52,8 @@ B1 production installation and visual operation are operator-confirmed. A
 read-only report matched all tagged component files and observed retained wind
 arithmetic history plus new circular points. The HGT state-class Repair is
 not accepted as a permanently unresolved normal outcome. The
-[prepared archive-and-keep follow-up](UPGRADING_8.3.5.md) needs review, a new
-explicitly published test package and its own operator readback before stable
+[archive-and-keep fix](UPGRADING_8.3.5.md) was accepted in PR #110. Its b2
+package needs verified publication and its own operator readback before stable
 promotion. That new migration has not been run on the operator’s database.
 The [focused protocol](ACCEPTANCE_8.3.5b1.md) keeps a historical wind migration
 on a test/restored copy until its preservation boundary is accepted. A version

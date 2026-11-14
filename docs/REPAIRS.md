@@ -1,5 +1,9 @@
 # Correct an invalid saved forecast location
 
+**Fixed HGT test package:** use [8.3.5b2](RELEASE_8.3.5b2.md) once published;
+follow the [archive-and-keep update](UPGRADING_8.3.5.md) and
+[focused HGT check](ACCEPTANCE_8.3.5b2.md). B1 does not contain this fix.
+
 **Availability:** included in published, operator-accepted
 [8.3.1b1](RELEASE_8.3.1b1.md). The [stable 8.3.1 package](RELEASE_8.3.1.md)
 promotes the same behaviour and is published. Stable 8.3.0 does not
