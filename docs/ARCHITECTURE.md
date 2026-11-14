@@ -12,7 +12,7 @@ recognisable. There is no new integration domain and no automatic migration of
 users' dashboards. `main` follows upstream; `development` integrates reviewed
 local changes. A release is an explicitly tested snapshot of `development`.
 
-**Unreleased exception for wind statistics:** the incompatible arithmetic
+**Published b1 wind-statistics boundary:** the incompatible arithmetic
 statistic ID is archived through HA's supported metadata API before starting a
 new circular series at the retained sensor ID. Metadata/row identity is verified;
 the entity/unique/device IDs remain unchanged. See [chart and recovery impact](WIND_STATISTICS_MIGRATION.md).
@@ -45,7 +45,13 @@ when the entity is added and removed with that entity. Configuration validates
 the chosen observation provider with the same coordinator contract, without
 listeners/polling, using HA's shared session and a 30-second total timeout.
 
-`wind_statistics.py` owns only the local Recorder metadata transition. The wind
+`wind_statistics.py` owns the wind transition and delegates its queued rename/
+readback boundary to `statistics_archive.py`. The prepared HGT follow-up in
+`forecast_statistics.py` reuses that boundary without altering existing wind
+archive IDs. Native Core repair refreshes run in order as HA-owned background
+tasks; an entry unload or a caller's 30-second deadline cannot cancel shared
+refresh work. Only a completed refresh permits the HGT task to report `ready`.
+The wind
 sensor stays without a state class until an entry-owned, post-startup task has
 verified the result; failure raises a local repair, rather than a provider outage.
 It neither downloads data nor changes historical mean algorithms in place.
@@ -664,3 +670,17 @@ The [lifecycle contract](SHARED_DIAGNOSTIC_LIFECYCLE.md) records pending setup,
 cancellation, shutdown, conflicts and manual-removal limits. Native tests include
 retained Recorder rows; runtime code introduces no Recorder migration, SQL or
 automatic orphan deletion. Historical grouping and full Gold remain separate.
+
+## Prepared HGT archive default
+
+The [unreleased HGT follow-up](UPGRADING_8.3.5.md) preserves compatible old
+forecast statistics under a distinct archive ID before native Core repair
+recomputation. The shared archive boundary verifies the same metadata PK and
+all metadata fields; native tests compare every long-/short-term row field.
+Existing live IDs, registry choices, wind archive IDs and raw-history identities
+remain unchanged. No fake archive entity, direct SQL, deletion, re-import,
+measurement-class workaround or issue suppression is introduced. Genuine
+conflicts remain visible, unrelated valid Core repairs survive recomputation,
+and startup/timeout/unload/retry boundaries are covered. This local/native
+evidence is not a new operator migration, an independent security/architecture
+assessment or completion of the remaining Gold rules.

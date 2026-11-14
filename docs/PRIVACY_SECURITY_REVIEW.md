@@ -1,7 +1,7 @@
 # Privacy, architecture and security: bounded review
 
 **Review:** 11 November 2026 · **Base:** `11ef5eaf7cb93d28f1039216b05670750ad6de6a`.
-**Publication evidence updated:** 13 November 2026; the original review scope below is unchanged.
+**Publication/readback evidence updated:** 14 November 2026; the original review scope below is unchanged.
 
 This source/configuration review is not an independent penetration test,
 regulatory certification or assurance that every deployment is secure.
@@ -175,10 +175,29 @@ inventory or establish an independent security clearance or completed Gold.
 The [test candidate](RELEASE_8.3.5b1.md) packages the reviewed source with only
 two component-version changes; all 42 non-version files remain identical.
 [Publication is verified](RELEASE_EVIDENCE_8.3.5b1.md), including a matching
-second invocation with no write attempt. Operator installation is pending. Its
+second invocation with no write attempt. The operator reported successful b1
+production installation and visual inspection on 13 November. A bounded
+read-only report on 14 November matched all 44 tagged files and observed old
+arithmetic wind data plus new circular points; its isolated HGT legacy Repair
+remains a b1 issue addressed by the prepared follow-up. This has no pre-update
+DB baseline and does not prove every historical row was retained. Its
 [focused acceptance plan](ACCEPTANCE_8.3.5b1.md) separates actual wind-history
 preservation, translated defaults and ordinary operation from automatic/native
 test evidence. Historical stale-device inventory, rule applicability and
 independent security/architecture review remain open. No operator DB read,
 device command, installation, cleanup or new security guarantee follows from
 publication. A software rollback alone does not reverse Recorder metadata.
+
+## Prepared HGT archive default
+
+The [unreleased HGT follow-up](UPGRADING_8.3.5.md) preserves compatible old
+forecast statistics under a distinct archive ID before native Core repair
+recomputation. The shared archive boundary verifies the same metadata PK and
+all metadata fields; native tests compare every long-/short-term row field.
+Existing live IDs, registry choices, wind archive IDs and raw-history identities
+remain unchanged. No fake archive entity, direct SQL, deletion, re-import,
+measurement-class workaround or issue suppression is introduced. Genuine
+conflicts remain visible, unrelated valid Core repairs survive recomputation,
+and startup/timeout/unload/retry boundaries are covered. This local/native
+evidence is not a new operator migration, an independent security/architecture
+assessment or completion of the remaining Gold rules.

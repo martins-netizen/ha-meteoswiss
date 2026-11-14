@@ -1,6 +1,6 @@
 # Release readiness: published test 8.3.5b1 and stable 8.3.4
 
-**Document version:** 2.22 · **Updated:** 13 November 2026
+**Document version:** 2.23 · **Updated:** 14 November 2026
 
 <a id="prepared-835b1-reviewed-source-publication-and-operator-acceptance-separate"></a>
 
@@ -27,7 +27,13 @@ published on **13 November 2026 at 22:21:10 UTC**, `prerelease=true`,
 all sixteen older tags and stable **8.3.4 / ID 437853341** as latest. A matching
 second publisher invocation verified the same release without another write;
 see [publication evidence](RELEASE_EVIDENCE_8.3.5b1.md).
-HA installation and focused operator acceptance remain pending.
+B1 production installation and visual operation are operator-confirmed. A
+read-only report matched all tagged component files and observed retained wind
+arithmetic history plus new circular points. The HGT state-class Repair is
+not accepted as a permanently unresolved normal outcome. The
+[prepared archive-and-keep follow-up](UPGRADING_8.3.5.md) needs review, a new
+explicitly published test package and its own operator readback before stable
+promotion. That new migration has not been run on the operator’s database.
 The [focused protocol](ACCEPTANCE_8.3.5b1.md) keeps a historical wind migration
 on a test/restored copy until its preservation boundary is accepted. A version
 rollback alone does not reverse Recorder metadata. Earlier accepted scopes stay

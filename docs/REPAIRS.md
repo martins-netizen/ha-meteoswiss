@@ -61,7 +61,9 @@ supported at the time. See the [current support policy](../DEVELOPMENT.md#suppor
 - [Engineering checklist](QUALITY_SCALE.md): the accepted b1 repair follow-up
   and remaining Gold work are recorded separately.
 
-## Wind-statistics preparation blocked (unreleased)
+<a id="wind-statistics-preparation-blocked-unreleased"></a>
+
+## Wind-statistics preparation blocked (8.3.5b1 test line)
 
 An entry-specific warning means Recorder's arithmetic-to-circular transition
 could not be verified safely. Direction readings continue, while new statistics
@@ -73,6 +75,25 @@ Recorder readiness or conflicting metadata before reloading the existing entry.
 Do not delete old statistics to remove the warning. The notice clears on a
 successful retry and is removed on unload. A provider outage alone is not this
 repair condition. The text is bundled and HA-loaded in DE/EN/FR/IT.
+
+## HGT forecast archival blocked (prepared follow-up)
+
+The recommended default is automatic preservation in a separate archive. A
+per-entry MeteoSwiss notice means that compatible metadata, a free destination
+or native Core repair refresh could not be verified. The current HGT forecast
+and ordinary history continue; the migration does not delete or overwrite a
+series. Keep the existing entry/archive and use the
+[upgrade and conflict instructions](UPGRADING_8.3.5.md). The notice is bundled
+and HA-loaded in DE/EN/FR/IT, and clears after a verified retry or entry unload.
+
+Published 8.3.5b1 only removes the inappropriate HGT measurement state class
+and can leave Core’s state-class Repair. The prepared follow-up actually moves
+the old metadata to an archive and asks Core to recompute its issue registry.
+The resolved HGT Repair then clears; it is not manually dismissed. Reinstalling
+b1 is not this fix, and a permanently unresolved Repair is not the successful
+normal update path. Historical archives can still appear in the advanced
+Statistics catalogue without a live entity; that is a separate catalogue
+condition, not the cleared live-sensor state-class Repair.
 
 ## Shared diagnostic ownership needs review
 

@@ -468,6 +468,10 @@
     "shared_diagnostics_blocked": {
       "title": "Vérifier les diagnostics partagés",
       "description": "Les diagnostics partagés n’ont pas pu être transférés de manière sûre. Les données météo restent disponibles. Vérifiez les groupes de diagnostic à l’aide du guide associé, puis rechargez l’entrée concernée. Clarifiez leur attribution avant de supprimer une entrée afin de conserver les réglages personnels."
+    },
+    "hgt_statistics_blocked": {
+      "title": "Les statistiques de prévision DJC doivent être vérifiées",
+      "description": "Par défaut, les anciennes statistiques de prévision DJC sont conservées dans une archive distincte. Cette transition ou la réévaluation native des réparations n’a pas pu être vérifiée. Les prévisions actuelles et l’historique normal continuent ; aucune statistique n’a été supprimée ou écrasée. Ne choisissez pas Supprimer pour masquer l’ancien avertissement de classe d’état. Conservez l’entité et l’archive existantes et suivez le guide de mise à jour pour examiner le conflit avant une nouvelle tentative contrôlée."
     }
   },
   "exceptions": {

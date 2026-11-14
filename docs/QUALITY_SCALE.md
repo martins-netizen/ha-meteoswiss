@@ -1,6 +1,6 @@
 # Quality evidence and remaining work
 
-**Runtime assessment:** 24 October 2026. **Documentation updated:** 13 November 2026.
+**Runtime assessment:** 24 October 2026. **Documentation updated:** 14 November 2026.
 **Scope:** the 8.3 runtime accepted as
 published b4 at **a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5**. Stable packaging
 changes only two component version files. The operator confirmed b3 calendar-day
@@ -182,8 +182,10 @@ separate from an actual cron execution or notification-delivery acceptance.
 
 The published [8.3.5b1 package](RELEASE_EVIDENCE_8.3.5b1.md) retains all 42
 non-version component files from that source. Packaging and publication are
-verified; installation and [focused acceptance](ACCEPTANCE_8.3.5b1.md) remain
-pending for wind-history and translated-name operator evidence. Publication
+verified. B1 installation and visual operation are operator-confirmed, and the
+bounded read-only report observes the retained wind archive/new circular data.
+The HGT legacy Repair is a real remaining migration issue; the prepared native
+archive follow-up needs a new test package and its own focused readback. Publication
 does not close the partial Gold rules or establish an independent security
 assessment.
 
@@ -205,3 +207,17 @@ baselines. The original 68-test/54.78% snapshot and later 762-/786-/967-test
 numbers are history, not the current suite or a demand to repeat completed
 acceptance. See RELEASE_READINESS.md for completed publication/catalogue results
 and the separately recorded operator-update scope.
+
+## Prepared HGT archive default
+
+The [unreleased HGT follow-up](UPGRADING_8.3.5.md) preserves compatible old
+forecast statistics under a distinct archive ID before native Core repair
+recomputation. The shared archive boundary verifies the same metadata PK and
+all metadata fields; native tests compare every long-/short-term row field.
+Existing live IDs, registry choices, wind archive IDs and raw-history identities
+remain unchanged. No fake archive entity, direct SQL, deletion, re-import,
+measurement-class workaround or issue suppression is introduced. Genuine
+conflicts remain visible, unrelated valid Core repairs survive recomputation,
+and startup/timeout/unload/retry boundaries are covered. This local/native
+evidence is not a new operator migration, an independent security/architecture
+assessment or completion of the remaining Gold rules.

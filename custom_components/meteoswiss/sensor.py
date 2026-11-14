@@ -570,6 +570,14 @@ class MeteoSwissWindDirectionSensor(MeteoSwissSensor):
         )
         self.async_write_ha_state()
 
+        if self._wind_statistics_status == "ready":
+            from .forecast_statistics import async_refresh_statistics_issues
+
+            try:
+                await async_refresh_statistics_issues(self.hass)
+            except Exception as err:
+                _LOGGER.warning("Statistics issue refresh failed (%s)", type(err).__name__)
+
     @property
     def extra_state_attributes(self) -> dict:
         return {
@@ -821,6 +829,9 @@ class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntit
         entry: MeteoSwissConfigEntry,
     ) -> None:
         super().__init__(forecast_coordinator)
+        self._entry = entry
+        self._hgt_statistics_status = "pending"
+        self._hgt_statistics_archive = None
         self._forecast_target = resolve_forecast_target(entry.data, None, None)
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_heating_degree_days"
         self._attr_device_info = forecast_device_info(entry.entry_id, self._forecast_target)
@@ -835,6 +846,48 @@ class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntit
             native_unit_of_measurement="°C·d",
         )
 
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        from .repair_issues import async_sync_hgt_statistics_issue
+
+        self.async_on_remove(
+            lambda: async_sync_hgt_statistics_issue(self.hass, self._entry, False)
+        )
+        self.async_on_remove(async_at_started(self.hass, self._start_hgt_statistics))
+
+    @callback
+    def _start_hgt_statistics(self, hass: HomeAssistant) -> None:
+        self._hgt_statistics_task = self._entry.async_create_background_task(
+            hass, self._prepare_hgt_statistics(), "MeteoSwiss HGT statistics archive"
+        )
+
+    async def _prepare_hgt_statistics(self) -> None:
+        from .forecast_statistics import (
+            async_prepare_hgt_statistics, async_refresh_statistics_issues,
+        )
+        from .repair_issues import async_sync_hgt_statistics_issue
+
+        registered = er.async_get(self.hass).async_get(self.entity_id)
+        if registered is None:
+            return
+        self._hgt_statistics_status = "pending"
+        self.async_write_ha_state()
+        try:
+            result = await async_prepare_hgt_statistics(
+                self.hass, self.entity_id, registered.id
+            )
+            self._hgt_statistics_archive = result.archive_id
+            if result.ready:
+                await async_refresh_statistics_issues(self.hass)
+            self._hgt_statistics_status = "ready" if result.ready else "blocked"
+        except Exception as err:
+            _LOGGER.warning("HGT statistics archival failed (%s)", type(err).__name__)
+            self._hgt_statistics_status = "blocked"
+        async_sync_hgt_statistics_issue(
+            self.hass, self._entry, self._hgt_statistics_status == "blocked"
+        )
+        self.async_write_ha_state()
+
     def _daily_mean(self) -> float | None:
         today = dt_util.utcnow().astimezone(FORECAST_TIME_ZONE).date().isoformat()
         return _daily_mean_for_date(self.coordinator.data or [], today)
@@ -847,12 +900,17 @@ class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntit
 
     @property
     def extra_state_attributes(self) -> dict | None:
+        diagnostics = {
+            "hgt_statistics_status": self._hgt_statistics_status,
+            "forecast_statistics_archive": self._hgt_statistics_archive,
+        }
         if not self.coordinator.data:
-            return self._forecast_target.state_attributes() or None
+            return {**self._forecast_target.state_attributes(), **diagnostics}
         attributes = {
             "method": "HGT 12/20",
             "source": "MeteoSwiss ICON Seamless via Open-Meteo",
             **self._forecast_target.state_attributes(),
+            **diagnostics,
         }
         daily_mean = self._daily_mean()
         if daily_mean is not None:

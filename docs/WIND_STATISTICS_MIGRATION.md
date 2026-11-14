@@ -1,6 +1,12 @@
 # Wind direction: preserve arithmetic history, start circular statistics
 
-**Status:** Unreleased follow-up; published stable 8.3.4 is unchanged.
+**Status:** Published in test prerelease 8.3.5b1; stable 8.3.4 is unchanged.
+
+For concrete update actions, read the [archive-and-keep guide](UPGRADING_8.3.5.md).
+The prepared HGT follow-up retains the existing wind archive IDs and uses the
+same verified native rename/readback boundary. It also lets Core recompute
+statistics Repairs after successful preparation; it does not suppress valid
+issues or turn archived arithmetic averages into circular measurements.
 
 For equal durations, 350° and 10° have a circular mean of north (0°), not
 the old arithmetic 180°. HA [stops a series when its mean algorithm changes](https://www.home-assistant.io/docs/configuration/long-term-statistics/#when-the-unit-or-the-state-class-changes).

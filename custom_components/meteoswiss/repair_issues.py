@@ -9,7 +9,29 @@ from .runtime_data import MeteoSwissConfigEntry
 
 INVALID_FORECAST_LOCATION = "invalid_forecast_location"
 WIND_STATISTICS_BLOCKED = "wind_statistics_blocked"
+HGT_STATISTICS_BLOCKED = "hgt_statistics_blocked"
 SHARED_DIAGNOSTICS_BLOCKED = "shared_diagnostics_blocked"
+
+
+@callback
+def async_sync_hgt_statistics_issue(
+    hass: HomeAssistant, entry: MeteoSwissConfigEntry, blocked: bool
+) -> None:
+    """Only a genuine archive/repair-refresh conflict needs an operator choice."""
+    issue_id = f"{HGT_STATISTICS_BLOCKED}_{entry.entry_id}"
+    if not blocked:
+        ir.async_delete_issue(hass, DOMAIN, issue_id)
+        return
+    ir.async_create_issue(
+        hass, DOMAIN, issue_id,
+        is_fixable=False, is_persistent=False,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key=HGT_STATISTICS_BLOCKED,
+        learn_more_url=(
+            "https://github.com/martins-netizen/ha-meteoswiss/"
+            "blob/development/docs/UPGRADING_8.3.5.md"
+        ),
+    )
 
 
 @callback
