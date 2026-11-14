@@ -25,6 +25,12 @@ including its test-copy requirement for existing arithmetic wind statistics,
 backup and rollback boundary. See [publication evidence](docs/RELEASE_EVIDENCE_8.3.5b1.md)
 and the unchanged [release notes](docs/RELEASE_8.3.5b1.md).
 
+**Existing 8.3.4/8.3.5b1 users:** read the
+[archive-and-keep upgrade default](docs/UPGRADING_8.3.5.md). The prepared HGT
+follow-up preserves old statistics and clears the resolved state-class Repair
+through native HA recomputation. It is not yet included in published 8.3.5b1;
+no history deletion or reinstall of b1 is the update procedure.
+
 **Available in the community catalogue.** On HA **2026.11 or newer**, open
 **Settings → Marketplace** and search for **MeteoSwiss**. On older HA versions,
 use HACS. Check that the repository is **martins-netizen/ha-meteoswiss**.

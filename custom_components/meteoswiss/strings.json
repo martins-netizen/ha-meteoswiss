@@ -468,6 +468,10 @@
     "shared_diagnostics_blocked": {
       "title": "Shared diagnostic ownership needs review",
       "description": "The shared diagnostic helpers could not be transferred safely. Weather data remains available. Review the diagnostic groups using the linked guide, then reload the affected entry. Resolve the ownership before removing an entry so personal settings can be retained."
+    },
+    "hgt_statistics_blocked": {
+      "title": "HGT forecast statistics need review",
+      "description": "The default is to preserve your earlier HGT forecast statistics in a separate archive. This transition or the native repair refresh could not be verified. Current HGT forecasts and ordinary history continue; no statistics were deleted or overwritten. Do not choose Delete to silence the old state-class notice. Keep the existing entity and archive, and follow the upgrade guide to diagnose the conflict before a controlled retry."
     }
   },
   "exceptions": {

@@ -13,6 +13,7 @@ from homeassistant.helpers import entity_registry as er, issue_registry as ir
 from homeassistant.helpers.translation import async_get_translations
 
 from custom_components.meteoswiss import wind_statistics as ws
+from custom_components.meteoswiss import statistics_archive as archive_helper
 from custom_components.meteoswiss.sensor import (
     MeteoSwissWindDirectionSensor, SENSOR_DESCRIPTIONS,
 )
@@ -67,7 +68,7 @@ async def test_existing_metadata_is_never_overwritten(fake_recorder,current,arch
     if current: existing[EID]=current
     if archive: existing[ARCHIVE]=archive
     fake_recorder.async_add_executor_job.return_value=existing
-    with patch.object(ws,"async_update_statistics_metadata") as rename:
+    with patch.object(archive_helper,"async_update_statistics_metadata") as rename:
         result=await ws.async_prepare_wind_statistics(fake_recorder.test_hass,EID,RID)
     assert result==ws.WindStatisticsResult(ready,ARCHIVE if has_archive else None)
     rename.assert_not_called()
@@ -93,7 +94,7 @@ async def test_queue_completion_requires_verified_identity_and_metadata(fake_rec
     def finish(*args,**kwargs):
         kwargs["on_done"]()
         kwargs["on_done"]()  # Duplicate/late completion is harmless.
-    with patch.object(ws,"async_update_statistics_metadata",side_effect=finish) as rename:
+    with patch.object(archive_helper,"async_update_statistics_metadata",side_effect=finish) as rename:
         result=await ws.async_prepare_wind_statistics(fake_recorder.test_hass,EID,RID)
     expected=after=={ARCHIVE:(3,dict(meta(),statistic_id=ARCHIVE))}
     assert result.ready is expected
@@ -199,7 +200,7 @@ async def test_cancel_after_queued_rename_accepts_late_worker_completion(fake_re
         completed = kwargs["on_done"]
         queued.set()
 
-    with patch.object(ws, "async_update_statistics_metadata", side_effect=enqueue):
+    with patch.object(archive_helper, "async_update_statistics_metadata", side_effect=enqueue):
         task = asyncio.create_task(
             ws.async_prepare_wind_statistics(fake_recorder.test_hass, EID, RID)
         )

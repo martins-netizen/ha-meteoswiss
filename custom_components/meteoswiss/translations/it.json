@@ -468,6 +468,10 @@
     "shared_diagnostics_blocked": {
       "title": "Verificare la diagnostica condivisa",
       "description": "Non è stato possibile trasferire in modo sicuro gli strumenti di diagnostica condivisi. I dati meteo restano disponibili. Verifica i gruppi di diagnostica seguendo la guida collegata, poi ricarica la voce interessata. Chiarisci l’assegnazione prima di rimuovere una voce per conservare le impostazioni personali."
+    },
+    "hgt_statistics_blocked": {
+      "title": "Le statistiche previsionali dei gradi giorno richiedono una verifica",
+      "description": "Per impostazione predefinita, le precedenti statistiche previsionali dei gradi giorno sono conservate in un archivio separato. Non è stato possibile verificare questa transizione o il riesame nativo delle riparazioni. Le previsioni attuali e la cronologia ordinaria continuano; nessuna statistica è stata eliminata o sovrascritta. Non scegliere Elimina per nascondere il precedente avviso sulla classe di stato. Conservare l’entità e l’archivio esistenti e seguire la guida di aggiornamento per esaminare il conflitto prima di un nuovo tentativo controllato."
     }
   },
   "exceptions": {

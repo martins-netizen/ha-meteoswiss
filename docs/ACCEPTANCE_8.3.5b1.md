@@ -1,14 +1,32 @@
 # 8.3.5b1: focused wind-history and default-name acceptance
 
-**Protocol version:** 1.1 · **Updated:** 13 November 2026
+**Protocol version:** 1.2 · **Updated:** 14 November 2026
 
-**Operator acceptance not yet performed.** [8.3.5b1 is published and verified](RELEASE_EVIDENCE_8.3.5b1.md)
+**Bounded b1 operator evidence recorded; HGT follow-up acceptance remains open.** [8.3.5b1 is published and verified](RELEASE_EVIDENCE_8.3.5b1.md)
 as test prerelease **444798178** from approved merge
 `af1220249e672bd8a6742c73022a7c42aca2f20a`. Packaging and publication are complete;
-installation and this focused protocol need separate approval/evidence. The
+the operator reported successful visual inspection and production installation
+on 13 November. A read-only b1 report on 14 November matched all 44 expected
+component files and observed both the retained arithmetic wind archive and new
+circular points. Its only flagged follow-up was the HGT legacy state-class
+notice. These observations have no pre-update DB baseline and do not prove
+every historical row was retained. A later HGT archival package needs its own
+installation approval and focused native readback. The
 publisher made no HA calls, restart or device commands. No new operator DB or
 registry read is claimed. Earlier accepted settings, icons, clean-install and
 generic restore checks remain closed within their scopes.
+
+## Prepared HGT follow-up: the new focused scope
+
+Use the [archive-and-keep default](UPGRADING_8.3.5.md). After a later explicitly
+published fixed test package, verify HGT status `ready`, the retained historical
+archive where applicable, continuing forecast/raw history and that the resolved
+live-sensor state-class Repair has cleared. A real archive conflict must remain
+visible and must not overwrite a destination. Earlier generic visual/install
+checks stay accepted; do not reinstall b1 or purge statistics for this purpose.
+Existing wind archive IDs and circular behaviour must remain unchanged. Native
+all-field/PK/long-/short-term preservation tests are separate from this future
+operator readback; a software rollback alone does not undo metadata changes.
 
 ## Before installation
 
@@ -75,4 +93,5 @@ The integration contacts public providers as documented in
 [API_SOURCES.md](API_SOURCES.md); this check adds no new provider, credential or
 telemetry. It is a bounded operator acceptance, separate from a historical
 orphan inventory, a manual four-language audit, independent penetration testing
-and the remaining Gold matrix. No production installation/restore is claimed.
+and the remaining Gold matrix. B1 installation is operator-reported; no new
+follow-up installation or restoration is claimed.

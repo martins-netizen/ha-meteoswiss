@@ -493,7 +493,7 @@ async def test_hgt_forecast_records_history_without_measurement_statistics(
 async def test_hgt_metadata_fix_keeps_existing_statistics_and_registry_after_reload(
     recorder_mock, hass, installed_entities, freezer
 ):
-    """Retain seeded old hourly rows while new predictions stay out of statistics."""
+    """Archive seeded old hourly rows while new predictions stay out of statistics."""
     entry = installed_entities
     registry = er.async_get(hass)
     unique_id = f"{DOMAIN}_{entry.entry_id}_heating_degree_days"
@@ -523,6 +523,9 @@ async def test_hgt_metadata_fix_keeps_existing_statistics_and_registry_after_rel
 
     assert await hass.config_entries.async_reload(entry.entry_id)
     await hass.async_block_till_done()
+    await hass.data["sensor"].get_entity(hgt)._hgt_statistics_task
+    archive = hass.states.get(hgt).attributes["forecast_statistics_archive"]
+    assert archive == f"sensor.meteoswiss_hgt_forecast_archive_{saved.id}"
     current = registry.async_get(hgt)
     assert registry.async_get_entity_id("sensor", DOMAIN, unique_id) == hgt
     assert current.id == saved.id and current.device_id == saved.device_id
@@ -540,18 +543,22 @@ async def test_hgt_metadata_fix_keeps_existing_statistics_and_registry_after_rel
     get_instance(hass).queue_task(StatisticsTask(NOW, False))
     await async_recorder_block_till_done(hass)
     metadata_after = await hass.async_add_executor_job(
-        partial(get_metadata, hass, statistic_ids={hgt})
+        partial(get_metadata, hass, statistic_ids={hgt, archive})
     )
     rows_after = await hass.async_add_executor_job(
-        statistics_during_period, hass, old_start, NOW, {hgt},
+        statistics_during_period, hass, old_start, NOW, {archive},
         "hour", None, {"mean", "min", "max"}
     )
     new_rows = await hass.async_add_executor_job(
         statistics_during_period, hass, NOW, None, {hgt},
         "5minute", None, {"mean", "min", "max"}
     )
-    assert metadata_after == metadata_before
-    assert rows_after == rows_before
+    assert hgt not in metadata_after
+    assert metadata_after[archive][0] == metadata_before[hgt][0]
+    assert metadata_after[archive][1] == {
+        k: archive if k == "statistic_id" else v for k, v in metadata_before[hgt][1].items()
+    }
+    assert rows_after[archive] == rows_before[hgt]
     assert new_rows.get(hgt, []) == []
 
 

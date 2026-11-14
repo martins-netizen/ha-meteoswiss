@@ -9,10 +9,11 @@ from functools import partial
 from homeassistant.components.recorder import get_instance
 from homeassistant.components.recorder.models import StatisticMeanType
 from homeassistant.components.recorder.statistics import (
-    async_update_statistics_metadata,
     get_metadata,
 )
 from homeassistant.core import HomeAssistant
+
+from .statistics_archive import async_archive_statistics
 
 
 @dataclass(frozen=True, slots=True)
@@ -69,28 +70,7 @@ async def async_prepare_wind_statistics(
         if meta["mean_type"] != StatisticMeanType.ARITHMETIC or archive:
             return WindStatisticsResult(False)
 
-        done = hass.loop.create_future()
-
-        def complete() -> None:
-            if not done.done():
-                done.set_result(None)
-
-        # Recorder invokes on_done from its worker thread.
-        async_update_statistics_metadata(
-            hass,
-            entity_id,
-            new_statistic_id=archive_id,
-            on_done=lambda: hass.loop.call_soon_threadsafe(complete),
+        verified = await async_archive_statistics(
+            hass, entity_id, archive_id, current, read
         )
-        await done
-        after = await read()
-        saved = after.get(archive_id)
-        if entity_id in after or saved is None or saved[0] != current[0]:
-            return WindStatisticsResult(False)
-        expected = {
-            key: archive_id if key == "statistic_id" else value
-            for key, value in meta.items()
-        }
-        if saved[1] != expected:
-            return WindStatisticsResult(False)
-        return WindStatisticsResult(True, archive_id)
+        return WindStatisticsResult(verified, archive_id if verified else None)

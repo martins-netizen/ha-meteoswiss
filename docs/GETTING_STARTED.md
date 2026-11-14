@@ -33,6 +33,14 @@ The fork retains the original MIT licence and attribution. It is not an official
 MeteoSwiss product. Forecasts depend on providers and are not a guarantee of the
 most accurate model in every situation. A failed warning feed is not an all-clear.
 
+## Updating an existing 8.3.4/8.3.5b1 installation
+
+Start with [Archive and keep history by default](UPGRADING_8.3.5.md). It
+separates published b1 from the prepared HGT follow-up and explains the normal
+update, automatic preservation, status attributes, optional archive charts and
+real-conflict path. A permanently unresolved HGT state-class Repair is not the
+normal successful outcome. Do not delete statistics as a routine update step.
+
 ## 1. Check prerequisites
 
 - For releases after 8.3.4, use Home Assistant **2026.11.0 or newer** with

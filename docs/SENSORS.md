@@ -184,13 +184,22 @@ than four hours is rejected on refresh.
 ## Daily heating degree days
 
 `heating_degree_days` is a **forecast-based HGT 12/20 estimate for today**.
+The [prepared archive-and-keep follow-up](UPGRADING_8.3.5.md) adds
+`hgt_statistics_status` and `forecast_statistics_archive`. Compatible older
+statistics are retained under `sensor.meteoswiss_hgt_forecast_archive_<registry_id>`
+using the same metadata row; Core then recomputes and clears the resolved
+state-class Repair. The live forecast keeps its original identity and never
+regains a measurement state class. Published b1 does not yet include this
+archival step; it needs a later reviewed test package.
 
-**Unreleased metadata correction:** the current source omits the HGT measurement
+**Published 8.3.5b1 metadata correction:** the current source omits the HGT measurement
 state class. Current values, IDs and ordinary history continue, and existing
 statistic rows are retained; new forecasts no longer enter measured long-term
 statistics. Existing HGT statistics charts stop gaining points. Published stable
 8.3.4 retains the earlier declaration. See the [metadata review and history
-boundary](SENSOR_METADATA.md) before adopting that follow-up.
+boundary](SENSOR_METADATA.md). The prepared HGT archival follow-up resolves the
+live-sensor state-class Repair by retaining old statistics separately, not by
+pretending the forecast is a measurement.
 At a forecast daily mean of at most 12 °C, the result is **20 minus that mean**;
 above 12 °C it is zero. A mean of 10 °C gives 10 °C·d, not 2 °C·d. Missing or
 invalid temperatures stay unknown. Attributes identify the forecast/calculation;

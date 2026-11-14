@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+- Archive compatible historical HGT forecast statistics by default using HA’s
+  native metadata API. Verify the same metadata primary key and every metadata
+  field before completing; retain all linked long-/short-term data and the live
+  forecast identity. Keep the forecast without a measurement state class.
+- Recompute Core statistics Repairs after verified archival and successful wind
+  preparation so the resolved HGT state-class notice clears without deletion
+  or manual dismissal. Preserve unrelated valid repairs and all existing wind
+  archive IDs. Surface genuine archive/refresh conflicts in DE/EN/FR/IT.
+- Add explicit archive-and-keep upgrade guidance, diagnostic attributes, bounded
+  startup/cancellation handling and native all-field history-preservation tests.
+  This follow-up requires a new reviewed test package; it is not retroactively
+  part of published 8.3.5b1.
+
 Future work beyond the published 8.3.5b1 test version remains separate.
 
 ## [8.3.5b1] — 2026-11-13 · published test prerelease

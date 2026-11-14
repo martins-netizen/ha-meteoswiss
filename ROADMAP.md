@@ -72,10 +72,14 @@ The published [8.3.5b1 test version](https://github.com/martins-netizen/ha-meteo
 packages the merged follow-ups below, retaining all 42 non-version component
 files. [Publication evidence](docs/RELEASE_EVIDENCE_8.3.5b1.md) records the approved
 regular merge, successful packaging checks and verified prerelease. Stable
-8.3.4 remains latest. Operator installation and the
-[focused acceptance plan](docs/ACCEPTANCE_8.3.5b1.md) are still pending; that
-protocol separates wind/Recorder preservation from ordinary operation and
-translated names. Packaging introduces no additional runtime capability.
+8.3.4 remains latest. Operator installation, normal operation and a bounded
+read-only wind/HGT check are recorded in the
+[focused acceptance plan](docs/ACCEPTANCE_8.3.5b1.md). The HGT state-class Repair
+remains an open migration issue in b1. The prepared, unreleased
+[archive-and-keep default](docs/UPGRADING_8.3.5.md) preserves that old series and
+uses native Core repair recomputation; it needs a later fixed test package and
+operator acceptance before stable promotion. Packaging itself introduced no
+additional runtime capability.
 
 The [diagnostic-defaults and service-metadata change](docs/DIAGNOSTIC_DEFAULTS.md), delivered in stable 8.3.4 after first shipping in 8.3.4b1,
 adds first-registration diagnostic defaults and explicit virtual service groups,
@@ -87,7 +91,7 @@ and personal choices. Native pollen-station round trips reuse all seven groups;
 no cleanup is needed for those tested changes. Historical orphaned groups have
 not been independently inventoried and are not deleted by this change.
 
-The unreleased [Foehn/HGT metadata review](docs/SENSOR_METADATA.md) retains their
+The [Foehn/HGT metadata review](docs/SENSOR_METADATA.md), shipped in 8.3.5b1, retains their
 numeric contracts without inventing device classes. It corrects the HGT
 forecast's measurement state class, keeping old statistics and ordinary history
 while stopping new forecast measurement statistics. Native Recorder tests cover

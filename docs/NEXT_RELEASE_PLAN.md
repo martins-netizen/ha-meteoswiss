@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.37 · **Updated:** 13 November 2026
+**Plan version:** 1.38 · **Updated:** 14 November 2026
 **Status:** The agreed architecture, catalogue/POI, forecast-display, shared-settings
 and station-condition scope is released in stable 8.3.0. B4 runtime acceptance,
 stable publication and HACS default-catalogue admission are complete. The operator
@@ -42,11 +42,14 @@ regular packaging merge `af1220249e672bd8a6742c73022a7c42aca2f20a`.
 All 42 non-version component files remain identical to reviewed source
 `b144a0b73d81358f27fd6ecd89a47120c8a0a1b9`; stable 8.3.4 remains latest.
 [Publication verification](RELEASE_EVIDENCE_8.3.5b1.md) is complete, including
-the harmless second invocation without another write. **Next bounded work:**
-separately approve installation and record the
-[focused wind-history/naming acceptance](ACCEPTANCE_8.3.5b1.md), without
-reopening earlier generic settings/install/restore checks. Actual cron execution,
-historical stale-device inventory,
+the harmless second invocation without another write. Installation and visual
+operation are now operator-confirmed, and a bounded read-only report observed
+retained arithmetic wind history/new circular points. **Next bounded work:**
+review the native HGT archive default and its [explicit upgrade path](UPGRADING_8.3.5.md),
+then package a later test version and verify the resolved live-sensor Repair.
+Do not promote b1 to stable with its HGT migration warning left unresolved.
+Earlier accepted generic settings/install/restore scopes stay closed. Actual
+cron execution, historical stale-device inventory,
 rule-specific applicability, authoritative locality aliases and independent
 security/architecture review remain separate. Preserve DE/EN/FR/IT, personal
 choices, identities/history and all security/hash/coverage/platform gates.
