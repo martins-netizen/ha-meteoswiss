@@ -1,5 +1,9 @@
 # Sensor reference
 
+**Fixed HGT test package:** use [8.3.5b2](RELEASE_8.3.5b2.md) once published;
+follow the [archive-and-keep update](UPGRADING_8.3.5.md) and
+[focused HGT check](ACCEPTANCE_8.3.5b2.md). B1 does not contain this fix.
+
 This describes the current maintained code, not every feature in older upstream
 releases. Keys are internal description keys, not fixed entity IDs. HA derives
 entity IDs on first addition; retained entities keep their existing identity.

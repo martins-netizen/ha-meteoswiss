@@ -1,5 +1,9 @@
 # Set up MeteoSwiss
 
+**Fixed HGT test package:** use [8.3.5b2](RELEASE_8.3.5b2.md) once published;
+follow the [archive-and-keep update](UPGRADING_8.3.5.md) and
+[focused HGT check](ACCEPTANCE_8.3.5b2.md). B1 does not contain this fix.
+
 ## Location privacy before setup
 
 This is a cloud-polling integration. Providers receive the station, postcode or

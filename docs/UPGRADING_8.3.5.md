@@ -1,15 +1,16 @@
 # 8.3.5 statistics migration: archive and keep history by default
 
-**Release boundary:** Published **8.3.5b1** still has the HGT state-class
-repair shown below. The automatic HGT archival fix in this guide is an
-**unreleased follow-up for the next test package**. Installing 8.3.5b1 again will
-not add it. Stable **8.3.4** remains latest; this guide does not publish or
-authorise a new package. The test line requires HA **2026.11.0 or newer**.
+**Release boundary:** **8.3.5b2** is the fixed test package described here.
+Select it only once the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b2)
+confirms publication; installation and [focused HGT acceptance](ACCEPTANCE_8.3.5b2.md)
+remain separate. Published **8.3.5b1** still has the old HGT state-class Repair;
+installing b1 again will not add this fix. Stable **8.3.4** remains latest.
+The test line requires HA **2026.11.0 or newer**.
 
 ## Recommended default: automatically archive and keep
 
-The normal update path should require no statistics-deletion decision. The
-prepared fix keeps existing entities, settings and ordinary history, moves
+The normal update path requires no statistics-deletion decision. The
+8.3.5b2 fix keeps existing entities, settings and ordinary history, moves
 compatible old HGT forecast statistics to a separate archive, verifies that
 their metadata row and attached data are retained, then asks Core to recompute
 its repair issues. The resolved HGT state-class repair disappears through
@@ -21,8 +22,8 @@ their current IDs and contents. Only genuine conflicts require diagnosis.
 
 | Situation | Recommended action | Expected result |
 |---|---|---|
-| You currently have 8.3.5b1 and the HGT state-class repair | Keep the data while the follow-up is reviewed. Close the current deletion dialog without deleting. | This is an interim step, not acceptance of a permanently unresolved repair. |
-| You update to the later, explicitly published fixed test package | Follow the normal existing-entry update below. No Delete action is part of it. | Old HGT statistics are archived; the live forecast keeps its original ID and no measurement state class. Native repair recomputation clears the resolved HGT notice. |
+| You currently have 8.3.5b1 and the HGT state-class repair | Keep the data and update to 8.3.5b2 once its publication is confirmed. Close the current deletion dialog without deleting. | This is an interim step, not acceptance of a permanently unresolved repair. |
+| You update to the explicitly published 8.3.5b2 test package | Follow the normal existing-entry update below. No Delete action is part of it. | Old HGT statistics are archived; the live forecast keeps its original ID and no measurement state class. Native repair recomputation clears the resolved HGT notice. |
 | HGT status is `ready` and an archive ID is present | Continue using the forecast normally. Select the archive only if you need its older statistics in a statistics chart. | Old forecast averages remain available as historical data; no new HGT measurement statistics are generated. |
 | HGT status is `ready` and no archive exists | Continue normally. | There was no compatible old HGT series to move. This is not a before/after database audit. |
 | HGT or wind preparation is `blocked` | Keep both existing series and IDs; open the entry-specific MeteoSwiss Repair for diagnosis. | No destination is overwritten or history deleted. Current forecasts/readings and ordinary history continue. |
@@ -51,12 +52,12 @@ measured total. Its current value and original entity ID continue unchanged.
 Older versions produced arithmetic long-term statistics under that live ID.
 Simply removing the inappropriate measurement state class leaves the old
 metadata associated with a numeric sensor and causes Core's state-class Repair.
-The prepared fix instead preserves that old metadata row under
+The 8.3.5b2 fix instead preserves that old metadata row under
 `sensor.meteoswiss_hgt_forecast_archive_<registry_id>`, keeping its attached
 long-term and short-term rows without recalculation. Core can then recognise
 that the live forecast no longer owns a measurement-statistics series.
 
-In the **fixed follow-up**, open **Developer tools → States**, find the existing
+In **8.3.5b2**, open **Developer tools → States**, find the existing
 HGT sensor and read its attributes; do not use Set state:
 
 - `hgt_statistics_status: ready`: archival preparation and native repair refresh
@@ -130,4 +131,4 @@ Software rollback alone does not undo either metadata transition. Controlled
 restoration or reverse migration requires separate approval and a verified
 backup. No deletion, restoration or forced retry is automatic. The
 [wind preservation contract](WIND_STATISTICS_MIGRATION.md) and
-[focused acceptance protocol](ACCEPTANCE_8.3.5b1.md) retain their evidence limits.
+[focused acceptance protocol](ACCEPTANCE_8.3.5b2.md) retain their evidence limits.

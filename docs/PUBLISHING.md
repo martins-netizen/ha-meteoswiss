@@ -1,6 +1,6 @@
 # Publish the maintained fork
 
-**Procedure version:** 1.20 · **Updated:** 13 November 2026
+**Procedure version:** 1.21 · **Updated:** 14 November 2026
 
 **Distribution UI:** On HA 2026.11+, use built-in **Settings → Marketplace**;
 older HA uses HACS. Follow [current installation/update steps](GETTING_STARTED.md).
@@ -12,6 +12,42 @@ A documentation update is not a Marketplace live acceptance result.
 For releases after 8.3.4, verify the **HA 2026.11.0** requirement in
 `hacs.json`, the minimum and current CI jobs, and the user-facing upgrade
 guidance before publishing. [Support and security rationale](../DEVELOPMENT.md#supported-home-assistant-versions)
+
+## 8.3.5b2: controlled HGT archive test publication
+
+[8.3.5b2](RELEASE_8.3.5b2.md) packages accepted PR #110 at
+`71c4c6269ea0c06cc5d2c43db9b0a24d8e6e9c08`, with ten exact-head and nine actual
+merge checks successful. Both source HA jobs passed 2,753 tests + 83 subtests.
+All 44 non-version component files are identical to that source; only two
+version fields change. Package checks and actual publication retain their own
+evidence. The authorised controlled publication follows a regular packaging PR,
+successful exact-head/merge gates and a fixed V1.9 publisher. Stable 8.3.4 and
+all seventeen older tags/releases remain unchanged.
+
+The default preserves compatible historical HGT statistics and lets native Core
+recomputation clear the resolved live-HGT Repair. No data deletion or entry
+recreation is part of the update. See the [upgrade guide](UPGRADING_8.3.5.md)
+and [focused HGT acceptance](ACCEPTANCE_8.3.5b2.md). Earlier b1 installation,
+visual operation and bounded wind/archive readback stay accepted. B2 HGT
+archival has not been run on the operator's database by this packaging work;
+operator installation/acceptance and stable promotion remain separate.
+
+The publication request explicitly includes b2 after successful checks; no
+second approval is required for the concrete unchanged package. The Mac flow
+retains the public handle/noreply identity, refuses a changed base/tree, checks
+all ten PR-head gates and all nine actual merge gates, then invokes only the
+fixed V1.9 publisher for that verified packaging merge. Matching reruns verify
+and reuse existing state. Its release is a prerelease with `make_latest=false`;
+no HA connection, installation, restart or restoration occurs.
+
+```bash
+bash publish_meteoswiss_835_beta_v1.9.sh --publish FULL_VERIFIED_PACKAGING_MERGE_SHA
+```
+
+The standalone publisher repeats the protected-branch, source/version-only,
+unchanged CI/lock policy, trusted-check, stable-selection and seventeen-tag
+guards before any write. Preserve the resulting JSON/log and independently
+read back the actual release, tag and body. Do not retag or overwrite a conflict.
 
 <a id="prepared-835b1-no-publication-performed"></a>
 
@@ -44,7 +80,7 @@ backup and non-automatic rollback boundary. The previous release records below
 retain their original scopes and are not requests to repeat old publishers.
 
 Current documentation records the verified release, immutable tag, source/check
-evidence and still-pending operator acceptance. The original preparation
+evidence and bounded b1 operator acceptance; the HGT follow-up has its own b2 protocol. The original preparation
 snapshot in RELEASE_8.3.5b1.md and the published body remain unchanged. Later
 8.3.5 stable promotion requires its own version-only review and
 the accepted beta/runtime evidence; no stable release is created by this plan.

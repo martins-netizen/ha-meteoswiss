@@ -16,6 +16,27 @@ The engineering foundation is strong. An unqualified "top-level in every
 respect" statement would exceed this evidence. The [quality matrix](QUALITY_SCALE.md)
 retains open Gold work; custom integrations have no official quality tier.
 
+
+## 8.3.5b2: fixed HGT archive test package
+
+[8.3.5b2](RELEASE_8.3.5b2.md) packages accepted PR #110 at
+`71c4c6269ea0c06cc5d2c43db9b0a24d8e6e9c08`, with ten exact-head and nine actual
+merge checks successful. Both source HA jobs passed 2,753 tests + 83 subtests.
+All 44 non-version component files are identical to that source; only two
+version fields change. Package checks and actual publication retain their own
+evidence. The authorised controlled publication follows a regular packaging PR,
+successful exact-head/merge gates and a fixed V1.9 publisher. Stable 8.3.4 and
+all seventeen older tags/releases remain unchanged.
+
+The default preserves compatible historical HGT statistics and lets native Core
+recomputation clear the resolved live-HGT Repair. No data deletion or entry
+recreation is part of the update. See the [upgrade guide](UPGRADING_8.3.5.md)
+and [focused HGT acceptance](ACCEPTANCE_8.3.5b2.md). Earlier b1 installation,
+visual operation and bounded wind/archive readback stay accepted. B2 HGT
+archival has not been run on the operator's database by this packaging work;
+operator installation/acceptance and stable promotion remain separate.
+
+
 ## Data flow and provider retention
 
 The [source/request table](API_SOURCES.md) is the data-flow inventory. A selected

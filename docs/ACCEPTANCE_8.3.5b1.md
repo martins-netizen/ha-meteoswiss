@@ -16,7 +16,12 @@ publisher made no HA calls, restart or device commands. No new operator DB or
 registry read is claimed. Earlier accepted settings, icons, clean-install and
 generic restore checks remain closed within their scopes.
 
-## Prepared HGT follow-up: the new focused scope
+## HGT follow-up: the separate b2 scope
+
+The fixed [8.3.5b2 package](RELEASE_8.3.5b2.md) uses its own
+[short HGT acceptance protocol](ACCEPTANCE_8.3.5b2.md). The b1 evidence above
+remains accepted; do not repeat its generic installation/visual checks.
+
 
 Use the [archive-and-keep default](UPGRADING_8.3.5.md). After a later explicitly
 published fixed test package, verify HGT status `ready`, the retained historical
