@@ -1,8 +1,8 @@
 # 8.3.5 upgrade: remove obsolete HGT forecast statistics
 
-**Package:** the native cleanup is included in **8.3.5b3**. Confirm its
-publication in the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b3)
-before updating; follow the [focused b3 check](ACCEPTANCE_8.3.5b3.md).
+**Package:** the native cleanup is included in published **8.3.5b3**. Its
+[publication and focused operator acceptance](RELEASE_EVIDENCE_8.3.5b3.md) are
+complete. New upgrading users can follow the [focused b3 check](ACCEPTANCE_8.3.5b3.md).
 Published b2 retains its archive-and-keep behaviour; its immutable
 [notes](RELEASE_8.3.5b2.md) and [accepted scope](ACCEPTANCE_8.3.5b2.md) remain
 historical evidence. HA **2026.11.0 or newer** is required. Stable **8.3.4**

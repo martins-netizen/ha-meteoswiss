@@ -14,6 +14,13 @@ This changes the b3 policy beyond b2; historical b2 evidence below remains
 scoped to its published archive-and-keep runtime. It is not full Gold certification.
 
 
+**Published b3 acceptance and current test maintenance:**
+[Publication evidence](RELEASE_EVIDENCE_8.3.5b3.md) and the operator's focused
+native cleanup acceptance are complete. The [Recorder lifecycle follow-up](TEST_RECORDER_LIFECYCLE.md)
+drains tracked work before teardown and requires explicit connection closure;
+it changes no component or production behaviour. Its hosted checks remain
+separate from b3's closed acceptance. Full Gold/independent review stay open.
+
 **Runtime assessment:** 24 October 2026. **Documentation updated:** 15 November 2026.
 **Scope:** the 8.3 runtime accepted as
 published b4 at **a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5**. Stable packaging

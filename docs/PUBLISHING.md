@@ -13,45 +13,37 @@ For releases after 8.3.4, verify the **HA 2026.11.0** requirement in
 `hacs.json`, the minimum and current CI jobs, and the user-facing upgrade
 guidance before publishing. [Support and security rationale](../DEVELOPMENT.md#supported-home-assistant-versions)
 
-## 8.3.5b3: native HGT cleanup test package
+## 8.3.5b3: published and focused cleanup accepted
 
-[8.3.5b3](RELEASE_8.3.5b3.md) packages accepted PR #112 at
-`9d7be4f935e751314bb950c70869bf09b143a6b1`, exact tree
-`e5dc7499c52d3b379847cf29358b67048a87c320`. Ten head and nine required actual
-merge checks passed, plus a real scheduled dependency audit on that source.
-Both source HA jobs passed 2,845 tests + 83 subtests and every strict step.
-Minimum/current runs had six/five warnings; the extra SQLite test-fixture
-ResourceWarning remains a separate open diagnosis, not a suppressed gate.
+[8.3.5b3](RELEASE_EVIDENCE_8.3.5b3.md), release **446112927**, was published on
+**15 November 2026 at 14:19:50 UTC** from regular PR #113, merge
+`b6c4502e5cdeb48121be628fdb7eda579df4f7c3`, exact tree
+`bb8c9de9a3822d56eac6f49892852d3cede298df`. Ten head and nine actual merge
+checks passed. Each native HA job passed 2,900 tests + 83 subtests and every
+strict step; both hosted jobs had six warnings including the known SQLite one.
+The immutable release/tag/English body and all eighteen older release records,
+bodies and tags were independently confirmed. Stable **8.3.4** stays latest.
+The 46 non-version component files out of 48 match accepted PR #112 source.
 
-All **46 non-version component files out of 48** remain identical to the
-accepted source. Only manifest.json/version.py become b3. Fixed Publisher
-**V1.10** and its independent profile retain every prior publisher, eighteen
-older tags/release bodies and stable 8.3.4. Workflows, locks, validation policy
-and the Core 2026.11.0 baseline are unchanged. Complete package validation,
-actual publication and operator cleanup acceptance are separate evidence.
+The operator confirmed the existing-entry update and focused native HGT cleanup
+successful on 15 November: repair/listed old IDs gone, forecast ready with no
+archive reference, cleanup-required false and normal operation retained. This
+closes that agreed operator acceptance, without an independent whole-database
+orphan-row audit. Do not repeat publication, installation or deletion; earlier
+b1/b2 scopes also remain closed. See [upgrade guidance](UPGRADING_8.3.5.md).
 
-The normal upgrade uses one native repair confirmation to permanently remove
-attributable obsolete HGT forecast statistics and metadata. No Mac script or
-replacement archive is required. Current forecasts, ordinary history and
-unrelated statistics are retained. Read [the upgrade guide](UPGRADING_8.3.5.md)
-and [focused b3 protocol](ACCEPTANCE_8.3.5b3.md). Actual OGD measured HGT import
-is still separate planned work. Earlier b1/b2 accepted scopes stay closed.
+Current development separately [drains native test Recorder work before pool
+shutdown](TEST_RECORDER_LIFECYCLE.md), with explicit connection-close accounting
+and a regression that fails the earlier order. All 48 component files, versions,
+workflows, locks and existing gates are unchanged. Hosted checks for this
+follow-up remain required. Official measured OGD HGT import, full Gold,
+independent review and any stable promotion remain separate work.
 
-The controlled b3 flow requires the existing `martins-netizen` gh account,
-the exact reviewed package tree and source parent, ten trusted head checks,
-a regular guarded merge and all nine actual merge checks. Then only fixed
-Publisher V1.10 may create prerelease b3 with `make_latest=false`. Matching
-reruns reuse an existing matching PR/merge/release; unknown outcomes are read
-back before any further write. The flow creates no HA connection or migration.
-
-```bash
-bash publish_meteoswiss_835_beta_v1.10.sh --publish FULL_VERIFIED_PACKAGING_MERGE_SHA
-```
-
-Preserve the JSON/log and independently confirm release, immutable tag, exact
-English body, all earlier releases/tags and stable selection. The versioned
-publisher profiles below remain historical records, not commands to publish
-older test versions again.
+The completed b3 flow checked the fixed public account, reviewed tree/parent,
+ten head checks, regular guarded merge and nine actual merge checks.
+Publisher V1.10 created only b3 with `make_latest=false`. Original receipts and
+independent readback confirm it. Keep the publisher as historical evidence;
+**do not rerun it as a new update action**.
 
 ## 8.3.5b2: controlled HGT archive test publication
 
@@ -67,8 +59,8 @@ historical database or 46-file installation audit.
 
 B2's archive-and-keep behaviour remains its immutable historical boundary.
 The [b3 cleanup](UPGRADING_8.3.5.md) instead recommends explicit full removal of
-obsolete forecasts. Its publication and new deletion acceptance remain separate;
-earlier b1/wind and b2 visible acceptance must not be requested again.
+obsolete forecasts. B3 publication and its focused native deletion acceptance
+are now closed; earlier b1/wind and b2 visible acceptance also stay closed.
 
 The historical V1.9 publisher created b2 after its reviewed head/merge gates.
 That completed publication is not repeated by the b3 flow.

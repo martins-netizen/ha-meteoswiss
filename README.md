@@ -20,7 +20,8 @@ packages the native **Remove obsolete HGT forecast statistics** repair. It
 recommends complete removal of old forecast statistics after one clear
 confirmation. Current forecasts, ordinary history and unrelated statistics are
 retained; no unused replacement HGT archive remains after completed cleanup.
-Confirm availability in the release catalogue before selecting this version.
+Published on **15 November 2026**; the operator confirmed the focused native
+cleanup successful. See [publication and acceptance evidence](docs/RELEASE_EVIDENCE_8.3.5b3.md).
 [Release notes](docs/RELEASE_8.3.5b3.md), [upgrade instructions](docs/UPGRADING_8.3.5.md)
 and [the short focused check](docs/ACCEPTANCE_8.3.5b3.md) explain the deletion
 boundary. **8.3.4 remains latest stable.** HA **2026.11.0 or newer** is required.
