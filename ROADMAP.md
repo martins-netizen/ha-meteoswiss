@@ -4,19 +4,23 @@ This describes current fork work. Historical upstream release claims remain in
 the changelog as history; they are not current certifications. Check the
 [release status](README.md#release-status) before installing.
 
-## Prepared 8.3.5: complete native HGT cleanup across upgrade paths
+## 8.3.5b3: native HGT cleanup across upgrade paths
 
-The next runtime follow-up adds [one explicit recommended cleanup repair](docs/UPGRADING_8.3.5.md)
-for original forecast statistics, b2 archives and attributable retired season
-series, including disabled sensors. A completed migration leaves no unused HGT
-forecast archive or metadata. It neither silently deletes on install nor
-requires a Mac script. Published b2 remains unchanged until a new package is
-reviewed and released.
+[8.3.5b3](docs/RELEASE_8.3.5b3.md) packages accepted PR #112, merge
+`9d7be4f935e751314bb950c70869bf09b143a6b1`, with all 46 non-version component
+files unchanged. The native repair recommends confirmed full removal of
+attributable original daily forecast statistics, b2 archives and retired season
+series, including disabled sensors. After completed cleanup, no unused HGT
+forecast archive or metadata remains. Installation/opening alone deletes nothing;
+normal users need no Mac script. [Upgrade](docs/UPGRADING_8.3.5.md) and
+[focused acceptance](docs/ACCEPTANCE_8.3.5b3.md) explain the exact boundary.
+The catalogue determines actual publication; package checks and operator
+acceptance are separate from the accepted source. B2 remains unchanged.
 
-The [official OGD HGT source](docs/HGT_OGD_PLAN.md) is verified; a separate measured
-series with historical backfill and ongoing corrected daily values is still to
-be implemented. It must not reuse the old forecast averages. Full Gold and the
-independent review remain separate requirements.
+Official [OGD HGT source fields](docs/HGT_OGD_PLAN.md) are verified; measured
+history/backfill with corrected daily values is still to be implemented as a
+separate series. Full Gold, SQLite test-cleanup diagnosis and independent review
+remain open. Earlier b1 operation/wind and b2 visible HGT acceptance stay closed.
 
 ## Published stable 8.3.4: clearer setup and verified HA 2026.11 support
 
@@ -99,8 +103,8 @@ regular merge, successful packaging checks and verified prerelease. Stable
 8.3.4 remains latest. Operator installation, normal operation and a bounded
 read-only wind/HGT check are recorded in the
 [focused acceptance plan](docs/ACCEPTANCE_8.3.5b1.md). The HGT state-class Repair
-remains an open migration issue in b1. The prepared, unreleased
-[published b2 archive default](docs/RELEASE_8.3.5b2.md) preserves that old series and
+remains an open migration issue in b1. The published
+[b2 archive default](docs/RELEASE_8.3.5b2.md) preserves that old series and
 uses native Core repair recomputation; it needs a later fixed test package and
 operator acceptance before stable promotion. Packaging itself introduced no
 additional runtime capability.
@@ -126,13 +130,13 @@ discovery exemptions for this public weather service. Its seven virtual groups
 do not fit the official single-device exception; dynamic-device and historical
 stale-device assessments remain partial, with their evidence limits explicit.
 
-The unreleased [wind-statistics follow-up](docs/WIND_STATISTICS_MIGRATION.md)
+The published b1 [wind-statistics follow-up](docs/WIND_STATISTICS_MIGRATION.md)
 preserves existing arithmetic rows under an archive ID before enabling circular
 statistics on the retained sensor. Release/operator acceptance remain open.
-The unreleased [diagnostic-name follow-up](docs/DIAGNOSTIC_TRANSLATIONS.md)
+The published b1 [diagnostic-name follow-up](docs/DIAGNOSTIC_TRANSLATIONS.md)
 translates both optional helper entities and their shared service groups while
 preserving IDs and personal registry choices. Technical state/attribute strings
-retain their compatibility contracts. The later unreleased
+retain their compatibility contracts. The published b1
 [service-group naming follow-up](docs/SERVICE_GROUP_TRANSLATIONS.md) covers the
 remaining fixed group labels through native DE/EN/FR/IT device keys, retaining
 English defaults, provider/station text, IDs and personal choices. It adds
@@ -149,7 +153,7 @@ authoritative multilingual locality aliases before adding provider name
 translations. Preserve personal registry choices, identities, history,
 four-language catalogues and existing quality/security gates.
 
-The unreleased [shared-diagnostic lifecycle fix](docs/SHARED_DIAGNOSTIC_LIFECYCLE.md)
+The published b1 [shared-diagnostic lifecycle fix](docs/SHARED_DIAGNOSTIC_LIFECYCLE.md)
 adds explicit ownership and native registry-preserving handoff for the two
 helpers. It covers ordinary entry departure, changed startup order and bounded
 failure/concurrency cases without reloading peer weather sources. Conflicting
@@ -157,7 +161,7 @@ legacy records stop the transfer with a repair; historical cleanup and overall
 dynamic/stale-device applicability remain separate. Release/operator acceptance
 is not inferred from this source work.
 
-The unreleased [manual device-removal policy](docs/DEVICE_REMOVAL.md) permits
+The published b1 [manual device-removal policy](docs/DEVICE_REMOVAL.md) permits
 only an unambiguous empty service shell for a non-existing entry ID. Current,
 disabled, shared, bound or linked groups stay protected. Native device-page
 and Recorder tests bound the behaviour; source-history review establishes
@@ -219,7 +223,7 @@ custom integrations.
 | Scope | Decision still needed |
 |---|---|
 | Locality names in other languages | Obtain authoritative aliases; preserve provider identities and avoid invented translations or duplicate places. |
-| Remaining Gold engineering work | Diagnostic defaults, service metadata and alternative-provider labels are delivered in published stable 8.3.4. Native pollen-station changes reuse the existing groups; historical orphan review, entity translations and the fixed-group lifecycle assessment remain separate. The unreleased wind migration has native Recorder evidence but still needs release/operator acceptance. Discovery exemptions have documented applicability reasons. Icon/error translations are delivered in published and operator-accepted stable 8.3.3; preserve existing user choices and history. Shared-Reconfigure focused acceptance is completed within its reported scope. |
+| Remaining Gold engineering work | Diagnostic defaults, service metadata and alternative-provider labels are delivered in published stable 8.3.4. Native pollen-station changes reuse the existing groups; historical orphan review, entity translations and the fixed-group lifecycle assessment remain separate. The published b1 wind migration has bounded native/operator evidence; historical inventory and remaining rule-specific evidence stay separate. Discovery exemptions have documented applicability reasons. Icon/error translations are delivered in published and operator-accepted stable 8.3.3; preserve existing user choices and history. Shared-Reconfigure focused acceptance is completed within its reported scope. |
 | External contributor CodeQL | The unprivileged route is implemented; retain evidence from the first actual external-fork run. A skipped analysis is not completed analysis. |
 | Processed local-forecast data | Assess provider payloads, resource limits and compatibility separately from the already released catalogue-based ICON selection. |
 | New sources/entities | Scope and test separately; no new device actions/sources in a documentation or release change. |

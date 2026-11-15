@@ -1,9 +1,9 @@
 # Set up MeteoSwiss
 
-**HGT upgrade policy:** published b2 archives old forecast statistics. The
-next, unreleased follow-up adds the [recommended native cleanup](UPGRADING_8.3.5.md)
-so a completed upgrade leaves no unused HGT forecast archive. Its deletion
-requires one explicit confirmation; current forecasts and ordinary history remain.
+**HGT upgrade policy:** 8.3.5b3 includes the [recommended native cleanup](UPGRADING_8.3.5.md).
+After confirmed removal, no unused HGT forecast archive remains. Current
+forecasts and ordinary history continue. Published b2 itself keeps its historical
+archive-and-keep behaviour; select the explicitly published b3 package for cleanup.
 
 ## Location privacy before setup
 
@@ -44,7 +44,7 @@ Start with [Archive and keep history by default](UPGRADING_8.3.5.md). It
 separates published b1 from the prepared HGT follow-up and explains the normal
 update, automatic preservation, status attributes, optional archive charts and
 real-conflict path. A permanently unresolved HGT state-class Repair is not the
-normal successful outcome. In b2, routine updates preserve statistics. In the next package, use the native HGT cleanup repair to confirm removal of obsolete forecasts; do not purge unrelated series.
+normal successful outcome. In b2, routine updates preserve statistics. In b3, use the native HGT cleanup repair to confirm removal of obsolete forecasts; do not purge unrelated series.
 
 ## 1. Check prerequisites
 

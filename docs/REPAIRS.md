@@ -1,9 +1,9 @@
 # Correct an invalid saved forecast location
 
-**Prepared HGT upgrade cleanup:** the next package adds a native confirmation
-for complete removal of obsolete forecast statistics. See the
-[upgrade guide](UPGRADING_8.3.5.md). Published b2 preserves archives until that
-follow-up is released; it does not already contain the deletion repair.
+**HGT cleanup in 8.3.5b3:** the package includes a native confirmation for
+complete removal of obsolete forecast statistics. See the
+[upgrade guide](UPGRADING_8.3.5.md) and [focused check](ACCEPTANCE_8.3.5b3.md).
+Published b2 preserves archives; it does not contain this deletion repair.
 
 **Availability:** included in published, operator-accepted
 [8.3.1b1](RELEASE_8.3.1b1.md). The [stable 8.3.1 package](RELEASE_8.3.1.md)
@@ -81,7 +81,7 @@ Do not delete old statistics to remove the warning. The notice clears on a
 successful retry and is removed on unload. A provider outage alone is not this
 repair condition. The text is bundled and HA-loaded in DE/EN/FR/IT.
 
-## Remove obsolete HGT forecast statistics (unreleased)
+## Remove obsolete HGT forecast statistics (8.3.5b3)
 
 Entry-owned inspection runs after registration, including disabled sensors and
 attributable retired season identities. The fixable notice lists exact old

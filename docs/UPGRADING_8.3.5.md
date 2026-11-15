@@ -1,11 +1,12 @@
 # 8.3.5 upgrade: remove obsolete HGT forecast statistics
 
-**Availability:** the native cleanup described here is an unreleased follow-up
-to published **8.3.5b2**. B2 itself retains its archive-and-keep behaviour;
-its immutable [release notes](RELEASE_8.3.5b2.md) and
-[accepted test scope](ACCEPTANCE_8.3.5b2.md) remain historical evidence.
-Use a released package containing this follow-up, on HA **2026.11.0 or newer**.
-Stable **8.3.4** remains the latest stable release until explicitly superseded.
+**Package:** the native cleanup is included in **8.3.5b3**. Confirm its
+publication in the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b3)
+before updating; follow the [focused b3 check](ACCEPTANCE_8.3.5b3.md).
+Published b2 retains its archive-and-keep behaviour; its immutable
+[notes](RELEASE_8.3.5b2.md) and [accepted scope](ACCEPTANCE_8.3.5b2.md) remain
+historical evidence. HA **2026.11.0 or newer** is required. Stable **8.3.4**
+remains latest until explicitly superseded.
 
 ## Recommended default: remove obsolete forecast statistics
 
@@ -24,14 +25,15 @@ a repair; the destructive action has one explicit confirmation.
 | Disabled HGT sensor or disabled forecast feature within a loaded entry | Entry-owned inspection still discovers registered/tombstoned series; it does not require a live forecast sensor. |
 | Fresh installation or already completed cleanup | No old metadata, no cleanup notice, no new archive. |
 | Disabled integration entry | Inspection runs when the entry is next enabled; disabled entries do not execute migrations in the background. |
-| Missing ownership, reused entity ID, foreign metadata or customisation re-enabling forecast statistics | No guessed deletion. A visible conflict requires diagnosis. Historical records whose registry ownership was already erased cannot be silently identified from a display name. |
+| Reused entity ID, foreign metadata or customisation re-enabling forecast statistics | No guessed deletion. A visible conflict requires diagnosis. |
+| Already orphaned histories whose registry ownership/tombstone was erased | They cannot be silently identified from display names. Separate inventory is required; absence of a cleanup notice does not prove that every unattributable historical row in HA is gone. |
 
 ## One normal upgrade, one native confirmation
 
 1. Keep an existing usable protected backup outside HA if a recovery point is
    required. Do not remove/recreate the integration, entities or dashboards.
 2. Update the existing Marketplace/HACS installation to an explicitly released
-   package containing this follow-up, using the ordinary installation procedure.
+   8.3.5b3 package, using the ordinary installation procedure.
 3. Open **Settings → System → Repairs → Remove obsolete HGT forecast statistics**.
    Review the exact statistic IDs shown. They are forecasts, not OGD observations.
 4. Confirm **Permanently remove old HGT forecasts**. This is irreversible within
@@ -59,7 +61,7 @@ Other entries' issues remain independent.
   not promise secure physical erasure from database pages, backups or copies.
 - Official measured HGT history is a separate feature with its own provenance;
   see [the OGD source plan](HGT_OGD_PLAN.md). Deleting old forecasts does not
-  generate measured history or make b2 an OGD HGT importer.
+  generate measured history or make b3 an OGD HGT importer.
 
 ## Evidence and recovery boundary
 

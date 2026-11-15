@@ -1,9 +1,9 @@
 # Sensor reference
 
-**HGT upgrade policy:** published b2 archives old forecast statistics. The
-next, unreleased follow-up adds the [recommended native cleanup](UPGRADING_8.3.5.md)
-so a completed upgrade leaves no unused HGT forecast archive. Its deletion
-requires one explicit confirmation; current forecasts and ordinary history remain.
+**HGT upgrade policy:** 8.3.5b3 includes the [recommended native cleanup](UPGRADING_8.3.5.md).
+After confirmed removal, no unused HGT forecast archive remains. Current
+forecasts and ordinary history continue. Published b2 itself keeps its historical
+archive-and-keep behaviour; select the explicitly published b3 package for cleanup.
 
 This describes the current maintained code, not every feature in older upstream
 releases. Keys are internal description keys, not fixed entity IDs. HA derives
@@ -188,7 +188,7 @@ than four hours is rejected on refresh.
 
 ## Daily heating degree days
 
-The unreleased cleanup adds `hgt_legacy_cleanup_required` while a temporary
+The b3 cleanup provides `hgt_legacy_cleanup_required` while a temporary
 HGT archive remains. The native confirmation removes that archive and its
 metadata completely, then clears both the attribute and the cleanup notice.
 An official [measured OGD HGT series](HGT_OGD_PLAN.md) remains separate planned work.

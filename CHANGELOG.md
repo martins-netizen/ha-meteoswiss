@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+Further measured-OGD HGT, Gold and independent-review work remains separate.
+
+## [8.3.5b3] — 2026-11-15 · native HGT cleanup test prerelease
+
 - Add a native recommended cleanup repair for obsolete HGT forecast statistics
   across direct upgrades and b2 archives. Include disabled sensors and attributable
   retired season identities. Explicit confirmation deletes complete selected
@@ -9,10 +13,16 @@
   opening a repair never counts as consent. Keep unrelated statistics and IDs.
 - Update upgrade, repair, architecture and privacy/security guidance. Record
   official OGD HGT parameters and the separate measured-series implementation
-  boundary. This follow-up is not present in immutable b2 and does not yet
+  boundary. This cleanup is included in b3, not immutable b2, and does not yet
   implement the measured HGT importer.
 
-Future Gold and independent-review work remains separate.
+Package accepted PR #112 (`9d7be4f935e751314bb950c70869bf09b143a6b1`): all
+46 non-version component files remain identical; only manifest.json/version.py
+become 8.3.5b3. Add fixed Publisher V1.10 and its independently tested profile,
+retaining all previous publishers, eighteen older releases/tags and stable 8.3.4.
+See [release notes](docs/RELEASE_8.3.5b3.md) and [focused acceptance](docs/ACCEPTANCE_8.3.5b3.md).
+The source translation schema fix is included; confirmation/error texts remain.
+Publication, installation and actual confirmed cleanup retain separate evidence.
 
 ## [8.3.5b2] — 2026-11-14 · HGT archive default test prerelease
 
