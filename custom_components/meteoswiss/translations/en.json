@@ -337,6 +337,9 @@
       },
       "cache_stats": {
         "name": "Cache Statistics"
+      },
+      "hgt_measured": {
+        "name": "Heating degree days 12/20 last observed day"
       }
     },
     "binary_sensor": {
@@ -490,6 +493,28 @@
     "hgt_legacy_cleanup_blocked": {
       "title": "HGT cleanup needs review",
       "description": "The old forecast statistics could not be attributed or validated safely. No deletion was performed. Check Recorder, the HGT sensor customisation and the upgrade guide, then reload this integration."
+    },
+    "hgt_ogd_retired_cleanup": {
+      "title": "Remove unused official HGT statistics",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Permanently remove unused measured HGT series",
+            "description": "Recommended: permanently remove the exact measured HGT series below. No configured MeteoSwiss station uses them. All selected long-term and short-term data and their metadata will be deleted; no replacement archive is created. Current station data and unrelated statistics are retained. Keep an existing protected backup outside Home Assistant if recovery is required.\n\n{statistic_ids}"
+          }
+        },
+        "error": {
+          "cleanup_not_verified": "Deletion was not confirmed. Close and reopen this repair to inspect the actual state before another confirmation. A queued Recorder operation may still complete."
+        }
+      }
+    },
+    "hgt_ogd_cleanup_blocked": {
+      "title": "Unused official HGT statistics need checking",
+      "description": "Ownership or Recorder metadata could not be verified. No guessed deletion is allowed. Check the HGT guide and leave unrelated series unchanged."
+    },
+    "hgt_ogd_import_blocked": {
+      "title": "The ownership or metadata of the official HGT statistics needs checking.",
+      "description": "Ownership or Recorder metadata could not be verified. No guessed deletion is allowed. Check the HGT guide and leave unrelated series unchanged."
     }
   },
   "exceptions": {
@@ -549,6 +574,12 @@
     },
     "precipitation_queue_failed": {
       "message": "The hourly precipitation statistics could not be queued for processing."
+    },
+    "hgt_ogd_unavailable": {
+      "message": "The official HGT update could not be confirmed. It will be retried."
+    },
+    "hgt_ogd_conflict": {
+      "message": "The ownership or metadata of the official HGT statistics needs checking."
     }
   }
 }

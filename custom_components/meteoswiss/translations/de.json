@@ -337,6 +337,9 @@
       },
       "cache_stats": {
         "name": "Cache-Statistik"
+      },
+      "hgt_measured": {
+        "name": "Heizgradtage 12/20 letzter Messtag"
       }
     },
     "binary_sensor": {
@@ -490,6 +493,28 @@
     "hgt_legacy_cleanup_blocked": {
       "title": "HGT-Bereinigung muss geprüft werden",
       "description": "Die alten Prognosestatistiken konnten nicht sicher zugeordnet oder geprüft werden. Es wurde nichts gelöscht. Recorder, Anpassungen am HGT-Sensor und die Upgrade-Anleitung prüfen; danach diese Integration neu laden."
+    },
+    "hgt_ogd_retired_cleanup": {
+      "title": "Nicht mehr verwendete HGT-Messwertstatistiken entfernen",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Nicht mehr verwendete HGT-Messreihen dauerhaft löschen",
+            "description": "Empfohlen: Die unten aufgeführten HGT-Messreihen dauerhaft löschen. Keine konfigurierte MeteoSchweiz-Station verwendet sie mehr. Gelöscht werden sämtliche ausgewählten Langzeit- und Kurzzeitdaten samt Metadaten, ohne Ersatzarchiv. Aktuelle Stationsdaten und fremde Statistiken bleiben erhalten. Falls ein Rückweg benötigt wird, ein vorhandenes geschütztes Backup ausserhalb von Home Assistant bereithalten.\n\n{statistic_ids}"
+          }
+        },
+        "error": {
+          "cleanup_not_verified": "Die Löschung konnte nicht bestätigt werden. Diese Reparatur schliessen und erneut öffnen, um vor einer weiteren Bestätigung den tatsächlichen Stand zu lesen. Ein Recorder-Auftrag kann noch abschliessen."
+        }
+      }
+    },
+    "hgt_ogd_cleanup_blocked": {
+      "title": "Nicht mehr verwendete HGT-Messwertstatistiken müssen geprüft werden",
+      "description": "Die Zuordnung oder Recorder-Metadaten konnten nicht geprüft werden. Es ist keine vermutete Löschung zulässig. Die HGT-Anleitung prüfen und fremde Reihen unverändert lassen."
+    },
+    "hgt_ogd_import_blocked": {
+      "title": "Die Zuordnung oder die Metadaten der offiziellen HGT-Statistik müssen geprüft werden.",
+      "description": "Die Zuordnung oder Recorder-Metadaten konnten nicht geprüft werden. Es ist keine vermutete Löschung zulässig. Die HGT-Anleitung prüfen und fremde Reihen unverändert lassen."
     }
   },
   "exceptions": {
@@ -549,6 +574,12 @@
     },
     "precipitation_queue_failed": {
       "message": "Die stündlichen Niederschlagsstatistiken konnten nicht zur Verarbeitung eingeplant werden."
+    },
+    "hgt_ogd_unavailable": {
+      "message": "Die Aktualisierung der offiziellen HGT-Daten konnte nicht bestätigt werden. Sie wird erneut versucht."
+    },
+    "hgt_ogd_conflict": {
+      "message": "Die Zuordnung oder die Metadaten der offiziellen HGT-Statistik müssen geprüft werden."
     }
   }
 }

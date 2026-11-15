@@ -26,6 +26,17 @@ cleanup successful. See [publication and acceptance evidence](docs/RELEASE_EVIDE
 and [the short focused check](docs/ACCEPTANCE_8.3.5b3.md) explain the deletion
 boundary. **8.3.4 remains latest stable.** HA **2026.11.0 or newer** is required.
 
+**Package-specific HA minimum:**
+
+| Published package | Required HA Core |
+|---|---|
+| 8.3.5b1 / b2 / b3 | 2026.11.0 or newer |
+| Latest stable 8.3.4 | 2026.8.3 or newer |
+
+The HA 2026.11.1 Marketplace page can show an installed beta together with the
+minimum of the stable release it is following. The beta still requires
+2026.11.0. See [the reproduced display mismatch](docs/MARKETPLACE_VERSION_DISPLAY.md).
+
 **Existing users, including b2:** update the existing entry normally; then use
 **Settings → System → Repairs** if old HGT forecasts are found. Opening or
 cancelling the repair deletes nothing. Confirming permanently removes the exact
@@ -35,10 +46,13 @@ sensors. Read [ownership/conflict limits](docs/UPGRADING_8.3.5.md) before confir
 No Mac script or entry recreation is needed. B2 itself retains its historical
 archive-and-keep behaviour; the new cleanup is included in b3.
 
-**Measured HGT history remains separate planned work.** Official OGD provides
-HGT 12/20 directly, but this package does not yet add its importer. Deleting old
-forecast averages does not resume measured HGT long-term statistics. See the
-[OGD source plan](docs/HGT_OGD_PLAN.md).
+**Unreleased development: official measured HGT 12/20.** A separate observed-day
+sensor and station-specific daily/monthly/annual statistics import the official
+OGD products, backfill available observations and recheck corrections. Forecasts
+keep their existing identity. This feature is **not in published b3**; packaging
+and a focused HA check are separate. See [sources, charts and removal](docs/HGT_OGD_PLAN.md).
+Removing the final MeteoSwiss integration entry also removes its owned OGD HGT
+statistics; normal sensor history and unrelated series are retained.
 
 **Available in the community catalogue.** On HA **2026.11 or newer**, open
 **Settings → Marketplace** and search for **MeteoSwiss**. On older HA versions,

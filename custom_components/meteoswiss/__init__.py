@@ -9,6 +9,7 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.device_registry import AnyDeviceEntry
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .alerts import MeteoSwissAlertsAPI
 from .const import (
@@ -38,6 +39,9 @@ from .coordinator import (
 from .device_removal import DeviceRemovalStatus, async_device_removal_status
 from .forecast_location_config import resolve_forecast_target
 from .hgt_cleanup import async_clear_cleanup_issue, async_setup_cleanup
+from .hgt_ogd import HgtError
+from .hgt_ogd_coordinator import MeteoSwissHgtCoordinator
+from .hgt_ogd_manager import get_hgt_manager
 from .localization import async_load_warning_labels
 from .precipitation import (
     ARCHIVE_LOOKBACK_MONTHS,
@@ -92,7 +96,7 @@ async def _async_refresh_optional_coordinators(*coordinators) -> None:
 
 def _keep_coordinator_polling(
     entry: MeteoSwissConfigEntry,
-    coordinator: MeteoSwissHourlyPrecipitationCoordinator,
+    coordinator: DataUpdateCoordinator,
 ) -> None:
     """Keep a coordinator without entity listeners polling until unload."""
     entry.async_on_unload(coordinator.async_add_listener(lambda: None))
@@ -195,6 +199,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
     # Fetch initial data for current weather
     await coordinator.async_config_entry_first_refresh()
 
+    hgt_ogd_coordinator = None
+    if data_source != DATA_SOURCE_OPENMETEO and "recorder" in hass.config.components:
+        try:
+            hgt_ogd_coordinator = MeteoSwissHgtCoordinator(hass, entry, station_id, shared_session)
+        except HgtError:
+            _LOGGER.warning("Official HGT needs a valid observation-station identity")
+
     # Create alerts API and coordinator
     alerts_api = MeteoSwissAlertsAPI(session=shared_session)
     alerts_api.postal_code = post_code
@@ -235,6 +246,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
         meteoswiss_pollen_coordinator=meteoswiss_pollen_coordinator,
         hourly_precipitation_coordinator=hourly_precipitation_coordinator,
         precipitation_archive_coordinator=precipitation_archive_coordinator,
+        hgt_ogd_coordinator=hgt_ogd_coordinator,
         data_source=data_source,
         session=shared_session,
         forecast_target=forecast_target,
@@ -262,6 +274,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
     if precipitation_archive_coordinator is not None:
         optional_coordinators.append(precipitation_archive_coordinator)
         _keep_coordinator_polling(entry, precipitation_archive_coordinator)
+    if hgt_ogd_coordinator is not None:
+        optional_coordinators.append(hgt_ogd_coordinator)
+        _keep_coordinator_polling(entry, hgt_ogd_coordinator)
 
     entry.async_create_background_task(
         hass,
@@ -312,6 +327,7 @@ async def async_remove_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) 
     """Remove an obsolete repair even when the entry never finished setup."""
     async_clear_forecast_location_issue(hass, entry)
     async_clear_cleanup_issue(hass, entry.entry_id)
+    await get_hgt_manager(hass).async_entry_removed(entry.entry_id)
 
 
 async def async_remove_config_entry_device(

@@ -1,5 +1,18 @@
 # Foehn and HGT metadata: numeric codes, predictions and statistics
 
+**Unreleased measured HGT:** the new observed-day entity has a distinct
+`heating_degree_days_observed` unique-ID suffix and the existing station device.
+It exposes the last completed official UTC-day amount in `°C·d`, without a
+measurement state class or temperature device class. Long-term data uses three
+station-specific external IDs with `has_sum=True`, `mean_type=NONE` and explicit
+`unit_class=None`; no Celsius/Fahrenheit offset conversion applies to this
+compound unit. Each row's `state` is the official product amount and `sum` the
+cumulative known amounts in that same product. Native `change` includes the
+first real period without an invented baseline. Daily gaps are not filled;
+monthly/yearly values come from their own official files. See
+[chart semantics and cleanup](HGT_OGD_PLAN.md). Historical forecast metadata
+correction below keeps its original published scope.
+
 **8.3.5b3 upgrade policy beyond published b2:** remove obsolete forecast
 statistics through the [explicit native cleanup](UPGRADING_8.3.5.md). Opening
 that repair performs no deletion. After confirmed complete deletion and readback,

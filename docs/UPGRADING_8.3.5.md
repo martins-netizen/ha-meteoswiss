@@ -1,5 +1,12 @@
 # 8.3.5 upgrade: remove obsolete HGT forecast statistics
 
+**Current development adds a separate measured-HGT feature.** This guide's
+accepted b3 forecast cleanup remains unchanged and is not repeated. The new
+OGD importer is unreleased; installing b3 does not install it. Its
+[usage/removal guide](HGT_OGD_PLAN.md) explains independent station-specific
+measured histories, initial backfill and continuing corrections. Keep the
+existing entry; never substitute an old forecast archive for observations.
+
 **Package:** the native cleanup is included in published **8.3.5b3**. Its
 [publication and focused operator acceptance](RELEASE_EVIDENCE_8.3.5b3.md) are
 complete. New upgrading users can follow the [focused b3 check](ACCEPTANCE_8.3.5b3.md).
@@ -12,7 +19,7 @@ remains latest until explicitly superseded.
 
 The old HGT series contains averages of earlier changing **forecasts**. It is
 not a measured heating-degree-day record. It is no longer updated and is not
-needed for current forecasts or the separately planned official OGD history.
+needed for current forecasts or the separate official OGD history feature.
 The recommendation is to delete it completely rather than keep an unused
 archive. No statistics are deleted merely by installing an update or opening
 a repair; the destructive action has one explicit confirmation.

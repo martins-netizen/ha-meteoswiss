@@ -1,5 +1,21 @@
 # Maintained fork: architecture and data contracts
 
+**Unreleased official measured HGT:** `hgt_ogd.py` validates bounded canonical
+station resources and completed UTC daily/monthly/annual products off the event
+loop. `hgt_ogd_coordinator.py` provides entry-owned optional polling;
+`hgt_ogd_manager.py` shares source snapshots and per-station locks across entries
+and persists only station ownership. `hgt_ogd_recorder.py` performs native
+metadata preflight, bounded row comparison, exact-slot withdrawals, batched
+upserts, queue completion and complete readback. Existing compound units and
+names are preserved; ambiguous ownership is not adopted. No new dependency,
+SQL writer, alternate session or archive is introduced. Source refresh failure
+does not delay normal weather startup. Unload clears the final in-memory client
+and snapshots while retaining explicitly owned active history; station changes
+surface native confirmed cleanup. Removing the final integration entry clears
+owned OGD products, with verified absence before owner storage is removed.
+[Full source/lifecycle contract](HGT_OGD_PLAN.md). Published b3's forecast
+cleanup below keeps its accepted scope.
+
 **HGT cleanup in the 8.3.5b3 test package:** an entry-owned post-startup
 inventory discovers attributable obsolete forecast statistics across old and b2
 upgrade paths, including disabled sensors and native season-entity tombstones.

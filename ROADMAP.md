@@ -13,13 +13,19 @@ and stable 8.3.4 stays latest. The operator confirmed the existing-entry update
 and focused native HGT cleanup successful; do not reopen those completed steps.
 The [upgrade guide](docs/UPGRADING_8.3.5.md) retains consent/ownership boundaries.
 
-Current development addresses the [test Recorder lifecycle](docs/TEST_RECORDER_LIFECYCLE.md):
-finish tracked work before shutdown and assert explicit pool closure. All 48
-component files, versions, workflows and locks are unchanged; hosted validation
-of this follow-up remains required. Official [OGD HGT fields](docs/HGT_OGD_PLAN.md)
-are verified; measured history/backfill and continuing corrections remain a
-separate implementation. Full Gold, independent review and stable promotion
-remain separate. Earlier b1/b2 accepted scopes stay closed.
+The [test Recorder lifecycle](docs/TEST_RECORDER_LIFECYCLE.md) follow-up was
+regularly merged as PR #114 at `3f58d8ac9d60e792a2b01b9ced73e7bd39d0f192`.
+Ten head and nine actual merge checks passed; both actual HA jobs passed
+2,901 tests plus 83 subtests without SQLite ResourceWarning. That test-only
+change requires no production update.
+
+**Current unreleased development:** [official measured HGT](docs/HGT_OGD_PLAN.md)
+adds separate daily/monthly/annual OGD products, verified backfill, corrections,
+shared station ownership and native retired-series cleanup. It never converts
+old forecasts into observations. Final integration-entry removal clears owned
+OGD HGT products; station changes offer explicit cleanup. Hosted feature checks,
+packaging and operator acceptance remain separate. Full Gold, independent review
+and stable promotion remain open. Earlier b1/b2/b3 accepted scopes stay closed.
 
 ## Published stable 8.3.4: clearer setup and verified HA 2026.11 support
 

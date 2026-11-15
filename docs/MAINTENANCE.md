@@ -1,5 +1,13 @@
 # Maintenance and release procedure
 
+**Measured-HGT development gate:** require native backfill/correction/change,
+source-withdrawal, duplicate-entry, station-change, repair-confirmation and final
+entry-removal tests on both supported HAs. Retain 100% line/branch coverage of
+all four HGT OGD modules. Do not release this runtime under an existing immutable
+tag; package separately after successful head and actual-merge checks. Existing
+b3 installation/cleanup acceptance and PR #114 test-only verification stay closed.
+See [the feature contract](HGT_OGD_PLAN.md).
+
 1. Keep `main` aligned with `LNKtwo/main`; review upstream changes before
    integrating them into `development`. Keep individual upstream PR branches
    focused. If an upstream fix is accepted, rebuild/rebase the integration

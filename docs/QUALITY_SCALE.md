@@ -18,8 +18,12 @@ scoped to its published archive-and-keep runtime. It is not full Gold certificat
 [Publication evidence](RELEASE_EVIDENCE_8.3.5b3.md) and the operator's focused
 native cleanup acceptance are complete. The [Recorder lifecycle follow-up](TEST_RECORDER_LIFECYCLE.md)
 drains tracked work before teardown and requires explicit connection closure;
-it changes no component or production behaviour. Its hosted checks remain
-separate from b3's closed acceptance. Full Gold/independent review stay open.
+it changes no component or production behaviour. PR #114 is merged with all
+ten head and nine actual merge checks successful, including both HA suites
+without SQLite ResourceWarning. B3 acceptance remains closed. The current
+[measured-HGT feature](HGT_OGD_PLAN.md) has separate native source/import/cleanup
+coverage; hosted feature verification, packaging and operator acceptance are
+separate. Full Gold/independent review stay open.
 
 **Runtime assessment:** 24 October 2026. **Documentation updated:** 15 November 2026.
 **Scope:** the 8.3 runtime accepted as
@@ -133,8 +137,8 @@ The normal upgrade uses one native repair confirmation to permanently remove
 attributable obsolete HGT forecast statistics and metadata. No Mac script or
 replacement archive is required. Current forecasts, ordinary history and
 unrelated statistics are retained. Read [the upgrade guide](UPGRADING_8.3.5.md)
-and [focused b3 protocol](ACCEPTANCE_8.3.5b3.md). Actual OGD measured HGT import
-is still separate planned work. Earlier b1/b2 accepted scopes stay closed.
+and [focused b3 protocol](ACCEPTANCE_8.3.5b3.md). The separate measured OGD importer is implemented in current unreleased
+development; it is not in b3. See [its own source/lifecycle contract](HGT_OGD_PLAN.md). Earlier b1/b2 accepted scopes stay closed.
 
 ## 8.3.5b2: fixed HGT archive test package
 

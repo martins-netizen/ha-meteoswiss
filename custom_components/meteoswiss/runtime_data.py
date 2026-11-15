@@ -21,6 +21,7 @@ if TYPE_CHECKING:
         OpenMeteoPollenCoordinator,
     )
     from .forecast_location_config import ForecastTarget
+    from .hgt_ogd_coordinator import MeteoSwissHgtCoordinator
 
 
 @dataclass(slots=True)
@@ -42,6 +43,7 @@ class MeteoSwissRuntimeData:
     precipitation_archive_coordinator: (
         MeteoSwissHourlyPrecipitationCoordinator | None
     ) = None
+    hgt_ogd_coordinator: MeteoSwissHgtCoordinator | None = None
 
 
 type MeteoSwissConfigEntry = ConfigEntry[MeteoSwissRuntimeData]
