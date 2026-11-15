@@ -4,6 +4,15 @@
 adds native tests and documentation; component files, catalogues, dependencies,
 workflows and published stable 8.3.4 are unchanged.
 
+**Prepared b4 extension, 15 November 2026:** the inventory below retains its
+base 45-entity scope. With Recorder and a MeteoSwiss measurement station, b4
+adds one optional observed-HGT sensor, `hgt_measured`, for up to **46 entities**
+(41 sensors, three binary sensors, two weather entities). Open-Meteo entries
+retain the base layout. This additional sensor has a distinct native name in
+DE/EN/FR/IT and its own [native lifecycle/name tests](../tests/test_hgt_ogd_lifecycle.py).
+It uses the existing station device, retains personal names across station
+changes and does not rename today's HGT forecast. See [the focused check](ACCEPTANCE_8.3.5b4.md).
+
 The official Gold [entity-translations rule](https://contributors.home-assistant.io/core/quality-scale/entity-translations/)
 concerns entity names supplied through HA's translation mechanism. A suitable
 device-class name is also supported. An entity with no own name can inherit its
@@ -12,7 +21,7 @@ rather than inferring coverage from equal JSON key counts.
 
 ## Complete exposed-name inventory
 
-Each configured provider registers the following layout when all source roles
+Each configured provider registers the following base layout when all source roles
 are configured. Two optional diagnostics are disabled on first registration.
 Missing provider values do not remove the corresponding named entities.
 
@@ -34,6 +43,8 @@ binary-sensor keys. Four legacy sensor keys remain in all catalogues:
 `soil_temperature_5cm`, `soil_temperature_10cm`, `soil_temperature_20cm` and
 `season_heating_degree_days`. They do not imply active entities or a supported
 seasonal forecast accumulator. No key or entity is removed by this review.
+The b4 observed-HGT sensor adds a separate 42nd sensor-name key across providers;
+it is not one of those four retained legacy keys.
 
 ## Native evidence
 
@@ -64,8 +75,9 @@ Authoritative multilingual place aliases are a separate provider-data task;
 their absence is not a missing entity-name key. Browser-specific language
 behaviour is not independently exercised by these backend tests.
 
-The project records automated engineering evidence for every exposed entity
-name. Release/operator UI acceptance of the unreleased naming changes remains
-open. Device lifecycle, wind-statistics acceptance, independent security review
-and the overall [Gold assessment](QUALITY_SCALE.md) remain separate. Custom
-integrations have no official HA quality tier.
+The project records automated engineering evidence for the base names and the
+additional b4 observed-HGT entity. B1's reported visual acceptance remains
+bounded to its agreed scope; publication and focused acceptance of the new b4
+entity are separate. These results do not complete every Gold naming/locality
+rule or independent security review. The overall [Gold assessment](QUALITY_SCALE.md)
+remains separate. Custom integrations have no official HA quality tier.

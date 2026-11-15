@@ -2,26 +2,30 @@
 
 ## [Unreleased]
 
-- Drain tracked HA background/database work before native test Recorder pool
-  shutdown. Assert explicit connection closure and add a native shutdown-order
-  regression; runtime, versions, locks and workflows remain unchanged.
-- Record verified 8.3.5b3 publication and operator-confirmed native HGT cleanup.
-  Retain immutable release notes and all completed acceptance scopes.
+## [8.3.5b4] — 2026-11-15 · prepared measured HGT test prerelease
 
-- Add official measured HGT 12/20 in separate station-specific daily, monthly
-  and annual external statistics. Backfill source history, retain real zeroes
-  and missing values, upsert corrections, verify native Recorder commits and
-  keep measured/forecast identities separate. Share conditional source reads
-  between entries without mixing stations or storing a second archive.
-- Add a translated latest-observed-day sensor and explicit cleanup for retired
-  station products. Confirmed removal of the final integration entry also
-  removes its owned OGD HGT projections; normal sensor history remains. Protect
-  active peers, unknown ownership and changed metadata.
-- Record PR #114 actual-merge verification and update source, chart, privacy,
-  lifecycle and removal guidance. No version, published tag or test lock changes.
+- Package approved PR #115 at `29d9bc73b2ad0dedc91c73cf167f46223330d22a`:
+  official station HGT 12/20 daily/monthly/annual history, historical backfill,
+  continuing corrections, explicit gaps/zeroes and verified native Recorder
+  commits. Keep measured and forecast identities separate.
+- Add the translated latest-observed-day entity and exact-target retired-station
+  cleanup. Final integration-entry removal also removes owned OGD HGT products,
+  while preserving ordinary sensor history and unrelated statistics. Share
+  station ownership across entries and leave no replacement archive.
+- Include PR #114's native test Recorder lifecycle correction and document its
+  completed actual-merge verification; it needs no separate production update.
+- Preserve all 50 non-version component files out of 52; change only the two
+  version fields to 8.3.5b4. Add fixed Publisher V1.11 and its independent guard
+  profile; preserve all old publishers, nineteen prior releases/tags, latest
+  stable 8.3.4, dependency locks, workflow files and existing quality gates.
+- Reconcile README, active source/upgrade/repair/privacy/quality guidance and
+  the [package notes](docs/RELEASE_8.3.5b4.md). The actual minimum remains HA
+  2026.11.0; the separate Core Marketplace display mismatch is documented.
 
-The measured importer is unreleased; packaging and focused HA acceptance remain
-separate. Full Gold and independent-review work remain open.
+This package is prepared, not published or installed. Complete package checks,
+publication and the [focused measured-HGT acceptance](docs/ACCEPTANCE_8.3.5b4.md)
+remain separate. Existing b3 cleanup acceptance stays closed. Full Gold and
+independent review remain open.
 
 ## [8.3.5b3] — 2026-11-15 · native HGT cleanup test prerelease
 

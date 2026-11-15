@@ -1,7 +1,7 @@
 # Correct an invalid saved forecast location
 
-**Unreleased measured-HGT repairs:** after a weather-station change, **Remove
-unused measured HGT statistics** lists the exact retired station products.
+**Prepared 8.3.5b4 measured-HGT repairs:** after a weather-station change, **Remove
+unused official HGT statistics** lists the exact retired station products.
 Recommended action: confirm removal if the old station is no longer wanted.
 Opening/cancelling deletes nothing. Confirmation permanently deletes complete
 listed external statistics and metadata; no archive is created. Active peer

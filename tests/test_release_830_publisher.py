@@ -36,8 +36,9 @@ ROOT = Path(__file__).resolve().parents[1]
         ("v1.8", "8.3.4", "8.3.5b1", "b144a0b73d81358f27fd6ecd89a47120c8a0a1b9"),
         ("v1.9", "8.3.5b1", "8.3.5b2", "71c4c6269ea0c06cc5d2c43db9b0a24d8e6e9c08"),
         ("v1.10", "8.3.5b2", "8.3.5b3", "9d7be4f935e751314bb950c70869bf09b143a6b1"),
+        ("v1.11", "8.3.5b3", "8.3.5b4", "29d9bc73b2ad0dedc91c73cf167f46223330d22a"),
     ],
-    ids=["beta1", "beta2", "beta3", "beta4", "stable", "beta831", "stable831", "beta832", "stable832", "beta833", "stable833", "beta834", "stable834", "beta835", "beta835b2", "beta835b3"],
+    ids=["beta1", "beta2", "beta3", "beta4", "stable", "beta831", "stable831", "beta832", "stable832", "beta833", "stable833", "beta834", "stable834", "beta835", "beta835b2", "beta835b3", "beta835b4"],
 )
 def publisher(request):
     """Exercise each historical/follow-up boundary independently."""
@@ -58,6 +59,8 @@ def publisher(request):
         script = ROOT / "scripts/publish_meteoswiss_833_stable_v1.6.sh"
     elif tag == "8.3.4b1":
         script = ROOT / "scripts/publish_meteoswiss_834_beta_v1.7.sh"
+    elif tag == "8.3.5b4":
+        script = ROOT / "scripts/publish_meteoswiss_835_beta_v1.11.sh"
     elif tag == "8.3.5b3":
         script = ROOT / "scripts/publish_meteoswiss_835_beta_v1.10.sh"
     elif tag == "8.3.5b2":
@@ -78,7 +81,7 @@ def publisher(request):
     module._source_version = source_version
     module._is_stable = tag in {"8.3.0", "8.3.1", "8.3.2", "8.3.3", "8.3.4"}
     module._identical_files = {
-        "8.3.0b4": 37, "8.3.0": 37, "8.3.1b1": 38, "8.3.1": 38, "8.3.2b1": 38, "8.3.2": 38, "8.3.3b1": 39, "8.3.3": 39, "8.3.4b1": 39, "8.3.4": 39, "8.3.5b1": 42, "8.3.5b2": 44, "8.3.5b3": 46
+        "8.3.0b4": 37, "8.3.0": 37, "8.3.1b1": 38, "8.3.1": 38, "8.3.2b1": 38, "8.3.2": 38, "8.3.3b1": 39, "8.3.3": 39, "8.3.4b1": 39, "8.3.4": 39, "8.3.5b1": 42, "8.3.5b2": 44, "8.3.5b3": 46, "8.3.5b4": 50
     }.get(tag, 36)
     return module
 
@@ -115,22 +118,24 @@ class GitHub:
         files = json.loads(
             (ROOT / "tests/fixtures/release_830_component_paths.json").read_text()
         )
-        if publisher.TAG in {"8.3.0b4", "8.3.0", "8.3.1b1", "8.3.1", "8.3.2b1", "8.3.2", "8.3.3b1", "8.3.3", "8.3.4b1", "8.3.4", "8.3.5b1", "8.3.5b2", "8.3.5b3"}:
+        if publisher.TAG in {"8.3.0b4", "8.3.0", "8.3.1b1", "8.3.1", "8.3.2b1", "8.3.2", "8.3.3b1", "8.3.3", "8.3.4b1", "8.3.4", "8.3.5b1", "8.3.5b2", "8.3.5b3", "8.3.5b4"}:
             files.append(PREFIX + "station_condition.py")
-        if publisher.TAG in {"8.3.1b1", "8.3.1", "8.3.2b1", "8.3.2", "8.3.3b1", "8.3.3", "8.3.4b1", "8.3.4", "8.3.5b1", "8.3.5b2", "8.3.5b3"}:
+        if publisher.TAG in {"8.3.1b1", "8.3.1", "8.3.2b1", "8.3.2", "8.3.3b1", "8.3.3", "8.3.4b1", "8.3.4", "8.3.5b1", "8.3.5b2", "8.3.5b3", "8.3.5b4"}:
             files.append(PREFIX + "repair_issues.py")
-        if publisher.TAG in {"8.3.3b1", "8.3.3", "8.3.4b1", "8.3.4", "8.3.5b1", "8.3.5b2", "8.3.5b3"}:
+        if publisher.TAG in {"8.3.3b1", "8.3.3", "8.3.4b1", "8.3.4", "8.3.5b1", "8.3.5b2", "8.3.5b3", "8.3.5b4"}:
             files.append(PREFIX + "icons.json")
-        if publisher.TAG in {"8.3.5b1", "8.3.5b2", "8.3.5b3"}:
+        if publisher.TAG in {"8.3.5b1", "8.3.5b2", "8.3.5b3", "8.3.5b4"}:
             files.extend(PREFIX + name for name in ("wind_statistics.py", "diagnostic_lifecycle.py", "device_removal.py"))
-        if publisher.TAG in {"8.3.5b2", "8.3.5b3"}:
+        if publisher.TAG in {"8.3.5b2", "8.3.5b3", "8.3.5b4"}:
             files.extend(PREFIX + name for name in ("forecast_statistics.py", "statistics_archive.py"))
-        if publisher.TAG == "8.3.5b3":
+        if publisher.TAG in {"8.3.5b3", "8.3.5b4"}:
             files.extend(PREFIX + name for name in ("hgt_cleanup.py", "repairs.py"))
+        if publisher.TAG == "8.3.5b4":
+            files.extend(PREFIX + name for name in ("hgt_ogd.py", "hgt_ogd_coordinator.py", "hgt_ogd_manager.py", "hgt_ogd_recorder.py"))
         self.candidate = {
             path: ("100644", blob((ROOT / path).read_bytes())) for path in files
         }
-        if publisher.TAG in {"8.3.5b1", "8.3.5b2", "8.3.5b3"}:
+        if publisher.TAG in {"8.3.5b1", "8.3.5b2", "8.3.5b3", "8.3.5b4"}:
             policy = [
                 *ROOT.glob("requirements*"),
                 *(ROOT / name for name in ("pyproject.toml", "pytest.ini", ".coveragerc")
@@ -170,7 +175,7 @@ class GitHub:
                 status="completed",
                 conclusion="success",
                 head_sha=COMMIT,
-                app={"id": 12526 if name.startswith("Sonar") else 15368},
+                app={"id": 12526 if name.startswith("Sonar") else 57789 if name == "CodeQL" else 15368},
             )
             for i, name in enumerate(sorted(self.publisher.REQUIRED_CHECKS))
         ]
@@ -196,6 +201,7 @@ class GitHub:
                 "8.3.5b1": "8.3.4",
                 "8.3.5b2": "8.3.4",
                 "8.3.5b3": "8.3.4",
+                "8.3.5b4": "8.3.4",
             }.get(publisher.TAG, "8.2.0"),
             draft=False,
             prerelease=False,
@@ -615,7 +621,7 @@ def test_shell_guard_runs_before_any_external_command(publisher, args, status):
 
 
 def test_profiles_preserve_the_preceding_published_betas(publisher):
-    if publisher.TAG in {"8.3.3b1", "8.3.3", "8.3.4b1", "8.3.4", "8.3.5b1", "8.3.5b2", "8.3.5b3"}:
+    if publisher.TAG in {"8.3.3b1", "8.3.3", "8.3.4b1", "8.3.4", "8.3.5b1", "8.3.5b2", "8.3.5b3", "8.3.5b4"}:
         expected = {
             "8.2.0b1": "abbb6b7701134ac2573f35b425ab3f0697a80540",
             "8.2.0b2": "80bf9195ecc3d42d9e4d1beb4ce8143e2c2df2c8",
@@ -633,21 +639,23 @@ def test_profiles_preserve_the_preceding_published_betas(publisher):
         if publisher.TAG == "8.3.3":
             expected["8.3.3b1"] = "d9fbc3fd49220b0ecc019d2babe0c173c46986f5"
             assert publisher.SOURCE_RELEASE_ID == 429321251
-        if publisher.TAG in {"8.3.4b1", "8.3.4", "8.3.5b1", "8.3.5b2", "8.3.5b3"}:
+        if publisher.TAG in {"8.3.4b1", "8.3.4", "8.3.5b1", "8.3.5b2", "8.3.5b3", "8.3.5b4"}:
             expected["8.3.3b1"] = "d9fbc3fd49220b0ecc019d2babe0c173c46986f5"
             expected["8.3.3"] = "3d4fad2330c89f134eba208e8b2db55705177e7d"
         if publisher.TAG == "8.3.4":
             expected["8.3.4b1"] = "1e5c5d1a7fc1c18d520e99189ae4dd5894621706"
             assert publisher.SOURCE_RELEASE_ID == 437718127
-        if publisher.TAG in {"8.3.5b1", "8.3.5b2", "8.3.5b3"}:
+        if publisher.TAG in {"8.3.5b1", "8.3.5b2", "8.3.5b3", "8.3.5b4"}:
             expected["8.3.4b1"] = "1e5c5d1a7fc1c18d520e99189ae4dd5894621706"
             expected["8.3.4"] = "f4479897023fa35d7c2fcb4c4859c4de8861fdda"
-        if publisher.TAG in {"8.3.5b2", "8.3.5b3"}:
+        if publisher.TAG in {"8.3.5b2", "8.3.5b3", "8.3.5b4"}:
             expected["8.3.5b1"] = "af1220249e672bd8a6742c73022a7c42aca2f20a"
-        if publisher.TAG == "8.3.5b3":
+        if publisher.TAG in {"8.3.5b3", "8.3.5b4"}:
             expected["8.3.5b2"] = "f8ea38babdfd44354059927888fb54fd662e5696"
+        if publisher.TAG == "8.3.5b4":
+            expected["8.3.5b3"] = "b6c4502e5cdeb48121be628fdb7eda579df4f7c3"
         assert publisher.PRESERVED_TAGS == expected
-        assert publisher.STABLE_RELEASE_ID == (437853341 if publisher.TAG in {"8.3.5b1", "8.3.5b2", "8.3.5b3"} else 429354633 if publisher.TAG in {"8.3.4b1", "8.3.4", "8.3.5b1", "8.3.5b2", "8.3.5b3"} else 426633496)
+        assert publisher.STABLE_RELEASE_ID == (437853341 if publisher.TAG in {"8.3.5b1", "8.3.5b2", "8.3.5b3", "8.3.5b4"} else 429354633 if publisher.TAG in {"8.3.4b1", "8.3.4", "8.3.5b1", "8.3.5b2", "8.3.5b3", "8.3.5b4"} else 426633496)
         return
     if publisher.TAG in {"8.3.0b2", "8.3.0b3", "8.3.0b4", "8.3.0", "8.3.1b1", "8.3.1", "8.3.2b1", "8.3.2"}:
         assert (
@@ -759,7 +767,8 @@ def test_stable834_refuses_the_deferred_hgt_runtime_change(publisher):
 
 @pytest.mark.parametrize("publisher", [("v1.8", "8.3.4", "8.3.5b1", "b144a0b73d81358f27fd6ecd89a47120c8a0a1b9"),
                                        ("v1.9", "8.3.5b1", "8.3.5b2", "71c4c6269ea0c06cc5d2c43db9b0a24d8e6e9c08"),
-                                       ("v1.10", "8.3.5b2", "8.3.5b3", "9d7be4f935e751314bb950c70869bf09b143a6b1")], indirect=True)
+                                       ("v1.10", "8.3.5b2", "8.3.5b3", "9d7be4f935e751314bb950c70869bf09b143a6b1"),
+                                       ("v1.11", "8.3.5b3", "8.3.5b4", "29d9bc73b2ad0dedc91c73cf167f46223330d22a")], indirect=True)
 @pytest.mark.parametrize("path", ["requirements_test.txt", "requirements_test_min.txt", "requirements_ci_security.txt",
                                   "pytest.ini", "pyproject.toml", "scripts/check_ci_security.py", "scripts/check_dependency_advisories.py",
                                   "scripts/check_test_lockfiles.py", "scripts/check_quality_coverage.py", ".github/dependabot.yml"])
@@ -768,5 +777,26 @@ def test_beta835_rejects_changed_validation_policy_or_dependency_locks(publisher
     assert (path in fake.candidate) is (path != "pyproject.toml")
     fake.candidate[path] = ("100644", OTHER)
     with pytest.raises(publisher.PublicationError, match="CI policy"):
+        run(fake, write=True)
+    assert not fake.writes()
+
+
+@pytest.mark.parametrize("publisher", [("v1.11", "8.3.5b3", "8.3.5b4", "29d9bc73b2ad0dedc91c73cf167f46223330d22a")], indirect=True)
+@pytest.mark.parametrize("change", ["wrong_head", "wrong_app"])
+def test_beta835b4_checks_codeql_aggregate_provenance_when_emitted(publisher, change):
+    fake = GitHub(publisher)
+    fake.rows.append(dict(id=1000, name="CodeQL", status="completed", conclusion="success",
+                          head_sha=OTHER if change == "wrong_head" else COMMIT,
+                          app={"id": 15368 if change == "wrong_app" else 57789}))
+    with pytest.raises(publisher.PublicationError):
+        run(fake, write=True)
+    assert not fake.writes()
+
+
+@pytest.mark.parametrize("publisher", [("v1.11", "8.3.5b3", "8.3.5b4", "29d9bc73b2ad0dedc91c73cf167f46223330d22a")], indirect=True)
+def test_beta835b4_preserves_the_core_security_minimum(publisher):
+    fake = GitHub(publisher)
+    fake.source_hacs["homeassistant"] = fake.hacs["homeassistant"] = "2026.8.3"
+    with pytest.raises(publisher.PublicationError):
         run(fake, write=True)
     assert not fake.writes()

@@ -19,13 +19,16 @@ Ten head and nine actual merge checks passed; both actual HA jobs passed
 2,901 tests plus 83 subtests without SQLite ResourceWarning. That test-only
 change requires no production update.
 
-**Current unreleased development:** [official measured HGT](docs/HGT_OGD_PLAN.md)
-adds separate daily/monthly/annual OGD products, verified backfill, corrections,
-shared station ownership and native retired-series cleanup. It never converts
-old forecasts into observations. Final integration-entry removal clears owned
-OGD HGT products; station changes offer explicit cleanup. Hosted feature checks,
-packaging and operator acceptance remain separate. Full Gold, independent review
-and stable promotion remain open. Earlier b1/b2/b3 accepted scopes stay closed.
+**Next prepared package: 8.3.5b4.** Official measured HGT source PR #115 was
+regularly merged at `29d9bc73b2ad0dedc91c73cf167f46223330d22a`, with ten head
+and nine actual merge checks successful. Both HA jobs passed 3,034 tests plus
+83 subtests and every strict gate, with no SQLite ResourceWarning. The
+[prepared package](docs/RELEASE_EVIDENCE_8.3.5b4.md) keeps 50 non-version
+component files identical. [Release notes](docs/RELEASE_8.3.5b4.md) and the
+[short read-only check](docs/ACCEPTANCE_8.3.5b4.md) cover initial history and
+continuing corrections. Package validation, publication and focused HA acceptance
+remain separate. Full Gold, independent review and stable promotion remain open.
+Earlier b1/b2/b3 acceptance and PR #114 stay closed.
 
 ## Published stable 8.3.4: clearer setup and verified HA 2026.11 support
 

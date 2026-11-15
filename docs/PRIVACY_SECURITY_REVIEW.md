@@ -1,6 +1,13 @@
 # Privacy, architecture and security: bounded review
 
-**Unreleased measured-HGT review, 15 November 2026:** official station CSVs add
+**Reviewed source now merged:** PR #115 at `29d9bc73b2ad0dedc91c73cf167f46223330d22a`
+has successful ten head and nine actual merge checks, including complete native
+suites, pinned Hassfest, source analysis and whole-lock audit. The prepared
+[8.3.5b4 package](RELEASE_EVIDENCE_8.3.5b4.md) preserves that runtime apart from
+two versions. Publication and focused measured-HGT acceptance are still pending;
+this does not constitute independent security/privacy certification.
+
+**Prepared b4 measured-HGT review, 15 November 2026:** official station CSVs add
 no new coordinates, credentials, account or maintainer telemetry. Providers
 receive the public station identity and source IP. Exact canonical HTTPS assets,
 ETag revalidation, bounded compressed/decoded reads, off-loop CSV parsing,
@@ -180,7 +187,7 @@ exposure in every external artifact; the other scope limits above remain.
 4. Verify HA account/network/backup controls separately. This repository review
    does not prove MFA, firewall rules, external exposure or restoration on a host.
 
-## Unreleased shared-diagnostic lifecycle scope
+## 8.3.5 test-line shared-diagnostic lifecycle scope
 
 The [lifecycle follow-up](SHARED_DIAGNOSTIC_LIFECYCLE.md) explicitly retains the two
 shared helper identities across entry departure and startup order, with native
@@ -191,7 +198,7 @@ retained user choices, cancellation/shutdown, rollback and disposable Recorder
 history. Historical conflicts, operator acceptance and independent review remain
 separate. The dated security inventory above is not refreshed by these tests.
 
-## Unreleased manual device-removal scope
+## 8.3.5 test-line manual device-removal scope
 
 The [bounded approval policy](DEVICE_REMOVAL.md) classifies native registry
 records locally. It adds no provider requests, telemetry, location export,
@@ -202,7 +209,7 @@ cleanup or Recorder deletion is introduced. The source-history review is not a
 production inventory; native UI/Recorder tests do not establish independent
 security clearance, operator acceptance or completed Gold.
 
-## Unreleased service-group naming scope
+## 8.3.5 test-line service-group naming scope
 
 The [native naming follow-up](SERVICE_GROUP_TRANSLATIONS.md) changes only local
 default labels. Station/postcode placeholders preserve text already present in

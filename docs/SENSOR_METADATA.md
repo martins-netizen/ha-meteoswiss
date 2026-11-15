@@ -1,6 +1,6 @@
 # Foehn and HGT metadata: numeric codes, predictions and statistics
 
-**Unreleased measured HGT:** the new observed-day entity has a distinct
+**Prepared 8.3.5b4 measured HGT:** the new observed-day entity has a distinct
 `heating_degree_days_observed` unique-ID suffix and the existing station device.
 It exposes the last completed official UTC-day amount in `°C·d`, without a
 measurement state class or temperature device class. Long-term data uses three
@@ -21,7 +21,7 @@ historical; the cleanup neither relabels forecasts nor implements measured OGD H
 
 
 **Review version:** 1.1 · **Reviewed:** 10 November 2026
-**Status:** Unreleased source follow-up after published stable 8.3.4.
+**Status:** included in the 8.3.5 test line after stable 8.3.4; that immutable stable release keeps its earlier metadata.
 
 ## Device classes must fit the quantity
 

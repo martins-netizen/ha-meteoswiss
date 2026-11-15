@@ -1,6 +1,6 @@
 # Sources, locations and update contracts
 
-**Unreleased measured HGT source:** the importer uses official SwissMetNet
+**Prepared 8.3.5b4 measured HGT source:** the importer uses official SwissMetNet
 `xno000d0/m0/y0` directly. Daily historical/recent and official monthly/annual
 products remain distinct; no forecast history is reused. See the
 [source, time, correction and removal contract](HGT_OGD_PLAN.md). Published
@@ -24,7 +24,7 @@ availability or permission for every use. Check the providers' current terms.
 | Measured pollen | MeteoSwiss `data.geo.admin.ch/ch.meteoschweiz.ogd-pollen` | Independently selected pollen station | 1 hour |
 | Pollen/AQ model values | Open-Meteo `air-quality-api.open-meteo.com/v1/air-quality` | Original HA/configured base coordinates, independent of a saved weather-forecast POI | 30 minutes |
 | Optional current UV | Separate Open-Meteo forecast request, `current=uv_index` | Same point as pollen/AQ | As part of that family's 30-minute refresh |
-| Official measured HGT (unreleased) | SwissMetNet exact `d_historical`, `d_recent`, `m`, `y` assets | Selected weather station | Shared 6-hour refresh; historical revalidation weekly and at a UTC year change; conditional ETags |
+| Official measured HGT (prepared b4) | SwissMetNet exact `d_historical`, `d_recent`, `m`, `y` assets | Selected weather station | Shared 6-hour refresh; historical revalidation weekly and at a UTC year change; conditional ETags |
 | Official hourly rain statistics | SwissMetNet station hourly assets | Selected weather station | Now file hourly; recent/historical archive initially and normally weekly |
 | Station catalogue | `data.geo.admin.ch/ch.meteoschweiz.ogd-smn/ogd-smn_meta_stations.csv` | Public station metadata | Shared 24-hour cache with guarded retry |
 

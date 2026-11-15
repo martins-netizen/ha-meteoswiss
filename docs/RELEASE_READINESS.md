@@ -1,9 +1,22 @@
-# Release readiness: 8.3.5b3 test line and stable 8.3.4
+# Release readiness: prepared 8.3.5b4 and stable 8.3.4
 
-**Document version:** 2.26 · **Updated:** 15 November 2026
+**Document version:** 2.27 · **Updated:** 15 November 2026
 
 <a id="prepared-835b1-reviewed-source-publication-and-operator-acceptance-separate"></a>
 
+
+## Prepared 8.3.5b4: measured HGT, publication separate
+
+[Release notes](RELEASE_8.3.5b4.md), [source/package evidence](RELEASE_EVIDENCE_8.3.5b4.md)
+and [focused read-only acceptance](ACCEPTANCE_8.3.5b4.md) define this next test
+package. PR #115 is regularly merged with ten head and nine actual merge checks
+successful. Only two component version files differ from that source. New
+Publisher V1.11 checks the exact protected approved packaging merge, all 50
+non-version files, unchanged CI policy, nineteen old tags and latest stable.
+The controlled publication must also compare all nineteen old records and bodies.
+Complete package validation, guarded merge, explicit publication and operator
+acceptance remain separate. It is not yet an available update. Keep every prior
+release and accepted scope; do not rerun an older publisher.
 
 ## 8.3.5b3: published and focused cleanup accepted
 
@@ -24,12 +37,12 @@ closes that agreed operator acceptance, without an independent whole-database
 orphan-row audit. Do not repeat publication, installation or deletion; earlier
 b1/b2 scopes also remain closed. See [upgrade guidance](UPGRADING_8.3.5.md).
 
-Current development separately [drains native test Recorder work before pool
-shutdown](TEST_RECORDER_LIFECYCLE.md), with explicit connection-close accounting
-and a regression that fails the earlier order. All 48 component files, versions,
-workflows, locks and existing gates are unchanged. Hosted checks for this
-follow-up remain required. Official measured OGD HGT import, full Gold,
-independent review and any stable promotion remain separate work.
+PR #114's [test Recorder lifecycle](TEST_RECORDER_LIFECYCLE.md) is merged and
+actually verified; that test-only change requires no production update.
+Official measured HGT source PR #115 is now merged and actually verified too;
+[8.3.5b4 preparation](RELEASE_EVIDENCE_8.3.5b4.md) packages it separately.
+B3 acceptance remains closed. Package publication/acceptance, remaining Gold,
+independent review and any stable promotion remain separate.
 
 ## 8.3.5b2: fixed HGT archive test package
 
