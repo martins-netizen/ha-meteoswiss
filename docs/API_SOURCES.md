@@ -1,6 +1,6 @@
 # Sources, locations and update contracts
 
-**Prepared 8.3.5b4 measured HGT source:** the importer uses official SwissMetNet
+**Published 8.3.5b4 measured HGT source:** the importer uses official SwissMetNet
 `xno000d0/m0/y0` directly. Daily historical/recent and official monthly/annual
 products remain distinct; no forecast history is reused. See the
 [source, time, correction and removal contract](HGT_OGD_PLAN.md). Published

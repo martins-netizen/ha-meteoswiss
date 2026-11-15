@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## [8.3.5b4] — 2026-11-15 · prepared measured HGT test prerelease
+## [8.3.5b4] — 2026-11-15 · published measured HGT test prerelease
 
 - Package approved PR #115 at `29d9bc73b2ad0dedc91c73cf167f46223330d22a`:
   official station HGT 12/20 daily/monthly/annual history, historical backfill,
@@ -22,10 +22,13 @@
   the [package notes](docs/RELEASE_8.3.5b4.md). The actual minimum remains HA
   2026.11.0; the separate Core Marketplace display mismatch is documented.
 
-This package is prepared, not published or installed. Complete package checks,
-publication and the [focused measured-HGT acceptance](docs/ACCEPTANCE_8.3.5b4.md)
-remain separate. Existing b3 cleanup acceptance stays closed. Full Gold and
-independent review remain open.
+Published as release **446375287** at **21:20:21 UTC** from approved regular
+PR #116 merge `a6a233513ac8e7c5937f9c41eee085e76108e801`. Ten head and nine
+actual merge checks passed; release/tag/body and all nineteen previous releases
+are independently verified. Installation and the
+[focused measured-HGT acceptance](docs/ACCEPTANCE_8.3.5b4.md) remain separate.
+Existing b3 cleanup acceptance stays closed; full Gold and independent review
+remain open.
 
 ## [8.3.5b3] — 2026-11-15 · native HGT cleanup test prerelease
 

@@ -1,8 +1,8 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.42 · **Updated:** 15 November 2026
+**Plan version:** 1.43 · **Updated:** 15 November 2026
 **Status:** The agreed architecture, catalogue/POI, forecast-display, shared-settings
-and station-condition scope is released in stable 8.3.0. B4 runtime acceptance,
+and station-condition scope is released in stable 8.3.0. **8.3.0b4** runtime acceptance,
 stable publication and HACS default-catalogue admission are complete. The operator
 confirmed the successful production update from 8.2 to stable 8.3 on 25 October.
 The current next-work overview is
@@ -11,16 +11,16 @@ as planning history, not new instructions to repeat completed work.
 This document does not approve a new feature, installation or release.
 
 
-## Current next package: 8.3.5b4
+## Current next step: focused acceptance of published 8.3.5b4
 
-PR #115 is regularly merged and actually verified at
-`29d9bc73b2ad0dedc91c73cf167f46223330d22a`. Prepare the
-[measured-HGT b4 package](RELEASE_EVIDENCE_8.3.5b4.md), retaining 50 non-version
-component files, all nineteen prior releases/tags, stable 8.3.4 and every existing
-gate. Full package validation, regular approved packaging merge, explicit
-publication and [focused read-only HA acceptance](ACCEPTANCE_8.3.5b4.md) are
-separate. B3 publication/cleanup acceptance and PR #114 are complete; older
-planning statements below keep their historical context.
+Source PR #115, regular package PR #116, all required checks and actual b4
+publication are complete. [Publication evidence](RELEASE_EVIDENCE_8.3.5b4.md)
+records release 446375287 and its exact signed merge, retained nineteen older
+releases/tags and stable 8.3.4. The next operational step is the
+[focused read-only check](ACCEPTANCE_8.3.5b4.md) after a normal existing-entry
+update. B3 publication/cleanup acceptance and PR #114 stay closed. Gold,
+independent review and stable promotion are separate; historical plans below
+do not reopen completed steps.
 
 ## 8.3.5b3: published and focused cleanup accepted
 

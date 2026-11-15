@@ -1,6 +1,6 @@
 # Publish the maintained fork
 
-**Procedure version:** 1.23 · **Updated:** 15 November 2026
+**Procedure version:** 1.24 · **Updated:** 15 November 2026
 
 **Distribution UI:** On HA 2026.11+, use built-in **Settings → Marketplace**;
 older HA uses HACS. Follow [current installation/update steps](GETTING_STARTED.md).
@@ -13,18 +13,45 @@ For releases after 8.3.4, verify the **HA 2026.11.0** requirement in
 `hacs.json`, the minimum and current CI jobs, and the user-facing upgrade
 guidance before publishing. [Support and security rationale](../DEVELOPMENT.md#supported-home-assistant-versions)
 
-## Prepared 8.3.5b4: measured HGT, publication separate
+## Published 8.3.5b4: measured HGT, focused acceptance separate
 
-[Release notes](RELEASE_8.3.5b4.md), [source/package evidence](RELEASE_EVIDENCE_8.3.5b4.md)
-and [focused read-only acceptance](ACCEPTANCE_8.3.5b4.md) define this next test
-package. PR #115 is regularly merged with ten head and nine actual merge checks
-successful. Only two component version files differ from that source. New
-Publisher V1.11 checks the exact protected approved packaging merge, all 50
-non-version files, unchanged CI policy, nineteen old tags and latest stable.
-The controlled publication must also compare all nineteen old records and bodies.
-Complete package validation, guarded merge, explicit publication and operator
-acceptance remain separate. It is not yet an available update. Keep every prior
-release and accepted scope; do not rerun an older publisher.
+[8.3.5b4](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b4),
+release **446375287**, was published on **15 November 2026 at 21:20:21 UTC**
+(22:20:21 CET) from regular packaging [PR #116](https://github.com/martins-netizen/ha-meteoswiss/pull/116),
+merge `a6a233513ac8e7c5937f9c41eee085e76108e801`, tree
+`010be578bb121fcad058c1bc8c1fcfccb6761ebf`, parent
+`29d9bc73b2ad0dedc91c73cf167f46223330d22a`.
+
+Ten exact-head checks and all nine actual merge checks passed. The actual
+[CI 43761426012](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/43761426012),
+CodeQL 43761426015 and HACS 43761426023 push runs succeeded on that merge.
+Both HA 2026.11.0/2026.11.1 jobs passed **3,092 tests plus 83 subtests**, five
+known upstream warnings and no SQLite ResourceWarning. Strict line/branch gates
+passed at **99.9831%** combined coverage; all four HGT OGD modules retain full
+line/branch coverage. Pinned Hassfest reported zero invalid integrations; both
+universal locks verified 138 selections and the audit of 140 package/version
+pairs found zero active/unknown advisories. SonarCloud passed.
+
+The release/tag and exact approved English body were independently read back.
+All nineteen older complete release records, bodies and tag references are
+unchanged. **8.3.4 remains latest stable.** The 50 non-version component files
+out of 52 match reviewed PR #115 source. This publication does not install or
+restart HA. The [focused measured-HGT acceptance](ACCEPTANCE_8.3.5b4.md) remains
+pending; accepted b1/b2/b3 scopes and PR #114 stay closed.
+
+Publication is complete. Do not rerun a publisher as a new update action.
+Update the existing entry normally when choosing this test release; no station
+change, entry recreation or repeated obsolete-forecast cleanup is required.
+Full Gold, independent review and any stable promotion remain separate.
+
+### Availability wording in immutable package snapshots
+
+Before tagging future packages, make the user-facing README's availability
+wording refer to the release catalogue instead of a flat "not yet published"
+claim. Keep preparation evidence explicitly dated. The installed Marketplace
+README may come from the installed immutable tag, so changing development
+documentation does not refresh that snapshot. Preserve published tags and
+release bodies; never retag to correct presentation text.
 
 ## 8.3.5b3: published and focused cleanup accepted
 
@@ -48,8 +75,8 @@ b1/b2 scopes also remain closed. See [upgrade guidance](UPGRADING_8.3.5.md).
 PR #114's [test Recorder lifecycle](TEST_RECORDER_LIFECYCLE.md) is merged and
 actually verified; that test-only change requires no production update.
 Official measured HGT source PR #115 is now merged and actually verified too;
-[8.3.5b4 preparation](RELEASE_EVIDENCE_8.3.5b4.md) packages it separately.
-B3 acceptance remains closed. Package publication/acceptance, remaining Gold,
+[published 8.3.5b4](RELEASE_EVIDENCE_8.3.5b4.md) packages it separately.
+B3 acceptance remains closed. Focused b4 acceptance, remaining Gold,
 independent review and any stable promotion remain separate.
 
 The completed b3 flow checked the fixed public account, reviewed tree/parent,

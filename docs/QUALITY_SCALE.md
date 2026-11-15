@@ -1,11 +1,12 @@
 # Quality evidence and remaining work
 
-**Prepared b4 boundary:** PR #115 is regularly merged and actually verified:
-ten head and nine merge checks, both HA suites 3,034 tests + 83 subtests,
-99.9831% strict coverage, no SQLite ResourceWarning, pinned Hassfest and
-whole-lock audit successful. [B4 packaging](RELEASE_EVIDENCE_8.3.5b4.md) keeps
-all 50 non-version component files unchanged. Package validation, publication,
-focused operator acceptance and remaining Gold/independent review stay separate.
+**Published b4 boundary:** source PR #115 and package PR #116 are regularly
+merged and actually verified. The package has ten head and nine merge checks,
+both HA suites 3,092 tests + 83 subtests, 99.9831% strict coverage and no SQLite
+ResourceWarning. Pinned Hassfest and whole-lock audit passed.
+[B4 publication](RELEASE_EVIDENCE_8.3.5b4.md) is independently verified, with all
+50 non-version component files unchanged. Focused operator acceptance and
+remaining Gold/independent review stay separate.
 
 **HGT cleanup in the 8.3.5b3 test package:** an entry-owned post-startup
 inventory discovers attributable obsolete forecast statistics across old and b2
@@ -144,7 +145,7 @@ The normal upgrade uses one native repair confirmation to permanently remove
 attributable obsolete HGT forecast statistics and metadata. No Mac script or
 replacement archive is required. Current forecasts, ordinary history and
 unrelated statistics are retained. Read [the upgrade guide](UPGRADING_8.3.5.md)
-and [focused b3 protocol](ACCEPTANCE_8.3.5b3.md). The separate measured OGD importer is packaged for prepared 8.3.5b4; it is not in b3. See [its own source/lifecycle contract](HGT_OGD_PLAN.md). Earlier b1/b2 accepted scopes stay closed.
+and [focused b3 protocol](ACCEPTANCE_8.3.5b3.md). The separate measured OGD importer is included in published 8.3.5b4; it is not in b3. See [its own source/lifecycle contract](HGT_OGD_PLAN.md). Earlier b1/b2 accepted scopes stay closed.
 
 ## 8.3.5b2: fixed HGT archive test package
 

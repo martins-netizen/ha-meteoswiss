@@ -1,9 +1,12 @@
 # Maintenance and release procedure
 
-**B4 packaging:** source PR #115 is merged and actually checked. Retain all
-50 non-version component files and the [native commit/cleanup contracts](HGT_OGD_PLAN.md).
-Use the new V1.11 publication profile and package-specific full tests; preserve
-all nineteen old releases/tags and stable 8.3.4. [Preparation and remaining gates](RELEASE_EVIDENCE_8.3.5b4.md).
+**B4 publication complete:** source PR #115, package PR #116 and the actual
+8.3.5b4 release are independently verified. All 50 non-version component files,
+nineteen earlier releases/tags and stable 8.3.4 are preserved. Keep the
+[native commit/cleanup contracts](HGT_OGD_PLAN.md) and
+[remaining focused acceptance](RELEASE_EVIDENCE_8.3.5b4.md). Do not repeat publication.
+Future tagged READMEs use release-catalogue availability wording; see
+[immutable package snapshots](PUBLISHING.md#availability-wording-in-immutable-package-snapshots).
 
 **Measured-HGT development gate:** require native backfill/correction/change,
 source-withdrawal, duplicate-entry, station-change, repair-confirmation and final

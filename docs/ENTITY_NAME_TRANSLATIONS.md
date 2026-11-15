@@ -4,7 +4,7 @@
 adds native tests and documentation; component files, catalogues, dependencies,
 workflows and published stable 8.3.4 are unchanged.
 
-**Prepared b4 extension, 15 November 2026:** the inventory below retains its
+**Published b4 extension, 15 November 2026:** the inventory below retains its
 base 45-entity scope. With Recorder and a MeteoSwiss measurement station, b4
 adds one optional observed-HGT sensor, `hgt_measured`, for up to **46 entities**
 (41 sensors, three binary sensors, two weather entities). Open-Meteo entries
