@@ -15,7 +15,8 @@ COMPONENT = Path(__file__).parents[1] / "custom_components" / "meteoswiss"
 def update_error_calls():
     return [
         node
-        for node in ast.walk(ast.parse((COMPONENT / "coordinator.py").read_text()))
+        for path in COMPONENT.glob("*.py")
+        for node in ast.walk(ast.parse(path.read_text()))
         if isinstance(node, ast.Call)
         and isinstance(node.func, ast.Name)
         and node.func.id == "UpdateFailed"

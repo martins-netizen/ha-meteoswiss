@@ -1,5 +1,23 @@
 # Privacy, architecture and security: bounded review
 
+**Unreleased measured-HGT review, 15 November 2026:** official station CSVs add
+no new coordinates, credentials, account or maintainer telemetry. Providers
+receive the public station identity and source IP. Exact canonical HTTPS assets,
+ETag revalidation, bounded compressed/decoded reads, off-loop CSV parsing,
+completed UTC periods and a conservative 1,000 degree-days per day ceiling
+protect the new boundary. Each file is limited to 16 MiB and 100,000 rows.
+A shared manager serializes each station's native Recorder import and deletion;
+all three products and metadata snapshots are checked before writes, and every
+result is read back after native completion. Owner storage contains station
+codes only, never observations or a second archive. Unknown/lost ownership or
+changed units/source/mean semantics block mutation. Full HA backups must keep
+Recorder and ownership storage together. Retired station deletion requires the
+listed-target repair confirmation; confirmed final integration removal deletes
+its owned public OGD projections. Failed final cleanup leaves a non-fixable
+notice instead of a generic confirmation that could falsely imply deletion.
+See [retention and recovery limits](HGT_OGD_PLAN.md#ownership-and-complete-removal).
+This is source/native-test evidence, not independent security certification.
+
 **HGT cleanup in the 8.3.5b3 test package:** an entry-owned post-startup
 inventory discovers attributable obsolete forecast statistics across old and b2
 upgrade paths, including disabled sensors and native season-entity tombstones.
@@ -50,12 +68,14 @@ closes that agreed operator acceptance, without an independent whole-database
 orphan-row audit. Do not repeat publication, installation or deletion; earlier
 b1/b2 scopes also remain closed. See [upgrade guidance](UPGRADING_8.3.5.md).
 
-Current development separately [drains native test Recorder work before pool
-shutdown](TEST_RECORDER_LIFECYCLE.md), with explicit connection-close accounting
-and a regression that fails the earlier order. All 48 component files, versions,
-workflows, locks and existing gates are unchanged. Hosted checks for this
-follow-up remain required. Official measured OGD HGT import, full Gold,
-independent review and any stable promotion remain separate work.
+PR #114 [test Recorder lifecycle](TEST_RECORDER_LIFECYCLE.md) is merged and
+verified: ten head and nine actual merge checks passed; both HA jobs passed
+2,901 tests plus 83 subtests without SQLite ResourceWarning. It changed no
+component, version, workflow or lock. It requires no production update.
+
+The current [measured OGD HGT development](HGT_OGD_PLAN.md) is a separate runtime
+feature, not part of published b3. Full Gold, independent review, feature
+publication/acceptance and stable promotion remain separate work.
 
 ## 8.3.5b2: fixed HGT archive test package
 

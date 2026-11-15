@@ -8,7 +8,20 @@
 - Record verified 8.3.5b3 publication and operator-confirmed native HGT cleanup.
   Retain immutable release notes and all completed acceptance scopes.
 
-Further measured-OGD HGT, Gold and independent-review work remains separate.
+- Add official measured HGT 12/20 in separate station-specific daily, monthly
+  and annual external statistics. Backfill source history, retain real zeroes
+  and missing values, upsert corrections, verify native Recorder commits and
+  keep measured/forecast identities separate. Share conditional source reads
+  between entries without mixing stations or storing a second archive.
+- Add a translated latest-observed-day sensor and explicit cleanup for retired
+  station products. Confirmed removal of the final integration entry also
+  removes its owned OGD HGT projections; normal sensor history remains. Protect
+  active peers, unknown ownership and changed metadata.
+- Record PR #114 actual-merge verification and update source, chart, privacy,
+  lifecycle and removal guidance. No version, published tag or test lock changes.
+
+The measured importer is unreleased; packaging and focused HA acceptance remain
+separate. Full Gold and independent-review work remain open.
 
 ## [8.3.5b3] — 2026-11-15 · native HGT cleanup test prerelease
 

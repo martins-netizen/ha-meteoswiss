@@ -63,6 +63,9 @@
       },
       "pollen_mugwort": {
         "default": "mdi:flower"
+      },
+      "hgt_measured": {
+        "default": "mdi:home-thermometer-outline"
       }
     },
     "binary_sensor": {

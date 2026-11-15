@@ -337,6 +337,9 @@
       },
       "cache_stats": {
         "name": "Statistiche della cache"
+      },
+      "hgt_measured": {
+        "name": "Gradi giorno 12/20 ultimo giorno misurato"
       }
     },
     "binary_sensor": {
@@ -490,6 +493,28 @@
     "hgt_legacy_cleanup_blocked": {
       "title": "Verificare la pulizia GGR",
       "description": "Impossibile attribuire o verificare in sicurezza le vecchie statistiche di previsione. Nessun dato è stato eliminato. Verificare Recorder, le personalizzazioni del sensore GGR e la guida all’aggiornamento, poi ricaricare questa integrazione."
+    },
+    "hgt_ogd_retired_cleanup": {
+      "title": "Rimuovere le statistiche HGT misurate non utilizzate",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Eliminare definitivamente le serie HGT misurate non utilizzate",
+            "description": "Consiglio: eliminare definitivamente le serie HGT misurate elencate sotto. Nessuna stazione MeteoSvizzera configurata le utilizza più. Verranno eliminati tutti i dati a lungo e breve termine e i metadati selezionati, senza archivio sostitutivo. I dati attuali e le altre statistiche sono conservati. Conservare un backup protetto esistente fuori da Home Assistant se occorre un ripristino.\n\n{statistic_ids}"
+          }
+        },
+        "error": {
+          "cleanup_not_verified": "L’eliminazione non è stata confermata. Chiudere e riaprire questa riparazione per verificare lo stato reale prima di una nuova conferma. Un’operazione Recorder in coda può ancora terminare."
+        }
+      }
+    },
+    "hgt_ogd_cleanup_blocked": {
+      "title": "Le statistiche HGT misurate non utilizzate devono essere verificate",
+      "description": "L’attribuzione o i metadati Recorder non sono stati verificati. Non è consentita alcuna eliminazione presunta. Consultare la guida HGT e lasciare invariate le serie estranee."
+    },
+    "hgt_ogd_import_blocked": {
+      "title": "L’attribuzione o i metadati delle statistiche HGT ufficiali devono essere verificati.",
+      "description": "L’attribuzione o i metadati Recorder non sono stati verificati. Non è consentita alcuna eliminazione presunta. Consultare la guida HGT e lasciare invariate le serie estranee."
     }
   },
   "exceptions": {
@@ -549,6 +574,12 @@
     },
     "precipitation_queue_failed": {
       "message": "Non è stato possibile accodare le statistiche delle precipitazioni orarie per l’elaborazione."
+    },
+    "hgt_ogd_unavailable": {
+      "message": "L’aggiornamento dei dati HGT ufficiali non è stato confermato. Verrà riprovato."
+    },
+    "hgt_ogd_conflict": {
+      "message": "L’attribuzione o i metadati delle statistiche HGT ufficiali devono essere verificati."
     }
   }
 }

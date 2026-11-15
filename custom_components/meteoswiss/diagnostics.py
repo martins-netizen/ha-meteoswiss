@@ -46,6 +46,7 @@ COORDINATORS = (
     "meteoswiss_pollen_coordinator",
     "hourly_precipitation_coordinator",
     "precipitation_archive_coordinator",
+    "hgt_ogd_coordinator",
 )
 
 

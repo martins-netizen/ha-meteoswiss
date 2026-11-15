@@ -40,11 +40,12 @@ most accurate model in every situation. A failed warning feed is not an all-clea
 
 ## Updating an existing 8.3.4/8.3.5b1 installation
 
-Start with [Archive and keep history by default](UPGRADING_8.3.5.md). It
-separates published b1 from the prepared HGT follow-up and explains the normal
-update, automatic preservation, status attributes, optional archive charts and
-real-conflict path. A permanently unresolved HGT state-class Repair is not the
-normal successful outcome. In b2, routine updates preserve statistics. In b3, use the native HGT cleanup repair to confirm removal of obsolete forecasts; do not purge unrelated series.
+Start with [the current upgrade instructions](UPGRADING_8.3.5.md). Published
+b3 recommends confirmed complete removal of obsolete forecast statistics; b2
+is historical archive-and-keep behaviour. Use the existing entry and exact
+native repair targets. Do not purge unrelated series. The separate
+[official measured-HGT feature](HGT_OGD_PLAN.md) is unreleased development and
+is not installed by selecting b3.
 
 ## 1. Check prerequisites
 

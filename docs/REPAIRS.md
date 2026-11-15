@@ -1,5 +1,19 @@
 # Correct an invalid saved forecast location
 
+**Unreleased measured-HGT repairs:** after a weather-station change, **Remove
+unused measured HGT statistics** lists the exact retired station products.
+Recommended action: confirm removal if the old station is no longer wanted.
+Opening/cancelling deletes nothing. Confirmation permanently deletes complete
+listed external statistics and metadata; no archive is created. Active peer
+entries protect shared series. Ownership or metadata conflicts produce a
+non-fixable notice and block writes. Resolve the conflict or restore matching
+Recorder/ownership backup; do not guess ownership from an ID prefix. The final
+native removal of all MeteoSwiss entries also removes their owned OGD HGT
+products. Complete station-change repairs before disabling every entry or
+removing integration code, because a custom repair needs a loaded integration.
+[Removal, failure and recovery details](HGT_OGD_PLAN.md#ownership-and-complete-removal).
+These new repairs are separate from the accepted b3 obsolete-forecast repair.
+
 **HGT cleanup in 8.3.5b3:** the package includes a native confirmation for
 complete removal of obsolete forecast statistics. See the
 [upgrade guide](UPGRADING_8.3.5.md) and [focused check](ACCEPTANCE_8.3.5b3.md).

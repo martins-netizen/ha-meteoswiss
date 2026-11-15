@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 from collections.abc import Callable
 from dataclasses import dataclass, replace
-from datetime import datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from typing import Any, Final
 
 from homeassistant.components.sensor import (
@@ -82,6 +82,7 @@ from .entity import (
     weather_device_info,
 )
 from .forecast_location_config import resolve_forecast_target
+from .hgt_ogd_coordinator import MeteoSwissHgtCoordinator
 from .forecast_summary import (
     FORECAST_ATTRIBUTION,
     FORECAST_MAX_AGE,
@@ -258,6 +259,8 @@ async def async_setup_entry(
         )
 
     # Add the calculated daily HGT 12/20 forecast sensor.
+    if entry.runtime_data.hgt_ogd_coordinator is not None:
+        entities.append(MeteoSwissMeasuredHgtSensor(entry.runtime_data.hgt_ogd_coordinator, entry, station_name))
     forecast_coordinator = entry.runtime_data.forecast_coordinator
     if forecast_coordinator:
         entities.append(MeteoSwissHeatingDegreeDaysSensor(forecast_coordinator, entry))
@@ -301,6 +304,38 @@ async def async_setup_entry(
         lambda: (MeteoSwissStationsMapSensor(stations_map), MeteoSwissCacheStatsSensor()),
     )
     async_add_entities(entities)
+
+
+class MeteoSwissMeasuredHgtSensor(MeteoSwissCoordinatorEntity[MeteoSwissHgtCoordinator], SensorEntity):
+    """Latest official UTC-day amount; native LTS live in station-specific IDs."""
+
+    _attr_translation_key = "hgt_measured"
+    _attr_native_unit_of_measurement = "°C·d"
+    _attr_suggested_display_precision = 1
+    _attr_attribution = "Source: MeteoSwiss SwissMetNet OGD"
+
+    def __init__(self, coordinator: MeteoSwissHgtCoordinator, entry: MeteoSwissConfigEntry, station_name: str) -> None:
+        super().__init__(coordinator)
+        self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_heating_degree_days_observed"
+        self._attr_device_info = weather_device_info(entry.entry_id, station_name)
+
+    @property
+    def available(self) -> bool:
+        return (super().available and self.coordinator.data is not None
+                and 1 <= (datetime.now(UTC).date() - date.fromisoformat(self.coordinator.data["source_day"])).days <= 2)
+
+    @property
+    def native_value(self) -> float | None:
+        return self.coordinator.data["latest_value"] if self.available else None
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        data = self.coordinator.data or {}
+        status = ("unavailable" if not self.coordinator.last_update_success else
+                  "delayed" if data and not self.available else data.get("statistics_status", "initializing"))
+        return {"source": "MeteoSwiss SwissMetNet OGD", "parameter": "xno000d0", "method": "HGT 12/20",
+                "value_type": "observation", "reference_time_zone": "UTC", "statistics_status": status,
+                **{k: data[k] for k in ["source_day", "statistic_ids", "imported_points", "missing_points"] if k in data}}
 
 
 @dataclass

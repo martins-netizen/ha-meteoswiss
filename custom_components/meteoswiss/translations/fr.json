@@ -337,6 +337,9 @@
       },
       "cache_stats": {
         "name": "Statistiques du cache"
+      },
+      "hgt_measured": {
+        "name": "Degrés-jours 12/20 du dernier jour mesuré"
       }
     },
     "binary_sensor": {
@@ -490,6 +493,28 @@
     "hgt_legacy_cleanup_blocked": {
       "title": "Vérifier le nettoyage DJC",
       "description": "Les anciennes statistiques de prévision n’ont pas pu être attribuées ou vérifiées de manière fiable. Aucune suppression n’a été effectuée. Vérifier Recorder, les personnalisations du capteur DJC et le guide de mise à niveau, puis recharger cette intégration."
+    },
+    "hgt_ogd_retired_cleanup": {
+      "title": "Supprimer les statistiques HGT mesurées inutilisées",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Supprimer définitivement les séries HGT mesurées inutilisées",
+            "description": "Recommandation : supprimer définitivement les séries HGT mesurées indiquées ci-dessous. Aucune station MétéoSuisse configurée ne les utilise encore. Toutes leurs données à long et court terme et leurs métadonnées seront supprimées, sans archive de remplacement. Les données actuelles et les autres statistiques sont conservées. Gardez une sauvegarde protégée existante hors de Home Assistant si une restauration est nécessaire.\n\n{statistic_ids}"
+          }
+        },
+        "error": {
+          "cleanup_not_verified": "La suppression n’a pas été confirmée. Fermez et rouvrez cette réparation pour vérifier l’état réel avant une nouvelle confirmation. Une opération Recorder en attente peut encore se terminer."
+        }
+      }
+    },
+    "hgt_ogd_cleanup_blocked": {
+      "title": "Les statistiques HGT mesurées inutilisées doivent être vérifiées",
+      "description": "L’attribution ou les métadonnées Recorder n’ont pas pu être vérifiées. Aucune suppression supposée n’est autorisée. Consultez le guide HGT et conservez les séries étrangères."
+    },
+    "hgt_ogd_import_blocked": {
+      "title": "L’attribution ou les métadonnées des statistiques HGT officielles doivent être vérifiées.",
+      "description": "L’attribution ou les métadonnées Recorder n’ont pas pu être vérifiées. Aucune suppression supposée n’est autorisée. Consultez le guide HGT et conservez les séries étrangères."
     }
   },
   "exceptions": {
@@ -549,6 +574,12 @@
     },
     "precipitation_queue_failed": {
       "message": "Les statistiques de précipitations horaires n’ont pas pu être mises en attente de traitement."
+    },
+    "hgt_ogd_unavailable": {
+      "message": "La mise à jour des données HGT officielles n’a pas pu être confirmée. Elle sera réessayée."
+    },
+    "hgt_ogd_conflict": {
+      "message": "L’attribution ou les métadonnées des statistiques HGT officielles doivent être vérifiées."
     }
   }
 }

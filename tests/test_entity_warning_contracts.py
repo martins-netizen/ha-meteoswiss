@@ -586,6 +586,7 @@ async def test_optional_sensor_platforms_skip_missing_families(hass, caplog):
         pollen_coordinator=None,
         forecast_coordinator=None,
         meteoswiss_pollen_coordinator=None,
+        hgt_ogd_coordinator=None,
     )
     # A direct platform probe never reaches LOADED. Shared diagnostics are
     # registered only by the native entry lifecycle, not obsolete added flags.

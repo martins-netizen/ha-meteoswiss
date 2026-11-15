@@ -6,6 +6,7 @@ Redirects are deliberately refused: provider moves need an explicit review.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 import json
 import zlib
 from typing import Any
@@ -60,44 +61,81 @@ async def async_get_bytes(
     bypass the streaming limits. Limit+1 detects excess without inflating a
     compression bomb fully. Cancellation and transport errors propagate.
     """
+    return (await async_get_resource(session, url, host=host, max_bytes=max_bytes, params=params)).body
+
+
+@dataclass(frozen=True, slots=True)
+class CachedResource:
+    """A validated representation, bound to its exact request URL and budget."""
+
+    url: str
+    body: bytes
+    etag: str | None = None
+
+
+async def async_get_resource(
+    session: aiohttp.ClientSession,
+    url: str,
+    *,
+    host: str,
+    max_bytes: int,
+    params: dict[str, Any] | None = None,
+    cached: CachedResource | None = None,
+) -> CachedResource:
+    """Conditionally revalidate exact resources without relaxing read limits."""
     validate_source_url(url, host)
+    headers = {"Accept-Encoding": "gzip, deflate"}
+    if cached is not None:
+        if cached.url != url or params is not None or len(cached.body) > max_bytes:
+            raise ValueError("Cached source identity or size differs")
+        if cached.etag is not None:
+            if len(cached.etag) > 512 or any(ord(c) < 32 or ord(c) > 126 for c in cached.etag):
+                raise ValueError("Invalid cached source validator")
+            headers["If-None-Match"] = cached.etag
     async with session.get(
-        url,
-        params=params,
-        timeout=DEFAULT_API_TIMEOUT,
-        allow_redirects=False,
-        auto_decompress=False,
-        headers={"Accept-Encoding": "gzip, deflate"},
+        url, params=params, timeout=DEFAULT_API_TIMEOUT, allow_redirects=False,
+        auto_decompress=False, headers=headers,
     ) as response:
         response.raise_for_status()
+        if response.status == 304 and cached is not None and cached.etag is not None:
+            return cached
         if not 200 <= response.status < 300:
             raise ValueError("Source redirect or unexpected HTTP status")
-        encoding = response.headers.get("Content-Encoding", "identity").strip().lower()
-        if encoding not in ("identity", "gzip", "deflate"):
-            raise ValueError("Unsupported source content encoding")
-        decoder = (
-            zlib.decompressobj(31 if encoding == "gzip" else 15)
-            if encoding != "identity"
-            else None
-        )
-        body = bytearray()
-        received = 0
-        stream = response.content
-        while chunk := await stream.read(min(_READ_CHUNK, max_bytes - received + 1)):
-            received += len(chunk)
-            if received > max_bytes:
-                raise ValueError("Source response exceeds wire size limit")
-            if decoder is not None:
-                try:
-                    chunk = decoder.decompress(chunk, max_bytes - len(body) + 1)
-                except zlib.error:
-                    raise ValueError("Invalid compressed source response") from None
-            body.extend(chunk)
-            if len(body) > max_bytes:
-                raise ValueError("Source response exceeds decoded size limit")
-        if decoder is not None and (not decoder.eof or decoder.unused_data):
-            raise ValueError("Incomplete or trailing compressed source response")
-        return bytes(body)
+        body = await _async_read_body(response, max_bytes)
+        etag = response.headers.get("ETag")
+        if etag is not None and (len(etag) > 512 or any(ord(c) < 32 or ord(c) > 126 for c in etag)):
+            etag = None
+        return CachedResource(url, body, etag)
+
+
+async def _async_read_body(response: aiohttp.ClientResponse, max_bytes: int) -> bytes:
+    """Share the exact existing wire/decompression boundary for both APIs."""
+    encoding = response.headers.get("Content-Encoding", "identity").strip().lower()
+    if encoding not in ("identity", "gzip", "deflate"):
+        raise ValueError("Unsupported source content encoding")
+    decoder = (
+        zlib.decompressobj(31 if encoding == "gzip" else 15)
+        if encoding != "identity"
+        else None
+    )
+    body = bytearray()
+    received = 0
+    stream = response.content
+    while chunk := await stream.read(min(_READ_CHUNK, max_bytes - received + 1)):
+        received += len(chunk)
+        if received > max_bytes:
+            raise ValueError("Source response exceeds wire size limit")
+        if decoder is not None:
+            try:
+                chunk = decoder.decompress(chunk, max_bytes - len(body) + 1)
+            except zlib.error:
+                raise ValueError("Invalid compressed source response") from None
+        body.extend(chunk)
+        if len(body) > max_bytes:
+            raise ValueError("Source response exceeds decoded size limit")
+    if decoder is not None and (not decoder.eof or decoder.unused_data):
+        raise ValueError("Incomplete or trailing compressed source response")
+    return bytes(body)
 
 
 async def async_get_json(

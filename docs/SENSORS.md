@@ -191,7 +191,14 @@ than four hours is rejected on refresh.
 The b3 cleanup provides `hgt_legacy_cleanup_required` while a temporary
 HGT archive remains. The native confirmation removes that archive and its
 metadata completely, then clears both the attribute and the cleanup notice.
-An official [measured OGD HGT series](HGT_OGD_PLAN.md) remains separate planned work.
+The unreleased [measured OGD HGT feature](HGT_OGD_PLAN.md) adds a separate
+`heating_degree_days_observed` unique-ID suffix. Its translated latest-day
+sensor belongs to the existing measurement-station device, with `°C·d`, no
+measurement state class and explicit UTC-day/source/statistic-ID attributes.
+It is unavailable when the latest observed day is older than two UTC days,
+future/current-day or the source/Recorder verification fails. Official external
+statistics provide the separate daily/monthly/annual long-term history. This
+feature is not in published b3 and does not alter the forecast below.
 
 `heating_degree_days` is a **forecast-based HGT 12/20 estimate for today**.
 Published b2 adds

@@ -110,8 +110,10 @@ async def test_every_exposed_name_is_resolved_by_ha_in_each_language(
 def test_name_inventory_distinguishes_active_provider_keys_and_retained_legacy_keys():
     """Fail when a new catalogue name has no reviewed native coverage."""
     strings = json.loads((COMPONENT / "strings.json").read_text())
-    active = expected_keys("meteoswiss")["sensor"] | expected_keys("openmeteo")["sensor"]
-    assert len(active) == 41
+    # The Recorder-dependent observed HGT entity has its own native setup,
+    # language and cleanup coverage in test_hgt_ogd_lifecycle.py.
+    active = expected_keys("meteoswiss")["sensor"] | expected_keys("openmeteo")["sensor"] | {"hgt_measured"}
+    assert len(active) == 42
     assert set(strings["entity"]["sensor"]) == active | INACTIVE_KEYS
     assert set(strings["entity"]["binary_sensor"]) == ALERTS
     assert set(strings["entity"]) == {"sensor", "binary_sensor"}
