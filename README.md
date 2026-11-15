@@ -24,11 +24,14 @@ installation/acceptance. **8.3.4 remains latest stable.** HA **2026.11.0 or
 newer** is required. B1 was published on 13 November; its production/visual and
 bounded wind/archive checks remain recorded, while its HGT Repair is fixed by b2.
 
-**Existing 8.3.4/8.3.5b1 users:** follow the
-[archive-and-keep upgrade guide](docs/UPGRADING_8.3.5.md). Keep your existing
-entry, identities, settings and history. The fixed package moves compatible
-old HGT statistics to an archive automatically; deleting statistics is not
-the update procedure. A software downgrade alone does not undo this metadata.
+**Prepared 8.3.5 upgrade cleanup (not in published b2):** the next reviewed
+package adds one native **Settings → System → Repairs** confirmation for
+permanently removing obsolete HGT forecast statistics. It covers earlier daily
+series, b2 archives and attributable retired season series, including disabled
+sensors. No Mac script, entry recreation or permanent replacement archive is
+needed. Read [the upgrade guide](docs/UPGRADING_8.3.5.md) before confirming;
+this permanently removes the selected old statistics. Published b2 keeps its
+historical archive-and-keep behaviour until that follow-up is released.
 
 **Available in the community catalogue.** On HA **2026.11 or newer**, open
 **Settings → Marketplace** and search for **MeteoSwiss**. On older HA versions,

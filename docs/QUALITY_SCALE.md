@@ -1,5 +1,19 @@
 # Quality evidence and remaining work
 
+**Prepared HGT cleanup follow-up (unreleased):** an entry-owned post-startup
+inventory discovers attributable obsolete forecast statistics across old and b2
+upgrade paths, including disabled sensors and native season-entity tombstones.
+The native repair recommends complete deletion and requires explicit confirmation;
+opening a flow never authorises a write. Ownership/metadata conflicts block the
+operation. A native Recorder completion barrier and absence readback precede
+Core repair recomputation and an entry-scoped forecast-attribute refresh. No
+replacement archive, SQL or device call is introduced. Existing archives are
+transitional until confirmed removal, not the normal final state. See
+[the upgrade contract](UPGRADING_8.3.5.md) and [native tests](../tests/test_hgt_cleanup.py).
+This changes the prepared policy beyond b2; historical b2 evidence below remains
+scoped to its published archive-and-keep runtime. It is not full Gold certification.
+
+
 **Runtime assessment:** 24 October 2026. **Documentation updated:** 14 November 2026.
 **Scope:** the 8.3 runtime accepted as
 published b4 at **a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5**. Stable packaging
@@ -229,9 +243,9 @@ numbers are history, not the current suite or a demand to repeat completed
 acceptance. See RELEASE_READINESS.md for completed publication/catalogue results
 and the separately recorded operator-update scope.
 
-## Prepared HGT archive default
+## Published b2 HGT archive boundary
 
-The [unreleased HGT follow-up](UPGRADING_8.3.5.md) preserves compatible old
+The published b2 runtime preserves compatible old
 forecast statistics under a distinct archive ID before native Core repair
 recomputation. The shared archive boundary verifies the same metadata PK and
 all metadata fields; native tests compare every long-/short-term row field.

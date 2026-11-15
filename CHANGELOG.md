@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+- Add a native recommended cleanup repair for obsolete HGT forecast statistics
+  across direct upgrades and b2 archives. Include disabled sensors and attributable
+  retired season identities. Explicit confirmation deletes complete selected
+  Recorder series and metadata, verifies absence and clears cached references;
+  opening a repair never counts as consent. Keep unrelated statistics and IDs.
+- Update upgrade, repair, architecture and privacy/security guidance. Record
+  official OGD HGT parameters and the separate measured-series implementation
+  boundary. This follow-up is not present in immutable b2 and does not yet
+  implement the measured HGT importer.
+
 Future Gold and independent-review work remains separate.
 
 ## [8.3.5b2] — 2026-11-14 · HGT archive default test prerelease

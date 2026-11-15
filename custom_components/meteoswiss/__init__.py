@@ -37,6 +37,7 @@ from .coordinator import (
 )
 from .device_removal import DeviceRemovalStatus, async_device_removal_status
 from .forecast_location_config import resolve_forecast_target
+from .hgt_cleanup import async_clear_cleanup_issue, async_setup_cleanup
 from .localization import async_load_warning_labels
 from .precipitation import (
     ARCHIVE_LOOKBACK_MONTHS,
@@ -241,6 +242,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
 
     # Set up platforms
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    async_setup_cleanup(hass, entry)
 
     # Refresh optional data in parallel after entities are registered
     optional_coordinators = [
@@ -309,6 +311,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) 
 async def async_remove_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -> None:
     """Remove an obsolete repair even when the entry never finished setup."""
     async_clear_forecast_location_issue(hass, entry)
+    async_clear_cleanup_issue(hass, entry.entry_id)
 
 
 async def async_remove_config_entry_device(

@@ -471,7 +471,25 @@
     },
     "hgt_statistics_blocked": {
       "title": "HGT-Prognosestatistik muss geprüft werden",
-      "description": "Standardmässig bleibt die bisherige HGT-Prognosestatistik in einem separaten Archiv erhalten. Diese Umstellung oder die native Aktualisierung der Reparaturhinweise konnte nicht bestätigt werden. Aktuelle HGT-Prognosen und der normale Verlauf laufen weiter; keine Statistik wurde gelöscht oder überschrieben. Nicht Löschen wählen, um den alten Zustandsklassen-Hinweis zu verbergen. Bestehende Entität und Archiv behalten und den Konflikt anhand der Upgrade-Anleitung vor einem kontrollierten Wiederholungsversuch prüfen."
+      "description": "Die alten HGT-Prognosestatistiken konnten nicht archiviert werden oder die native Reparaturprüfung konnte nicht bestätigt werden. Aktuelle Prognosen und normaler Verlauf laufen weiter. Für die empfohlene bestätigte Bereinigung die separate Reparatur Alte HGT-Prognosestatistiken entfernen verwenden, sofern die alten Reihen sicher zugeordnet werden können. Andernfalls den Konflikt gemäss Upgrade-Anleitung beheben; keine fremden Statistiken löschen."
+    },
+    "hgt_legacy_cleanup": {
+      "title": "Alte HGT-Prognosestatistiken entfernen",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Alte HGT-Prognosen dauerhaft löschen",
+            "description": "Empfohlen: Die unten aufgeführten alten HGT-Prognosestatistiken dauerhaft löschen. Sie enthalten frühere Prognosen, keine gemessenen Heizgradtage, und werden nicht fortgeführt. Aktuelle Prognosen, normaler Verlauf sowie Wind- und Niederschlagsstatistiken bleiben erhalten. Gelöscht werden die vollständigen ausgewählten Langzeit- und Kurzzeitreihen samt Metadaten. Falls ein Rückweg benötigt wird, vorher ein vorhandenes geschütztes Backup ausserhalb von Home Assistant bereithalten. Es wird kein Ersatzarchiv angelegt.\n\n{statistic_ids}"
+          }
+        },
+        "error": {
+          "cleanup_not_verified": "Die Löschung konnte nicht bestätigt werden. Ein Erfolg wird nicht angenommen. Ein bereits eingereihter Recorder-Auftrag kann noch abschliessen. Diese Reparatur schliessen und erneut öffnen, um vor einer weiteren Bestätigung den tatsächlichen Stand zu lesen."
+        }
+      }
+    },
+    "hgt_legacy_cleanup_blocked": {
+      "title": "HGT-Bereinigung muss geprüft werden",
+      "description": "Die alten Prognosestatistiken konnten nicht sicher zugeordnet oder geprüft werden. Es wurde nichts gelöscht. Recorder, Anpassungen am HGT-Sensor und die Upgrade-Anleitung prüfen; danach diese Integration neu laden."
     }
   },
   "exceptions": {
