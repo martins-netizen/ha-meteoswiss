@@ -4,23 +4,22 @@ This describes current fork work. Historical upstream release claims remain in
 the changelog as history; they are not current certifications. Check the
 [release status](README.md#release-status) before installing.
 
-## 8.3.5b3: native HGT cleanup across upgrade paths
+## Published 8.3.5b3: focused HGT cleanup accepted
 
-[8.3.5b3](docs/RELEASE_8.3.5b3.md) packages accepted PR #112, merge
-`9d7be4f935e751314bb950c70869bf09b143a6b1`, with all 46 non-version component
-files unchanged. The native repair recommends confirmed full removal of
-attributable original daily forecast statistics, b2 archives and retired season
-series, including disabled sensors. After completed cleanup, no unused HGT
-forecast archive or metadata remains. Installation/opening alone deletes nothing;
-normal users need no Mac script. [Upgrade](docs/UPGRADING_8.3.5.md) and
-[focused acceptance](docs/ACCEPTANCE_8.3.5b3.md) explain the exact boundary.
-The catalogue determines actual publication; package checks and operator
-acceptance are separate from the accepted source. B2 remains unchanged.
+[8.3.5b3](docs/RELEASE_EVIDENCE_8.3.5b3.md) was published from regular PR #113
+at `b6c4502e5cdeb48121be628fdb7eda579df4f7c3` on 15 November. Ten head and
+nine actual merge checks passed, all eighteen prior releases/tags are unchanged,
+and stable 8.3.4 stays latest. The operator confirmed the existing-entry update
+and focused native HGT cleanup successful; do not reopen those completed steps.
+The [upgrade guide](docs/UPGRADING_8.3.5.md) retains consent/ownership boundaries.
 
-Official [OGD HGT source fields](docs/HGT_OGD_PLAN.md) are verified; measured
-history/backfill with corrected daily values is still to be implemented as a
-separate series. Full Gold, SQLite test-cleanup diagnosis and independent review
-remain open. Earlier b1 operation/wind and b2 visible HGT acceptance stay closed.
+Current development addresses the [test Recorder lifecycle](docs/TEST_RECORDER_LIFECYCLE.md):
+finish tracked work before shutdown and assert explicit pool closure. All 48
+component files, versions, workflows and locks are unchanged; hosted validation
+of this follow-up remains required. Official [OGD HGT fields](docs/HGT_OGD_PLAN.md)
+are verified; measured history/backfill and continuing corrections remain a
+separate implementation. Full Gold, independent review and stable promotion
+remain separate. Earlier b1/b2 accepted scopes stay closed.
 
 ## Published stable 8.3.4: clearer setup and verified HA 2026.11 support
 

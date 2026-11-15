@@ -1,6 +1,6 @@
 # Next development: location selection, Silver and Gold
 
-**Plan version:** 1.40 · **Updated:** 15 November 2026
+**Plan version:** 1.41 · **Updated:** 15 November 2026
 **Status:** The agreed architecture, catalogue/POI, forecast-display, shared-settings
 and station-condition scope is released in stable 8.3.0. B4 runtime acceptance,
 stable publication and HACS default-catalogue admission are complete. The operator
@@ -11,29 +11,31 @@ as planning history, not new instructions to repeat completed work.
 This document does not approve a new feature, installation or release.
 
 
-## 8.3.5b3: native HGT cleanup test package
+## 8.3.5b3: published and focused cleanup accepted
 
-[8.3.5b3](RELEASE_8.3.5b3.md) packages accepted PR #112 at
-`9d7be4f935e751314bb950c70869bf09b143a6b1`, exact tree
-`e5dc7499c52d3b379847cf29358b67048a87c320`. Ten head and nine required actual
-merge checks passed, plus a real scheduled dependency audit on that source.
-Both source HA jobs passed 2,845 tests + 83 subtests and every strict step.
-Minimum/current runs had six/five warnings; the extra SQLite test-fixture
-ResourceWarning remains a separate open diagnosis, not a suppressed gate.
+[8.3.5b3](RELEASE_EVIDENCE_8.3.5b3.md), release **446112927**, was published on
+**15 November 2026 at 14:19:50 UTC** from regular PR #113, merge
+`b6c4502e5cdeb48121be628fdb7eda579df4f7c3`, exact tree
+`bb8c9de9a3822d56eac6f49892852d3cede298df`. Ten head and nine actual merge
+checks passed. Each native HA job passed 2,900 tests + 83 subtests and every
+strict step; both hosted jobs had six warnings including the known SQLite one.
+The immutable release/tag/English body and all eighteen older release records,
+bodies and tags were independently confirmed. Stable **8.3.4** stays latest.
+The 46 non-version component files out of 48 match accepted PR #112 source.
 
-All **46 non-version component files out of 48** remain identical to the
-accepted source. Only manifest.json/version.py become b3. Fixed Publisher
-**V1.10** and its independent profile retain every prior publisher, eighteen
-older tags/release bodies and stable 8.3.4. Workflows, locks, validation policy
-and the Core 2026.11.0 baseline are unchanged. Complete package validation,
-actual publication and operator cleanup acceptance are separate evidence.
+The operator confirmed the existing-entry update and focused native HGT cleanup
+successful on 15 November: repair/listed old IDs gone, forecast ready with no
+archive reference, cleanup-required false and normal operation retained. This
+closes that agreed operator acceptance, without an independent whole-database
+orphan-row audit. Do not repeat publication, installation or deletion; earlier
+b1/b2 scopes also remain closed. See [upgrade guidance](UPGRADING_8.3.5.md).
 
-The normal upgrade uses one native repair confirmation to permanently remove
-attributable obsolete HGT forecast statistics and metadata. No Mac script or
-replacement archive is required. Current forecasts, ordinary history and
-unrelated statistics are retained. Read [the upgrade guide](UPGRADING_8.3.5.md)
-and [focused b3 protocol](ACCEPTANCE_8.3.5b3.md). Actual OGD measured HGT import
-is still separate planned work. Earlier b1/b2 accepted scopes stay closed.
+Current development separately [drains native test Recorder work before pool
+shutdown](TEST_RECORDER_LIFECYCLE.md), with explicit connection-close accounting
+and a regression that fails the earlier order. All 48 component files, versions,
+workflows, locks and existing gates are unchanged. Hosted checks for this
+follow-up remain required. Official measured OGD HGT import, full Gold,
+independent review and any stable promotion remain separate work.
 
 ## 8.3.5b2: fixed HGT archive test package
 
@@ -49,8 +51,8 @@ historical database or 46-file installation audit.
 
 B2's archive-and-keep behaviour remains its immutable historical boundary.
 The [b3 cleanup](UPGRADING_8.3.5.md) instead recommends explicit full removal of
-obsolete forecasts. Its publication and new deletion acceptance remain separate;
-earlier b1/wind and b2 visible acceptance must not be requested again.
+obsolete forecasts. B3 publication and its focused native deletion acceptance
+are now closed; earlier b1/wind and b2 visible acceptance also stay closed.
 
 
 **Completed stable 8.3.2:** published on **28 October 2026 at 12:21:19 UTC**,

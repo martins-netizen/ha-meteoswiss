@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- Drain tracked HA background/database work before native test Recorder pool
+  shutdown. Assert explicit connection closure and add a native shutdown-order
+  regression; runtime, versions, locks and workflows remain unchanged.
+- Record verified 8.3.5b3 publication and operator-confirmed native HGT cleanup.
+  Retain immutable release notes and all completed acceptance scopes.
+
 Further measured-OGD HGT, Gold and independent-review work remains separate.
 
 ## [8.3.5b3] — 2026-11-15 · native HGT cleanup test prerelease
