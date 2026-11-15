@@ -475,7 +475,6 @@
     },
     "hgt_legacy_cleanup": {
       "title": "Supprimer les anciennes statistiques de prévision DJC",
-      "description": "Recommandation : supprimer définitivement les anciennes statistiques de prévision DJC ci-dessous. Ce sont des prévisions, pas des degrés-jours mesurés, et elles ne seront plus alimentées. Les prévisions actuelles, l’historique ordinaire et les statistiques de vent et de précipitations sont conservés. Les séries sélectionnées à long et à court terme et leurs métadonnées sont entièrement supprimées. Conserver au préalable une sauvegarde protégée existante hors de Home Assistant si une restauration est nécessaire. Aucune archive de remplacement n’est créée.\n\n{statistic_ids}",
       "fix_flow": {
         "step": {
           "confirm": {

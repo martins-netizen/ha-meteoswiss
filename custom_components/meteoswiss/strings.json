@@ -475,7 +475,6 @@
     },
     "hgt_legacy_cleanup": {
       "title": "Remove obsolete HGT forecast statistics",
-      "description": "Recommended: permanently delete the obsolete HGT forecast statistics listed below. They contain old forecasts, not measured heating degree days, and will not receive new values. Current forecasts, ordinary history, wind and precipitation statistics are retained. This removes the complete selected long-term and short-term series and their metadata. Keep an existing protected backup outside Home Assistant if you need a recovery point. No replacement archive is created.\n\n{statistic_ids}",
       "fix_flow": {
         "step": {
           "confirm": {

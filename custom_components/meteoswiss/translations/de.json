@@ -475,7 +475,6 @@
     },
     "hgt_legacy_cleanup": {
       "title": "Alte HGT-Prognosestatistiken entfernen",
-      "description": "Empfohlen: Die unten aufgeführten alten HGT-Prognosestatistiken dauerhaft löschen. Sie enthalten frühere Prognosen, keine gemessenen Heizgradtage, und werden nicht fortgeführt. Aktuelle Prognosen, normaler Verlauf sowie Wind- und Niederschlagsstatistiken bleiben erhalten. Gelöscht werden die vollständigen ausgewählten Langzeit- und Kurzzeitreihen samt Metadaten. Falls ein Rückweg benötigt wird, vorher ein vorhandenes geschütztes Backup ausserhalb von Home Assistant bereithalten. Es wird kein Ersatzarchiv angelegt.\n\n{statistic_ids}",
       "fix_flow": {
         "step": {
           "confirm": {

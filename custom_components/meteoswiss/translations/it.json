@@ -475,7 +475,6 @@
     },
     "hgt_legacy_cleanup": {
       "title": "Rimuovere le vecchie statistiche di previsione GGR",
-      "description": "Consigliato: eliminare definitivamente le vecchie statistiche di previsione GGR elencate sotto. Contengono previsioni, non gradi-giorno misurati, e non vengono più aggiornate. Le previsioni attuali, la cronologia ordinaria e le statistiche di vento e precipitazioni vengono mantenute. Le serie selezionate a lungo e breve termine e i relativi metadati vengono eliminati completamente. Se serve un ripristino, predisporre prima un backup protetto esistente fuori da Home Assistant. Non viene creato un archivio sostitutivo.\n\n{statistic_ids}",
       "fix_flow": {
         "step": {
           "confirm": {
