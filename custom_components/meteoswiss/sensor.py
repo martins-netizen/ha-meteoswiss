@@ -849,6 +849,23 @@ class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntit
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
         from .repair_issues import async_sync_hgt_statistics_issue
+        from .hgt_cleanup import SIGNAL
+        from homeassistant.helpers.dispatcher import async_dispatcher_connect
+
+        @callback
+        def cleaned(entry_id: str) -> None:
+            if entry_id == self._entry.entry_id:
+                # Cleanup has already verified absence and refreshed Core issues.
+                # Cancel only this entity's old waiter so it cannot restore stale
+                # cached diagnostics after the confirmed deletion.
+                if task := getattr(self, "_hgt_statistics_task", None):
+                    task.cancel()
+                self._hgt_statistics_archive = None
+                self._hgt_statistics_status = "ready"
+                async_sync_hgt_statistics_issue(self.hass, self._entry, False)
+                self.async_write_ha_state()
+
+        self.async_on_remove(async_dispatcher_connect(self.hass, SIGNAL, cleaned))
 
         self.async_on_remove(
             lambda: async_sync_hgt_statistics_issue(self.hass, self._entry, False)
@@ -902,6 +919,7 @@ class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntit
     def extra_state_attributes(self) -> dict | None:
         diagnostics = {
             "hgt_statistics_status": self._hgt_statistics_status,
+            "hgt_legacy_cleanup_required": self._hgt_statistics_archive is not None,
             "forecast_statistics_archive": self._hgt_statistics_archive,
         }
         if not self.coordinator.data:

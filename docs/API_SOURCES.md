@@ -1,5 +1,11 @@
 # Sources, locations and update contracts
 
+**Planned measured HGT source:** official SwissMetNet OGD already provides
+`xno000d0/m0/y0` (HGT 12/20). The [verified source plan](HGT_OGD_PLAN.md)
+separates this future measured series from existing ICON forecasts. The native
+legacy-cleanup follow-up introduces no provider request or HGT importer.
+
+
 This describes requests made by the current maintained integration. Provider
 publication, the integration's polling interval and its cache lifetime are
 different things. Public access does not imply unlimited requests, guaranteed

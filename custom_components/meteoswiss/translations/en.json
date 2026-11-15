@@ -471,7 +471,26 @@
     },
     "hgt_statistics_blocked": {
       "title": "HGT forecast statistics need review",
-      "description": "The default is to preserve your earlier HGT forecast statistics in a separate archive. This transition or the native repair refresh could not be verified. Current HGT forecasts and ordinary history continue; no statistics were deleted or overwritten. Do not choose Delete to silence the old state-class notice. Keep the existing entity and archive, and follow the upgrade guide to diagnose the conflict before a controlled retry."
+      "description": "The old HGT forecast statistics could not be archived or the native repair refresh could not be verified. Current forecasts and ordinary history continue. Use the separate Remove obsolete HGT forecast statistics repair for the recommended confirmed cleanup when it can safely attribute the old series. Otherwise resolve the conflict using the upgrade guide; never clear unrelated statistics."
+    },
+    "hgt_legacy_cleanup": {
+      "title": "Remove obsolete HGT forecast statistics",
+      "description": "Recommended: permanently delete the obsolete HGT forecast statistics listed below. They contain old forecasts, not measured heating degree days, and will not receive new values. Current forecasts, ordinary history, wind and precipitation statistics are retained. This removes the complete selected long-term and short-term series and their metadata. Keep an existing protected backup outside Home Assistant if you need a recovery point. No replacement archive is created.\n\n{statistic_ids}",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Permanently remove old HGT forecasts",
+            "description": "Recommended: permanently delete the obsolete HGT forecast statistics listed below. They contain old forecasts, not measured heating degree days, and will not receive new values. Current forecasts, ordinary history, wind and precipitation statistics are retained. This removes the complete selected long-term and short-term series and their metadata. Keep an existing protected backup outside Home Assistant if you need a recovery point. No replacement archive is created.\n\n{statistic_ids}"
+          }
+        },
+        "error": {
+          "cleanup_not_verified": "The deletion could not be verified. No success has been assumed. A submitted Recorder operation can still finish. Close and reopen this repair to read the actual state before confirming again."
+        }
+      }
+    },
+    "hgt_legacy_cleanup_blocked": {
+      "title": "HGT cleanup needs review",
+      "description": "The old forecast statistics could not be attributed or validated safely. No deletion was performed. Check Recorder, the HGT sensor customisation and the upgrade guide, then reload this integration."
     }
   },
   "exceptions": {

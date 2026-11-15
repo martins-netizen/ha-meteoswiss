@@ -1,8 +1,9 @@
 # Sensor reference
 
-**Fixed HGT test package:** use [8.3.5b2](RELEASE_8.3.5b2.md) once published;
-follow the [archive-and-keep update](UPGRADING_8.3.5.md) and
-[focused HGT check](ACCEPTANCE_8.3.5b2.md). B1 does not contain this fix.
+**HGT upgrade policy:** published b2 archives old forecast statistics. The
+next, unreleased follow-up adds the [recommended native cleanup](UPGRADING_8.3.5.md)
+so a completed upgrade leaves no unused HGT forecast archive. Its deletion
+requires one explicit confirmation; current forecasts and ordinary history remain.
 
 This describes the current maintained code, not every feature in older upstream
 releases. Keys are internal description keys, not fixed entity IDs. HA derives
@@ -187,8 +188,13 @@ than four hours is rejected on refresh.
 
 ## Daily heating degree days
 
+The unreleased cleanup adds `hgt_legacy_cleanup_required` while a temporary
+HGT archive remains. The native confirmation removes that archive and its
+metadata completely, then clears both the attribute and the cleanup notice.
+An official [measured OGD HGT series](HGT_OGD_PLAN.md) remains separate planned work.
+
 `heating_degree_days` is a **forecast-based HGT 12/20 estimate for today**.
-The [prepared archive-and-keep follow-up](UPGRADING_8.3.5.md) adds
+Published b2 adds
 `hgt_statistics_status` and `forecast_statistics_archive`. Compatible older
 statistics are retained under `sensor.meteoswiss_hgt_forecast_archive_<registry_id>`
 using the same metadata row; Core then recomputes and clears the resolved
@@ -201,7 +207,7 @@ state class. Current values, IDs and ordinary history continue, and existing
 statistic rows are retained; new forecasts no longer enter measured long-term
 statistics. Existing HGT statistics charts stop gaining points. Published stable
 8.3.4 retains the earlier declaration. See the [metadata review and history
-boundary](SENSOR_METADATA.md). The prepared HGT archival follow-up resolves the
+boundary](SENSOR_METADATA.md). The b2 archival fix resolves the
 live-sensor state-class Repair by retaining old statistics separately, not by
 pretending the forecast is a measurement.
 At a forecast daily mean of at most 12 °C, the result is **20 minus that mean**;

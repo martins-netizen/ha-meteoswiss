@@ -4,6 +4,20 @@ This describes current fork work. Historical upstream release claims remain in
 the changelog as history; they are not current certifications. Check the
 [release status](README.md#release-status) before installing.
 
+## Prepared 8.3.5: complete native HGT cleanup across upgrade paths
+
+The next runtime follow-up adds [one explicit recommended cleanup repair](docs/UPGRADING_8.3.5.md)
+for original forecast statistics, b2 archives and attributable retired season
+series, including disabled sensors. A completed migration leaves no unused HGT
+forecast archive or metadata. It neither silently deletes on install nor
+requires a Mac script. Published b2 remains unchanged until a new package is
+reviewed and released.
+
+The [official OGD HGT source](docs/HGT_OGD_PLAN.md) is verified; a separate measured
+series with historical backfill and ongoing corrected daily values is still to
+be implemented. It must not reuse the old forecast averages. Full Gold and the
+independent review remain separate requirements.
+
 ## Published stable 8.3.4: clearer setup and verified HA 2026.11 support
 
 [Stable 8.3.4](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4),
@@ -86,7 +100,7 @@ regular merge, successful packaging checks and verified prerelease. Stable
 read-only wind/HGT check are recorded in the
 [focused acceptance plan](docs/ACCEPTANCE_8.3.5b1.md). The HGT state-class Repair
 remains an open migration issue in b1. The prepared, unreleased
-[archive-and-keep default](docs/UPGRADING_8.3.5.md) preserves that old series and
+[published b2 archive default](docs/RELEASE_8.3.5b2.md) preserves that old series and
 uses native Core repair recomputation; it needs a later fixed test package and
 operator acceptance before stable promotion. Packaging itself introduced no
 additional runtime capability.

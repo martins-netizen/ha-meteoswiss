@@ -1,5 +1,12 @@
 # Foehn and HGT metadata: numeric codes, predictions and statistics
 
+**Prepared upgrade policy beyond published b2:** remove obsolete forecast
+statistics through the [explicit native cleanup](UPGRADING_8.3.5.md). Opening
+that repair performs no deletion. After confirmed complete deletion and readback,
+no unused HGT archive remains. Existing b2 preservation evidence below is
+historical; the cleanup neither relabels forecasts nor implements measured OGD HGT.
+
+
 **Review version:** 1.1 · **Reviewed:** 10 November 2026
 **Status:** Unreleased source follow-up after published stable 8.3.4.
 
@@ -47,7 +54,7 @@ extra request, configuration change or entry/device deletion.
 
 Home Assistant can flag an existing series whose entity no longer has a state
 class in its Statistics tools. See [the statistics guide](https://www.home-assistant.io/docs/configuration/long-term-statistics/#when-the-unit-or-the-state-class-changes).
-Do not delete old data to hide that indication. This follow-up performs no
+B2 resolves the live indication by archiving; the newer explicit cleanup repair removes the obsolete forecast archive. The original metadata-only follow-up performs no
 statistics purge, metadata conversion, backfill or lifetime-history guarantee.
 Normal Recorder retention still applies to raw state history.
 

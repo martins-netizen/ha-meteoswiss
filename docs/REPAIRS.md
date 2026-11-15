@@ -1,8 +1,9 @@
 # Correct an invalid saved forecast location
 
-**Fixed HGT test package:** use [8.3.5b2](RELEASE_8.3.5b2.md) once published;
-follow the [archive-and-keep update](UPGRADING_8.3.5.md) and
-[focused HGT check](ACCEPTANCE_8.3.5b2.md). B1 does not contain this fix.
+**Prepared HGT upgrade cleanup:** the next package adds a native confirmation
+for complete removal of obsolete forecast statistics. See the
+[upgrade guide](UPGRADING_8.3.5.md). Published b2 preserves archives until that
+follow-up is released; it does not already contain the deletion repair.
 
 **Availability:** included in published, operator-accepted
 [8.3.1b1](RELEASE_8.3.1b1.md). The [stable 8.3.1 package](RELEASE_8.3.1.md)
@@ -80,31 +81,22 @@ Do not delete old statistics to remove the warning. The notice clears on a
 successful retry and is removed on unload. A provider outage alone is not this
 repair condition. The text is bundled and HA-loaded in DE/EN/FR/IT.
 
-## HGT forecast archival blocked (prepared follow-up)
+## Remove obsolete HGT forecast statistics (unreleased)
 
-The recommended default is automatic preservation in a separate archive. A
-per-entry MeteoSwiss notice means that compatible metadata, a free destination
-or native Core repair refresh could not be verified. The current HGT forecast
-and ordinary history continue; the migration does not delete or overwrite a
-series. Keep the existing entry/archive and use the
-[upgrade and conflict instructions](UPGRADING_8.3.5.md). The notice is bundled
-and HA-loaded in DE/EN/FR/IT, and clears after a verified retry or entry unload.
+Entry-owned inspection runs after registration, including disabled sensors and
+attributable retired season identities. The fixable notice lists exact old
+statistic IDs. **Recommended: permanently remove the old forecasts.** Opening
+or cancelling the dialog performs no deletion. Explicit confirmation clears
+complete series through native Recorder, verifies absence, recomputes Core
+issues and refreshes the forecast's archive attribute. No replacement archive
+or permanent preservation option is created by this repair.
 
-Published 8.3.5b1 only removes the inappropriate HGT measurement state class
-and can leave Core’s state-class Repair. The prepared follow-up actually moves
-the old metadata to an archive and asks Core to recompute its issue registry.
-The resolved HGT Repair then clears; it is not manually dismissed. Reinstalling
-b1 is not this fix, and a permanently unresolved Repair is not the successful
-normal update path. Historical archives can still appear in the advanced
-Statistics catalogue without a live entity; that is a separate catalogue
-condition, not the cleared live-sensor state-class Repair.
+When ownership, metadata, Recorder readiness or forecast customisation is
+incompatible, a separate non-fixable diagnostic notice blocks deletion. Resolve
+the conflict and reload the entry. Unrelated IDs are never inferred from names
+or a broad prefix. See [upgrade paths and limits](UPGRADING_8.3.5.md).
 
-## Shared diagnostic ownership needs review
-
-Unreleased follow-up: `shared_diagnostics_blocked` reports a local registration
-or ownership-transfer problem for the optional station-catalogue/cache helpers.
-Ordinary weather is independent. Resolve conflicting legacy ownership before
-removing an entry; HA still applies its normal entry-removal cleanup.
-[Scope and recovery](SHARED_DIAGNOSTIC_LIFECYCLE.md#ownership-repair) explain the
-retention checks, rollback limits and original-owner reload path. The notice is
-translated in DE/EN/FR/IT and contains no raw exception or location fields.
+The existing b2 archival conflict notice can coexist with this cleanup repair
+when both compatible old source and destination metadata exist. A verified
+explicit cleanup resolves that historical conflict without overwriting either
+series. Wind migration conflicts remain a separate issue and deletion scope.

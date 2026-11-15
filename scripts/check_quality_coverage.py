@@ -70,6 +70,8 @@ def validate() -> None:
         "repair_issues.py",
         "wind_statistics.py",
         "forecast_statistics.py",
+        "hgt_cleanup.py",
+        "repairs.py",
         "statistics_archive.py",
         "calc.py",
     ):
