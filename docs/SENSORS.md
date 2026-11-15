@@ -74,7 +74,7 @@ on what the selected station actually measures.
 | `foehn_index` | Foehn index, if measured | Code | `wcc006s0` |
 
 Numeric observation descriptions normally have state class `measurement`.
-**Unreleased wind follow-up:** wind direction uses device class `wind_direction`
+**8.3.5 test-line wind metadata:** wind direction uses device class `wind_direction`
 and state class `measurement_angle` only after verifying that Recorder can start
 a circular series. Older arithmetic statistics are archived without deleting
 rows; the entity ID stays the same. Preparation/conflicts leave the state class
@@ -191,7 +191,7 @@ than four hours is rejected on refresh.
 The b3 cleanup provides `hgt_legacy_cleanup_required` while a temporary
 HGT archive remains. The native confirmation removes that archive and its
 metadata completely, then clears both the attribute and the cleanup notice.
-The unreleased [measured OGD HGT feature](HGT_OGD_PLAN.md) adds a separate
+The prepared 8.3.5b4 [measured OGD HGT feature](HGT_OGD_PLAN.md) adds a separate
 `heating_degree_days_observed` unique-ID suffix. Its translated latest-day
 sensor belongs to the existing measurement-station device, with `°C·d`, no
 measurement state class and explicit UTC-day/source/statistic-ID attributes.
@@ -261,14 +261,14 @@ station and can stay disabled. `meteoswiss_cache_stats` is the shared cache
 helper's unique ID. Existing entity names can differ. Integration diagnostics
 download a redacted technical summary.
 
-**Unreleased naming follow-up:** both helper entity names and shared device
+**8.3.5 test-line diagnostic naming:** both helper entity names and shared device
 labels are translated in DE/EN/FR/IT. Personal names, IDs, areas, aliases and
 enabled/disabled choices stay intact. Their technical string states and
 attributes remain unchanged; [compatibility and tests](DIAGNOSTIC_TRANSLATIONS.md).
 The [Cache Statistics guide](USAGE.md#cache-statistics-what-the-numbers-mean)
 explains hit rate, lookups, expiry and why these are not API-request counters.
 
-**Unreleased development change:** newly registered station-catalogue and cache
+**8.3.5 test-line diagnostic defaults:** newly registered station-catalogue and cache
 helpers start disabled. Existing registry choices remain unchanged, including
 enabled helpers. To use a helper, open its entity settings under
 **Settings → Devices & services → Entities**, include disabled entities in the

@@ -1,6 +1,6 @@
 # Maintained fork: architecture and data contracts
 
-**Unreleased official measured HGT:** `hgt_ogd.py` validates bounded canonical
+**Prepared 8.3.5b4 official measured HGT:** `hgt_ogd.py` validates bounded canonical
 station resources and completed UTC daily/monthly/annual products off the event
 loop. `hgt_ogd_coordinator.py` provides entry-owned optional polling;
 `hgt_ogd_manager.py` shares source snapshots and per-station locks across entries

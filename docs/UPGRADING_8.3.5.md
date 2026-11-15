@@ -1,8 +1,16 @@
 # 8.3.5 upgrade: remove obsolete HGT forecast statistics
 
+**Prepared b4 path:** after its announced publication, update the same entry
+to [8.3.5b4](RELEASE_8.3.5b4.md) and perform the [focused measured-HGT check](ACCEPTANCE_8.3.5b4.md).
+Initial OGD backfill is automatic for an enabled station entry with Recorder.
+Keep forecasts, wind and precipitation unchanged; no old forecast data,
+station change, entry recreation or destructive test is needed. See the
+[permanent-removal boundary](HGT_OGD_PLAN.md#ownership-and-complete-removal)
+before deliberately removing the integration.
+
 **Current development adds a separate measured-HGT feature.** This guide's
 accepted b3 forecast cleanup remains unchanged and is not repeated. The new
-OGD importer is unreleased; installing b3 does not install it. Its
+OGD importer is packaged for prepared b4; installing b3 does not install it. Its
 [usage/removal guide](HGT_OGD_PLAN.md) explains independent station-specific
 measured histories, initial backfill and continuing corrections. Keep the
 existing entry; never substitute an old forecast archive for observations.

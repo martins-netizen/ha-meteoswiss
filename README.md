@@ -15,6 +15,15 @@ This is an independent community project, not an official MeteoSwiss product.
 This guide describes the **8.3 series**; [8.3.0 release notes](docs/RELEASE_8.3.0.md)
 explain the changes from 8.2.0. Use a published release, not a branch.
 
+**Prepared 8.3.5b4 test package:** official measured HGT 12/20 history, with
+initial backfill, continuing source corrections and explicit ownership/removal.
+This is **not yet published** and is not in b3. Keep the existing entry and wait
+for the announced release. [Release notes](docs/RELEASE_8.3.5b4.md),
+[preparation/evidence](docs/RELEASE_EVIDENCE_8.3.5b4.md) and
+[the short read-only check](docs/ACCEPTANCE_8.3.5b4.md) explain the new entity and
+station-specific statistics. Removing the final integration entry also removes
+its owned OGD HGT products; normal sensor history and unrelated statistics remain.
+
 **8.3.5 test line:** [8.3.5b3](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b3)
 packages the native **Remove obsolete HGT forecast statistics** repair. It
 recommends complete removal of old forecast statistics after one clear
@@ -28,9 +37,9 @@ boundary. **8.3.4 remains latest stable.** HA **2026.11.0 or newer** is required
 
 **Package-specific HA minimum:**
 
-| Published package | Required HA Core |
+| Package | Required HA Core |
 |---|---|
-| 8.3.5b1 / b2 / b3 | 2026.11.0 or newer |
+| 8.3.5b1 / b2 / b3; prepared b4 | 2026.11.0 or newer |
 | Latest stable 8.3.4 | 2026.8.3 or newer |
 
 The HA 2026.11.1 Marketplace page can show an installed beta together with the
@@ -46,11 +55,11 @@ sensors. Read [ownership/conflict limits](docs/UPGRADING_8.3.5.md) before confir
 No Mac script or entry recreation is needed. B2 itself retains its historical
 archive-and-keep behaviour; the new cleanup is included in b3.
 
-**Unreleased development: official measured HGT 12/20.** A separate observed-day
+**Prepared b4 feature: official measured HGT 12/20.** A separate observed-day
 sensor and station-specific daily/monthly/annual statistics import the official
 OGD products, backfill available observations and recheck corrections. Forecasts
-keep their existing identity. This feature is **not in published b3**; packaging
-and a focused HA check are separate. See [sources, charts and removal](docs/HGT_OGD_PLAN.md).
+keep their existing identity. This feature is **not in published b3**; b4
+publication and its focused HA check are separate. See [sources, charts and removal](docs/HGT_OGD_PLAN.md).
 Removing the final MeteoSwiss integration entry also removes its owned OGD HGT
 statistics; normal sensor history and unrelated series are retained.
 
@@ -170,31 +179,31 @@ records verified controls and remaining checks. Providers receive the source IP
 and requested location; diagnostic redaction does not hide those requests from
 the provider. See [location privacy before setup](docs/GETTING_STARTED.md#location-privacy-before-setup).
 
-**Unreleased diagnostic-name follow-up:** the two optional technical helpers
+**8.3.5 test-line diagnostic names:** the two optional technical helpers
 and their shared service groups have translated default names in DE/EN/FR/IT.
 Existing IDs, personal names and enabled/disabled choices are retained. Technical
 states/attributes keep their compatibility format; see [names and limits](docs/DIAGNOSTIC_TRANSLATIONS.md).
 The [dated security inventory](docs/PRIVACY_SECURITY_REVIEW.md#owner-authenticated-alert-inventory)
 records no open alerts as of 11 November 2026; it is separate from Gold completion.
 
-**Unreleased dependency-security gate:** CI checks every package/version in both
+**8.3.5 test-line dependency-security gate:** CI checks every package/version in both
 universal test locks against known advisories, including foreign-platform
 selections. Active advisories and unknown results fail the existing `tests`
 merge gate. A separate daily workflow uses the same read-only check; see
 [scope, failure handling and limits](docs/DEPENDENCY_ADVISORIES.md).
 
-**Unreleased shared-diagnostic lifecycle fix:** keep both helper entity/device
+**8.3.5 test-line shared-diagnostic lifecycle:** keep both helper entity/device
 IDs and personal settings when their owner unloads or another entry starts
 first. A loaded peer takes over through its existing platform; its weather
 coordinators are not reloaded. Ambiguous historical bindings raise a translated
 repair instead of being merged or deleted. See [ownership and recovery](docs/SHARED_DIAGNOSTIC_LIFECYCLE.md).
 
-**Unreleased manual device removal:** HA's normal device-page confirmation can
+**8.3.5 test-line manual device removal:** HA's normal device-page confirmation can
 remove an unambiguous empty service shell for an entry that no longer exists.
 Current, disabled, shared, bound or linked groups stay protected. This adds no
 automatic cleanup or production orphan claim; see [approval and limits](docs/DEVICE_REMOVAL.md).
 
-**Unreleased service-group names:** current weather, modelled air quality/pollen,
+**8.3.5 test-line service-group names:** current weather, modelled air quality/pollen,
 warnings and measured pollen use native DE/EN/FR/IT labels. English defaults,
 raw station/postcode text, existing IDs and personal names remain intact.
 See [names, language changes and retained history](docs/SERVICE_GROUP_TRANSLATIONS.md).
@@ -275,7 +284,7 @@ package-merge jobs passed **2,225 tests plus 83 subtests** on HA 2026.8.3 and
 Native icons and translated errors are retained from stable 8.3.3. The
 [Gold checklist](docs/QUALITY_SCALE.md) still has separate remaining work.
 
-**Unreleased wind-statistics change.** Wind direction uses HA's circular angle
+**8.3.5 test-line wind-statistics change.** Wind direction uses HA's circular angle
 statistics after a verified migration. Existing arithmetic statistics are kept
 under a separate archive ID; new circular statistics use the original sensor.
 Review [chart impact, repair notices and rollback](docs/WIND_STATISTICS_MIGRATION.md)

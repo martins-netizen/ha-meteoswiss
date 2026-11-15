@@ -1,8 +1,9 @@
 # Official measured HGT 12/20: use, sources and removal
 
-**Status: implemented in unreleased development; not in published 8.3.5b3.**
-Packaging, successful hosted feature checks and a focused HA acceptance remain
-separate. Do not install a branch as a substitute for an announced release.
+**Status: reviewed source PR #115 merged and actually checked; packaged for
+unpublished 8.3.5b4, not included in published 8.3.5b3.**
+[Package checks/publication](RELEASE_EVIDENCE_8.3.5b4.md) and a
+[focused HA acceptance](ACCEPTANCE_8.3.5b4.md) remain separate. Do not install a branch as a substitute for an announced release.
 The accepted b3 cleanup of obsolete forecasts remains complete and separate.
 
 ## What users get
@@ -139,7 +140,7 @@ silently adopted. Keep Recorder and the integration's ownership storage in the
 same protected full HA backup; restoring only one side can require review.
 
 **After changing the weather station:** open **Settings → System → Repairs →
-Remove unused measured HGT statistics**. Review the exact old station IDs and
+Remove unused official HGT statistics**. Review the exact old station IDs and
 confirm complete removal if they are no longer wanted. Opening/cancelling does
 nothing. Confirmation permanently deletes their long-/short-term statistic
 rows and metadata, then removes their ownership references after verified
