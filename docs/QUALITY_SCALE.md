@@ -1,6 +1,6 @@
 # Quality evidence and remaining work
 
-**Prepared HGT cleanup follow-up (unreleased):** an entry-owned post-startup
+**HGT cleanup in the 8.3.5b3 test package:** an entry-owned post-startup
 inventory discovers attributable obsolete forecast statistics across old and b2
 upgrade paths, including disabled sensors and native season-entity tombstones.
 The native repair recommends complete deletion and requires explicit confirmation;
@@ -10,11 +10,11 @@ Core repair recomputation and an entry-scoped forecast-attribute refresh. No
 replacement archive, SQL or device call is introduced. Existing archives are
 transitional until confirmed removal, not the normal final state. See
 [the upgrade contract](UPGRADING_8.3.5.md) and [native tests](../tests/test_hgt_cleanup.py).
-This changes the prepared policy beyond b2; historical b2 evidence below remains
+This changes the b3 policy beyond b2; historical b2 evidence below remains
 scoped to its published archive-and-keep runtime. It is not full Gold certification.
 
 
-**Runtime assessment:** 24 October 2026. **Documentation updated:** 14 November 2026.
+**Runtime assessment:** 24 October 2026. **Documentation updated:** 15 November 2026.
 **Scope:** the 8.3 runtime accepted as
 published b4 at **a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5**. Stable packaging
 changes only two component version files. The operator confirmed b3 calendar-day
@@ -105,24 +105,46 @@ is distinct from publication. PR #92 HGT behaviour and remaining Gold rules stay
 outside this package.
 
 
+## 8.3.5b3: native HGT cleanup test package
+
+[8.3.5b3](RELEASE_8.3.5b3.md) packages accepted PR #112 at
+`9d7be4f935e751314bb950c70869bf09b143a6b1`, exact tree
+`e5dc7499c52d3b379847cf29358b67048a87c320`. Ten head and nine required actual
+merge checks passed, plus a real scheduled dependency audit on that source.
+Both source HA jobs passed 2,845 tests + 83 subtests and every strict step.
+Minimum/current runs had six/five warnings; the extra SQLite test-fixture
+ResourceWarning remains a separate open diagnosis, not a suppressed gate.
+
+All **46 non-version component files out of 48** remain identical to the
+accepted source. Only manifest.json/version.py become b3. Fixed Publisher
+**V1.10** and its independent profile retain every prior publisher, eighteen
+older tags/release bodies and stable 8.3.4. Workflows, locks, validation policy
+and the Core 2026.11.0 baseline are unchanged. Complete package validation,
+actual publication and operator cleanup acceptance are separate evidence.
+
+The normal upgrade uses one native repair confirmation to permanently remove
+attributable obsolete HGT forecast statistics and metadata. No Mac script or
+replacement archive is required. Current forecasts, ordinary history and
+unrelated statistics are retained. Read [the upgrade guide](UPGRADING_8.3.5.md)
+and [focused b3 protocol](ACCEPTANCE_8.3.5b3.md). Actual OGD measured HGT import
+is still separate planned work. Earlier b1/b2 accepted scopes stay closed.
+
 ## 8.3.5b2: fixed HGT archive test package
 
-[8.3.5b2](RELEASE_8.3.5b2.md) packages accepted PR #110 at
-`71c4c6269ea0c06cc5d2c43db9b0a24d8e6e9c08`, with ten exact-head and nine actual
-merge checks successful. Both source HA jobs passed 2,753 tests + 83 subtests.
-All 44 non-version component files are identical to that source; only two
-version fields change. Package checks and actual publication retain their own
-evidence. The authorised controlled publication follows a regular packaging PR,
-successful exact-head/merge gates and a fixed V1.9 publisher. Stable 8.3.4 and
-all seventeen older tags/releases remain unchanged.
+[8.3.5b2](RELEASE_8.3.5b2.md), release **445608354**, was published on
+**14 November 2026 at 21:40:13 UTC** from packaging merge
+`f8ea38babdfd44354059927888fb54fd662e5696`. It retains PR #110 runtime except
+for its two version files. All 17 older tags/release bodies and stable 8.3.4
+were independently confirmed. Publication is complete; its publisher is not a
+new update action. The operator's visible HGT check is also closed: `ready`,
+archive assignment and current forecast were shown, and disappearance of the
+original live-HGT Core repair was explicitly confirmed. This is not a full
+historical database or 46-file installation audit.
 
-The default preserves compatible historical HGT statistics and lets native Core
-recomputation clear the resolved live-HGT Repair. No data deletion or entry
-recreation is part of the update. See the [upgrade guide](UPGRADING_8.3.5.md)
-and [focused HGT acceptance](ACCEPTANCE_8.3.5b2.md). Earlier b1 installation,
-visual operation and bounded wind/archive readback stay accepted. B2 HGT
-archival has not been run on the operator's database by this packaging work;
-operator installation/acceptance and stable promotion remain separate.
+B2's archive-and-keep behaviour remains its immutable historical boundary.
+The [b3 cleanup](UPGRADING_8.3.5.md) instead recommends explicit full removal of
+obsolete forecasts. Its publication and new deletion acceptance remain separate;
+earlier b1/wind and b2 visible acceptance must not be requested again.
 
 
 ## Bronze: twenty rules

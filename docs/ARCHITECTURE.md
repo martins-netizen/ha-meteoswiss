@@ -1,6 +1,6 @@
 # Maintained fork: architecture and data contracts
 
-**Prepared HGT cleanup follow-up (unreleased):** an entry-owned post-startup
+**HGT cleanup in the 8.3.5b3 test package:** an entry-owned post-startup
 inventory discovers attributable obsolete forecast statistics across old and b2
 upgrade paths, including disabled sensors and native season-entity tombstones.
 The native repair recommends complete deletion and requires explicit confirmation;
@@ -10,7 +10,7 @@ Core repair recomputation and an entry-scoped forecast-attribute refresh. No
 replacement archive, SQL or device call is introduced. Existing archives are
 transitional until confirmed removal, not the normal final state. See
 [the upgrade contract](UPGRADING_8.3.5.md) and [native tests](../tests/test_hgt_cleanup.py).
-This changes the prepared policy beyond b2; historical b2 evidence below remains
+This changes the b3 policy beyond b2; historical b2 evidence below remains
 scoped to its published archive-and-keep runtime. It is not full Gold certification.
 
 
@@ -74,7 +74,7 @@ and the remaining architectural evidence limits.
 
 ## Native service-group names
 
-The unreleased [naming follow-up](SERVICE_GROUP_TRANSLATIONS.md) uses HA-native
+The published b1 [naming follow-up](SERVICE_GROUP_TRANSLATIONS.md) uses HA-native
 DeviceInfo translation keys for all current service-group families. Existing
 station/postcode text is passed as local display placeholders; provider
 identities, models, attribution and every registry identifier remain unchanged.
@@ -91,7 +91,7 @@ test/documentation follow-up changes no component, source request or lifecycle.
 
 ## Manual service-group removal
 
-The unreleased `device_removal.py` classifier owns only read-only native
+The published b1 `device_removal.py` classifier owns only read-only native
 device-removal approval. The typed integration hook permits a user-confirmed
 empty retired service shell; it performs no registry write, await, source call
 or automatic cleanup. Current/shared groups, any entity bindings, device links

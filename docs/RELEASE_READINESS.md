@@ -1,28 +1,50 @@
-# Release readiness: 8.3.5b2 test line and stable 8.3.4
+# Release readiness: 8.3.5b3 test line and stable 8.3.4
 
-**Document version:** 2.24 · **Updated:** 14 November 2026
+**Document version:** 2.25 · **Updated:** 15 November 2026
 
 <a id="prepared-835b1-reviewed-source-publication-and-operator-acceptance-separate"></a>
 
 
+## 8.3.5b3: native HGT cleanup test package
+
+[8.3.5b3](RELEASE_8.3.5b3.md) packages accepted PR #112 at
+`9d7be4f935e751314bb950c70869bf09b143a6b1`, exact tree
+`e5dc7499c52d3b379847cf29358b67048a87c320`. Ten head and nine required actual
+merge checks passed, plus a real scheduled dependency audit on that source.
+Both source HA jobs passed 2,845 tests + 83 subtests and every strict step.
+Minimum/current runs had six/five warnings; the extra SQLite test-fixture
+ResourceWarning remains a separate open diagnosis, not a suppressed gate.
+
+All **46 non-version component files out of 48** remain identical to the
+accepted source. Only manifest.json/version.py become b3. Fixed Publisher
+**V1.10** and its independent profile retain every prior publisher, eighteen
+older tags/release bodies and stable 8.3.4. Workflows, locks, validation policy
+and the Core 2026.11.0 baseline are unchanged. Complete package validation,
+actual publication and operator cleanup acceptance are separate evidence.
+
+The normal upgrade uses one native repair confirmation to permanently remove
+attributable obsolete HGT forecast statistics and metadata. No Mac script or
+replacement archive is required. Current forecasts, ordinary history and
+unrelated statistics are retained. Read [the upgrade guide](UPGRADING_8.3.5.md)
+and [focused b3 protocol](ACCEPTANCE_8.3.5b3.md). Actual OGD measured HGT import
+is still separate planned work. Earlier b1/b2 accepted scopes stay closed.
+
 ## 8.3.5b2: fixed HGT archive test package
 
-[8.3.5b2](RELEASE_8.3.5b2.md) packages accepted PR #110 at
-`71c4c6269ea0c06cc5d2c43db9b0a24d8e6e9c08`, with ten exact-head and nine actual
-merge checks successful. Both source HA jobs passed 2,753 tests + 83 subtests.
-All 44 non-version component files are identical to that source; only two
-version fields change. Package checks and actual publication retain their own
-evidence. The authorised controlled publication follows a regular packaging PR,
-successful exact-head/merge gates and a fixed V1.9 publisher. Stable 8.3.4 and
-all seventeen older tags/releases remain unchanged.
+[8.3.5b2](RELEASE_8.3.5b2.md), release **445608354**, was published on
+**14 November 2026 at 21:40:13 UTC** from packaging merge
+`f8ea38babdfd44354059927888fb54fd662e5696`. It retains PR #110 runtime except
+for its two version files. All 17 older tags/release bodies and stable 8.3.4
+were independently confirmed. Publication is complete; its publisher is not a
+new update action. The operator's visible HGT check is also closed: `ready`,
+archive assignment and current forecast were shown, and disappearance of the
+original live-HGT Core repair was explicitly confirmed. This is not a full
+historical database or 46-file installation audit.
 
-The default preserves compatible historical HGT statistics and lets native Core
-recomputation clear the resolved live-HGT Repair. No data deletion or entry
-recreation is part of the update. See the [upgrade guide](UPGRADING_8.3.5.md)
-and [focused HGT acceptance](ACCEPTANCE_8.3.5b2.md). Earlier b1 installation,
-visual operation and bounded wind/archive readback stay accepted. B2 HGT
-archival has not been run on the operator's database by this packaging work;
-operator installation/acceptance and stable promotion remain separate.
+B2's archive-and-keep behaviour remains its immutable historical boundary.
+The [b3 cleanup](UPGRADING_8.3.5.md) instead recommends explicit full removal of
+obsolete forecasts. Its publication and new deletion acceptance remain separate;
+earlier b1/wind and b2 visible acceptance must not be requested again.
 
 
 ## Published 8.3.5b1: bounded acceptance recorded; HGT fixed in b2
@@ -36,8 +58,8 @@ change. HA 2026.11.0 is the minimum; fixtures remain 2026.11.0/2026.11.1.
 Source PR #107 passed all ten head and nine actual merge checks. The separate
 manual Dependency audit [run 43389137603](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/43389137603)
 also passed on that exact source: 140 package/version pairs, no active advisories
-and no unknown results. This proves the manual hosted workflow; an actual cron
-execution and delivery of a failure notification have not been observed.
+and no unknown results. This proves the manual hosted workflow. Later actual scheduled runs on b2 and
+PR #112 source are recorded above; failure-notification delivery remains separate.
 
 Packaging PR #108 was regularly merged as
 `af1220249e672bd8a6742c73022a7c42aca2f20a`, exact tree
@@ -52,9 +74,9 @@ B1 production installation and visual operation are operator-confirmed. A
 read-only report matched all tagged component files and observed retained wind
 arithmetic history plus new circular points. The HGT state-class Repair is
 not accepted as a permanently unresolved normal outcome. The
-[archive-and-keep fix](UPGRADING_8.3.5.md) was accepted in PR #110. Its b2
-package needs verified publication and its own operator readback before stable
-promotion. That new migration has not been run on the operator’s database.
+[b2 archive fix](RELEASE_8.3.5b2.md) was published and its visible operator check
+is closed. B3 adds the separate confirmed cleanup repair and needs its own
+bounded acceptance before stable promotion.
 The [focused protocol](ACCEPTANCE_8.3.5b1.md) keeps a historical wind migration
 on a test/restored copy until its preservation boundary is accepted. A version
 rollback alone does not reverse Recorder metadata. Earlier accepted scopes stay

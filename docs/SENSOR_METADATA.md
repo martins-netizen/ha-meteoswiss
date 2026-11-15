@@ -1,6 +1,6 @@
 # Foehn and HGT metadata: numeric codes, predictions and statistics
 
-**Prepared upgrade policy beyond published b2:** remove obsolete forecast
+**8.3.5b3 upgrade policy beyond published b2:** remove obsolete forecast
 statistics through the [explicit native cleanup](UPGRADING_8.3.5.md). Opening
 that repair performs no deletion. After confirmed complete deletion and readback,
 no unused HGT archive remains. Existing b2 preservation evidence below is
@@ -83,7 +83,7 @@ A circular mean correctly handles the 360°/0° boundary, but HA deliberately
 [stops a series when its mean type changes](https://www.home-assistant.io/docs/configuration/long-term-statistics/#when-the-unit-or-the-state-class-changes).
 Silently reinterpreting older arithmetic means as circular means would be wrong.
 
-The unreleased [wind follow-up](WIND_STATISTICS_MIGRATION.md) now implements a
+The published b1 [wind follow-up](WIND_STATISTICS_MIGRATION.md) now implements a
 separate archival policy: retain arithmetic rows under an archive statistic ID,
 read back their identity/metadata and only then enable circular statistics under
 the unchanged sensor ID. It does not convert historical averages. Native Recorder
