@@ -1,4 +1,14 @@
-# Release readiness: published 8.3.5b4 and stable 8.3.4
+# Release readiness: 8.3.5b5 recovery package and stable 8.3.4
+
+## 8.3.5b5 package boundary
+
+The **8.3.5b5** test package includes the approved #119 HGT retry correction.
+Publication/availability is determined by the release catalogue; source checks
+do not establish package publication or live availability. Existing entries,
+IDs and owned statistics remain. Already completed b3 cleanup stays closed.
+Follow the [focused b5 check](ACCEPTANCE_8.3.5b5.md) and
+[package boundary](RELEASE_8.3.5b5.md). Full Gold and independent
+privacy/security/architecture review remain separate.
 
 **Document version:** 2.28 · **Updated:** 15 November 2026
 
@@ -28,12 +38,14 @@ The release/tag and exact approved English body were independently read back.
 All nineteen older complete release records, bodies and tag references are
 unchanged. **8.3.4 remains latest stable.** The 50 non-version component files
 out of 52 match reviewed PR #115 source. This publication does not install or
-restart HA. The [focused measured-HGT acceptance](ACCEPTANCE_8.3.5b4.md) remains
-pending; accepted b1/b2/b3 scopes and PR #114 stay closed.
+restart HA. Its original [measured-HGT protocol](ACCEPTANCE_8.3.5b4.md) is
+retained. For the retry correction choose published b5 and its
+[focused recovery check](ACCEPTANCE_8.3.5b5.md); no prior b4 installation
+or repeated cleanup is required. Accepted b1/b2/b3 scopes and PR #114 stay closed.
 
 Publication is complete. Do not rerun a publisher as a new update action.
-Update the existing entry normally when choosing this test release; no station
-change, entry recreation or repeated obsolete-forecast cleanup is required.
+Choose the current published recovery test package through the release
+catalogue. Keep the entry and station; completed cleanup stays complete.
 Full Gold, independent review and any stable promotion remain separate.
 
 ## 8.3.5b3: published and focused cleanup accepted

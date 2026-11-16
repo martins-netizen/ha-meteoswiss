@@ -1,7 +1,17 @@
 # 8.3.5 upgrade: remove obsolete HGT forecast statistics
 
-**Published b4 test path:** if choosing this test release, update the same entry
-to [8.3.5b4](RELEASE_8.3.5b4.md) and perform the [focused measured-HGT check](ACCEPTANCE_8.3.5b4.md).
+## 8.3.5b5: update the existing entry
+
+The **8.3.5b5** recovery package retries temporary measured-HGT failures
+without changing existing entries, IDs or owned statistics. If choosing this
+published test release, update normally and follow the
+[short b5 check](ACCEPTANCE_8.3.5b5.md). Already completed obsolete-forecast
+cleanup stays complete. [Package notes](RELEASE_8.3.5b5.md) describe availability
+and the recovery limits.
+
+**Measured HGT in b4 and later:** choose published [8.3.5b5](RELEASE_8.3.5b5.md)
+for the recovery correction and perform the [focused b5 check](ACCEPTANCE_8.3.5b5.md).
+A preceding b4 installation or a second acceptance round is not required.
 Initial OGD backfill is automatic for an enabled station entry with Recorder.
 Keep forecasts, wind and precipitation unchanged; no old forecast data,
 station change, entry recreation or destructive test is needed. See the

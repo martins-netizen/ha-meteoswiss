@@ -1,8 +1,9 @@
 # Measured HGT: bounded recovery after a transient failure
 
-**Status: unreleased follow-up.** Published 8.3.5b4 retains the previous
-six-hour failure cadence. The change described here requires a later reviewed
-and published package; it does not alter any existing release or tag.
+**Package scope: 8.3.5b5.** Published 8.3.5b4 retains the previous six-hour
+failure cadence. Choose a published b5 package from the release catalogue to
+receive this change. Publication, installation and live acceptance are separate;
+the existing b4 release and tag remain unchanged.
 
 ## What changes
 
@@ -41,8 +42,8 @@ current availability.
 
 ## Existing users
 
-Keep the entry, station, entity IDs and owned statistics. Once the follow-up
-package is announced, update normally. No database edit, helper archive,
+Keep the entry, station, entity IDs and owned statistics. When choosing the published b5
+package, update normally through Marketplace. No database edit, helper archive,
 station change, entry recreation or repeated legacy-forecast cleanup is needed.
 The accepted b3 forecast cleanup and published b4 feature remain separate.
 
@@ -52,4 +53,4 @@ an unsuccessful attempt the state remains unavailable; after verified recovery
 the sensor reports `statistics_status: ready`. Missing source values remain
 gaps, not invented zeroes. A single ready snapshot is not a guarantee about
 every later refresh. See [the source contract](HGT_OGD_PLAN.md) and
-[the b4 read-only acceptance scope](ACCEPTANCE_8.3.5b4.md).
+[the b5 read-only acceptance scope](ACCEPTANCE_8.3.5b5.md).

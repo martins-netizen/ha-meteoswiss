@@ -1,5 +1,14 @@
 # Set up MeteoSwiss
 
+## Measured-HGT recovery package
+
+The **8.3.5b5** recovery package retries temporary measured-HGT failures
+without changing existing entries, IDs or owned statistics. If choosing this
+published test release, update normally and follow the
+[short b5 check](ACCEPTANCE_8.3.5b5.md). Already completed obsolete-forecast
+cleanup stays complete. [Package notes](RELEASE_8.3.5b5.md) describe availability
+and the recovery limits.
+
 **Published b4 test update:** [8.3.5b4](RELEASE_8.3.5b4.md) adds official measured
 HGT on the station device and separate long-term products. Publication is
 [independently verified](RELEASE_EVIDENCE_8.3.5b4.md); installing b3 does not add

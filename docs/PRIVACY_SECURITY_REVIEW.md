@@ -1,14 +1,14 @@
 # Privacy, architecture and security: bounded review
 
-**Reviewed source now merged:** PR #115 at `29d9bc73b2ad0dedc91c73cf167f46223330d22a`
-has successful ten head and nine actual merge checks, including complete native
-suites, pinned Hassfest, source analysis and whole-lock audit. The published
-[8.3.5b4 package](RELEASE_EVIDENCE_8.3.5b4.md) preserves that runtime apart from
-two versions; PR #116, actual package checks and publication are independently
-verified. Focused measured-HGT acceptance remains pending. These checks do not
-constitute independent security/privacy certification.
+**Reviewed source:** PR #115 introduced official measured HGT and is preserved
+in the published [b4 package](RELEASE_EVIDENCE_8.3.5b4.md). The later approved
+#119 merge `6873c0390cb276dc6afa2c347d055e995d7bf956` adds bounded native recovery;
+all ten head and nine actual merge checks passed, both HA suites have 3,101
+passing tests plus 83 subtests, and the complete audit still covers 140 package
+versions. B5 packages that reviewed source. Its package/publication/live checks
+are separate; these engineering checks are not independent certification.
 
-**Unreleased measured-HGT recovery:** bounded retries change failure cadence,
+**8.3.5b5 measured-HGT recovery:** bounded retries change failure cadence,
 not credentials, destinations, source validation, native statistics ownership
 or cleanup consent. Core owns the timer; unload and disabled polling prevent
 retries. Existing localised error categories keep provider exception text out
