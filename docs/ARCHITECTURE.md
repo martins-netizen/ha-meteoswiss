@@ -16,7 +16,7 @@ owned OGD products, with verified absence before owner storage is removed.
 [Full source/lifecycle contract](HGT_OGD_PLAN.md). Published b3's forecast
 cleanup below keeps its accepted scope.
 
-**Unreleased HGT recovery:** transient failures use Core `UpdateFailed.retry_after`
+**8.3.5b5 HGT recovery:** transient failures use Core `UpdateFailed.retry_after`
 with a 60-second initial retry and bounded backoff to 15 minutes. Successful
 verification restores the six-hour interval. Core owns the single timer and
 respects disabled polling and unload; conflicts retain their repair and normal

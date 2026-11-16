@@ -1,5 +1,14 @@
 # Correct an invalid saved forecast location
 
+## 8.3.5b5 update
+
+The **8.3.5b5** recovery package retries temporary measured-HGT failures
+without changing existing entries, IDs or owned statistics. If choosing this
+published test release, update normally and follow the
+[short b5 check](ACCEPTANCE_8.3.5b5.md). Already completed obsolete-forecast
+cleanup stays complete. [Package notes](RELEASE_8.3.5b5.md) describe availability
+and the recovery limits.
+
 **Published 8.3.5b4 measured-HGT repairs:** after a weather-station change, **Remove
 unused official HGT statistics** lists the exact retired station products.
 Recommended action: confirm removal if the old station is no longer wanted.

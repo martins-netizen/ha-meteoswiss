@@ -28,7 +28,7 @@ availability or permission for every use. Check the providers' current terms.
 | Official hourly rain statistics | SwissMetNet station hourly assets | Selected weather station | Now file hourly; recent/historical archive initially and normally weekly |
 | Station catalogue | `data.geo.admin.ch/ch.meteoschweiz.ogd-smn/ogd-smn_meta_stations.csv` | Public station metadata | Shared 24-hour cache with guarded retry |
 
-**Unreleased measured-HGT retry exception:** transient failures retry after 60
+**8.3.5b5 measured-HGT retry exception:** transient failures retry after 60
 seconds with bounded backoff to 15 minutes, then return to six-hour polling
 after successful verification. The existing fixed sources, shared failure
 cooldown and conditional reads remain. See [recovery scope](HGT_RETRY_RECOVERY.md).

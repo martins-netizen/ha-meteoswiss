@@ -1,5 +1,15 @@
 # Quality evidence and remaining work
 
+## 8.3.5b5 package evidence
+
+The **8.3.5b5** test package includes the approved #119 HGT retry correction.
+Publication/availability is determined by the release catalogue; source checks
+do not establish package publication or live availability. Existing entries,
+IDs and owned statistics remain. Already completed b3 cleanup stays closed.
+Follow the [focused b5 check](ACCEPTANCE_8.3.5b5.md) and
+[package boundary](RELEASE_8.3.5b5.md). Full Gold and independent
+privacy/security/architecture review remain separate.
+
 **Published b4 boundary:** source PR #115 and package PR #116 are regularly
 merged and actually verified. The package has ten head and nine merge checks,
 both HA suites 3,092 tests + 83 subtests, 99.9831% strict coverage and no SQLite
@@ -298,7 +308,7 @@ evidence is not a new operator migration, an independent security/architecture
 assessment or completion of the remaining Gold rules.
 
 
-Unreleased measured-HGT recovery has native timer/entity/Recorder regressions
+8.3.5b5 measured-HGT recovery has native timer/entity/Recorder regressions
 for first failure, unchanged existing history, bounded retries, six-hour reset,
 conflict repair, disabled polling and unload. See [recovery scope](HGT_RETRY_RECOVERY.md);
 this targeted change does not close the remaining Gold rules or independent review.

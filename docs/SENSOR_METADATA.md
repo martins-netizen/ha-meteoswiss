@@ -1,5 +1,14 @@
 # Foehn and HGT metadata: numeric codes, predictions and statistics
 
+## Measured-HGT availability
+
+The **8.3.5b5** recovery package retries temporary measured-HGT failures
+without changing existing entries, IDs or owned statistics. If choosing this
+published test release, update normally and follow the
+[short b5 check](ACCEPTANCE_8.3.5b5.md). Already completed obsolete-forecast
+cleanup stays complete. [Package notes](RELEASE_8.3.5b5.md) describe availability
+and the recovery limits.
+
 **Published 8.3.5b4 measured HGT:** the new observed-day entity has a distinct
 `heating_degree_days_observed` unique-ID suffix and the existing station device.
 It exposes the last completed official UTC-day amount in `°C·d`, without a

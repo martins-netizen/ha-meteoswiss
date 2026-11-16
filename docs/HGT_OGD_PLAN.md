@@ -1,5 +1,14 @@
 # Official measured HGT 12/20: use, sources and removal
 
+## Recovery package
+
+The **8.3.5b5** recovery package retries temporary measured-HGT failures
+without changing existing entries, IDs or owned statistics. If choosing this
+published test release, update normally and follow the
+[short b5 check](ACCEPTANCE_8.3.5b5.md). Already completed obsolete-forecast
+cleanup stays complete. [Package notes](RELEASE_8.3.5b5.md) describe availability
+and the recovery limits.
+
 **Status: included in published 8.3.5b4, not in 8.3.5b3.**
 [Package checks and publication](RELEASE_EVIDENCE_8.3.5b4.md) are complete;
 the [focused HA acceptance](ACCEPTANCE_8.3.5b4.md) remains separate.

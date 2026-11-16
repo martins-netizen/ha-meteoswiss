@@ -15,6 +15,16 @@ This is an independent community project, not an official MeteoSwiss product.
 This guide describes the **8.3 series**; [8.3.0 release notes](docs/RELEASE_8.3.0.md)
 explain the changes from 8.2.0. Use a published release, not a branch.
 
+**HGT recovery test package (8.3.5b5):** a transient source/Recorder failure
+retries after one minute with bounded backoff up to 15 minutes, then returns to
+the normal six-hour cadence after verification. Check the
+[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+for publication/availability and choose **8.3.5b5** when testing this correction.
+It is not included in b4. Keep the existing entry and statistics; follow the
+[short update and read-only check](docs/ACCEPTANCE_8.3.5b5.md).
+[Release notes](docs/RELEASE_8.3.5b5.md) and
+[recovery limits](docs/HGT_RETRY_RECOVERY.md) explain the scope.
+
 **Published [8.3.5b4 test package](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b4):**
 official measured HGT 12/20 history, initial backfill, continuing source
 corrections and explicit ownership/removal. Published on **15 November 2026**;
@@ -27,12 +37,7 @@ acceptance remain separate. [Release notes](docs/RELEASE_8.3.5b4.md),
 station-specific statistics. Removing the final integration entry also removes
 its owned OGD HGT products; normal sensor history and unrelated statistics remain.
 
-**Unreleased measured-HGT recovery:** a transient source/Recorder failure
-will retry through HA after one minute with bounded backoff, then return to
-the normal six-hour cadence after verification. This is not in published b4.
-Keep existing entries and statistics; see [recovery and limits](docs/HGT_RETRY_RECOVERY.md).
-
-**Earlier accepted cleanup, retained in b4:** [8.3.5b3](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b3)
+**Earlier accepted cleanup, retained in b4/b5:** [8.3.5b3](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b3)
 packages the native **Remove obsolete HGT forecast statistics** repair. It
 recommends complete removal of old forecast statistics after one clear
 confirmation. Current forecasts, ordinary history and unrelated statistics are
@@ -47,7 +52,7 @@ boundary. **8.3.4 remains latest stable.** HA **2026.11.0 or newer** is required
 
 | Package | Required HA Core |
 |---|---|
-| 8.3.5b1 / b2 / b3 / b4 | 2026.11.0 or newer |
+| 8.3.5b1 / b2 / b3 / b4 / b5 | 2026.11.0 or newer |
 | Latest stable 8.3.4 | 2026.8.3 or newer |
 
 The HA 2026.11.1 Marketplace page can show an installed beta together with the

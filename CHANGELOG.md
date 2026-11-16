@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+## [8.3.5b5] — 2026-11-16 · measured HGT recovery test package
+
+- Package approved PR #119 at `6873c0390cb276dc6afa2c347d055e995d7bf956`:
+  bounded native retries after transient source/Recorder failures; keep the
+  normal six-hour cadence after verified success and all ownership safeguards.
+- Preserve all 50 non-version component files, existing statistics, accepted
+  b3 cleanup, the Core 2026.11.0 minimum and every dependency/CI gate.
+- Add Publisher V1.12 and the [focused existing-entry check](docs/ACCEPTANCE_8.3.5b5.md).
+  Publication/availability follows the release catalogue; package checks and
+  live HA acceptance remain separate. No b5 publication or installation is
+  inferred from source checks. See [package notes](docs/RELEASE_8.3.5b5.md).
+
 - Retry transient measured-HGT failures through Core after 60 seconds with
   bounded backoff up to 15 minutes, instead of waiting six hours after a
   failed initial refresh. Restore the normal interval on success; preserve

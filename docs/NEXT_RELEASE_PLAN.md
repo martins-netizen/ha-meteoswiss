@@ -1,5 +1,15 @@
 # Next development: location selection, Silver and Gold
 
+## Next test-package boundary
+
+The **8.3.5b5** test package includes the approved #119 HGT retry correction.
+Publication/availability is determined by the release catalogue; source checks
+do not establish package publication or live availability. Existing entries,
+IDs and owned statistics remain. Already completed b3 cleanup stays closed.
+Follow the [focused b5 check](ACCEPTANCE_8.3.5b5.md) and
+[package boundary](RELEASE_8.3.5b5.md). Full Gold and independent
+privacy/security/architecture review remain separate.
+
 **Plan version:** 1.43 · **Updated:** 15 November 2026
 **Status:** The agreed architecture, catalogue/POI, forecast-display, shared-settings
 and station-condition scope is released in stable 8.3.0. **8.3.0b4** runtime acceptance,
@@ -11,16 +21,18 @@ as planning history, not new instructions to repeat completed work.
 This document does not approve a new feature, installation or release.
 
 
-## Current next step: focused acceptance of published 8.3.5b4
+## Current next step: package the approved HGT recovery as 8.3.5b5
 
-Source PR #115, regular package PR #116, all required checks and actual b4
-publication are complete. [Publication evidence](RELEASE_EVIDENCE_8.3.5b4.md)
-records release 446375287 and its exact signed merge, retained nineteen older
-releases/tags and stable 8.3.4. The next operational step is the
-[focused read-only check](ACCEPTANCE_8.3.5b4.md) after a normal existing-entry
-update. B3 publication/cleanup acceptance and PR #114 stay closed. Gold,
-independent review and stable promotion are separate; historical plans below
-do not reopen completed steps.
+PR #119 and all its exact-head/actual-merge checks are complete. The b5 package
+preserves that runtime apart from two version fields and includes a fixed
+publisher and [focused recovery check](ACCEPTANCE_8.3.5b5.md). Package PR/merge
+checks, publication and live acceptance follow in that order; none is inferred
+from the earlier source checks. Publication availability follows the release
+catalogue. The b4 publication remains complete and preserved in its
+[evidence](RELEASE_EVIDENCE_8.3.5b4.md); there is no requirement to install b4
+first or repeat its original acceptance before choosing published b5.
+B3 cleanup acceptance and PR #114 stay closed. Full Gold, independent review
+and stable promotion remain separate.
 
 ## 8.3.5b3: published and focused cleanup accepted
 

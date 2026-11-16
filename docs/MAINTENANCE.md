@@ -1,10 +1,20 @@
 # Maintenance and release procedure
 
+## 8.3.5b5 maintenance scope
+
+The **8.3.5b5** test package includes the approved #119 HGT retry correction.
+Publication/availability is determined by the release catalogue; source checks
+do not establish package publication or live availability. Existing entries,
+IDs and owned statistics remain. Already completed b3 cleanup stays closed.
+Follow the [focused b5 check](ACCEPTANCE_8.3.5b5.md) and
+[package boundary](RELEASE_8.3.5b5.md). Full Gold and independent
+privacy/security/architecture review remain separate.
+
 **B4 publication complete:** source PR #115, package PR #116 and the actual
 8.3.5b4 release are independently verified. All 50 non-version component files,
 nineteen earlier releases/tags and stable 8.3.4 are preserved. Keep the
 [native commit/cleanup contracts](HGT_OGD_PLAN.md) and
-[remaining focused acceptance](RELEASE_EVIDENCE_8.3.5b4.md). Do not repeat publication.
+[b4 publication evidence](RELEASE_EVIDENCE_8.3.5b4.md). Do not repeat publication.
 Future tagged READMEs use release-catalogue availability wording; see
 [immutable package snapshots](PUBLISHING.md#availability-wording-in-immutable-package-snapshots).
 
