@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- Regenerate both universal test locks for [PR #118](https://github.com/martins-netizen/ha-meteoswiss/pull/118):
+  botocore 1.43.126 → 1.43.127, coverage 7.17.2 → 7.17.3 and josepy
+  2.2.0 → 2.3.0. Retain all 138 selections per fixture, existing extras,
+  platform markers, HA/fixture pins and security/coverage gates. These are
+  development/test dependencies; the published 8.3.5b5 package is unchanged.
+
 ## [8.3.5b5] — 2026-11-16 · measured HGT recovery test package
 
 - Package approved PR #119 at `6873c0390cb276dc6afa2c347d055e995d7bf956`:

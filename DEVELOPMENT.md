@@ -215,6 +215,42 @@ review. Keep the resolved input versions, hashes and markers together. Do not
 merge a proposal by disabling this check, changing the advertised minimum to
 match an accidental update, or suppressing its security alert.
 
+### Universal correction for PR #118 — 16 November 2026
+
+The original [#118 proposal](https://github.com/martins-netizen/ha-meteoswiss/pull/118)
+selected botocore 1.43.127, coverage 7.17.3 and josepy 2.3.0, but reduced
+each lock from 138 to 123 selections and changed existing markers/extras.
+The universal-lock job and both fixture contract tests rejected that output.
+The observed files establish the incomplete result; they do not independently
+establish the updater's exact internal command.
+
+Start this correction from the current reviewed `development` lockfiles, not
+from the shortened proposal. With the existing hash-pinned uv 0.13.6, apply
+only its three intended version changes:
+
+```sh
+UV_OFFLINE=false uv pip compile --universal --python-version 3.14.10 --generate-hashes \
+  --upgrade-package botocore==1.43.127 --upgrade-package coverage==7.17.3 \
+  --upgrade-package josepy==2.3.0 --output-file requirements_test.txt requirements_test.in
+UV_OFFLINE=false uv pip compile --universal --python-version 3.14.10 --generate-hashes \
+  --upgrade-package botocore==1.43.127 --upgrade-package coverage==7.17.3 \
+  --upgrade-package josepy==2.3.0 --output-file requirements_test_min.txt requirements_test_min.in
+```
+
+Both corrected locks retain exactly the 138 existing requirement keys, including
+their extras and platform/interpreter markers. Only these three package versions
+and their release hashes differ from the reviewed baseline; all other package
+records, input manifests and the pinned compiler are unchanged. Re-run the
+universal verification, whole-lock advisory audit and complete compatibility
+recipe in separate fresh environments before requesting review. The existing
+PR must then pass every check on its actual updated head and use the regular
+approved merge path.
+
+This repairs one update proposal. It does not make the managed updater a
+universal uv compiler. Keep the existing guard for subsequent proposals;
+maintainer-edited branches need their own fresh base/head check. No runtime,
+HA minimum, integration version, workflow or published release changes here.
+
 Review the actual managed update job and its proposal separately from graph
 submissions or empty update checks. Before merging, bring the proposal branch
 up to date with `development` and wait for all required checks on that exact
