@@ -29,6 +29,14 @@ def test_all_update_failures_use_translation_metadata_without_raw_details():
     for call in calls:
         assert not call.args
         keywords = {kw.arg: kw.value for kw in call.keywords}
+        if "retry_after" in keywords:
+            # Core's numeric retry hint adds no user-facing text. Admit only
+            # this bounded HGT helper; keep every translation/privacy assertion.
+            retry = keywords.pop("retry_after")
+            assert ast.dump(retry) == ast.dump(
+                ast.parse("self._transient_retry_delay()", mode="eval").body
+            )
+            assert keywords["translation_key"].value == "hgt_ogd_unavailable"
         assert set(keywords) == {"translation_domain", "translation_key"}
         assert isinstance(keywords["translation_domain"], ast.Name)
         assert keywords["translation_domain"].id == "DOMAIN"

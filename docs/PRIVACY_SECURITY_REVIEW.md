@@ -2,12 +2,20 @@
 
 **Reviewed source now merged:** PR #115 at `29d9bc73b2ad0dedc91c73cf167f46223330d22a`
 has successful ten head and nine actual merge checks, including complete native
-suites, pinned Hassfest, source analysis and whole-lock audit. The prepared
+suites, pinned Hassfest, source analysis and whole-lock audit. The published
 [8.3.5b4 package](RELEASE_EVIDENCE_8.3.5b4.md) preserves that runtime apart from
-two versions. Publication and focused measured-HGT acceptance are still pending;
-this does not constitute independent security/privacy certification.
+two versions; PR #116, actual package checks and publication are independently
+verified. Focused measured-HGT acceptance remains pending. These checks do not
+constitute independent security/privacy certification.
 
-**Prepared b4 measured-HGT review, 15 November 2026:** official station CSVs add
+**Unreleased measured-HGT recovery:** bounded retries change failure cadence,
+not credentials, destinations, source validation, native statistics ownership
+or cleanup consent. Core owns the timer; unload and disabled polling prevent
+retries. Existing localised error categories keep provider exception text out
+of normal errors. This does not establish the cause of an earlier failure or
+complete independent security assurance. See [scope](HGT_RETRY_RECOVERY.md).
+
+**Published b4 measured-HGT review, 15 November 2026:** official station CSVs add
 no new coordinates, credentials, account or maintainer telemetry. Providers
 receive the public station identity and source IP. Exact canonical HTTPS assets,
 ETag revalidation, bounded compressed/decoded reads, off-loop CSV parsing,

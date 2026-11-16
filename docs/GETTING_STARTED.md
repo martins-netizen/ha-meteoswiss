@@ -1,10 +1,11 @@
 # Set up MeteoSwiss
 
-**Prepared b4 update:** [8.3.5b4](RELEASE_8.3.5b4.md) adds official measured
-HGT on the station device and separate long-term products. It is not yet
-published; installing b3 does not add it. After announced publication, follow
-the [short read-only check](ACCEPTANCE_8.3.5b4.md), keeping the existing entry.
-The accepted b3 forecast cleanup is not repeated.
+**Published b4 test update:** [8.3.5b4](RELEASE_8.3.5b4.md) adds official measured
+HGT on the station device and separate long-term products. Publication is
+[independently verified](RELEASE_EVIDENCE_8.3.5b4.md); installing b3 does not add
+this importer. If choosing b4, keep the existing entry and follow the
+[short read-only check](ACCEPTANCE_8.3.5b4.md). The accepted b3 forecast cleanup
+is not repeated.
 
 **HGT upgrade policy:** 8.3.5b3 includes the [recommended native cleanup](UPGRADING_8.3.5.md).
 After confirmed removal, no unused HGT forecast archive remains. Current
@@ -50,7 +51,7 @@ Start with [the current upgrade instructions](UPGRADING_8.3.5.md). Published
 b3 recommends confirmed complete removal of obsolete forecast statistics; b2
 is historical archive-and-keep behaviour. Use the existing entry and exact
 native repair targets. Do not purge unrelated series. The separate
-[official measured-HGT feature](HGT_OGD_PLAN.md) is packaged for prepared b4 and
+[official measured-HGT feature](HGT_OGD_PLAN.md) is included in published b4 and
 is not installed by selecting b3.
 
 ## 1. Check prerequisites

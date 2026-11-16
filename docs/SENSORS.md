@@ -191,7 +191,7 @@ than four hours is rejected on refresh.
 The b3 cleanup provides `hgt_legacy_cleanup_required` while a temporary
 HGT archive remains. The native confirmation removes that archive and its
 metadata completely, then clears both the attribute and the cleanup notice.
-The prepared 8.3.5b4 [measured OGD HGT feature](HGT_OGD_PLAN.md) adds a separate
+The published 8.3.5b4 [measured OGD HGT feature](HGT_OGD_PLAN.md) adds a separate
 `heating_degree_days_observed` unique-ID suffix. Its translated latest-day
 sensor belongs to the existing measurement-station device, with `°C·d`, no
 measurement state class and explicit UTC-day/source/statistic-ID attributes.
