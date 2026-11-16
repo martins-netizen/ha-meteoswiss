@@ -1,6 +1,6 @@
 # Maintained fork: architecture and data contracts
 
-**Prepared 8.3.5b4 official measured HGT:** `hgt_ogd.py` validates bounded canonical
+**Published 8.3.5b4 official measured HGT:** `hgt_ogd.py` validates bounded canonical
 station resources and completed UTC daily/monthly/annual products off the event
 loop. `hgt_ogd_coordinator.py` provides entry-owned optional polling;
 `hgt_ogd_manager.py` shares source snapshots and per-station locks across entries
@@ -15,6 +15,13 @@ surface native confirmed cleanup. Removing the final integration entry clears
 owned OGD products, with verified absence before owner storage is removed.
 [Full source/lifecycle contract](HGT_OGD_PLAN.md). Published b3's forecast
 cleanup below keeps its accepted scope.
+
+**Unreleased HGT recovery:** transient failures use Core `UpdateFailed.retry_after`
+with a 60-second initial retry and bounded backoff to 15 minutes. Successful
+verification restores the six-hour interval. Core owns the single timer and
+respects disabled polling and unload; conflicts retain their repair and normal
+interval. There is no new task, storage or bypass of native readback.
+[Behaviour and native regressions](HGT_RETRY_RECOVERY.md).
 
 **HGT cleanup in the 8.3.5b3 test package:** an entry-owned post-startup
 inventory discovers attributable obsolete forecast statistics across old and b2

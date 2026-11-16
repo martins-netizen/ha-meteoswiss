@@ -15,16 +15,24 @@ This is an independent community project, not an official MeteoSwiss product.
 This guide describes the **8.3 series**; [8.3.0 release notes](docs/RELEASE_8.3.0.md)
 explain the changes from 8.2.0. Use a published release, not a branch.
 
-**Prepared 8.3.5b4 test package:** official measured HGT 12/20 history, with
-initial backfill, continuing source corrections and explicit ownership/removal.
-This is **not yet published** and is not in b3. Keep the existing entry and wait
-for the announced release. [Release notes](docs/RELEASE_8.3.5b4.md),
-[preparation/evidence](docs/RELEASE_EVIDENCE_8.3.5b4.md) and
+**Published [8.3.5b4 test package](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b4):**
+official measured HGT 12/20 history, initial backfill, continuing source
+corrections and explicit ownership/removal. Published on **15 November 2026**;
+release/tag/body and retention of all nineteen earlier releases are independently
+confirmed. Keep the existing entry and update normally if choosing this test
+release. Publication is complete; installation and focused measured-HGT
+acceptance remain separate. [Release notes](docs/RELEASE_8.3.5b4.md),
+[publication evidence](docs/RELEASE_EVIDENCE_8.3.5b4.md) and
 [the short read-only check](docs/ACCEPTANCE_8.3.5b4.md) explain the new entity and
 station-specific statistics. Removing the final integration entry also removes
 its owned OGD HGT products; normal sensor history and unrelated statistics remain.
 
-**8.3.5 test line:** [8.3.5b3](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b3)
+**Unreleased measured-HGT recovery:** a transient source/Recorder failure
+will retry through HA after one minute with bounded backoff, then return to
+the normal six-hour cadence after verification. This is not in published b4.
+Keep existing entries and statistics; see [recovery and limits](docs/HGT_RETRY_RECOVERY.md).
+
+**Earlier accepted cleanup, retained in b4:** [8.3.5b3](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b3)
 packages the native **Remove obsolete HGT forecast statistics** repair. It
 recommends complete removal of old forecast statistics after one clear
 confirmation. Current forecasts, ordinary history and unrelated statistics are
@@ -39,12 +47,16 @@ boundary. **8.3.4 remains latest stable.** HA **2026.11.0 or newer** is required
 
 | Package | Required HA Core |
 |---|---|
-| 8.3.5b1 / b2 / b3; prepared b4 | 2026.11.0 or newer |
+| 8.3.5b1 / b2 / b3 / b4 | 2026.11.0 or newer |
 | Latest stable 8.3.4 | 2026.8.3 or newer |
 
 The HA 2026.11.1 Marketplace page can show an installed beta together with the
 minimum of the stable release it is following. The beta still requires
 2026.11.0. See [the reproduced display mismatch](docs/MARKETPLACE_VERSION_DISPLAY.md).
+Marketplace may also read the README from the installed immutable tag. B4's
+tagged README retains its preparation wording; the release catalogue and
+[current publication evidence](docs/RELEASE_EVIDENCE_8.3.5b4.md) confirm availability.
+A documentation update on development does not change that tagged snapshot.
 
 **Existing users, including b2:** update the existing entry normally; then use
 **Settings → System → Repairs** if old HGT forecasts are found. Opening or
@@ -55,11 +67,11 @@ sensors. Read [ownership/conflict limits](docs/UPGRADING_8.3.5.md) before confir
 No Mac script or entry recreation is needed. B2 itself retains its historical
 archive-and-keep behaviour; the new cleanup is included in b3.
 
-**Prepared b4 feature: official measured HGT 12/20.** A separate observed-day
+**In 8.3.5b4: official measured HGT 12/20.** A separate observed-day
 sensor and station-specific daily/monthly/annual statistics import the official
 OGD products, backfill available observations and recheck corrections. Forecasts
-keep their existing identity. This feature is **not in published b3**; b4
-publication and its focused HA check are separate. See [sources, charts and removal](docs/HGT_OGD_PLAN.md).
+keep their existing identity. This feature is **not in published b3**. B4 is
+published; its focused HA check remains separate. See [sources, charts and removal](docs/HGT_OGD_PLAN.md).
 Removing the final MeteoSwiss integration entry also removes its owned OGD HGT
 statistics; normal sensor history and unrelated series are retained.
 

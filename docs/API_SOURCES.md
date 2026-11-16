@@ -1,6 +1,6 @@
 # Sources, locations and update contracts
 
-**Prepared 8.3.5b4 measured HGT source:** the importer uses official SwissMetNet
+**Published 8.3.5b4 measured HGT source:** the importer uses official SwissMetNet
 `xno000d0/m0/y0` directly. Daily historical/recent and official monthly/annual
 products remain distinct; no forecast history is reused. See the
 [source, time, correction and removal contract](HGT_OGD_PLAN.md). Published
@@ -27,6 +27,11 @@ availability or permission for every use. Check the providers' current terms.
 | Official measured HGT (prepared b4) | SwissMetNet exact `d_historical`, `d_recent`, `m`, `y` assets | Selected weather station | Shared 6-hour refresh; historical revalidation weekly and at a UTC year change; conditional ETags |
 | Official hourly rain statistics | SwissMetNet station hourly assets | Selected weather station | Now file hourly; recent/historical archive initially and normally weekly |
 | Station catalogue | `data.geo.admin.ch/ch.meteoschweiz.ogd-smn/ogd-smn_meta_stations.csv` | Public station metadata | Shared 24-hour cache with guarded retry |
+
+**Unreleased measured-HGT retry exception:** transient failures retry after 60
+seconds with bounded backoff to 15 minutes, then return to six-hour polling
+after successful verification. The existing fixed sources, shared failure
+cooldown and conditional reads remain. See [recovery scope](HGT_RETRY_RECOVERY.md).
 
 Weather, warning and pollen locations are not interchangeable. The postcode
 does not choose the weather station or move the forecast point. Public weather

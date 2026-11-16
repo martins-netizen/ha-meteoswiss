@@ -14,6 +14,8 @@ from .hgt_ogd_manager import get_hgt_manager
 from .runtime_data import MeteoSwissConfigEntry
 
 _LOGGER = logging.getLogger(__name__)
+_INITIAL_RETRY_SECONDS = 60
+_MAX_RETRY_SECONDS = 15 * 60
 
 
 class MeteoSwissHgtCoordinator(DataUpdateCoordinator[dict]):
@@ -33,6 +35,7 @@ class MeteoSwissHgtCoordinator(DataUpdateCoordinator[dict]):
             lambda: self.manager.release(entry.entry_id, self.station)
         )
         self.issue_id = f"hgt_ogd_import_blocked_{entry.entry_id}"
+        self._next_retry_seconds = _INITIAL_RETRY_SECONDS
         entry.async_on_unload(
             lambda: ir.async_delete_issue(hass, DOMAIN, self.issue_id)
         )
@@ -48,6 +51,7 @@ class MeteoSwissHgtCoordinator(DataUpdateCoordinator[dict]):
         try:
             data = await self.manager.async_refresh(self.station, datetime.now(UTC))
             ir.async_delete_issue(self.hass, DOMAIN, self.issue_id)
+            self._next_retry_seconds = _INITIAL_RETRY_SECONDS
             return data
         except HgtError as error:
             if str(error) in {"statistics_conflict", "ownership_unavailable"}:
@@ -64,11 +68,21 @@ class MeteoSwissHgtCoordinator(DataUpdateCoordinator[dict]):
                     translation_domain=DOMAIN, translation_key="hgt_ogd_conflict"
                 ) from None
             raise UpdateFailed(
-                translation_domain=DOMAIN, translation_key="hgt_ogd_unavailable"
+                retry_after=self._transient_retry_delay(),
+                translation_domain=DOMAIN,
+                translation_key="hgt_ogd_unavailable",
             ) from None
         except Exception:
             raise UpdateFailed(
-                translation_domain=DOMAIN, translation_key="hgt_ogd_unavailable"
+                retry_after=self._transient_retry_delay(),
+                translation_domain=DOMAIN,
+                translation_key="hgt_ogd_unavailable",
             ) from None
         finally:
             await self.manager.async_sync_issue()
+
+    def _transient_retry_delay(self) -> int:
+        """Use Core's single polling timer; do not strand failures for six hours."""
+        retry_after = self._next_retry_seconds
+        self._next_retry_seconds = min(retry_after * 2, _MAX_RETRY_SECONDS)
+        return retry_after

@@ -4,7 +4,38 @@ This describes current fork work. Historical upstream release claims remain in
 the changelog as history; they are not current certifications. Check the
 [release status](README.md#release-status) before installing.
 
-## Published 8.3.5b3: focused HGT cleanup accepted
+## Published 8.3.5b4: measured HGT, focused acceptance separate
+
+[8.3.5b4](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b4),
+release **446375287**, was published on **15 November 2026 at 21:20:21 UTC**
+(22:20:21 CET) from regular packaging [PR #116](https://github.com/martins-netizen/ha-meteoswiss/pull/116),
+merge `a6a233513ac8e7c5937f9c41eee085e76108e801`, tree
+`010be578bb121fcad058c1bc8c1fcfccb6761ebf`, parent
+`29d9bc73b2ad0dedc91c73cf167f46223330d22a`.
+
+Ten exact-head checks and all nine actual merge checks passed. The actual
+[CI 43761426012](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/43761426012),
+CodeQL 43761426015 and HACS 43761426023 push runs succeeded on that merge.
+Both HA 2026.11.0/2026.11.1 jobs passed **3,092 tests plus 83 subtests**, five
+known upstream warnings and no SQLite ResourceWarning. Strict line/branch gates
+passed at **99.9831%** combined coverage; all four HGT OGD modules retain full
+line/branch coverage. Pinned Hassfest reported zero invalid integrations; both
+universal locks verified 138 selections and the audit of 140 package/version
+pairs found zero active/unknown advisories. SonarCloud passed.
+
+The release/tag and exact approved English body were independently read back.
+All nineteen older complete release records, bodies and tag references are
+unchanged. **8.3.4 remains latest stable.** The 50 non-version component files
+out of 52 match reviewed PR #115 source. This publication does not install or
+restart HA. The [focused measured-HGT acceptance](docs/ACCEPTANCE_8.3.5b4.md) remains
+pending; accepted b1/b2/b3 scopes and PR #114 stay closed.
+
+Publication is complete. Do not rerun a publisher as a new update action.
+Update the existing entry normally when choosing this test release; no station
+change, entry recreation or repeated obsolete-forecast cleanup is required.
+Full Gold, independent review and any stable promotion remain separate.
+
+## Earlier 8.3.5b3: focused HGT cleanup accepted
 
 [8.3.5b3](docs/RELEASE_EVIDENCE_8.3.5b3.md) was published from regular PR #113
 at `b6c4502e5cdeb48121be628fdb7eda579df4f7c3` on 15 November. Ten head and
@@ -19,15 +50,8 @@ Ten head and nine actual merge checks passed; both actual HA jobs passed
 2,901 tests plus 83 subtests without SQLite ResourceWarning. That test-only
 change requires no production update.
 
-**Next prepared package: 8.3.5b4.** Official measured HGT source PR #115 was
-regularly merged at `29d9bc73b2ad0dedc91c73cf167f46223330d22a`, with ten head
-and nine actual merge checks successful. Both HA jobs passed 3,034 tests plus
-83 subtests and every strict gate, with no SQLite ResourceWarning. The
-[prepared package](docs/RELEASE_EVIDENCE_8.3.5b4.md) keeps 50 non-version
-component files identical. [Release notes](docs/RELEASE_8.3.5b4.md) and the
-[short read-only check](docs/ACCEPTANCE_8.3.5b4.md) cover initial history and
-continuing corrections. Package validation, publication and focused HA acceptance
-remain separate. Full Gold, independent review and stable promotion remain open.
+Official measured-HGT source PR #115 and packaging PR #116 are complete.
+The published b4 package and remaining focused check are recorded above.
 Earlier b1/b2/b3 acceptance and PR #114 stay closed.
 
 ## Published stable 8.3.4: clearer setup and verified HA 2026.11 support

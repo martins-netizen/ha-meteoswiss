@@ -8,7 +8,7 @@ from pathlib import Path
 from unittest.mock import AsyncMock, patch
 
 import pytest
-from ha_helpers import MockConfigEntry
+from ha_helpers import MockConfigEntry, async_fire_time_changed
 from homeassistant.components.sensor import DATA_COMPONENT
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers import issue_registry as ir
@@ -289,3 +289,182 @@ async def test_coordinator_success_clears_only_own_issue_and_cancellation_propag
         with pytest.raises(asyncio.CancelledError):
             await coordinator._async_update_data()
     await entry._async_process_on_unload(hass)
+
+
+@pytest.mark.parametrize("existing_history", [False, True])
+async def test_native_timer_recovers_failed_import_then_resumes_six_hour_polling(
+    recorder_mock, hass, enable_custom_integrations, source_data, freezer,
+    existing_history,
+):
+    """Exercise Core's real timer, entity availability and native Recorder rows."""
+    entry = make_entry(hass, "meteoswiss")
+    ids = set(statistic_ids("klo").values())
+    if existing_history:
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done(wait_background_tasks=True)
+        assert live(hass, entry).available
+        assert await hass.config_entries.async_unload(entry.entry_id)
+        await hass.async_block_till_done(wait_background_tasks=True)
+    before = await rec._rows(hass, ids)
+    original = mgr.async_import_products
+    attempts = 0
+
+    async def first_attempt_times_out(*args, **kwargs):
+        nonlocal attempts
+        attempts += 1
+        if attempts == 1:
+            raise TimeoutError("private_provider_marker")
+        return await original(*args, **kwargs)
+
+    with patch.object(mgr, "async_import_products", side_effect=first_attempt_times_out):
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done(wait_background_tasks=True)
+        sensor = live(hass, entry)
+        coordinator = entry.runtime_data.hgt_ogd_coordinator
+        assert not sensor.available and hass.states.get(sensor.entity_id).state == "unavailable"
+        assert attempts == 1 and coordinator.update_interval == timedelta(hours=6)
+        assert await rec._rows(hass, ids) == before
+
+        early = NOW + timedelta(seconds=58)
+        freezer.move_to(early)
+        async_fire_time_changed(hass, early)
+        await hass.async_block_till_done(wait_background_tasks=True)
+        assert attempts == 1 and not sensor.available
+
+        retry = NOW + timedelta(seconds=62)
+        freezer.move_to(retry)
+        async_fire_time_changed(hass, retry)
+        await hass.async_block_till_done(wait_background_tasks=True)
+        assert attempts == 2 and sensor.available
+        assert hass.states.get(sensor.entity_id).state == "19.1"
+        assert sensor.extra_state_attributes["statistics_status"] == "ready"
+        after = await rec._rows(hass, ids)
+        assert all(after.values())
+        if existing_history:
+            assert after == before
+
+        before_regular = NOW + timedelta(hours=5)
+        freezer.move_to(before_regular)
+        async_fire_time_changed(hass, before_regular)
+        await hass.async_block_till_done(wait_background_tasks=True)
+        assert attempts == 2
+
+        regular = retry + timedelta(hours=6, seconds=2)
+        freezer.move_to(regular)
+        async_fire_time_changed(hass, regular)
+        await hass.async_block_till_done(wait_background_tasks=True)
+        assert attempts == 3 and sensor.available
+        assert await rec._rows(hass, ids) == after
+        assert await hass.config_entries.async_unload(entry.entry_id)
+
+
+@pytest.mark.parametrize("failure", [HgtError("source_unavailable"), OSError("private_provider_marker")])
+async def test_transient_retry_backoff_is_bounded_and_resets_after_success(hass, failure):
+    entry = MockConfigEntry(domain=DOMAIN)
+    coordinator = MeteoSwissHgtCoordinator(hass, entry, "klo", None)
+    with (
+        patch.object(coordinator.manager, "async_refresh", side_effect=failure) as refresh,
+        patch.object(coordinator.manager, "async_sync_issue", new_callable=AsyncMock),
+    ):
+        for expected in [60, 120, 240, 480, 900, 900]:
+            with pytest.raises(UpdateFailed) as error:
+                await coordinator._async_update_data()
+            assert error.value.retry_after == expected
+            assert error.value.translation_key == "hgt_ogd_unavailable"
+            assert "private_provider_marker" not in str(error.value)
+        refresh.side_effect = None
+        refresh.return_value = {"statistics_status": "ready"}
+        assert await coordinator._async_update_data() == {"statistics_status": "ready"}
+        refresh.side_effect = failure
+        with pytest.raises(UpdateFailed) as error:
+            await coordinator._async_update_data()
+        assert error.value.retry_after == 60
+    await entry._async_process_on_unload(hass)
+
+
+@pytest.mark.parametrize("reason", ["statistics_conflict", "ownership_unavailable"])
+async def test_ownership_conflicts_keep_repair_and_normal_interval(hass, reason):
+    entry = MockConfigEntry(domain=DOMAIN)
+    coordinator = MeteoSwissHgtCoordinator(hass, entry, "klo", None)
+    with (
+        patch.object(coordinator.manager, "async_refresh", side_effect=HgtError(reason)),
+        patch.object(coordinator.manager, "async_sync_issue", new_callable=AsyncMock),
+    ):
+        with pytest.raises(UpdateFailed) as error:
+            await coordinator._async_update_data()
+    assert error.value.retry_after is None
+    assert coordinator.update_interval == timedelta(hours=6)
+    assert ir.async_get(hass).async_get_issue(DOMAIN, coordinator.issue_id) is not None
+    await entry._async_process_on_unload(hass)
+
+
+async def test_native_unload_cancels_pending_retry_without_recreating_statistics(
+    recorder_mock, hass, enable_custom_integrations, source_data, freezer,
+):
+    entry = make_entry(hass, "meteoswiss")
+    with patch.object(mgr, "async_import_products", side_effect=TimeoutError) as attempt:
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done(wait_background_tasks=True)
+        coordinator = entry.runtime_data.hgt_ogd_coordinator
+        assert not live(hass, entry).available
+        assert attempt.await_count == 1 and coordinator._unsub_refresh is not None
+        assert await hass.config_entries.async_unload(entry.entry_id)
+        assert not coordinator._listeners and coordinator._unsub_refresh is None
+        later = NOW + timedelta(minutes=20)
+        freezer.move_to(later)
+        async_fire_time_changed(hass, later)
+        await hass.async_block_till_done(wait_background_tasks=True)
+        attempt.assert_awaited_once()
+        assert await rec.async_metadata(hass, {"klo"}) == {}
+
+
+async def test_native_disabled_polling_does_not_start_a_retry_loop(
+    recorder_mock, hass, enable_custom_integrations, source_data, freezer,
+):
+    entry = make_entry(hass, "meteoswiss")
+    hass.config_entries.async_update_entry(entry, pref_disable_polling=True)
+    with patch.object(mgr, "async_import_products", side_effect=TimeoutError) as attempt:
+        assert await hass.config_entries.async_setup(entry.entry_id)
+        await hass.async_block_till_done(wait_background_tasks=True)
+        coordinator = entry.runtime_data.hgt_ogd_coordinator
+        assert not live(hass, entry).available and coordinator._unsub_refresh is None
+        later = NOW + timedelta(minutes=20)
+        freezer.move_to(later)
+        async_fire_time_changed(hass, later)
+        await hass.async_block_till_done(wait_background_tasks=True)
+        attempt.assert_awaited_once()
+        assert await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def test_native_peer_retries_share_one_verified_station_import(
+    recorder_mock, hass, enable_custom_integrations, source_data, freezer,
+):
+    one = make_entry(hass, "meteoswiss")
+    original = mgr.async_import_products
+    attempts = 0
+
+    async def first_attempt_times_out(*args, **kwargs):
+        nonlocal attempts
+        attempts += 1
+        if attempts == 1:
+            raise TimeoutError
+        return await original(*args, **kwargs)
+
+    with patch.object(mgr, "async_import_products", side_effect=first_attempt_times_out):
+        assert await hass.config_entries.async_setup(one.entry_id)
+        await hass.async_block_till_done(wait_background_tasks=True)
+        two = make_entry(hass, "meteoswiss")
+        assert await hass.config_entries.async_setup(two.entry_id)
+        await hass.async_block_till_done(wait_background_tasks=True)
+        assert not live(hass, one).available and not live(hass, two).available
+        # The second entry respects the manager's failed-attempt cooldown.
+        assert attempts == 1 and source_data.await_count == 1
+        retry = NOW + timedelta(seconds=62)
+        freezer.move_to(retry)
+        async_fire_time_changed(hass, retry)
+        await hass.async_block_till_done(wait_background_tasks=True)
+        assert live(hass, one).available and live(hass, two).available
+        assert attempts == 2 and source_data.await_count == 2
+        assert len(await rec.async_metadata(hass, {"klo"})) == 3
+        assert await hass.config_entries.async_unload(one.entry_id)
+        assert await hass.config_entries.async_unload(two.entry_id)

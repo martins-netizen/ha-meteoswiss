@@ -8,7 +8,8 @@ acceptance remain closed. Do not repeat deletion or create legacy test data.
 
 ## Update the existing entry normally
 
-Once the announced [8.3.5b4 release](RELEASE_8.3.5b4.md) is published, update
+The [8.3.5b4 release](RELEASE_8.3.5b4.md) is published and independently
+[verified](RELEASE_EVIDENCE_8.3.5b4.md). If choosing this test release, update
 through Marketplace and restart once as normally required for an integration
 update. Keep the existing entry, station, IDs, names and dashboards. Retain a
 usable protected full backup outside HA when a recovery point is required;

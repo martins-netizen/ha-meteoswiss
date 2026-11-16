@@ -1,9 +1,9 @@
 # Official measured HGT 12/20: use, sources and removal
 
-**Status: reviewed source PR #115 merged and actually checked; packaged for
-unpublished 8.3.5b4, not included in published 8.3.5b3.**
-[Package checks/publication](RELEASE_EVIDENCE_8.3.5b4.md) and a
-[focused HA acceptance](ACCEPTANCE_8.3.5b4.md) remain separate. Do not install a branch as a substitute for an announced release.
+**Status: included in published 8.3.5b4, not in 8.3.5b3.**
+[Package checks and publication](RELEASE_EVIDENCE_8.3.5b4.md) are complete;
+the [focused HA acceptance](ACCEPTANCE_8.3.5b4.md) remains separate.
+Use the announced release and retain the existing entry.
 The accepted b3 cleanup of obsolete forecasts remains complete and separate.
 
 ## What users get
