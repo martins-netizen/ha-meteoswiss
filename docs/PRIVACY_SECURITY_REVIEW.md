@@ -1,6 +1,15 @@
 # Privacy, architecture and security: bounded review
 
-**Unreleased precipitation resource boundary:** a bounded metadata body could
+**B6 evidence boundary, 17 November 2026:** the test package combines the
+measured-HGT pending-write ownership and bounded precipitation corrections.
+There is no additional credential, endpoint, telemetry, persistent archive or
+automatic purge. [Dated source/package evidence](RELEASE_EVIDENCE_8.3.5b6.md)
+keeps automated checks, publication and installed acceptance separate. Prior
+b3 cleanup and b5 availability acceptance remain closed. These improvements
+do not establish full Gold or independent privacy/security/architecture
+certification; the remaining evidence gaps below stay open.
+
+**Precipitation resource boundary included in 8.3.5b6:** a bounded metadata body could
 previously amplify into many duplicate historical downloads. The source and
 importer now validate/deduplicate a maximum four-file canonical station plan
 before CSV I/O and share one 300-second source/parser-wait deadline. Invalid
@@ -25,7 +34,7 @@ alert/settings inventory, provider-retention evidence or independent assurance.
 **Current follow-up, 17 November 2026:** a source review of development
 `1d34e525d2938f6e265265a1efc80571ba9c1eca` found a narrowly reproduced HGT
 ownership race: queued initial imports could commit after station retirement
-had incorrectly discarded provenance. The unreleased correction serializes
+had incorrectly discarded provenance. The correction included in b6 serializes
 retired checks with station refreshes and waits for native queued writes before
 using empty metadata as absence. It retains ownership on uncertainty and adds
 native Recorder regressions. No additional credentials, destinations, telemetry,

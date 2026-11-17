@@ -1,18 +1,21 @@
 # Sensor reference
 
-## Measured-HGT recovery scope
+## 8.3.5b6 scope
 
-The **8.3.5b5** recovery package retries temporary measured-HGT failures
-without changing existing entries, IDs or owned statistics. If choosing this
-published test release, update normally and follow the
-[short b5 check](ACCEPTANCE_8.3.5b5.md). Already completed obsolete-forecast
-cleanup stays complete. [Package notes](RELEASE_8.3.5b5.md) describe availability
-and the recovery limits.
+**8.3.5b6** includes the pending-import HGT ownership correction and bounded
+hourly-precipitation imports, retaining b5's recovery after temporary HGT
+failures. Check the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+for availability, then use the existing entry and the
+[short b6 update and read-only check](ACCEPTANCE_8.3.5b6.md).
+[Package notes](RELEASE_8.3.5b6.md) keep source checks, publication and installed
+acceptance separate. Completed b3 cleanup and b5 availability acceptance stay
+closed; no station change, removal or repeated cleanup is needed for this check.
 
 **HGT upgrade policy:** 8.3.5b3 includes the [recommended native cleanup](UPGRADING_8.3.5.md).
 After confirmed removal, no unused HGT forecast archive remains. Current
 forecasts and ordinary history continue. Published b2 itself keeps its historical
-archive-and-keep behaviour; select the explicitly published b3 package for cleanup.
+archive-and-keep behaviour. The existing explicit repair applies when obsolete
+forecast statistics are found; completed cleanup does not need repeating.
 
 This describes the current maintained code, not every feature in older upstream
 releases. Keys are internal description keys, not fixed entity IDs. HA derives
@@ -119,7 +122,7 @@ back 13 calendar months at initial import and normally weekly; the current-hourl
 file is checked hourly. Existing mean/min/max metadata is retained; this is not
 a cumulative `total_increasing` counter.
 
-The unreleased importer hardening validates canonical station assets and a
+The importer hardening included in **8.3.5b6** validates canonical station assets and a
 deduplicated maximum four-file plan, with a shared five-minute source/parser
 wait budget. Valid completed files survive later failure as partial data;
 partial status is not proof of every historical hour. The 13-month lookback
@@ -216,13 +219,13 @@ statistics provide the separate daily/monthly/annual long-term history. This
 feature is not in published b3 and does not alter the forecast below.
 
 `heating_degree_days` is a **forecast-based HGT 12/20 estimate for today**.
-Published b2 adds
+Historical published b2 adds
 `hgt_statistics_status` and `forecast_statistics_archive`. Compatible older
 statistics are retained under `sensor.meteoswiss_hgt_forecast_archive_<registry_id>`
 using the same metadata row; Core then recomputes and clears the resolved
 state-class Repair. The live forecast keeps its original identity and never
-regains a measurement state class. Published b1 does not yet include this
-archival step; it needs a later reviewed test package.
+regains a measurement state class. Published b1 does not include this archival
+step. B3 and later instead use the explicit cleanup policy above.
 
 **Published 8.3.5b1 metadata correction:** the current source omits the HGT measurement
 state class. Current values, IDs and ordinary history continue, and existing

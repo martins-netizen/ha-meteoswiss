@@ -1,8 +1,10 @@
 # Coordinator examples for contributors
 
-**Guide version:** 1.5 · **Updated:** 17 November 2026
-**Scope:** the 8.3 runtime through published 8.3.5b5, plus explicitly identified
-unreleased corrections, saved forecast-location routing and station conditions.
+**Guide version:** 1.6 · **Updated:** 17 November 2026
+**Scope:** the 8.3.5b6 runtime, including retained saved forecast-location routing
+and station conditions. The [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+determines availability. [Package notes](RELEASE_8.3.5b6.md) distinguish source
+and package checks from publication and the [read-only installed check](ACCEPTANCE_8.3.5b6.md).
 This guide explains the implemented behaviour and ownership;
 it does not itself change HA configuration or polling. Use the [architecture](ARCHITECTURE.md) for the
 full contracts and [sensor guide](SENSORS.md) for end-user features.

@@ -2,31 +2,23 @@
 
 ## Current engineering work
 
-The next separate runtime correction bounds the official precipitation
-import's complete plan and source/parser waits. It preserves existing IDs,
-13-month lookback, valid partial data, real zero and queue-only Recorder
-semantics; it introduces no replacement archive or user cleanup action.
-[Source contract, regressions and limits](docs/PRECIPITATION_RESOURCE_BOUNDS.md).
-The CI 2026.11.2 promotion is merged as
-[PR #122](https://github.com/martins-netizen/ha-meteoswiss/pull/122); actual merge
-verification is complete: all ten actual checks, including the dependency graph,
-passed at `1439b83c8dedde1a89f62fcc4c0fd689f1b6baa6`. The actual
-[CI run](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/44173090555)
-passed both HA 2026.11.0/2026.11.2 suites. This source correction and its
-publication retain their own verification boundary.
+The **8.3.5b6** test package brings together the merged
+[HGT pending-import ownership correction](docs/HGT_PENDING_IMPORT_OWNERSHIP.md),
+[bounded precipitation imports](docs/PRECIPITATION_RESOURCE_BOUNDS.md), and
+HA 2026.11.0/2026.11.2 compatibility checks. Existing entries, IDs, accepted b3
+cleanup and b5 availability evidence remain. The minimum stays 2026.11.0.
+Use [the catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+for availability and [the b6 update/check](docs/ACCEPTANCE_8.3.5b6.md).
 
-The **8.3.5b5** test package includes the approved #119 HGT retry correction.
-Publication is verified and the operator confirmed measured HGT available on
-b5. Existing entries, IDs and owned statistics remain; completed b3 cleanup
-stays closed. The HGT pending-import ownership correction is merged as
-[PR #121](https://github.com/martins-netizen/ha-meteoswiss/pull/121) with all
-actual merge checks passed; it remains unreleased. See
-[the failure and cleanup boundary](docs/HGT_PENDING_IMPORT_OWNERSHIP.md).
-Current CI maintenance advances the paired current HA/test fixture to
-**2026.11.2**, retaining the **2026.11.0** minimum, all 138 selections per lock
-and existing security/coverage gates. It changes no integration runtime or
-published package. [Maintenance contract](DEVELOPMENT.md#current-fixture-update).
-Full Gold and independent privacy/security/architecture assurance remain separate.
+PR #121 merged at `b936505d348c199717c00b3211def7fa6b3013c1`;
+PR #122 at `1439b83c8dedde1a89f62fcc4c0fd689f1b6baa6`;
+PR #123 at `8e6dc429e54f2973ac120601fc5134f882c535d9`.
+[Dated source and package evidence](docs/RELEASE_EVIDENCE_8.3.5b6.md) keeps actual
+merge checks, packaging, publication and installed acceptance separate.
+The next quality work remains the open Gold rules and independent review in
+[the quality assessment](docs/QUALITY_SCALE.md), not repeating accepted cleanup
+or adding a replacement archive. Full Gold and independent privacy/security/
+architecture assurance remain unestablished.
 
 This describes current fork work. Historical upstream release claims remain in
 the changelog as history; they are not current certifications. Check the

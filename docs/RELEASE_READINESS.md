@@ -1,16 +1,16 @@
-# Release readiness: 8.3.5b5 recovery package and stable 8.3.4
+# Release readiness: 8.3.5b6 test package and stable 8.3.4
 
-## 8.3.5b5 package boundary
+## 8.3.5b6 package boundary
 
-The **8.3.5b5** test package includes the approved #119 HGT retry correction.
-Publication/availability is determined by the release catalogue; source checks
-do not establish package publication or live availability. Existing entries,
-IDs and owned statistics remain. Already completed b3 cleanup stays closed.
-Follow the [focused b5 check](ACCEPTANCE_8.3.5b5.md) and
-[package boundary](RELEASE_8.3.5b5.md). Full Gold and independent
-privacy/security/architecture review remain separate.
+B6 includes HGT pending-import ownership and bounded precipitation imports,
+with the HA 2026.11.0 minimum and 2026.11.2 current fixture. Its
+[dated evidence](RELEASE_EVIDENCE_8.3.5b6.md) separates source, package checks,
+publication and installed acceptance. The [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+determines availability. Retain the existing entry and follow
+[the short read-only check](ACCEPTANCE_8.3.5b6.md); accepted b3 cleanup/b5
+availability remain closed. Full Gold and independent assurance remain separate.
 
-**Document version:** 2.28 · **Updated:** 15 November 2026
+**Document version:** 2.29 · **Updated:** 17 November 2026
 
 <a id="prepared-835b1-reviewed-source-publication-and-operator-acceptance-separate"></a>
 

@@ -1,5 +1,12 @@
 # Maintained fork: architecture and data contracts
 
+**8.3.5b6 scope:** the pending-import HGT ownership correction and bounded
+precipitation imports below are included in this test package. The
+[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+determines availability; [package notes](RELEASE_8.3.5b6.md) and the
+[read-only installed check](ACCEPTANCE_8.3.5b6.md) retain separate source,
+package, publication and acceptance evidence.
+
 **Published 8.3.5b4 official measured HGT:** `hgt_ogd.py` validates bounded canonical
 station resources and completed UTC daily/monthly/annual products off the event
 loop. `hgt_ogd_coordinator.py` provides entry-owned optional polling;
@@ -23,7 +30,7 @@ respects disabled polling and unload; conflicts retain their repair and normal
 interval. There is no new task, storage or bypass of native readback.
 [Behaviour and native regressions](HGT_RETRY_RECOVERY.md).
 
-**Unreleased HGT pending-import ownership correction:** retired-station issue
+**HGT pending-import ownership correction, included in b6:** retired-station issue
 scans take the station locks and wait behind already queued native Recorder
 writes before pruning an empty profile. Cancellation retains provenance and
 skips that passive scan so unload does not wait for a blocked writer. A normal
@@ -49,7 +56,8 @@ scoped to its published archive-and-keep runtime. It is not full Gold certificat
 
 Maintain an independent community fork with reviewed fixes, its own releases
 and [HACS catalogue admission](HACS_ACCEPTANCE.md#hacs-catalogue-admission).
-The contracts below describe the released 8.3 runtime. Preserve `meteoswiss`, config entries, unique IDs, entity IDs,
+The contracts below describe the 8.3 runtime, including the b6 scope above.
+Preserve `meteoswiss`, config entries, unique IDs, entity IDs,
 and Recorder statistic IDs for retained entities. The legacy forecast-only
 season-HGT entity is explicitly retired rather than presented as a measured
 accumulated total; see the migration guide. Upstream source, licence and attribution remain
@@ -94,7 +102,7 @@ the chosen observation provider with the same coordinator contract, without
 listeners/polling, using HA's shared session and a 30-second total timeout.
 
 `wind_statistics.py` owns the wind transition and delegates its queued rename/
-readback boundary to `statistics_archive.py`. The prepared HGT follow-up in
+readback boundary to `statistics_archive.py`. The HGT archive transition in
 `forecast_statistics.py` reuses that boundary without altering existing wind
 archive IDs. Native Core repair refreshes run in order as HA-owned background
 tasks; an entry unload or a caller's 30-second deadline cannot cancel shared
@@ -234,7 +242,7 @@ source work starts, and required current-weather validation remains outside
 that catch. A partially constructed unused coordinator retains native entry
 unload cleanup; no new repair or session owner is introduced.
 
-The unreleased [whole-import resource bounds](PRECIPITATION_RESOURCE_BOUNDS.md)
+The [whole-import resource bounds included in b6](PRECIPITATION_RESOURCE_BOUNDS.md)
 bind exact canonical station assets and validate/deduplicate at most four CSV
 files before any CSV request. One 300-second deadline covers source and parser
 waits, preserving earlier valid files on expiry. Present malformed relevant
