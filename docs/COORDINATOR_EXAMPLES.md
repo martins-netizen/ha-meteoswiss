@@ -1,18 +1,20 @@
 # Coordinator examples for contributors
 
-**Guide version:** 1.4 · **Updated:** 25 October 2026
-**Scope:** the released 8.3 runtime, including saved forecast-location routing
-and the independent station-condition source.
+**Guide version:** 1.5 · **Updated:** 17 November 2026
+**Scope:** the 8.3 runtime through published 8.3.5b5, plus explicitly identified
+unreleased corrections, saved forecast-location routing and station conditions.
 This guide explains the implemented behaviour and ownership;
 it does not itself change HA configuration or polling. Use the [architecture](ARCHITECTURE.md) for the
 full contracts and [sensor guide](SENSORS.md) for end-user features.
 
 ## Choose the existing data family
 
-All eight concrete coordinator classes are defined in
-[coordinator.py](../custom_components/meteoswiss/coordinator.py). Setup creates
+Eight concrete coordinator classes are defined in
+[coordinator.py](../custom_components/meteoswiss/coordinator.py); the ninth,
+`MeteoSwissHgtCoordinator`, is in
+[hgt_ogd_coordinator.py](../custom_components/meteoswiss/hgt_ogd_coordinator.py). Setup creates
 entry-owned instances in [typed runtime data](../custom_components/meteoswiss/runtime_data.py).
-Eight class definitions do not mean that every entry creates eight different
+Nine class definitions do not mean that every entry creates nine different
 classes: current-weather providers are alternatives, while hourly precipitation
 and its archive use two instances of the same class.
 
@@ -26,6 +28,7 @@ and its archive use two instances of the same class.
 | MeteoSwissPollenCoordinator | Actual measured pollen at the independently selected pollen station, for example PZH. | 3600 seconds. | MeteoSwissPollenClient in pollen_meteoswiss.py; measured-pollen sensors. |
 | OpenMeteoPollenCoordinator | Modelled pollen/AQ and optional UV at existing base coordinates, independent of a weather-forecast POI; not measured-pollen station data. | 1800 seconds. | OpenMeteoPollenClient in pollen_openmeteo.py; modelled pollen/AQ/UV entities. |
 | MeteoSwissHourlyPrecipitationCoordinator | Official completed-hour precipitation and its archive for the observation station. | now assets hourly; historical/recent assets every seven days, with a thirteen-calendar-month lookback. | Source/parser in precipitation.py, Recorder projection in precipitation_recorder.py; external statistics, no replacement current-hour entity. |
+| MeteoSwissHgtCoordinator | Official observed HGT 12/20 daily/monthly/annual products for the measurement station. | Six hours after verified success; transient failures retry after 60 seconds with bounded backoff to 15 minutes. | hgt_ogd.py, shared station manager and native Recorder adapter; distinct observed-day sensor and station-specific histories. Optional, entry-owned polling; sources/snapshots/ownership are shared per station. |
 
 These are attempted-refresh schedules, not a guarantee that the provider has
 published a new value. Cache hits do not extend their original expiry. Source

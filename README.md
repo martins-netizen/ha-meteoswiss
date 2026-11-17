@@ -15,7 +15,7 @@ This is an independent community project, not an official MeteoSwiss product.
 This guide describes the **8.3 series**; [8.3.0 release notes](docs/RELEASE_8.3.0.md)
 explain the changes from 8.2.0. Use a published release, not a branch.
 
-**HGT recovery test package (8.3.5b5):** a transient source/Recorder failure
+**Published HGT recovery test package (8.3.5b5):** a transient source/Recorder failure
 retries after one minute with bounded backoff up to 15 minutes, then returns to
 the normal six-hour cadence after verification. Check the
 [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
@@ -23,15 +23,23 @@ for publication/availability and choose **8.3.5b5** when testing this correction
 It is not included in b4. Keep the existing entry and statistics; follow the
 [short update and read-only check](docs/ACCEPTANCE_8.3.5b5.md).
 [Release notes](docs/RELEASE_8.3.5b5.md) and
-[recovery limits](docs/HGT_RETRY_RECOVERY.md) explain the scope.
+[recovery limits](docs/HGT_RETRY_RECOVERY.md) explain the scope. Publication and
+the operator's focused measured-HGT availability check are complete. This is
+bounded acceptance of the test package, not stable promotion or full Gold.
+
+**Unreleased ownership correction:** changing or removing a station while its
+first HGT import is queued must retain ownership until Recorder has committed
+and cleanup has verified absence. The development correction closes that
+cancellation race; it is not included in the immutable b5 package. Existing
+confirmed cleanup instructions remain in [the HGT guide](docs/HGT_OGD_PLAN.md#ownership-and-complete-removal).
 
 **Published [8.3.5b4 test package](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b4):**
 official measured HGT 12/20 history, initial backfill, continuing source
 corrections and explicit ownership/removal. Published on **15 November 2026**;
 release/tag/body and retention of all nineteen earlier releases are independently
 confirmed. Keep the existing entry and update normally if choosing this test
-release. Publication is complete; installation and focused measured-HGT
-acceptance remain separate. [Release notes](docs/RELEASE_8.3.5b4.md),
+release. Publication is complete; focused measured-HGT availability was later
+operator-confirmed on b5. [Release notes](docs/RELEASE_8.3.5b4.md),
 [publication evidence](docs/RELEASE_EVIDENCE_8.3.5b4.md) and
 [the short read-only check](docs/ACCEPTANCE_8.3.5b4.md) explain the new entity and
 station-specific statistics. Removing the final integration entry also removes
@@ -76,7 +84,7 @@ archive-and-keep behaviour; the new cleanup is included in b3.
 sensor and station-specific daily/monthly/annual statistics import the official
 OGD products, backfill available observations and recheck corrections. Forecasts
 keep their existing identity. This feature is **not in published b3**. B4 is
-published; its focused HA check remains separate. See [sources, charts and removal](docs/HGT_OGD_PLAN.md).
+published; focused availability is accepted on b5. See [sources, charts and removal](docs/HGT_OGD_PLAN.md).
 Removing the final MeteoSwiss integration entry also removes its owned OGD HGT
 statistics; normal sensor history and unrelated series are retained.
 

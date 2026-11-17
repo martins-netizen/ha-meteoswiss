@@ -19,7 +19,12 @@ from .hgt_ogd import (
     MeteoSwissHgtClient,
     station_code,
 )
-from .hgt_ogd_recorder import async_clear_owned, async_import_products, async_metadata
+from .hgt_ogd_recorder import (
+    async_clear_owned,
+    async_import_products,
+    async_metadata,
+    async_wait_for_writes,
+)
 
 DATA_KEY = "hgt_ogd_manager"
 CLEANUP_ISSUE = "hgt_ogd_retired_cleanup"
@@ -148,6 +153,10 @@ class HgtOgdManager:
     ) -> HgtRetiredPlan:
         await self.async_load()
         stations = tuple(sorted(self.known - self.active_stations(exclude_entry_id)))
+        if stations:
+            # Entry cancellation cannot retract imports already in Recorder's
+            # queue. An empty read before those commit is not verified absence.
+            await async_wait_for_writes(self.hass)
         metadata = await async_metadata(self.hass, set(stations)) if stations else {}
         if set(stations) != self.known - self.active_stations(exclude_entry_id):
             raise HgtError("cleanup_target_changed")
@@ -156,33 +165,42 @@ class HgtOgdManager:
     async def async_sync_issue(self, exclude_entry_id: str | None = None) -> None:
         """Keep every retired owned profile visible, also after its entry is gone."""
         try:
-            plan = await self.async_retired_plan(exclude_entry_id)
-            if not plan.metadata:
-                if plan.stations:
-                    async with self.state_lock:
-                        await self._save(
-                            self.known
-                            - (
-                                set(plan.stations)
-                                - self.active_stations(exclude_entry_id)
+            await self.async_load()
+            stations = tuple(sorted(self.known - self.active_stations(exclude_entry_id)))
+            async with AsyncExitStack() as stack:
+                for station in stations:
+                    await stack.enter_async_context(
+                        self.locks.setdefault(station, asyncio.Lock())
+                    )
+                plan = await self.async_retired_plan(exclude_entry_id)
+                if plan.stations != stations:
+                    raise HgtError("cleanup_target_changed")
+                if not plan.metadata:
+                    if plan.stations:
+                        async with self.state_lock:
+                            await self._save(
+                                self.known
+                                - (
+                                    set(plan.stations)
+                                    - self.active_stations(exclude_entry_id)
+                                )
                             )
-                        )
-                ir.async_delete_issue(self.hass, DOMAIN, CLEANUP_ISSUE)
-            else:
-                ir.async_create_issue(
-                    self.hass,
-                    DOMAIN,
-                    CLEANUP_ISSUE,
-                    is_fixable=True,
-                    is_persistent=True,
-                    severity=ir.IssueSeverity.WARNING,
-                    translation_key=CLEANUP_ISSUE,
-                    data={"kind": CLEANUP_ISSUE},
-                    translation_placeholders={
-                        "statistic_ids": "\n".join(sorted(plan.metadata))
-                    },
-                )
-            ir.async_delete_issue(self.hass, DOMAIN, BLOCKED_ISSUE)
+                    ir.async_delete_issue(self.hass, DOMAIN, CLEANUP_ISSUE)
+                else:
+                    ir.async_create_issue(
+                        self.hass,
+                        DOMAIN,
+                        CLEANUP_ISSUE,
+                        is_fixable=True,
+                        is_persistent=True,
+                        severity=ir.IssueSeverity.WARNING,
+                        translation_key=CLEANUP_ISSUE,
+                        data={"kind": CLEANUP_ISSUE},
+                        translation_placeholders={
+                            "statistic_ids": "\n".join(sorted(plan.metadata))
+                        },
+                    )
+                ir.async_delete_issue(self.hass, DOMAIN, BLOCKED_ISSUE)
         except Exception:
             ir.async_create_issue(
                 self.hass,

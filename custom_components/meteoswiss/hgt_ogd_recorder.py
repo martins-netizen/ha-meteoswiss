@@ -82,6 +82,14 @@ async def async_clear_owned(
         await done.wait()
 
 
+async def async_wait_for_writes(hass: HomeAssistant) -> None:
+    """Read absence only after every already-queued native write has committed."""
+    committed = hass.loop.create_future()
+    get_instance(hass).queue_task(SynchronizeTask(committed))
+    async with asyncio.timeout(30):
+        await asyncio.shield(committed)
+
+
 async def _rows(hass: HomeAssistant, ids: set[str]) -> dict[str, list[dict]]:
     def read():
         result = {}
@@ -134,7 +142,6 @@ async def async_import_products(
     hass: HomeAssistant, station: str, products: HgtProducts, metadata: dict
 ) -> dict:
     """Upsert corrections and withdraw exact missing slots; verify every result."""
-    instance = get_instance(hass)
     ids = statistic_ids(station)
     existing = await _rows(hass, set(ids.values()))
     expected = {period: project_hgt(values) for period, values in products.items()}
@@ -161,10 +168,7 @@ async def async_import_products(
     # The convenience barrier can return early once the worker has dequeued
     # the last import, before that running task commits. Always queue Core's
     # commit-before synchronization task behind every submitted product.
-    committed = hass.loop.create_future()
-    instance.queue_task(SynchronizeTask(committed))
-    async with asyncio.timeout(30):
-        await committed
+    await async_wait_for_writes(hass)
     verified = await _rows(hass, set(ids.values()))
     for period, desired in expected.items():
         rows = verified.get(ids[period], [])

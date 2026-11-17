@@ -1,20 +1,20 @@
 # Maintained-fork roadmap
 
-## Current test-package work
+## Current engineering work
 
 The **8.3.5b5** test package includes the approved #119 HGT retry correction.
-Publication/availability is determined by the release catalogue; source checks
-do not establish package publication or live availability. Existing entries,
-IDs and owned statistics remain. Already completed b3 cleanup stays closed.
-Follow the [focused b5 check](docs/ACCEPTANCE_8.3.5b5.md) and
-[package boundary](docs/RELEASE_8.3.5b5.md). Full Gold and independent
-privacy/security/architecture review remain separate.
+Publication is verified and the operator confirmed measured HGT available on
+b5. Existing entries, IDs and owned statistics remain; completed b3 cleanup
+stays closed. The next bounded correction preserves HGT ownership when a station
+changes/removes during a queued initial import. It adds native Recorder race
+regressions and remains unreleased; see [the failure and cleanup boundary](docs/HGT_PENDING_IMPORT_OWNERSHIP.md).
+Full Gold and independent privacy/security/architecture assurance remain separate.
 
 This describes current fork work. Historical upstream release claims remain in
 the changelog as history; they are not current certifications. Check the
 [release status](README.md#release-status) before installing.
 
-## Published 8.3.5b4: measured HGT, focused acceptance separate
+## Published 8.3.5b4: measured HGT, availability accepted on b5
 
 [8.3.5b4](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b4),
 release **446375287**, was published on **15 November 2026 at 21:20:21 UTC**

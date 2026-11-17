@@ -1,6 +1,30 @@
 # 8.3.5b5: source, package and publication evidence
 
-**Evidence version:** 1.0 · **Date:** 16 November 2026
+**Evidence version:** 1.1 · **Updated:** 17 November 2026
+
+## Completed publication and focused availability
+
+Published [8.3.5b5](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b5),
+release **447678651**, at **22:08:42 UTC on 16 November 2026** from approved
+regular package merge `ba8a15aa282aa7b67d16c83cca6f99e38ee2bf4b`, tree
+`cd82dfa02bf1638125283b6ad44c54dc3cce5028`, direct parent
+`6873c0390cb276dc6afa2c347d055e995d7bf956`.
+All ten expected package-head and nine actual-merge checks passed. The immutable
+release/tag/English body, all twenty earlier releases/tags and latest stable
+**8.3.4 / 437853341** were independently verified. The fifty non-version
+component files match the reviewed #119 source.
+
+After updating the existing installation to b5, the operator reported the
+last-observed-day HGT entry available. This closes that focused availability
+acceptance. It does not independently verify every historical row, all
+attributes in the protocol below or which recovery attempt succeeded. The
+earlier b4 unavailable-state cause remains unproven. Completed b3 cleanup stays
+closed; no repeat installation, cleanup or diagnostic export is requested.
+
+The [pending-import ownership correction](HGT_PENDING_IMPORT_OWNERSHIP.md) is a
+later, separate unreleased change. It does not alter this immutable release.
+The preparation requirements below explain the completed publication process;
+they are not outstanding steps or instructions to publish b5 again.
 
 ## Confirmed source
 
@@ -23,7 +47,7 @@ twenty documents are byte-identical and six retain all original content with
 additional recovery guidance. #117 is closed as superseded, not a second merge.
 The separately failing #118 dependency-lock update is not part of this source.
 
-## Package and publication boundary
+## Historical preparation: package and publication boundary
 
 The b5 candidate changes only the two version fields among the 52 component
 files and adds package documentation, Publisher V1.12 and its regressions.
@@ -51,10 +75,12 @@ release records/IDs before and after publication, plus latest stable
 and do not authorise blind retries, retagging or overwriting existing notes.
 A matching existing publication can be read back without creating a duplicate.
 
-Publication/availability follows the release catalogue. It does not establish
-installation or current HGT availability. The [focused b5 UI check](ACCEPTANCE_8.3.5b5.md)
-must confirm the measured last-observed-day sensor, its own source date/product
-IDs and usual weather/forecast operation after the update.
+Publication/availability follows the release catalogue. Publication alone does
+not establish installation or current HGT availability. The original
+[focused b5 UI protocol](ACCEPTANCE_8.3.5b5.md) describes the observed-day sensor,
+its own source date/product IDs and normal weather/forecast operation. The
+operator's actual availability report is recorded separately above; do not
+infer the unreported protocol fields from it or reopen the agreed check.
 
 Already accepted b3 cleanup stays closed. No new deletion, station change,
 entry removal, broad log export or diagnostic script is required for this

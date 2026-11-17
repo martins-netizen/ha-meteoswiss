@@ -2,6 +2,12 @@
 
 **Protocol version:** 1.0 · **Package date:** 16 November 2026
 
+**Recorded outcome, 17 November 2026:** after updating to b5 the operator
+confirmed the observed-day HGT entry available. The focused availability
+acceptance is closed. This protocol remains a guide for other installations;
+its other fields are not inferred from that report. Do not repeat the accepted
+update or b3 cleanup. [Publication and evidence limits](RELEASE_EVIDENCE_8.3.5b5.md).
+
 The check is for the existing measured-HGT sensor after an ordinary update.
 Publication availability follows the release catalogue. It does not require
 repeating the accepted b3 cleanup or destructive station/removal tests.

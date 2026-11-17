@@ -1,12 +1,25 @@
 # Privacy, architecture and security: bounded review
 
+**Current follow-up, 17 November 2026:** a source review of development
+`1d34e525d2938f6e265265a1efc80571ba9c1eca` found a narrowly reproduced HGT
+ownership race: queued initial imports could commit after station retirement
+had incorrectly discarded provenance. The unreleased correction serializes
+retired checks with station refreshes and waits for native queued writes before
+using empty metadata as absence. It retains ownership on uncertainty and adds
+native Recorder regressions. No additional credentials, destinations, telemetry,
+source data or persistent archive is introduced. See [the exact trigger and limits](HGT_PENDING_IMPORT_OWNERSHIP.md).
+This evidence strengthens one lifecycle boundary; it is not independent
+security/privacy certification or proof of a production incident.
+
 **Reviewed source:** PR #115 introduced official measured HGT and is preserved
 in the published [b4 package](RELEASE_EVIDENCE_8.3.5b4.md). The later approved
 #119 merge `6873c0390cb276dc6afa2c347d055e995d7bf956` adds bounded native recovery;
 all ten head and nine actual merge checks passed, both HA suites have 3,101
 passing tests plus 83 subtests, and the complete audit still covers 140 package
-versions. B5 packages that reviewed source. Its package/publication/live checks
-are separate; these engineering checks are not independent certification.
+versions. B5 packages that reviewed source. Publication is independently
+verified and the operator reported the observed-day entry available on b5;
+that bounded availability acceptance is closed. These engineering/operator
+checks are not a complete historical-data audit or independent certification.
 
 **8.3.5b5 measured-HGT recovery:** bounded retries change failure cadence,
 not credentials, destinations, source validation, native statistics ownership
