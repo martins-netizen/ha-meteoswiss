@@ -982,7 +982,7 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         if self._uv_last_update_success is available:
             return
         if not available:
-            _LOGGER.warning("Optional UV response unavailable")
+            _LOGGER.info("Optional UV response unavailable")
         elif self._uv_last_update_success is False:
             _LOGGER.info("Optional UV response recovered")
         self._uv_last_update_success = available
