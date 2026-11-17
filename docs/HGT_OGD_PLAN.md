@@ -1,18 +1,21 @@
 # Official measured HGT 12/20: use, sources and removal
 
-## Recovery package
+## 8.3.5b6 package scope
 
-The **8.3.5b5** recovery package retries temporary measured-HGT failures
-without changing existing entries, IDs or owned statistics. If choosing this
-published test release, update normally and follow the
-[short b5 check](ACCEPTANCE_8.3.5b5.md). Already completed obsolete-forecast
-cleanup stays complete. [Package notes](RELEASE_8.3.5b5.md) describe availability
-and the recovery limits.
+**8.3.5b6** includes the [pending-import ownership correction](HGT_PENDING_IMPORT_OWNERSHIP.md)
+and retains b5's bounded recovery after temporary measured-HGT failures.
+Availability follows the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases).
+If choosing the listed b6 test release, update the existing entry and follow the
+[short read-only check](ACCEPTANCE_8.3.5b6.md). Keep the station, IDs and owned
+statistics. Completed b3 cleanup and b5 observed-day availability acceptance
+stay closed; native race/removal regressions do not require destructive tests
+on an installation. [Package notes](RELEASE_8.3.5b6.md) distinguish source,
+package, publication and installed evidence.
 
-**Status: included in published 8.3.5b4, not in 8.3.5b3.**
-[Package checks and publication](RELEASE_EVIDENCE_8.3.5b4.md) are complete;
-the [focused HA acceptance](ACCEPTANCE_8.3.5b4.md) remains separate.
-Use the announced release and retain the existing entry.
+**Measured HGT was introduced in published 8.3.5b4; it is not in 8.3.5b3.**
+[Package checks and publication](RELEASE_EVIDENCE_8.3.5b4.md) are complete.
+The focused observed-day availability check was subsequently operator-confirmed
+on b5; its [recorded scope](RELEASE_EVIDENCE_8.3.5b5.md) remains historical.
 The accepted b3 cleanup of obsolete forecasts remains complete and separate.
 
 ## What users get
@@ -207,6 +210,7 @@ native entry removal. All four new modules retain 100% line and branch coverage.
 [The quality matrix](QUALITY_SCALE.md) and [bounded privacy/security assessment](PRIVACY_SECURITY_REVIEW.md)
 retain full Gold/independent-review limits. Published b4/b5 and the operator's
 focused b5 observed-day availability check are complete. The pending-import
-correction still needs its own hosted checks, approved merge and later
-publication. B5 availability and published b3/PR #114 acceptance are not repeated;
+correction's [merged-source evidence](HGT_PENDING_IMPORT_OWNERSHIP.md) remains
+distinct from the b6 package checks, publication and installed check.
+B5 availability and published b3/PR #114 acceptance are not repeated;
 full historical-row or independent assurance is not inferred from those results.

@@ -1,6 +1,6 @@
 # Quality evidence and remaining work
 
-**Unreleased precipitation hardening:** canonical station URL binding,
+**Precipitation hardening included in 8.3.5b6:** canonical station URL binding,
 four-file whole-plan validation/deduplication and a shared 300-second source/
 parser-wait budget close a reproduced resource boundary. Native/source
 regressions retain real-zero, correction, timeout/cancellation and queue
@@ -14,8 +14,8 @@ claiming independent privacy/security assurance.
 HA/test fixture to **2026.11.2** and keeps the **2026.11.0** minimum. Package
 keys, platform support, security floors, offline uv and strict coverage gates
 are retained. [PR #121](https://github.com/martins-netizen/ha-meteoswiss/pull/121)
-is merged and its actual checks passed; its HGT correction still needs a later
-package. These maintenance changes do not close remaining Gold rules or
+is merged and its actual checks passed; its HGT correction is included in
+8.3.5b6. These maintenance changes do not close remaining Gold rules or
 independent review. [Reproduce both fixtures](../DEVELOPMENT.md#local-compatibility-checks).
 
 ## 8.3.5b5 package evidence
@@ -25,7 +25,7 @@ Its [publication](RELEASE_EVIDENCE_8.3.5b5.md) is verified and the operator
 confirmed the measured-HGT entry available after updating to b5. This closes
 that focused availability check, not a complete historical-row audit or every
 recovery path. Existing entries, IDs and owned statistics remain. Completed
-b3 cleanup stays closed. The unreleased [pending-import ownership correction](HGT_PENDING_IMPORT_OWNERSHIP.md)
+b3 cleanup stays closed. The [pending-import ownership correction](HGT_PENDING_IMPORT_OWNERSHIP.md)
 has its own native regression and release boundary. Full Gold and independent
 privacy/security/architecture assurance remain separate.
 
@@ -63,9 +63,11 @@ without SQLite ResourceWarning. B3 acceptance remains closed. The current
 coverage. B4/b5 publication and the focused b5 availability check are complete;
 full Gold/independent review stay open.
 
-**Documentation updated:** 17 November 2026. **Current scope:** development
-based on `1d34e525d2938f6e265265a1efc80571ba9c1eca`, with the explicitly
-unreleased pending-import correction; published runtime remains 8.3.5b5.
+**Documentation updated:** 17 November 2026. **Current scope:** 8.3.5b6 includes
+the HGT pending-import and precipitation resource corrections. Its source is
+the actual #123 merge `8e6dc429e54f2973ac120601fc5134f882c535d9`.
+[Dated evidence](RELEASE_EVIDENCE_8.3.5b6.md) and the live catalogue separate
+engineering checks, package publication and installed acceptance.
 The original **24 October 2026** assessment used **8.3.0b4** at
 **a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5**. Its historical acceptance and
 the release-specific qualifications below remain bounded to those versions. Stable packaging

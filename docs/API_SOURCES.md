@@ -6,6 +6,13 @@ products remain distinct; no forecast history is reused. See the
 [source, time, correction and removal contract](HGT_OGD_PLAN.md). Published
 8.3.5b3 does not include this feature.
 
+**8.3.5b6 scope:** the pending-import HGT ownership correction and bounded
+precipitation imports retain the existing providers and location choices.
+Check the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+for availability and follow the [normal update and read-only check](ACCEPTANCE_8.3.5b6.md).
+[Package notes](RELEASE_8.3.5b6.md) distinguish engineering checks from publication
+and installed acceptance; completed b3 cleanup and b5 observed-day availability
+acceptance stay closed.
 
 This describes requests made by the current maintained integration. Provider
 publication, the integration's polling interval and its cache lifetime are
@@ -28,7 +35,7 @@ availability or permission for every use. Check the providers' current terms.
 | Official hourly rain statistics | SwissMetNet station hourly assets | Selected weather station | Now file hourly; recent/historical archive initially and normally weekly |
 | Station catalogue | `data.geo.admin.ch/ch.meteoschweiz.ogd-smn/ogd-smn_meta_stations.csv` | Public station metadata | Shared 24-hour cache with guarded retry |
 
-**8.3.5b5 measured-HGT retry exception:** transient failures retry after 60
+**Measured-HGT retry exception, b5 onward:** transient failures retry after 60
 seconds with bounded backoff to 15 minutes, then return to six-hour polling
 after successful verification. The existing fixed sources, shared failure
 cooldown and conditional reads remain. See [recovery scope](HGT_RETRY_RECOVERY.md).
@@ -59,7 +66,7 @@ catalogue, not hardcoded as a promise of network coverage.
 The independent hourly importer uses `rre150h0` in `_h_now`, `_h_recent` and
 matching historical assets. Archive refresh imports a thirteen-calendar-month
 lookback; this is not a retention purge of older recorded statistics.
-The unreleased import hardening accepts only canonical station/period paths,
+The import hardening included in **8.3.5b6** accepts only canonical station/period paths,
 deduplicates and rejects plans above four CSV files before downloading them,
 and shares a 300-second source/parser-wait budget. Present malformed relevant
 assets fail metadata; valid subsets survive later file failures/timeouts.

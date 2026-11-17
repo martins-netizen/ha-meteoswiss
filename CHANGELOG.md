@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+## [8.3.5b6] — 2026-11-17 · HGT ownership and precipitation import bounds
+
+- Package the pending-import HGT ownership correction from PR #121 and bounded
+  precipitation source/import correction from PR #123. Retain existing entries,
+  statistics IDs and accepted obsolete-forecast cleanup; no new archive or purge.
+- Keep the HA 2026.11.0 minimum and use 2026.11.0/2026.11.2 CI fixtures. Change
+  only two component version fields when packaging the approved source; keep all
+  50 non-version component files, dependency locks and existing quality gates.
+- Add fixed Publisher V1.13, current release/upgrade guidance and a short
+  existing-entry read-only acceptance protocol. Publication follows the release
+  catalogue; package and installed acceptance have separate evidence.
+
 - Bound official hourly precipitation import plans to four unique canonical
   station CSVs and one 300-second source/parser-wait deadline. Validate station/
   periods before I/O, reject present malformed relevant assets and non-CSV

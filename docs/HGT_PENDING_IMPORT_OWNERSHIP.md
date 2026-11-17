@@ -1,7 +1,10 @@
 # HGT ownership while Recorder writes are pending
 
-**Scope:** unreleased correction based on development
-`1d34e525d2938f6e265265a1efc80571ba9c1eca`, reviewed 17 November 2026.
+**Package scope: included in 8.3.5b6.** Availability follows the
+[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases),
+with source/package checks and installed acceptance recorded separately in the
+[package notes](RELEASE_8.3.5b6.md). The original review on 17 November 2026
+used development `1d34e525d2938f6e265265a1efc80571ba9c1eca`.
 This correction is not in the immutable published 8.3.5b5 package.
 
 **Merged source:** [PR #121](https://github.com/martins-netizen/ha-meteoswiss/pull/121)
@@ -63,8 +66,9 @@ statistics retain their existing contracts.
 
 ## Upgrade and recovery boundary
 
-No new user action is needed for the correction itself once it is included in
-a published update. Keep the existing entry and station. Do not switch stations,
+No new user action is needed for the correction itself after the ordinary
+update to a listed b6 package. Follow the [read-only b6 check](ACCEPTANCE_8.3.5b6.md)
+and keep the existing entry and station. Do not switch stations,
 remove entries, delete data or repeat the accepted b3 cleanup as a test.
 Follow the existing [ownership/removal guide](HGT_OGD_PLAN.md#ownership-and-complete-removal)
 for an actual intended station change or removal.
@@ -79,5 +83,5 @@ establish a new release or whole-database absence audit.
 Native regressions cover pending-write cancellation, station serialization,
 target changes, failed completion barriers and the final-removal boundary.
 The exact local validation result is recorded with the reviewed PR candidate;
-the completed hosted/merge result is recorded above. A later package must retain
+the completed hosted/merge result is recorded above. The b6 package retains
 its own reviewed source, checks and publication evidence.

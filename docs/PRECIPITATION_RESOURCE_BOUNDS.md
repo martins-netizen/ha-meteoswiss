@@ -1,8 +1,13 @@
 # Bounded hourly precipitation imports
 
-**Scope:** unreleased source hardening, reviewed 17 November 2026. This is
-separate from the accepted HGT cleanup and ownership corrections. No operator
-cleanup, station change or repeated installation is required to test this work.
+**Package scope: included in 8.3.5b6.** This source hardening was reviewed on
+17 November 2026. Availability follows the
+[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases);
+[package notes](RELEASE_8.3.5b6.md) separate source checks, packaging,
+publication and installed acceptance. Use the [normal b6 update and read-only check](ACCEPTANCE_8.3.5b6.md).
+Accepted b3 cleanup and b5 HGT availability remain closed. No operator cleanup,
+station change, forced source failure or repeated installation is required to
+complete the installed check. Native regressions exercise the resource boundary.
 
 ## Why per-response limits were insufficient
 
@@ -99,6 +104,7 @@ Regressions cover large/repeated metadata, exact destination binding, invalid
 inputs before I/O, whole-plan rejection, date boundaries, source/header errors,
 deadline exhaustion, real zero, cancellation and late real-executor completion.
 Native Recorder semantic tests retain interval, metadata and correction checks.
-The exact local results belong to the reviewed PR candidate; hosted checks,
-approved merge and any later package publication remain separate. This bounded
+The exact local results belong to the reviewed source candidate; hosted checks,
+approved source merge, b6 package checks, publication and installed acceptance
+remain separate evidence. This bounded
 hardening is not an independent security or full Gold certification.

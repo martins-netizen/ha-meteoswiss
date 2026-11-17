@@ -15,29 +15,23 @@ This is an independent community project, not an official MeteoSwiss product.
 This guide describes the **8.3 series**; [8.3.0 release notes](docs/RELEASE_8.3.0.md)
 explain the changes from 8.2.0. Use a published release, not a branch.
 
-**Published HGT recovery test package (8.3.5b5):** a transient source/Recorder failure
-retries after one minute with bounded backoff up to 15 minutes, then returns to
-the normal six-hour cadence after verification. Check the
-[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-for publication/availability and choose **8.3.5b5** when testing this correction.
-It is not included in b4. Keep the existing entry and statistics; follow the
-[short update and read-only check](docs/ACCEPTANCE_8.3.5b5.md).
-[Release notes](docs/RELEASE_8.3.5b5.md) and
-[recovery limits](docs/HGT_RETRY_RECOVERY.md) explain the scope. Publication and
-the operator's focused measured-HGT availability check are complete. This is
-bounded acceptance of the test package, not stable promotion or full Gold.
+**Included in 8.3.5b6:** measured-HGT ownership remains protected while native
+Recorder imports are pending, including cancellation during a station change or
+removal. Official hourly precipitation imports validate canonical station
+assets, deduplicate a maximum four-file plan and share a five-minute source/
+parser-wait budget. Valid partial files and real zero remain usable; source
+failures stay visible. Existing entries, IDs, statistics and bounded HGT retries
+are retained. No replacement archive or new cleanup is introduced.
 
-**Unreleased ownership correction:** changing or removing a station while its
-first HGT import is queued must retain ownership until Recorder has committed
-and cleanup has verified absence. The development correction closes that
-cancellation race; it is not included in the immutable b5 package. Existing
-confirmed cleanup instructions remain in [the HGT guide](docs/HGT_OGD_PLAN.md#ownership-and-complete-removal).
-
-**Unreleased precipitation hardening:** canonical station assets, a four-file
-plan limit and one five-minute source/parser-wait budget bound archive imports.
-Valid partial files and real zero remain usable; present malformed assets and
-failed files retain their failure status. Existing IDs/history remain. See
-[the precise resource and completeness limits](docs/PRECIPITATION_RESOURCE_BOUNDS.md).
+Check the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+for availability before selecting **8.3.5b6**. Use the
+[short normal update and read-only check](docs/ACCEPTANCE_8.3.5b6.md),
+[release notes](docs/RELEASE_8.3.5b6.md) and
+[precise resource limits](docs/PRECIPITATION_RESOURCE_BOUNDS.md).
+Previously completed b3 cleanup and b5 measured-HGT availability checks remain
+complete. B6 is a test prerelease; stable selection follows the latest-stable
+page. Source tests, publication and acceptance of an installed package are
+separate; full Gold and independent assurance are not claimed.
 
 **Published [8.3.5b4 test package](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b4):**
 official measured HGT 12/20 history, initial backfill, continuing source
@@ -51,7 +45,7 @@ operator-confirmed on b5. [Release notes](docs/RELEASE_8.3.5b4.md),
 station-specific statistics. Removing the final integration entry also removes
 its owned OGD HGT products; normal sensor history and unrelated statistics remain.
 
-**Earlier accepted cleanup, retained in b4/b5:** [8.3.5b3](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b3)
+**Earlier accepted cleanup, retained in later 8.3.5 betas:** [8.3.5b3](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b3)
 packages the native **Remove obsolete HGT forecast statistics** repair. It
 recommends complete removal of old forecast statistics after one clear
 confirmation. Current forecasts, ordinary history and unrelated statistics are
@@ -66,7 +60,7 @@ boundary. **8.3.4 remains latest stable.** HA **2026.11.0 or newer** is required
 
 | Package | Required HA Core |
 |---|---|
-| 8.3.5b1 / b2 / b3 / b4 / b5 | 2026.11.0 or newer |
+| 8.3.5b1 / b2 / b3 / b4 / b5 / b6 | 2026.11.0 or newer |
 | Latest stable 8.3.4 | 2026.8.3 or newer |
 
 The HA 2026.11.1 Marketplace page can show an installed beta together with the

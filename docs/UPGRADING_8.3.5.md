@@ -1,22 +1,26 @@
 # 8.3.5 upgrade: remove obsolete HGT forecast statistics
 
-## 8.3.5b5: update the existing entry
+## 8.3.5b6: update the existing entry
 
-The **8.3.5b5** recovery package retries temporary measured-HGT failures
-without changing existing entries, IDs or owned statistics. If choosing this
-published test release, update normally and follow the
-[short b5 check](ACCEPTANCE_8.3.5b5.md). Already completed obsolete-forecast
-cleanup stays complete. [Package notes](RELEASE_8.3.5b5.md) describe availability
-and the recovery limits.
+Choose **8.3.5b6** only when it appears in the
+[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases).
+Update the existing integration normally and follow the
+[short b6 read-only check](ACCEPTANCE_8.3.5b6.md). Keep the station, entry,
+entity IDs and statistics. No intermediate beta, station change, entry
+recreation or destructive test is required. Core **2026.11.0 or newer** is
+required; an installation on **2026.11.2** already meets that minimum.
 
-**Measured HGT in b4 and later:** choose published [8.3.5b5](RELEASE_8.3.5b5.md)
-for the recovery correction and perform the [focused b5 check](ACCEPTANCE_8.3.5b5.md).
-A preceding b4 installation or a second acceptance round is not required.
-Initial OGD backfill is automatic for an enabled station entry with Recorder.
-Keep forecasts, wind and precipitation unchanged; no old forecast data,
-station change, entry recreation or destructive test is needed. See the
-[permanent-removal boundary](HGT_OGD_PLAN.md#ownership-and-complete-removal)
-before deliberately removing the integration.
+B6 includes HGT ownership protection for pending imports and bounded hourly
+precipitation source work. It retains the b5 retry correction. Previously
+completed obsolete-forecast cleanup stays complete. New upgrading users receive
+the existing explicit cleanup repair only if attributable obsolete forecasts
+are found; read the confirmation boundary below before choosing deletion.
+
+Measured-HGT backfill remains automatic for an enabled station entry with
+Recorder. Keep forecasts, wind and precipitation in place. See
+[the permanent-removal boundary](HGT_OGD_PLAN.md#ownership-and-complete-removal)
+before deliberately removing the integration. B6 prevents premature ownership
+loss; it does not adopt already-unowned rows from a statistic-ID prefix.
 
 **Published b4 adds a separate measured-HGT feature.** This guide's
 accepted b3 forecast cleanup remains unchanged and is not repeated. The new

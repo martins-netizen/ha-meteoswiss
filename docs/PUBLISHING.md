@@ -1,24 +1,24 @@
 # Publish the maintained fork
 
-## 8.3.5b5 publisher
+## 8.3.5b6 publisher
 
-The **8.3.5b5** test package includes the approved #119 HGT retry correction.
-Publication/availability is determined by the release catalogue; source checks
-do not establish package publication or live availability. Existing entries,
-IDs and owned statistics remain. Already completed b3 cleanup stays closed.
-Follow the [focused b5 check](ACCEPTANCE_8.3.5b5.md) and
-[package boundary](RELEASE_8.3.5b5.md). Full Gold and independent
-privacy/security/architecture review remain separate.
+The fixed `scripts/publish_meteoswiss_835_beta_v1.13.sh` is for **8.3.5b6**
+only. Its source is the actual approved #123 merge, not a feature-branch head.
+Run `--check FULL_PACKAGE_MERGE_SHA` first; it is read-only. A separately
+approved `--publish FULL_PACKAGE_MERGE_SHA` verifies the signed package commit,
+its exact direct source parent, both version fields, all 50 unchanged non-version
+component files, current policy/locks and completed trusted actual-merge checks
+on HA 2026.11.0/2026.11.2. Existing frozen publishers/profiles remain unchanged.
+It preserves all **21** prior full release records and tags, including b5, and
+latest stable 8.3.4. It never overwrites, retags or bypasses branch protection.
 
-Use the fixed `scripts/publish_meteoswiss_835_beta_v1.12.sh` only for b5,
-with the full approved package merge SHA. `--check SHA` is read-only;
-`--publish SHA` requires the separately approved publication step. It verifies
-the fixed account, signed direct-parent merge, 50 unchanged runtime files,
-both version fields, policy/locks and all actual merge checks. It preserves
-all 20 older tag references and full release records, and latest stable 8.3.4.
-Never rerun an earlier b1–b4 publisher to publish this package.
+The [package notes](RELEASE_8.3.5b6.md), [dated evidence](RELEASE_EVIDENCE_8.3.5b6.md)
+and [read-only acceptance](ACCEPTANCE_8.3.5b6.md) have separate scopes.
+Availability follows [the catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases).
+Use a full approved **b6 package merge**, not the #123 source merge or an old
+b5 publisher invocation. Full Gold/independent assurance is not inferred.
 
-**Procedure version:** 1.24 · **Updated:** 15 November 2026
+**Procedure version:** 1.25 · **Updated:** 17 November 2026
 
 **Distribution UI:** On HA 2026.11+, use built-in **Settings → Marketplace**;
 older HA uses HACS. Follow [current installation/update steps](GETTING_STARTED.md).
