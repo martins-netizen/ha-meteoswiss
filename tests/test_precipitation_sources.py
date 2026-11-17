@@ -80,6 +80,7 @@ def test_wrong_station_future_and_nonhourly_records_are_not_imported():
 
 @pytest.mark.parametrize("period", ["now", "historical"])
 def test_asset_selection_ignores_malformed_and_other_station_assets(period):
+    expected_url = HISTORY_URL if period == "historical" else CSV_URL
     name = (
         "ogd-smn_klo_h_"
         + period
@@ -87,13 +88,13 @@ def test_asset_selection_ignores_malformed_and_other_station_assets(period):
         + ".csv"
     )
     assets = {
-        name: {"href": CSV_URL},
+        name: {"href": expected_url},
         "other.csv": {},
         "ogd-smn_other_h_now.csv": {"href": "wrong"},
         "ogd-smn_klo_h_historical_2010-2019.csv": {"href": "old"},
         "ogd-smn_klo_h_historical_2030-2039.csv": None,
     }
-    assert p._asset_urls_for_period(assets, "klo", period, 2025) == [CSV_URL]
+    assert p._asset_urls_for_period(assets, "klo", period, 2025) == [expected_url]
 
 
 @pytest.mark.parametrize("stage", ["metadata", "csv"])

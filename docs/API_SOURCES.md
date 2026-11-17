@@ -24,7 +24,7 @@ availability or permission for every use. Check the providers' current terms.
 | Measured pollen | MeteoSwiss `data.geo.admin.ch/ch.meteoschweiz.ogd-pollen` | Independently selected pollen station | 1 hour |
 | Pollen/AQ model values | Open-Meteo `air-quality-api.open-meteo.com/v1/air-quality` | Original HA/configured base coordinates, independent of a saved weather-forecast POI | 30 minutes |
 | Optional current UV | Separate Open-Meteo forecast request, `current=uv_index` | Same point as pollen/AQ | As part of that family's 30-minute refresh |
-| Official measured HGT (prepared b4) | SwissMetNet exact `d_historical`, `d_recent`, `m`, `y` assets | Selected weather station | Shared 6-hour refresh; historical revalidation weekly and at a UTC year change; conditional ETags |
+| Official measured HGT (b4 onward) | SwissMetNet exact `d_historical`, `d_recent`, `m`, `y` assets | Selected weather station | Shared 6-hour refresh; historical revalidation weekly and at a UTC year change; conditional ETags |
 | Official hourly rain statistics | SwissMetNet station hourly assets | Selected weather station | Now file hourly; recent/historical archive initially and normally weekly |
 | Station catalogue | `data.geo.admin.ch/ch.meteoschweiz.ogd-smn/ogd-smn_meta_stations.csv` | Public station metadata | Shared 24-hour cache with guarded retry |
 
@@ -57,7 +57,14 @@ accepts an explicit UTF-8 BOM. The number of stations is read from the current
 catalogue, not hardcoded as a promise of network coverage.
 
 The independent hourly importer uses `rre150h0` in `_h_now`, `_h_recent` and
-matching historical assets. It retains 13 calendar months on archive import.
+matching historical assets. Archive refresh imports a thirteen-calendar-month
+lookback; this is not a retention purge of older recorded statistics.
+The unreleased import hardening accepts only canonical station/period paths,
+deduplicates and rejects plans above four CSV files before downloading them,
+and shares a 300-second source/parser-wait budget. Present malformed relevant
+assets fail metadata; valid subsets survive later file failures/timeouts.
+Partial status is period-based, not proof of every hour's completeness. See
+[the exact limits](PRECIPITATION_RESOURCE_BOUNDS.md).
 Completed-hour UTC interval ends become interval starts for Recorder; missing
 hours are not invented, and later valid provider corrections update the same
 statistic ID. The former locally derived running-hour sum is retired; use
@@ -145,7 +152,8 @@ Open-Meteo/Copernicus CAMS model values are not local air-quality measurements.
 
 HA owns the shared TLS-verified session. Each request uses a 30-second timeout;
 this is not a universal 30-second deadline for every multi-request update.
-Warnings, station-catalogue loading and setup-form validation also have outer
+Warnings, station-catalogue loading, setup-form validation and the hardened
+hourly/archive precipitation importer also have outer
 budgets. Retry counts vary by client (three/four attempts) and only transient
 errors retry. Retry-After is honoured within the local delay cap; a longer pause
 ends that retry sequence. It is not a persistent cross-refresh cooldown.
@@ -156,7 +164,8 @@ retries determine total traffic: there is no fixed requests/hour guarantee.
 In the released 8.3 runtime, all active sources use fixed-host
 HTTPS validation, reject redirects and enforce streaming wire/decompressed
 limits. STAC asset URLs are constrained before fetching. Historical decade CSVs
-have a separate 64 MiB budget, preserving the official archive path. See the
+have a separate 64 MiB per-attempt budget; the precipitation importer also bounds
+the complete plan and awaited source work as described above. See the
 [exact contract, sample sizes and acceptance boundary](HTTP_SOURCE_HARDENING.md).
 The published 8.2.0 package does not contain this follow-up.
 

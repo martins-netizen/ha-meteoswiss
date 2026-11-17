@@ -1,5 +1,18 @@
 # Privacy, architecture and security: bounded review
 
+**Unreleased precipitation resource boundary:** a bounded metadata body could
+previously amplify into many duplicate historical downloads. The source and
+importer now validate/deduplicate a maximum four-file canonical station plan
+before CSV I/O and share one 300-second source/parser-wait deadline. Invalid
+station/period inputs, direct same-host noncanonical paths, present malformed
+relevant assets and non-CSV headers are rejected at their applicable boundary.
+Valid earlier partial files survive later failure; cancelled/expired parser
+results cannot queue a new import. The budget does not forcibly stop a worker
+thread or certify every historical hour. This is a reproduced resource/accuracy
+finding, not evidence of a provider compromise or production incident. There
+is no new host, coordinate, credential, telemetry, dependency or persistent
+archive. [Exact contract and evidence limits](PRECIPITATION_RESOURCE_BOUNDS.md).
+
 **Current CI follow-up:** the paired current HA/official test fixture advances
 to **2026.11.2**, with the **2026.11.0** minimum and all existing security,
 integrity, advisory and coverage gates retained. Only those two current package

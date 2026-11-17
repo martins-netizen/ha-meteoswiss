@@ -33,6 +33,12 @@ and cleanup has verified absence. The development correction closes that
 cancellation race; it is not included in the immutable b5 package. Existing
 confirmed cleanup instructions remain in [the HGT guide](docs/HGT_OGD_PLAN.md#ownership-and-complete-removal).
 
+**Unreleased precipitation hardening:** canonical station assets, a four-file
+plan limit and one five-minute source/parser-wait budget bound archive imports.
+Valid partial files and real zero remain usable; present malformed assets and
+failed files retain their failure status. Existing IDs/history remain. See
+[the precise resource and completeness limits](docs/PRECIPITATION_RESOURCE_BOUNDS.md).
+
 **Published [8.3.5b4 test package](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b4):**
 official measured HGT 12/20 history, initial backfill, continuing source
 corrections and explicit ownership/removal. Published on **15 November 2026**;

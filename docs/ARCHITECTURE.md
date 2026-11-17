@@ -228,6 +228,21 @@ and `failed_downloads` in coordinator results. All-invalid or all-failed data
 fails without queuing empty statistics. A real in-memory Recorder test confirms
 repeat-import upserts and correction of an existing hour without duplicate rows.
 
+Invalid optional precipitation configuration is caught only at its typed
+construction boundary. Both precipitation roles stay absent, no rejected
+source work starts, and required current-weather validation remains outside
+that catch. A partially constructed unused coordinator retains native entry
+unload cleanup; no new repair or session owner is introduced.
+
+The unreleased [whole-import resource bounds](PRECIPITATION_RESOURCE_BOUNDS.md)
+bind exact canonical station assets and validate/deduplicate at most four CSV
+files before any CSV request. One 300-second deadline covers source and parser
+waits, preserving earlier valid files on expiry. Present malformed relevant
+metadata and missing CSV headers are failures; period-level partial status does
+not assert complete hourly coverage. External cancellation ignores any late
+executor result; no new import is queued from it. Recorder queue acceptance
+retains its existing meaning, without a new commit/rollback guarantee.
+
 HGT 12/20 retains its existing threshold and reference temperature. Missing,
 boolean and non-finite temperatures do not become zero heating demand or
 contaminate totals. Tests cover daily boundaries and the existing season helper

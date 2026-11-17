@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+- Bound official hourly precipitation import plans to four unique canonical
+  station CSVs and one 300-second source/parser-wait deadline. Validate station/
+  periods before I/O, reject present malformed relevant assets and non-CSV
+  headers, and enforce destination binding on direct CSV calls. Isolate rejected
+  optional precipitation setup from required observations. Retain valid
+  partial files and real zero, propagate cancellation and ignore late executor
+  results. Preserve statistics IDs, correction order, native queue semantics,
+  polling and existing per-response/retry limits. Add resource/failure/native
+  regressions and document period-level completeness and executor limits.
+
 - Advance the current CI fixture and its matching official test package to
   Home Assistant 2026.11.2. Preserve the 2026.11.0 minimum, all 138 universal
   selections/extras/platform markers per lock, the other 136 current package

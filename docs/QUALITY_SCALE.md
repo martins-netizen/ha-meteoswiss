@@ -1,5 +1,14 @@
 # Quality evidence and remaining work
 
+**Unreleased precipitation hardening:** canonical station URL binding,
+four-file whole-plan validation/deduplication and a shared 300-second source/
+parser-wait budget close a reproduced resource boundary. Native/source
+regressions retain real-zero, correction, timeout/cancellation and queue
+semantics; [the contract](PRECIPITATION_RESOURCE_BOUNDS.md) distinguishes
+period-level partial status, absent hours and executor/commit limitations.
+This changes one bounded source path, without closing other Gold rules or
+claiming independent privacy/security assurance.
+
 **Current CI maintenance, 17 November 2026:** development based on
 `b936505d348c199717c00b3211def7fa6b3013c1` advances the current matching
 HA/test fixture to **2026.11.2** and keeps the **2026.11.0** minimum. Package

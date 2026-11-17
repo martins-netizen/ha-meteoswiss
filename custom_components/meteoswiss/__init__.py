@@ -46,6 +46,7 @@ from .localization import async_load_warning_labels
 from .precipitation import (
     ARCHIVE_LOOKBACK_MONTHS,
     ARCHIVE_UPDATE_INTERVAL,
+    InvalidPrecipitationConfiguration,
 )
 from .repair_issues import (
     async_clear_forecast_location_issue,
@@ -180,21 +181,29 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
         hourly_precipitation_coordinator = None
         precipitation_archive_coordinator = None
         if "recorder" in hass.config.components:
-            hourly_precipitation_coordinator = MeteoSwissHourlyPrecipitationCoordinator(
-                hass,
-                station_id=station_id,
-                session=shared_session,
-            )
-            precipitation_archive_coordinator = (
-                MeteoSwissHourlyPrecipitationCoordinator(
+            try:
+                hourly_precipitation_coordinator = MeteoSwissHourlyPrecipitationCoordinator(
                     hass,
                     station_id=station_id,
                     session=shared_session,
-                    asset_periods=("historical", "recent"),
-                    update_interval=ARCHIVE_UPDATE_INTERVAL,
-                    lookback_months=ARCHIVE_LOOKBACK_MONTHS,
                 )
-            )
+                precipitation_archive_coordinator = (
+                    MeteoSwissHourlyPrecipitationCoordinator(
+                        hass,
+                        station_id=station_id,
+                        session=shared_session,
+                        asset_periods=("historical", "recent"),
+                        update_interval=ARCHIVE_UPDATE_INTERVAL,
+                        lookback_months=ARCHIVE_LOOKBACK_MONTHS,
+                    )
+                )
+            except InvalidPrecipitationConfiguration:
+                hourly_precipitation_coordinator = None
+                precipitation_archive_coordinator = None
+                _LOGGER.warning(
+                    "Official hourly precipitation source configuration is invalid; "
+                    "optional imports are unavailable"
+                )
 
     # Fetch initial data for current weather
     await coordinator.async_config_entry_first_refresh()

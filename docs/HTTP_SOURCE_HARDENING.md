@@ -1,9 +1,21 @@
 # Bounded HTTP source reads
 
-**Status:** included in the 8.3 runtime; accepted b4 is the stable promotion source.
+**Historical baseline:** included in the 8.3 runtime; the original accepted b4
+was the stable promotion source. The later precipitation plan/deadline
+hardening described below is unreleased.
 **Review date:** 22 October 2026. This is scoped hardening, not a penetration test.
 
 ## Contract
+
+**17 November follow-up:** per-response limits alone did not bound a metadata
+plan containing many repeated historical URLs. The unreleased precipitation
+hardening validates exact canonical station assets, deduplicates the whole plan,
+caps it at four CSV files before CSV I/O and shares one 300-second source/parser
+wait deadline. Present malformed relevant assets and non-CSV schemas are
+failures; valid completed files can survive later failure/timeout as partial
+data. Direct source calls retain the same destination validation. See
+[the contract and its limits](PRECIPITATION_RESOURCE_BOUNDS.md); this does not
+add a native commit guarantee or forcibly terminate an existing parser thread.
 
 All active source clients use `http.py`. Each call supplies its own fixed host:
 OGD observations, metadata, measured pollen and archives use `data.geo.admin.ch`;
@@ -64,7 +76,7 @@ All sampled assets used the exact OGD host and returned without a redirect.
 | `ogd-smn_klo_h_historical_2010-2019.csv` | 12,566,240 |
 | `ogd-smn_klo_h_historical_2020-2029.csv` | 7,682,391 |
 
-These current samples justify headroom for real archives; they do not prove a
+These 22 October samples justify headroom for real archives; they do not prove a
 provider-wide maximum, future response sizes, all stations or the live behaviour
 of every other service. No additional location-bearing App/AQ/forecast probe
 is claimed. Offline tests exercise those clients through the shared transport.

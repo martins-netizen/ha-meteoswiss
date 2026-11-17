@@ -111,7 +111,12 @@ into HA statistics metadata and queues the import. Queue acceptance is not a
 synchronous database-commit confirmation.
 
 If one archive file fails, keep valid files and report a partial import. If
-all data is invalid, fail the update and queue nothing. Recorder is optional;
+all data is invalid, fail the update and queue nothing.
+The hardened source/importer first enforce a canonical, deduplicated four-file
+plan and one 300-second source/parser-wait budget. Prior completed values can
+be queued as partial data after expiry; a cancelled import cannot queue a late
+parser result. Partial status does not certify every file/hour. See
+[the resource contract](PRECIPITATION_RESOURCE_BOUNDS.md). Recorder is optional;
 setup creates the two import instances only when it is loaded. Because external
 statistics have no entity listener, setup retains entry-owned listeners to keep
 these coordinators polling and removes them on unload. Do not add another

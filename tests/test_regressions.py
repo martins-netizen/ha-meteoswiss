@@ -100,21 +100,27 @@ def test_calendar_month_lookback_handles_month_end() -> None:
     )
 
 
-def test_hourly_archive_selects_only_overlapping_decade_assets() -> None:
+def test_hourly_archive_selects_only_overlapping_decade_assets(freezer) -> None:
     """Archive lookup must handle MeteoSwiss' decade-based filenames."""
+    freezer.move_to("2031-01-01T00:00:00Z")
+    base = "https://data.geo.admin.ch/ch.meteoschweiz.ogd-smn/klo/ogd-smn_klo_h_"
     assets = {
         "ogd-smn_klo_h_historical_2010-2019.csv": {"href": "2010.csv"},
-        "ogd-smn_klo_h_historical_2020-2029.csv": {"href": "2020.csv"},
-        "ogd-smn_klo_h_historical_2030-2039.csv": {"href": "2030.csv"},
-        "ogd-smn_klo_h_recent.csv": {"href": "recent.csv"},
+        "ogd-smn_klo_h_historical_2020-2029.csv": {
+            "href": base + "historical_2020-2029.csv"
+        },
+        "ogd-smn_klo_h_historical_2030-2039.csv": {
+            "href": base + "historical_2030-2039.csv"
+        },
+        "ogd-smn_klo_h_recent.csv": {"href": base + "recent.csv"},
     }
 
     assert _asset_urls_for_period(assets, "klo", "historical", 2028) == [
-        "2020.csv",
-        "2030.csv",
+        base + "historical_2020-2029.csv",
+        base + "historical_2030-2039.csv",
     ]
     assert _asset_urls_for_period(assets, "klo", "recent", 2028) == [
-        "recent.csv"
+        base + "recent.csv"
     ]
 
 
