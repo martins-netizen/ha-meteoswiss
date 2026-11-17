@@ -96,7 +96,8 @@ is introduced. The [separate wind-statistics change](WIND_STATISTICS_MIGRATION.m
 keeps its own release/acceptance boundary.
 
 The whole-integration suite and strict line/branch gates remain required on
-both HA 2026.11.0 and 2026.11.1. The new lifecycle module also requires full
+the minimum and current [CI fixtures](../DEVELOPMENT.md#local-compatibility-checks).
+The lifecycle module also requires full
 line/branch coverage. Dependency locks, CI permissions and version floors are
 unchanged by this runtime follow-up.
 

@@ -75,7 +75,7 @@ jobs:
         include:
           - ha: '2026.11.0'
             requirements: requirements_test_min.txt
-          - ha: '2026.11.1'
+          - ha: '2026.11.2'
             requirements: requirements_test.txt
     runs-on: ubuntu-latest
     timeout-minutes: 20

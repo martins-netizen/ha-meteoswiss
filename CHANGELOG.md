@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- Advance the current CI fixture and its matching official test package to
+  Home Assistant 2026.11.2. Preserve the 2026.11.0 minimum, all 138 universal
+  selections/extras/platform markers per lock, the other 136 current package
+  records/hashes and every existing security/coverage gate. Update active
+  contributor guidance and record PR #121's completed source checks; retain
+  historical release evidence and frozen publishers. This is test maintenance
+  without an integration runtime, version or published-package change.
+
 - Preserve measured-HGT station ownership when a station change/removal cancels
   an initial import with native Recorder writes still queued. Serialize retired
   checks with refreshes and wait for native completion before treating empty

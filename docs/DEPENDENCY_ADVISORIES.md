@@ -1,7 +1,13 @@
 # Complete test-lock vulnerability checks
 
-**Status:** unreleased CI/security follow-up after PR #106. Component files,
-test dependency selections, hashes, platform support and HA versions are unchanged.
+**Status:** implemented CI/security control introduced after PR #106 and
+verified on the actual #107 merge. The dated evidence below retains that scope.
+The current fixture now pairs HA/pytest-homeassistant **2026.11.2** with the
+unchanged minimum **2026.11.0**. Both universal locks still contain 138
+selections and together cover 140 distinct package/version pairs; two current
+fixture pairs replace their 11.1 equivalents. Re-run the complete audit on the
+actual candidate; the original observation is not a fresh inventory or an
+owner-alert/settings review. [Fixture and integrity contract](../DEVELOPMENT.md#current-fixture-update).
 
 The `Test dependency advisories` CI job checks both universal test lockfiles.
 The existing required `tests` aggregate also requires this job to succeed.

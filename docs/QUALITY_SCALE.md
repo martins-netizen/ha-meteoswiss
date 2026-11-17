@@ -1,5 +1,14 @@
 # Quality evidence and remaining work
 
+**Current CI maintenance, 17 November 2026:** development based on
+`b936505d348c199717c00b3211def7fa6b3013c1` advances the current matching
+HA/test fixture to **2026.11.2** and keeps the **2026.11.0** minimum. Package
+keys, platform support, security floors, offline uv and strict coverage gates
+are retained. [PR #121](https://github.com/martins-netizen/ha-meteoswiss/pull/121)
+is merged and its actual checks passed; its HGT correction still needs a later
+package. These maintenance changes do not close remaining Gold rules or
+independent review. [Reproduce both fixtures](../DEVELOPMENT.md#local-compatibility-checks).
+
 ## 8.3.5b5 package evidence
 
 The **8.3.5b5** test package includes the approved #119 HGT retry correction.

@@ -1,5 +1,14 @@
 # Privacy, architecture and security: bounded review
 
+**Current CI follow-up:** the paired current HA/official test fixture advances
+to **2026.11.2**, with the **2026.11.0** minimum and all existing security,
+integrity, advisory and coverage gates retained. Only those two current package
+versions/hashes change; all other 136 current selections and the minimum lock
+are unchanged. No integration runtime, destination, credential, telemetry or
+published package changes. This maintenance does not refresh the dated owner
+alert/settings inventory, provider-retention evidence or independent assurance.
+[Fixture contract](../DEVELOPMENT.md#current-fixture-update).
+
 **Current follow-up, 17 November 2026:** a source review of development
 `1d34e525d2938f6e265265a1efc80571ba9c1eca` found a narrowly reproduced HGT
 ownership race: queued initial imports could commit after station retirement
