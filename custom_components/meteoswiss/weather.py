@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Callable, Iterator
 from datetime import UTC, date, datetime, time, timedelta
+from functools import partial
 from typing import Any, Final
 
 from homeassistant.components.weather import (
@@ -18,6 +19,7 @@ from homeassistant.const import (
     UnitOfTemperature,
 )
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.event import async_track_point_in_utc_time
 from homeassistant.util import dt as dt_util
 
 from .const import (
@@ -45,7 +47,11 @@ from .entity import (
     weather_device_info,
 )
 from .forecast_location_config import resolve_forecast_target
-from .forecast_summary import FORECAST_ATTRIBUTION
+from .forecast_summary import (
+    FORECAST_ATTRIBUTION,
+    FORECAST_MAX_AGE,
+    forecast_snapshot_time,
+)
 from .runtime_data import MeteoSwissConfigEntry
 from .station_condition import STATION_CONDITION_SOURCE, current_station_condition
 from .weather_data import (
@@ -148,10 +154,63 @@ class MeteoSwissForecastWeatherBase(WeatherEntity):
     _attr_native_pressure_unit = UnitOfPressure.HPA
     _attr_native_wind_speed_unit = UnitOfSpeed.KILOMETERS_PER_HOUR
     _attr_native_precipitation_unit = UnitOfPrecipitationDepth.MILLIMETERS
+    _forecast_clock_active = False
+    _forecast_clock_generation = 0
+    _forecast_clock_cancel: Callable[[], None] | None = None
+
+    async def async_added_to_hass(self) -> None:
+        """Keep local forecast projections aligned without another source fetch."""
+        await super().async_added_to_hass()
+        self._forecast_clock_active = True
+        self.async_on_remove(self._stop_forecast_clock)
+        self._schedule_forecast_clock()
+
+    @callback
+    def _cancel_forecast_clock(self) -> None:
+        """Invalidate queued callbacks as well as cancelling the active timer."""
+        self._forecast_clock_generation += 1
+        if self._forecast_clock_cancel is not None:
+            self._forecast_clock_cancel()
+            self._forecast_clock_cancel = None
+
+    @callback
+    def _stop_forecast_clock(self) -> None:
+        self._forecast_clock_active = False
+        self._cancel_forecast_clock()
+
+    @callback
+    def _schedule_forecast_clock(self) -> None:
+        """Own one next-hour/expiry callback while a usable snapshot exists."""
+        self._cancel_forecast_clock()
+        source = self._forecast_coordinator
+        if (
+            not self._forecast_clock_active
+            or source is None
+            or not any(self._forecast_entries())
+        ):
+            return
+        now = dt_util.utcnow()
+        deadline = now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=1)
+        fetched = forecast_snapshot_time(source.data)
+        if fetched is not None:
+            deadline = min(deadline, fetched + FORECAST_MAX_AGE + timedelta(microseconds=1))
+        self._forecast_clock_cancel = async_track_point_in_utc_time(
+            self.hass,
+            partial(self._handle_forecast_clock, self._forecast_clock_generation),
+            deadline,
+        )
+
+    @callback
+    def _handle_forecast_clock(self, generation: int, _now: datetime) -> None:
+        if not self._forecast_clock_active or generation != self._forecast_clock_generation:
+            return
+        self._forecast_clock_cancel = None
+        self._handle_forecast_update()
 
     @callback
     def _handle_forecast_update(self) -> None:
         """Update current condition and push forecasts to active HA subscribers."""
+        self._schedule_forecast_clock()
         self.async_write_ha_state()
         self._entry.async_create_task(
             self.hass,
@@ -184,7 +243,7 @@ class MeteoSwissForecastWeatherBase(WeatherEntity):
             now = dt_util.utcnow()
             if (
                 fetched_at is None
-                or now - fetched_at > timedelta(hours=3)
+                or now - fetched_at > FORECAST_MAX_AGE
                 or fetched_at - now > timedelta(minutes=10)
             ):
                 return []
