@@ -174,7 +174,7 @@ async def test_csv_parse_failure_preserves_other_files_and_later_corrections(
 ):
     client, _ = source
     importer = MeteoSwissPrecipitationImporter(
-        hass, client, asset_periods=("historical", "now"), lookback_months=13
+        hass, client, asset_periods=("historical", "now"), lookback_months=None
     )
 
     def parse(content, earliest, station):
@@ -186,7 +186,10 @@ async def test_csv_parse_failure_preserves_other_files_and_later_corrections(
         patch.object(
             client,
             "async_get_urls",
-            return_value={"historical": ["broken", HISTORY_URL], "now": [NOW_URL]},
+            return_value={
+                "historical": [BASE + "historical_2010-2019.csv", HISTORY_URL],
+                "now": [NOW_URL],
+            },
         ),
         patch.object(
             client,

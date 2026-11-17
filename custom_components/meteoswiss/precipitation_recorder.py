@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import csv
 from datetime import UTC, datetime
 from typing import Any
@@ -17,11 +18,13 @@ from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN
 from .precipitation import (
+    PRECIPITATION_IMPORT_TIMEOUT,
     HourlyPrecipitationValue,
     MeteoSwissHourlyPrecipitationClient,
     PrecipitationSourceError,
     _subtract_calendar_months,
     parse_hourly_precipitation,
+    validate_precipitation_plan,
 )
 
 
@@ -55,26 +58,40 @@ class MeteoSwissPrecipitationImporter:
         self.hass = hass
         self.client = client
         self.station_id = client.station_id
-        self._asset_periods = asset_periods
+        self._asset_periods = tuple(dict.fromkeys(asset_periods))
         self._lookback_months = lookback_months
         self.statistic_id = f"{DOMAIN}:{self.station_id}_precipitation_hourly"
 
     async def _async_read_period(
-        self, period: str, urls: list[str], earliest_start: datetime | None
+        self,
+        period: str,
+        urls: list[str],
+        earliest_start: datetime | None,
+        deadline: float,
     ) -> tuple[dict[datetime, HourlyPrecipitationValue], int]:
         """Keep valid files when another fails; parse CSV off the event loop."""
         values: dict[datetime, HourlyPrecipitationValue] = {}
         failed_downloads = 0
-        for csv_url in urls:
+        for index, csv_url in enumerate(urls):
+            if asyncio.get_running_loop().time() >= deadline:
+                failed_downloads += len(urls) - index
+                break
             try:
-                content = await self.client.async_get_csv(csv_url, period)
-                parsed = await self.hass.async_add_executor_job(
-                    parse_hourly_precipitation,
-                    content,
-                    earliest_start,
-                    self.station_id,
-                )
-            except (PrecipitationSourceError, ValueError, TypeError, csv.Error):
+                async with asyncio.timeout_at(deadline):
+                    content = await self.client.async_get_csv(csv_url, period)
+                    parsed = await self.hass.async_add_executor_job(
+                        parse_hourly_precipitation,
+                        content,
+                        earliest_start,
+                        self.station_id,
+                    )
+            except (
+                PrecipitationSourceError,
+                TimeoutError,
+                ValueError,
+                TypeError,
+                csv.Error,
+            ):
                 failed_downloads += 1
                 continue
             for value in parsed:
@@ -82,7 +99,10 @@ class MeteoSwissPrecipitationImporter:
         return values, failed_downloads
 
     async def _async_collect(
-        self, csv_urls: dict[str, list[str]], earliest_start: datetime | None
+        self,
+        csv_urls: dict[str, list[str]],
+        earliest_start: datetime | None,
+        deadline: float,
     ) -> tuple[list[HourlyPrecipitationValue], list[str], int]:
         """Retain declared period order and later valid corrections per hour."""
         values_by_start: dict[datetime, HourlyPrecipitationValue] = {}
@@ -93,7 +113,7 @@ class MeteoSwissPrecipitationImporter:
             if period_urls is None:
                 continue
             values, failed = await self._async_read_period(
-                period, period_urls, earliest_start
+                period, period_urls, earliest_start, deadline
             )
             values_by_start.update(values)
             failed_downloads += failed
@@ -107,21 +127,25 @@ class MeteoSwissPrecipitationImporter:
 
     async def async_import(self) -> dict[str, Any]:
         """Queue the same mean/min/max series without manufacturing missing data."""
+        deadline = asyncio.get_running_loop().time() + PRECIPITATION_IMPORT_TIMEOUT
         earliest_start = None
         if self._lookback_months is not None:
             earliest_start = _subtract_calendar_months(
                 datetime.now(UTC), self._lookback_months
             )
         try:
-            csv_urls = await self.client.async_get_urls(
-                earliest_start.year if earliest_start is not None else None
+            earliest_year = earliest_start.year if earliest_start is not None else None
+            async with asyncio.timeout_at(deadline):
+                csv_urls = await self.client.async_get_urls(earliest_year)
+            csv_urls = validate_precipitation_plan(
+                csv_urls, self.station_id, self._asset_periods, earliest_year
             )
-        except PrecipitationSourceError:
+        except (PrecipitationSourceError, TimeoutError, ValueError, TypeError):
             raise HourlyPrecipitationMetadataError() from None
         if not csv_urls:
             raise HourlyPrecipitationURLsMissing()
         values, imported_periods, failed_downloads = await self._async_collect(
-            csv_urls, earliest_start
+            csv_urls, earliest_start, deadline
         )
         if not values:
             raise HourlyPrecipitationDataMissing()

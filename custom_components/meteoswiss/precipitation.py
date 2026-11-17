@@ -27,6 +27,11 @@ PARAM_PRECIPITATION_HOURLY = "rre150h0"
 HOURLY_UPDATE_INTERVAL = timedelta(hours=1)
 ARCHIVE_UPDATE_INTERVAL = timedelta(days=7)
 ARCHIVE_LOOKBACK_MONTHS = 13
+# The 13-month archive can cross two decades; recent and now add one file each.
+# Full station history without a lookback is not a supported unbounded import.
+MAX_PRECIPITATION_FILES = 4
+PRECIPITATION_IMPORT_TIMEOUT = 300.0
+_ASSET_PERIODS = frozenset({"historical", "recent", "now"})
 
 
 class HourlyPrecipitationValue(TypedDict):
@@ -42,25 +47,96 @@ def _asset_urls_for_period(
     period: str,
     earliest_year: int | None = None,
 ) -> list[str]:
-    """Return matching hourly asset URLs for a period."""
+    """Select canonical station assets intersecting the requested UTC years."""
+    if period not in _ASSET_PERIODS:
+        raise ValueError("Invalid precipitation period")
     prefix = f"ogd-smn_{station_id}_h_{period}"
     if period != "historical":
-        asset = assets.get(f"{prefix}.csv")
+        name = f"{prefix}.csv"
+        if name not in assets:
+            return []
+        asset = assets[name]
         href = asset.get("href") if isinstance(asset, dict) else None
-        return [href] if isinstance(href, str) and href.strip() else []
+        if href != _asset_url(station_id, name):
+            raise ValueError("Invalid precipitation asset")
+        return [href]
 
-    historical_pattern = re.compile(rf"^{re.escape(prefix)}_(\d{{4}})-(\d{{4}})\.csv$")
+    historical_pattern = re.compile(
+        rf"^{re.escape(prefix)}_([0-9]{{4}})-([0-9]{{4}})\.csv$"
+    )
+    current_year = datetime.now(UTC).year
     matches: list[tuple[int, str]] = []
     for asset_key, asset in assets.items():
         match = historical_pattern.fullmatch(asset_key)
-        href = asset.get("href") if isinstance(asset, dict) else None
-        if match is None or not isinstance(href, str) or not href.strip():
+        if match is None:
             continue
         start_year, end_year = (int(year) for year in match.groups())
-        if earliest_year is None or end_year >= earliest_year:
-            matches.append((start_year, href))
+        # Official decade names retain their full end year while incomplete:
+        # 2020-2029 is valid in 2026, whereas 2030-2039 is not yet relevant.
+        if (
+            not 1 <= start_year <= current_year
+            or start_year % 10
+            or end_year != start_year + 9
+            or earliest_year is not None and end_year < earliest_year
+        ):
+            continue
+        href = asset.get("href") if isinstance(asset, dict) else None
+        if href != _asset_url(station_id, asset_key):
+            raise ValueError("Invalid precipitation asset")
+        matches.append((start_year, href))
 
-    return [href for _, href in sorted(matches)]
+    return list(dict.fromkeys(href for _, href in sorted(matches)))
+
+
+def _asset_url(station_id: str, name: str) -> str:
+    """Bind each public asset name to its exact station directory."""
+    return f"https://{OGD_HOST}/{STAC_COLLECTION}/{station_id}/{name}"
+
+
+def _validate_precipitation_url(
+    url: str, station_id: str, period: str, earliest_year: int | None
+) -> None:
+    """Bind one direct read to its canonical station, period and year range."""
+    if not isinstance(url, str):
+        raise ValueError("Invalid precipitation download plan")
+    name = url.rsplit("/", 1)[-1]
+    if _asset_urls_for_period(
+        {name: {"href": url}}, station_id, period, earliest_year
+    ) != [url]:
+        raise ValueError("Invalid precipitation download plan")
+
+
+def validate_precipitation_plan(
+    urls: dict[str, list[str]],
+    station_id: str,
+    asset_periods: tuple[str, ...],
+    earliest_year: int | None,
+) -> dict[str, list[str]]:
+    """Validate and bound the whole plan before any CSV request is allowed."""
+    if (
+        not re.fullmatch(r"[a-z]{3}", station_id)
+        or not isinstance(urls, dict)
+        or set(urls) - set(asset_periods)
+        or set(asset_periods) - _ASSET_PERIODS
+    ):
+        raise ValueError("Invalid precipitation download plan")
+    result: dict[str, list[str]] = {}
+    seen: set[str] = set()
+    for period in dict.fromkeys(asset_periods):
+        if period not in urls:
+            continue
+        period_urls = urls[period]
+        if not isinstance(period_urls, list):
+            raise ValueError("Invalid precipitation download plan")
+        for url in period_urls:
+            _validate_precipitation_url(url, station_id, period, earliest_year)
+            if url in seen:
+                continue
+            seen.add(url)
+            if len(seen) > MAX_PRECIPITATION_FILES:
+                raise ValueError("Precipitation download plan exceeds file limit")
+            result.setdefault(period, []).append(url)
+    return result
 
 
 def _subtract_calendar_months(value: datetime, months: int) -> datetime:
@@ -88,8 +164,14 @@ def parse_hourly_precipitation(
     """Normalize valid completed-hour amounts with UTC interval starts."""
     values_by_start: dict[datetime, float] = {}
     now = datetime.now(UTC)
+    reader = csv.DictReader(io.StringIO(content), delimiter=";")
+    required = {"reference_timestamp", PARAM_PRECIPITATION_HOURLY}
+    if station_id is not None:
+        required.add("station_abbr")
+    if reader.fieldnames is None or not required.issubset(reader.fieldnames):
+        raise ValueError("Invalid hourly precipitation CSV header")
 
-    for row in csv.DictReader(io.StringIO(content), delimiter=";"):
+    for row in reader:
         if (
             station_id is not None
             and (row.get("station_abbr") or "").strip().lower() != station_id.lower()
@@ -135,6 +217,10 @@ class PrecipitationSourceError(Exception):
     """A metadata/CSV source failed without exposing its URL or payload."""
 
 
+class InvalidPrecipitationConfiguration(ValueError):
+    """A source declaration is invalid before any provider I/O is possible."""
+
+
 class MeteoSwissHourlyPrecipitationClient:
     """Fetch station assets and CSV bytes with a borrowed session."""
 
@@ -145,9 +231,22 @@ class MeteoSwissHourlyPrecipitationClient:
         *,
         asset_periods: tuple[str, ...] = ("now",),
     ) -> None:
+        if not isinstance(station_id, str) or not re.fullmatch(
+            r"[A-Za-z]{3}", station_id
+        ):
+            raise InvalidPrecipitationConfiguration("Invalid precipitation station")
+        if (
+            not isinstance(asset_periods, tuple)
+            or not asset_periods
+            or any(
+                not isinstance(period, str) or period not in _ASSET_PERIODS
+                for period in asset_periods
+            )
+        ):
+            raise InvalidPrecipitationConfiguration("Invalid precipitation periods")
         self.station_id = station_id.lower()
         self._session = session
-        self.asset_periods = asset_periods
+        self.asset_periods = tuple(dict.fromkeys(asset_periods))
 
     async def async_get_urls(
         self, earliest_year: int | None = None
@@ -161,6 +260,7 @@ class MeteoSwissHourlyPrecipitationClient:
     async def async_get_csv(self, csv_url: str, period: str) -> str:
         """Return provider text; CSV validation is a separate pure operation."""
         try:
+            _validate_precipitation_url(csv_url, self.station_id, period, None)
             return await self._async_download_hourly_csv(csv_url, period)
         except (aiohttp.ClientError, TimeoutError, ValueError, TypeError):
             raise PrecipitationSourceError() from None
@@ -183,7 +283,9 @@ class MeteoSwissHourlyPrecipitationClient:
             )
             if period_urls:
                 urls[period] = period_urls
-        return urls
+        return validate_precipitation_plan(
+            urls, self.station_id, self.asset_periods, earliest_year
+        )
 
     @async_retry_with_backoff(max_attempts=4, base_delay=1.0, max_delay=10.0)
     async def _async_download_hourly_csv(self, csv_url: str, period: str) -> str:

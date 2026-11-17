@@ -119,6 +119,12 @@ back 13 calendar months at initial import and normally weekly; the current-hourl
 file is checked hourly. Existing mean/min/max metadata is retained; this is not
 a cumulative `total_increasing` counter.
 
+The unreleased importer hardening validates canonical station assets and a
+deduplicated maximum four-file plan, with a shared five-minute source/parser
+wait budget. Valid completed files survive later failure as partial data;
+partial status is not proof of every historical hour. The 13-month lookback
+does not purge older statistics. See [failure and resource limits](PRECIPITATION_RESOURCE_BOUNDS.md).
+
 ### Removed derived running-hour sensor
 
 `precipitation_current_hour` is retired before the first maintained beta release.

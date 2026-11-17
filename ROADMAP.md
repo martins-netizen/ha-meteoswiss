@@ -2,6 +2,19 @@
 
 ## Current engineering work
 
+The next separate runtime correction bounds the official precipitation
+import's complete plan and source/parser waits. It preserves existing IDs,
+13-month lookback, valid partial data, real zero and queue-only Recorder
+semantics; it introduces no replacement archive or user cleanup action.
+[Source contract, regressions and limits](docs/PRECIPITATION_RESOURCE_BOUNDS.md).
+The CI 2026.11.2 promotion is merged as
+[PR #122](https://github.com/martins-netizen/ha-meteoswiss/pull/122); actual merge
+verification is complete: all ten actual checks, including the dependency graph,
+passed at `1439b83c8dedde1a89f62fcc4c0fd689f1b6baa6`. The actual
+[CI run](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/44173090555)
+passed both HA 2026.11.0/2026.11.2 suites. This source correction and its
+publication retain their own verification boundary.
+
 The **8.3.5b5** test package includes the approved #119 HGT retry correction.
 Publication is verified and the operator confirmed measured HGT available on
 b5. Existing entries, IDs and owned statistics remain; completed b3 cleanup
