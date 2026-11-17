@@ -214,8 +214,15 @@ async def test_retired_station_visible_and_active_peer_protected(manager, hass):
     assert (
         issue.is_fixable
         and issue.is_persistent
-        and issue.translation_placeholders["statistic_ids"] == next(iter(meta()))
+        and issue.translation_placeholders is None
     )
+    with patch.object(manager, "async_retired_plan", return_value=plan):
+        flow = await repairs.async_create_fix_flow(
+            hass, mgr.CLEANUP_ISSUE, {"kind": mgr.CLEANUP_ISSUE}
+        )
+        flow.hass = hass
+        form = await flow.async_step_init()
+    assert form["description_placeholders"]["statistic_ids"] == next(iter(meta()))
     assert manager.active_stations(item.entry_id) == set()
 
 
