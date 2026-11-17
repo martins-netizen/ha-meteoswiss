@@ -1,5 +1,6 @@
 """Entry-owned polling for shared, authoritative station HGT statistics."""
 
+import asyncio
 import logging
 from datetime import UTC, datetime
 
@@ -48,11 +49,15 @@ class MeteoSwissHgtCoordinator(DataUpdateCoordinator[dict]):
         )
 
     async def _async_update_data(self) -> dict:
+        cancelled = False
         try:
             data = await self.manager.async_refresh(self.station, datetime.now(UTC))
             ir.async_delete_issue(self.hass, DOMAIN, self.issue_id)
             self._next_retry_seconds = _INITIAL_RETRY_SECONDS
             return data
+        except asyncio.CancelledError:
+            cancelled = True
+            raise
         except HgtError as error:
             if str(error) in {"statistics_conflict", "ownership_unavailable"}:
                 ir.async_create_issue(
@@ -79,7 +84,10 @@ class MeteoSwissHgtCoordinator(DataUpdateCoordinator[dict]):
                 translation_key="hgt_ogd_unavailable",
             ) from None
         finally:
-            await self.manager.async_sync_issue()
+            # Ownership was persisted before native writes. Leave it intact on
+            # unload; the next normal refresh or removal inspects it after commit.
+            if not cancelled:
+                await self.manager.async_sync_issue()
 
     def _transient_retry_delay(self) -> int:
         """Use Core's single polling timer; do not strand failures for six hours."""

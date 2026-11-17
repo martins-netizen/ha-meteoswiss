@@ -239,6 +239,21 @@ async def test_native_queue_callback_required_and_wait_is_cancellable(hass):
             await task
 
 
+async def test_native_commit_barrier_survives_requester_cancellation(hass):
+    queued = []
+    instance = SimpleNamespace(queue_task=queued.append)
+    with patch.object(rec, "get_instance", return_value=instance):
+        task = asyncio.create_task(rec.async_wait_for_writes(hass))
+        await asyncio.sleep(0)
+        assert len(queued) == 1 and not task.done()
+        task.cancel()
+        with pytest.raises(asyncio.CancelledError):
+            await task
+        assert not queued[0].future.cancelled()
+        queued[0]._set_result_if_not_done()
+        assert queued[0].future.result() is None
+
+
 async def test_bounded_read_and_all_product_preflight_before_mutation(hass):
     instance = SimpleNamespace(
         async_add_executor_job=AsyncMock(side_effect=lambda f: f())

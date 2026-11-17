@@ -1,6 +1,13 @@
 # 8.3.5b5 — Measured HGT recovery test prerelease
 
-**Notes version:** 1.0 · **Package date:** 16 November 2026
+**Notes version:** 1.1 · **Package date:** 16 November 2026 · **Updated:** 17 November 2026
+
+Published as prerelease **447678651** from
+`ba8a15aa282aa7b67d16c83cca6f99e38ee2bf4b` on 16 November 2026 at
+22:08:42 UTC. Publication and the operator's focused observed-day availability
+check are complete. See [the evidence and its limits](RELEASE_EVIDENCE_8.3.5b5.md).
+The later [pending-import ownership correction](HGT_PENDING_IMPORT_OWNERSHIP.md)
+is unreleased and is not included in this immutable package.
 
 Publication and availability are determined by the release catalogue. Package
 checks, publication, installation and live acceptance are separate evidence.

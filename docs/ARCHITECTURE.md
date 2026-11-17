@@ -23,6 +23,14 @@ respects disabled polling and unload; conflicts retain their repair and normal
 interval. There is no new task, storage or bypass of native readback.
 [Behaviour and native regressions](HGT_RETRY_RECOVERY.md).
 
+**Unreleased HGT pending-import ownership correction:** retired-station issue
+scans take the station locks and wait behind already queued native Recorder
+writes before pruning an empty profile. Cancellation retains provenance and
+skips that passive scan so unload does not wait for a blocked writer. A normal
+refresh or explicit final-entry removal performs synchronized inspection and
+the existing exact-target cleanup. Timeouts retain ownership and a blocked
+notice. See [the reproduced race and recovery limits](HGT_PENDING_IMPORT_OWNERSHIP.md).
+
 **HGT cleanup in the 8.3.5b3 test package:** an entry-owned post-startup
 inventory discovers attributable obsolete forecast statistics across old and b2
 upgrade paths, including disabled sensors and native season-entity tombstones.
@@ -56,7 +64,7 @@ the entity/unique/device IDs remain unchanged. See [chart and recovery impact](W
 
 ## Responsibilities
 
-See the [coordinator examples](COORDINATOR_EXAMPLES.md) for the eight concrete
+See the [coordinator examples](COORDINATOR_EXAMPLES.md) for the nine concrete
 classes, entry-owned instances, polling and practical consumer/failure examples.
 
 - API clients download and validate payloads. A transport or decoding failure
@@ -76,8 +84,11 @@ classes, entry-owned instances, polling and practical consumer/failure examples.
   operation to a later refresh instead of retrying prematurely.
 
 Entry-specific coordinators and the borrowed session live in typed
-`entry.runtime_data` (`MeteoSwissRuntimeData`). Domain-global flags only coordinate
-the single shared diagnostic devices. Weather forecast listeners are registered
+`entry.runtime_data` (`MeteoSwissRuntimeData`). Domain-global state also owns
+shared diagnostic handoff, the per-station HGT manager and serialized statistics
+repair recomputation. The HGT manager owns station locks, memory-only clients/
+snapshots and the durable station-code provenance; it does not duplicate source
+history. Weather forecast listeners are registered
 when the entity is added and removed with that entity. Configuration validates
 the chosen observation provider with the same coordinator contract, without
 listeners/polling, using HA's shared session and a 30-second total timeout.
@@ -432,10 +443,11 @@ Downloading diagnostics performs no catalogue network request. `available` in
 the coordinator summary means an instance exists; `last_update_success` carries
 the separate fetch result.
 
-The station diagnostic exposes catalogue status and last successful download,
-with unavailable state until a valid catalogue exists. Last-good metadata can
-stay available with an explicit `stale` label. Its GeoJSON remains available;
-the picture-elements helper now requires an explicit map image and actual
+The station diagnostic exposes catalogue status and last successful download.
+The entity is available only while the catalogue status is `current`.
+Last-good metadata and GeoJSON remain retained with `stale` status after a
+refresh failure; retained content does not make the entity available. The
+picture-elements helper now requires an explicit map image and actual
 entity ID instead of inventing an external image URL/entity. Its Swiss fixed
 bounds are north-up. Existing registry disabled/enabled flags are unchanged.
 

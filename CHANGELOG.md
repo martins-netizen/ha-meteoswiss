@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+- Preserve measured-HGT station ownership when a station change/removal cancels
+  an initial import with native Recorder writes still queued. Serialize retired
+  checks with refreshes and wait for native completion before treating empty
+  metadata as absence. Retain provenance and the existing blocked notice on
+  uncertainty; preserve exact-target consent, IDs and unrelated history.
+  Add native pending-write/lifecycle regressions and reconcile current
+  architecture, quality and b5 publication/availability documentation.
+
 - Regenerate both universal test locks for [PR #118](https://github.com/martins-netizen/ha-meteoswiss/pull/118):
   botocore 1.43.126 → 1.43.127, coverage 7.17.2 → 7.17.3 and josepy
   2.2.0 → 2.3.0. Retain all 138 selections per fixture, existing extras,

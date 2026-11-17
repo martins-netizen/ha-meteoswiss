@@ -139,6 +139,14 @@ versioned archive of every original publication.
 
 ## Ownership and complete removal
 
+**Unreleased pending-import correction:** a native queued-write barrier and
+retired-station serialization now precede ownership pruning. This closes a
+reproduced station-change/cancellation race during the first import; already
+queued writes can outlive their caller. Timeouts retain provenance instead of
+assuming an empty read proves absence. See [trigger, tests and recovery limits](HGT_PENDING_IMPORT_OWNERSHIP.md).
+Published b4/b5 do not contain this correction; it adds no new deletion consent
+or production cleanup action.
+
 The integration persists only a set of owned station codes in its HA storage.
 Observations live once in Recorder, not in a second on-disk CSV/archive. Source
 representations, ETags and six-hour snapshots are memory-only and disappear
@@ -197,6 +205,8 @@ first-period change, corrections/withdrawals, shared entries, memory ownership,
 metadata/storage failure, cancelled confirmation, station changes and final
 native entry removal. All four new modules retain 100% line and branch coverage.
 [The quality matrix](QUALITY_SCALE.md) and [bounded privacy/security assessment](PRIVACY_SECURITY_REVIEW.md)
-retain full Gold/independent-review limits. Hosted feature checks, packaging and
-the focused operator check are required before calling this feature released
-or accepted; published b3 and PR #114 acceptance are not repeated.
+retain full Gold/independent-review limits. Published b4/b5 and the operator's
+focused b5 observed-day availability check are complete. The pending-import
+correction still needs its own hosted checks, approved merge and later
+publication. B5 availability and published b3/PR #114 acceptance are not repeated;
+full historical-row or independent assurance is not inferred from those results.

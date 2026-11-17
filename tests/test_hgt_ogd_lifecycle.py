@@ -284,10 +284,11 @@ async def test_coordinator_success_clears_only_own_issue_and_cancellation_propag
         patch.object(
             coordinator.manager, "async_refresh", side_effect=asyncio.CancelledError
         ),
-        patch.object(coordinator.manager, "async_sync_issue", new_callable=AsyncMock),
+        patch.object(coordinator.manager, "async_sync_issue", new_callable=AsyncMock) as sync,
     ):
         with pytest.raises(asyncio.CancelledError):
             await coordinator._async_update_data()
+    sync.assert_not_awaited()
     await entry._async_process_on_unload(hass)
 
 
@@ -468,3 +469,184 @@ async def test_native_peer_retries_share_one_verified_station_import(
         assert len(await rec.async_metadata(hass, {"klo"})) == 3
         assert await hass.config_entries.async_unload(one.entry_id)
         assert await hass.config_entries.async_unload(two.entry_id)
+
+
+async def test_cancelled_initial_import_retains_ownership_until_queued_writes_commit(
+    recorder_mock, hass, source_data,
+):
+    """A retired station must stay attributable when native writes outlive cancellation."""
+    from threading import Event
+
+    from ha_helpers import async_recorder_block_till_done
+    from homeassistant.components.recorder.tasks import ImportStatisticsTask, SynchronizeTask
+
+    entry = make_entry(hass, "meteoswiss")
+    coordinator = MeteoSwissHgtCoordinator(hass, entry, "klo", None)
+    manager = coordinator.manager
+    started, release = asyncio.Event(), Event()
+    cleanup_barrier = asyncio.Event()
+    cancelling = False
+    original = ImportStatisticsTask.run
+    original_queue = recorder_mock.queue_task
+
+    def run(task, recorder):
+        if task.metadata["statistic_id"].endswith("klo_hgt_12_20_daily"):
+            hass.loop.call_soon_threadsafe(started.set)
+            assert release.wait(5), "Test failed to release the native writer"
+        return original(task, recorder)
+
+    def queue(task):
+        if cancelling and isinstance(task, SynchronizeTask):
+            cleanup_barrier.set()
+        original_queue(task)
+
+    with (
+        patch.object(ImportStatisticsTask, "run", run),
+        patch.object(recorder_mock, "queue_task", queue),
+    ):
+        task = asyncio.create_task(coordinator._async_update_data())
+        barrier_waiter = asyncio.create_task(cleanup_barrier.wait())
+        try:
+            async with asyncio.timeout(3):
+                await started.wait()
+            assert manager.known == {"klo"}
+            assert await rec.async_metadata(hass, {"klo"}) == {}
+            hass.config_entries.async_update_entry(
+                entry, data={**entry.data, "station_id": "ber"}
+            )
+            cancelling = True
+            task.cancel()
+            done, _ = await asyncio.wait(
+                (task, barrier_waiter), timeout=3,
+                return_when=asyncio.FIRST_COMPLETED,
+            )
+            assert done, "Cancellation neither completed nor waited for native commit"
+            known_before_commit = manager.known.copy()
+        finally:
+            release.set()
+            barrier_waiter.cancel()
+            await asyncio.gather(barrier_waiter, return_exceptions=True)
+        with pytest.raises(asyncio.CancelledError):
+            await task
+        await async_recorder_block_till_done(hass)
+
+    try:
+        assert len(await rec.async_metadata(hass, {"klo"})) == 3
+        assert known_before_commit == {"klo"}
+        assert manager.known == {"klo"}
+        plan = await manager.async_retired_plan()
+        assert plan.stations == ("klo",) and len(plan.metadata) == 3
+    finally:
+        await entry._async_process_on_unload(hass)
+
+
+async def test_final_native_removal_waits_for_queued_initial_import_before_cleanup(
+    recorder_mock, hass, enable_custom_integrations, source_data,
+):
+    """Removing the final entry also clears imports queued before native unload."""
+    from threading import Event
+
+    from homeassistant.components.recorder.tasks import ImportStatisticsTask, SynchronizeTask
+
+    entry = make_entry(hass, "meteoswiss")
+    started, release = asyncio.Event(), Event()
+    cleanup_barrier = asyncio.Event()
+    removing = False
+    original_run = ImportStatisticsTask.run
+    original_queue = recorder_mock.queue_task
+
+    def run(task, recorder):
+        if task.metadata["statistic_id"].endswith("klo_hgt_12_20_daily"):
+            hass.loop.call_soon_threadsafe(started.set)
+            assert release.wait(5), "Test failed to release the native writer"
+        return original_run(task, recorder)
+
+    def queue(task):
+        if removing and isinstance(task, SynchronizeTask):
+            cleanup_barrier.set()
+        original_queue(task)
+
+    with (
+        patch.object(ImportStatisticsTask, "run", run),
+        patch.object(recorder_mock, "queue_task", queue),
+    ):
+        try:
+            assert await hass.config_entries.async_setup(entry.entry_id)
+            async with asyncio.timeout(3):
+                await started.wait()
+            manager = mgr.get_hgt_manager(hass)
+            assert manager.known == {"klo"}
+            assert await rec.async_metadata(hass, {"klo"}) == {}
+            removing = True
+            removal = asyncio.create_task(
+                hass.config_entries.async_remove(entry.entry_id)
+            )
+            barrier_waiter = asyncio.create_task(cleanup_barrier.wait())
+            try:
+                done, _ = await asyncio.wait(
+                    (removal, barrier_waiter), timeout=3,
+                    return_when=asyncio.FIRST_COMPLETED,
+                )
+                assert done, "Removal neither completed nor waited for native commit"
+                known_before_commit = manager.known.copy()
+            finally:
+                barrier_waiter.cancel()
+                await asyncio.gather(barrier_waiter, return_exceptions=True)
+        finally:
+            release.set()
+        assert await removal
+    await hass.async_block_till_done(wait_background_tasks=True)
+    assert known_before_commit == {"klo"}
+    assert await rec.async_metadata(hass, {"klo"}) == {}
+    assert manager.known == set() and await manager.store.async_load() is None
+    assert not manager.users and not manager.clients and not manager.snapshots
+    assert ir.async_get(hass).async_get_issue(DOMAIN, mgr.CLEANUP_ISSUE) is None
+
+
+async def test_slow_queued_import_does_not_hold_native_unload_cancellation(
+    recorder_mock, hass, source_data, caplog,
+):
+    """The entry's ten-second guard must not wait for the thirty-second DB barrier."""
+    from threading import Event
+
+    from ha_helpers import async_recorder_block_till_done
+    from homeassistant.components.recorder.tasks import ImportStatisticsTask
+
+    entry = make_entry(hass, "meteoswiss")
+    coordinator = MeteoSwissHgtCoordinator(hass, entry, "klo", None)
+    manager = coordinator.manager
+    started, release = asyncio.Event(), Event()
+    original_run = ImportStatisticsTask.run
+    original_wait = asyncio.wait
+
+    def run(task, recorder):
+        if task.metadata["statistic_id"].endswith("klo_hgt_12_20_daily"):
+            hass.loop.call_soon_threadsafe(started.set)
+            assert release.wait(5), "Test failed to release the native writer"
+        return original_run(task, recorder)
+
+    async def unload_guard(tasks, *, timeout):
+        assert timeout == 10
+        # Exercise Core's real pending-task guard without sleeping ten seconds.
+        return await original_wait(tasks, timeout=0)
+
+    with patch.object(ImportStatisticsTask, "run", run):
+        task = entry.async_create_background_task(
+            hass, coordinator._async_update_data(), "HGT blocked native import"
+        )
+        try:
+            async with asyncio.timeout(3):
+                await started.wait()
+            hass.config_entries.async_update_entry(
+                entry, data={**entry.data, "station_id": "ber"}
+            )
+            with patch("homeassistant.config_entries.asyncio.wait", unload_guard):
+                await entry._async_process_on_unload(hass)
+            assert task.cancelled()
+            assert manager.known == {"klo"}
+            assert "did not complete in time" not in caplog.text
+        finally:
+            release.set()
+        await async_recorder_block_till_done(hass)
+    plan = await manager.async_retired_plan()
+    assert plan.stations == ("klo",) and len(plan.metadata) == 3

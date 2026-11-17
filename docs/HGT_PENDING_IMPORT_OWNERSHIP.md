@@ -1,0 +1,72 @@
+# HGT ownership while Recorder writes are pending
+
+**Scope:** unreleased correction based on development
+`1d34e525d2938f6e265265a1efc80571ba9c1eca`, reviewed 17 November 2026.
+This correction is not in the immutable published 8.3.5b5 package.
+
+## Problem and trigger
+
+Official measured HGT was introduced in 8.3.5b4. Its importer records the station
+as owned before queuing native Recorder writes. That ordering protects
+interrupted imports, but a later passive cleanup check could remove that
+ownership too early.
+
+The narrow trigger is a station change or final entry removal during its first
+import, while Recorder has accepted writes but has not committed the first
+metadata row. Cancelling the caller cannot retract those queued writes. The
+old cleanup check could see an empty database, discard the station's ownership
+record, then leave later-committed statistics outside the cleanup inventory.
+An empty read is therefore not proof that nothing remains to be written.
+
+A controlled regression reproduces this with the real HA Recorder and the
+actual HGT coordinator cancellation/finally path. It blocks the first native
+`ImportStatisticsTask`, changes the configured station, cancels the refresh,
+then releases the writer. This is a demonstrated lifecycle defect, not evidence
+that it occurred in an operator's production database. It does not explain the
+earlier b4 unavailable-sensor report.
+
+## Correction
+
+Issue synchronization locks retired stations in stable order and rechecks that
+the station set is unchanged. Before inspecting retired metadata, a native
+`SynchronizeTask` waits behind already queued Recorder writes, including after
+cancellation of their original caller. The wait retains the existing 30-second
+bound. Only a synchronized empty result can release an unused ownership record.
+The importer uses the same completion helper instead of a second implementation.
+On coordinator cancellation, the passive issue scan is skipped and durable
+ownership is retained, allowing unload to finish promptly even with a blocked
+writer. The next normal refresh or explicit entry-removal hook performs the
+synchronized inventory. No new background cleanup task is started.
+
+If data committed, the station remains owned and its exact products remain in
+the existing cleanup repair. A station change still requires the listed-target
+confirmation before deleting those products. Final native integration-entry
+removal still performs its already documented owned-data cleanup. A timeout,
+changed target, storage failure or unverified result retains ownership and
+surfaces the existing blocked-cleanup notice. Cancellation propagates; it does
+not count as proof of completion or authorization to delete.
+
+This changes no statistic/entity ID, storage schema, source validation, polling
+cadence, retry policy or consent text. It introduces no new archive, account,
+credential, destination, telemetry or dependency. Ordinary history and unrelated
+statistics retain their existing contracts.
+
+## Upgrade and recovery boundary
+
+No new user action is needed for the correction itself once it is included in
+a published update. Keep the existing entry and station. Do not switch stations,
+remove entries, delete data or repeat the accepted b3 cleanup as a test.
+Follow the existing [ownership/removal guide](HGT_OGD_PLAN.md#ownership-and-complete-removal)
+for an actual intended station change or removal.
+
+The correction prevents premature loss of provenance; it does not adopt
+pre-existing statistics whose ownership record is already missing. IDs alone
+cannot safely prove ownership. Such a conflict requires a specific review or
+a matching protected full backup, rather than prefix-based bulk deletion.
+Published b5 availability acceptance remains closed; source regressions do not
+establish a new release or whole-database absence audit.
+
+Native regressions cover pending-write cancellation, station serialization,
+target changes, failed completion barriers and the final-removal boundary.
+The exact local validation result is recorded with the reviewed PR candidate;
+hosted checks and an approved merge remain separate.

@@ -20,7 +20,8 @@ from custom_components.meteoswiss.hgt_ogd import HgtError
 
 
 @pytest.fixture
-def manager(hass):
+def manager(hass, monkeypatch):
+    monkeypatch.setattr(mgr, "async_wait_for_writes", AsyncMock())
     item = mgr.get_hgt_manager(hass)
     item.store = SimpleNamespace(
         async_load=AsyncMock(return_value=None),
@@ -244,6 +245,66 @@ async def test_failed_inventory_is_a_visible_nonfixable_issue(manager):
     await manager.async_sync_issue()
     issue = ir.async_get(manager.hass).async_get_issue(DOMAIN, mgr.BLOCKED_ISSUE)
     assert issue is not None and not issue.is_fixable
+
+
+async def test_issue_sync_waits_for_a_retired_station_refresh(manager, hass):
+    item = entry(hass)
+    manager.store.async_load.return_value = {"stations": ["klo"]}
+    manager.register(item.entry_id, "klo", None)
+    fetching, release = asyncio.Event(), asyncio.Event()
+
+    async def fetch(*args):
+        fetching.set()
+        await release.wait()
+        return products()
+
+    manager.clients["klo"].async_fetch = fetch
+    with (
+        patch.object(mgr, "async_metadata", return_value={}),
+        patch.object(mgr, "async_import_products", return_value={}) as write,
+    ):
+        refresh = asyncio.create_task(manager.async_refresh("klo", NOW))
+        await fetching.wait()
+        hass.config_entries.async_update_entry(
+            item, data={**item.data, "station_id": "ber"}
+        )
+        sync = asyncio.create_task(manager.async_sync_issue())
+        await asyncio.sleep(0)
+        assert not sync.done() and manager.known == {"klo"}
+        release.set()
+        await refresh
+        await sync
+    write.assert_awaited_once()
+    assert manager.known == set()
+
+
+async def test_new_retired_station_during_lock_acquisition_cannot_be_pruned(manager):
+    manager.store.async_load.return_value = {"stations": ["klo"]}
+    await manager.async_load()
+    lock = manager.locks.setdefault("klo", asyncio.Lock())
+    await lock.acquire()
+    sync = asyncio.create_task(manager.async_sync_issue())
+    await asyncio.sleep(0)
+    manager.known.add("ber")
+    lock.release()
+    with patch.object(mgr, "async_metadata", return_value={}):
+        await sync
+    assert manager.known == {"klo", "ber"}
+    manager.store.async_remove.assert_not_awaited()
+    assert ir.async_get(manager.hass).async_get_issue(DOMAIN, mgr.BLOCKED_ISSUE)
+
+
+async def test_unconfirmed_commit_cannot_prune_empty_retired_provenance(manager):
+    manager.store.async_load.return_value = {"stations": ["klo"]}
+    with (
+        patch.object(mgr, "async_wait_for_writes", side_effect=TimeoutError),
+        patch.object(mgr, "async_metadata", new_callable=AsyncMock) as inspect,
+    ):
+        await manager.async_sync_issue()
+    inspect.assert_not_awaited()
+    manager.store.async_remove.assert_not_awaited()
+    assert manager.known == {"klo"}
+    assert ir.async_get(manager.hass).async_get_issue(DOMAIN, mgr.BLOCKED_ISSUE)
 
 
 @pytest.mark.parametrize("mutation", ["reactivated", "metadata", "readback"])

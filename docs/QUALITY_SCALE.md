@@ -3,20 +3,22 @@
 ## 8.3.5b5 package evidence
 
 The **8.3.5b5** test package includes the approved #119 HGT retry correction.
-Publication/availability is determined by the release catalogue; source checks
-do not establish package publication or live availability. Existing entries,
-IDs and owned statistics remain. Already completed b3 cleanup stays closed.
-Follow the [focused b5 check](ACCEPTANCE_8.3.5b5.md) and
-[package boundary](RELEASE_8.3.5b5.md). Full Gold and independent
-privacy/security/architecture review remain separate.
+Its [publication](RELEASE_EVIDENCE_8.3.5b5.md) is verified and the operator
+confirmed the measured-HGT entry available after updating to b5. This closes
+that focused availability check, not a complete historical-row audit or every
+recovery path. Existing entries, IDs and owned statistics remain. Completed
+b3 cleanup stays closed. The unreleased [pending-import ownership correction](HGT_PENDING_IMPORT_OWNERSHIP.md)
+has its own native regression and release boundary. Full Gold and independent
+privacy/security/architecture assurance remain separate.
 
 **Published b4 boundary:** source PR #115 and package PR #116 are regularly
 merged and actually verified. The package has ten head and nine merge checks,
 both HA suites 3,092 tests + 83 subtests, 99.9831% strict coverage and no SQLite
 ResourceWarning. Pinned Hassfest and whole-lock audit passed.
 [B4 publication](RELEASE_EVIDENCE_8.3.5b4.md) is independently verified, with all
-50 non-version component files unchanged. Focused operator acceptance and
-remaining Gold/independent review stay separate.
+50 non-version component files unchanged. Focused measured-HGT availability
+was subsequently operator-confirmed on b5; remaining Gold/independent review
+stays separate.
 
 **HGT cleanup in the 8.3.5b3 test package:** an entry-owned post-startup
 inventory discovers attributable obsolete forecast statistics across old and b2
@@ -40,12 +42,15 @@ it changes no component or production behaviour. PR #114 is merged with all
 ten head and nine actual merge checks successful, including both HA suites
 without SQLite ResourceWarning. B3 acceptance remains closed. The current
 [measured-HGT feature](HGT_OGD_PLAN.md) has separate native source/import/cleanup
-coverage; hosted feature verification, packaging and operator acceptance are
-separate. Full Gold/independent review stay open.
+coverage. B4/b5 publication and the focused b5 availability check are complete;
+full Gold/independent review stay open.
 
-**Runtime assessment:** 24 October 2026. **Documentation updated:** 15 November 2026.
-**Scope:** the 8.3 runtime accepted as
-published b4 at **a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5**. Stable packaging
+**Documentation updated:** 17 November 2026. **Current scope:** development
+based on `1d34e525d2938f6e265265a1efc80571ba9c1eca`, with the explicitly
+unreleased pending-import correction; published runtime remains 8.3.5b5.
+The original **24 October 2026** assessment used **8.3.0b4** at
+**a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5**. Its historical acceptance and
+the release-specific qualifications below remain bounded to those versions. Stable packaging
 changes only two component version files. The operator confirmed b3 calendar-day
 values/shared station changes and positive b4 operation; screenshots show distinct
 station/forecast devices. [Readiness](RELEASE_READINESS.md) retains evidence limits.
@@ -182,7 +187,7 @@ earlier b1/wind and b2 visible acceptance must not be requested again.
 | `action-setup` | Exempt | No custom integration actions. `weather.get_forecasts` belongs to HA's weather platform. |
 | `appropriate-polling` | Evidence | Developer-selected 600-second observation default/minimum; source-specific forecast, warning, pollen and archive schedules. New setup/options no longer expose an interval. Legacy intervals survive without a new UI knob. See API_SOURCES.md and options migration tests. |
 | `brands` | Custom-integration asset evidence; Core route not assessed | Valid bundled HACS PNGs are present and catalogue admission is complete. The separate home-assistant/brands requirement concerns the Core rule; it is not an outstanding route to an official tier for this custom integration. |
-| `common-modules` | Evidence | All eight real coordinator classes are in coordinator.py; shared bases are in entity.py and runtime ownership is typed. Source separation is substantive for ICON/current/AQ/pollen/precipitation, not alias-only placement. The legacy station adapter remains in its coordinator, with executor CSV parsing. |
+| `common-modules` | Evidence | Eight coordinator classes are in coordinator.py; the ninth, MeteoSwissHgtCoordinator, is in hgt_ogd_coordinator.py. Shared bases are in entity.py and entry runtime ownership is typed. The shared HGT manager owns station locks, provenance and memory-only clients/snapshots. Source separation is substantive for ICON/current/AQ/pollen/precipitation/HGT, not alias-only placement. The legacy station adapter remains in its coordinator, with executor CSV parsing. |
 | `config-flow` | Evidence | Native setup/options and Reconfigure. Published 8.3.2b1 offers the complete settings transaction through both existing-entry routes. Four-language fields/help; source selector; explicit pollen choice and point search/selection/confirmation. Current source and warning/forecast/pollen purposes stay distinct. |
 | `config-flow-test-coverage` | Evidence | Full line/branch gate. Real flow-manager tests cover both providers, errors, retries, duplicate guards, translations, cancel/keep/reset and loaded-entry reconfiguration. |
 | `dependency-transparency` | Exempt | Manifest requirements are empty; there is no separately distributed extra runtime library. HA-provided dependencies and public data/service dependencies are documented. |
@@ -240,7 +245,7 @@ engineering work.
 | `entity-category` | Evidence | Diagnostic helpers stay diagnostic; measured/modelled pollen and AQ stay ordinary sensors, with registry tests. |
 | `entity-device-class` | Bounded 8.3.5 test-line Foehn/HGT/wind evidence; full Gold separate | SENSOR_METADATA.md records why the numeric Foehn code and forecast HGT `°C·d` have no fitting standard class. Forecast HGT no longer enters measurement statistics; b3 removes obsolete forecast statistics only after explicit confirmation, retaining ordinary history. B4's official observations use separate external statistics and a distinct live entity. WIND_STATISTICS_MIGRATION.md implements HA wind/circular classes only after archiving and verifying older arithmetic metadata/rows. Native Recorder tests cover both mean algorithms, retained identities, conflicts, lifecycle and preserving rollback. Published stable 8.3.4 retains the earlier metadata. This bounded source evidence does not complete Gold. |
 | `entity-disabled-by-default` | Automated evidence delivered in stable 8.3.4; first shipped in 8.3.4b1 | Only newly registered station-catalogue and cache-statistics helpers start disabled. Native HA tests cover both providers, no disabled-helper polling, retained enabled/user-disabled/integration-disabled choices, names/icons/IDs, reload and manual enablement. Ordinary environmental entities remain enabled. See DIAGNOSTIC_DEFAULTS.md; released in beta 8.3.4b1, not included in stable 8.3.3. The short operation report does not independently exercise fresh registration. |
-| `entity-translations` | Automated base and observed-HGT name evidence; focused b4 acceptance separate | ENTITY_NAME_TRANSLATIONS.md inventories the base 45 registered entities per provider: 40 sensors, three warning binary sensors and two weather entities inheriting their device names. Native DE/EN/FR/IT tests cover the 41 base sensor keys across providers and three warning keys, all activation choices, personal names and retained registry bindings through full language round trips. B4 adds the separately tested `hgt_measured` name with Recorder and a MeteoSwiss station: up to 46 entities and 42 distinct sensor-name keys across providers. Four inactive legacy keys remain explicitly identified. DIAGNOSTIC_TRANSLATIONS.md and SERVICE_GROUP_TRANSLATIONS.md retain their privacy/Recorder evidence. Technical compatibility strings and authoritative place aliases are separate scopes, not missing entity-name keys. The test-line naming scope has native four-language evidence and bounded b1 visual acceptance; the new b4 entity still needs focused acceptance. This does not complete every Gold naming/locality rule. |
+| `entity-translations` | Automated base and observed-HGT name evidence; focused b5 availability accepted | ENTITY_NAME_TRANSLATIONS.md inventories the base 45 registered entities per provider: 40 sensors, three warning binary sensors and two weather entities inheriting their device names. Native DE/EN/FR/IT tests cover the 41 base sensor keys across providers and three warning keys, all activation choices, personal names and retained registry bindings through full language round trips. B4 adds the separately tested `hgt_measured` name with Recorder and a MeteoSwiss station: up to 46 entities and 42 distinct sensor-name keys across providers. Four inactive legacy keys remain explicitly identified. DIAGNOSTIC_TRANSLATIONS.md and SERVICE_GROUP_TRANSLATIONS.md retain their privacy/Recorder evidence. Technical compatibility strings and authoritative place aliases are separate scopes, not missing entity-name keys. The test-line naming scope has native four-language evidence and bounded b1 visual acceptance; the observed-HGT entry was operator-confirmed available on b5. This does not independently establish a fresh four-language visual review. This does not complete every Gold naming/locality rule. |
 | `exception-translations` | Automated evidence in accepted published 8.3.3b1 | EXCEPTION_TRANSLATIONS.md records all 21 UpdateFailed sites using 19 keys in DE/EN/FR/IT. Native HA tests load every message; safe causes, retry/availability and recovery remain. The operator reported normal operation, without manually triggering all failures. Stable 8.3.3 now delivers this runtime and its actual installation/operation is operator-confirmed; no manual exercise of all errors is claimed. |
 | `icon-translations` | Automated and reported focused evidence in accepted published 8.3.3b1 | ICON_TRANSLATIONS.md maps all 24 previous custom icons to icons.json, retaining device-class defaults and personal registry overrides. Native HA tests cover key linkage and override persistence after reload; Hassfest validates the schema. The operator reported icons/personal choices OK on Core 2026.10.4 / HA OS 18.4 within the acceptance scope. Stable 8.3.3 now delivers the same runtime and its actual installation/operation is operator-confirmed. |
 | `reconfiguration-flow` | Automated and reported focused evidence in accepted 8.3.2b1 | Native Reconfigure and Configure share the complete weather station/base-coordinate, measured-pollen, forecast and warning-postcode transaction. Tests cover both providers/routes, explicit confirmation, cancellation at each stage, source retry with retained choices, duplicate/concurrent-edit rejection, translations and retained entity IDs with a single loaded-entry reload. The original setup confirmation remains separate. This extends stable 8.3.1's forecast-only shortcut. The operator reported all five configured-source steps positive on Core 2026.10.4; no separate registry audit or manual test of every provider is inferred. |
@@ -269,10 +274,11 @@ The published [8.3.5b1 package](RELEASE_EVIDENCE_8.3.5b1.md) retains all 42
 non-version component files from that source. Packaging and publication are
 verified. B1 installation and visual operation are operator-confirmed, and the
 bounded read-only report observes the retained wind archive/new circular data.
-The HGT legacy Repair is a real remaining migration issue; the prepared native
-archive follow-up needs a new test package and its own focused readback. Publication
-does not close the partial Gold rules or establish an independent security
-assessment.
+The HGT legacy Repair was a remaining issue at that b1 boundary. Published b3
+later delivered the native confirmed cleanup and its focused operator check is
+complete; do not repeat it. The obsolete b2 archive default is historical
+behaviour. Publication does not close the partial Gold rules or establish an
+independent security assessment.
 
 Use the [local compatibility checks](../DEVELOPMENT.md#local-compatibility-checks)
 in a separate isolated environment for each supported HA fixture. This shared
