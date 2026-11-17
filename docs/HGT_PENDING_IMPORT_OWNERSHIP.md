@@ -4,6 +4,16 @@
 `1d34e525d2938f6e265265a1efc80571ba9c1eca`, reviewed 17 November 2026.
 This correction is not in the immutable published 8.3.5b5 package.
 
+**Merged source:** [PR #121](https://github.com/martins-netizen/ha-meteoswiss/pull/121)
+was regularly squashed at `b936505d348c199717c00b3211def7fa6b3013c1` on
+17 November 2026. All ten head and nine actual-merge checks passed. The actual
+[merge CI](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/44166982779)
+passed 3,180 tests plus 83 subtests on each of HA 2026.11.0/2026.11.1, with
+strict coverage and full coverage of all four HGT modules. The byte-identical
+tree also passed the complete local 2026.11.2 fixture. The source/merge gate is
+complete; packaging and publication remain separate. Do not rerun the PR helper
+or repeat the already accepted b3/b5 operator checks.
+
 ## Problem and trigger
 
 Official measured HGT was introduced in 8.3.5b4. Its importer records the station
@@ -69,4 +79,5 @@ establish a new release or whole-database absence audit.
 Native regressions cover pending-write cancellation, station serialization,
 target changes, failed completion barriers and the final-removal boundary.
 The exact local validation result is recorded with the reviewed PR candidate;
-hosted checks and an approved merge remain separate.
+the completed hosted/merge result is recorded above. A later package must retain
+its own reviewed source, checks and publication evidence.

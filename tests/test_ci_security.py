@@ -88,7 +88,7 @@ def test_uv_requires_offline_mode_even_when_patched(secure_environment, monkeypa
         ("2026.8.3", "0.11.31"),
         ("2026.11.0", "0.11.31"),
         ("2026.11.0", "0.12.23"),
-        ("2026.11.1", "0.13.3"),
+        ("2026.11.2", "0.13.3"),
     ],
 )
 def test_offline_uv_must_meet_security_floor(secure_environment, ha, uv):
@@ -99,7 +99,7 @@ def test_offline_uv_must_meet_security_floor(secure_environment, ha, uv):
 
 def test_installed_ha_must_match_the_matrix(secure_environment):
     with pytest.raises(security.SecurityBaselineError, match="does not match"):
-        security.check_security("installed", "2026.11.1")
+        security.check_security("installed", "2026.11.2")
 
 
 @pytest.mark.parametrize("name", ["pip", "certifi", "homeassistant", "uv"])

@@ -44,7 +44,7 @@ def test_real_lock_inventory_includes_all_host_platforms():
     assert counts == {name: 138 for name in audit.LOCKS}
     assert len(packages) == 140
     assert ("homeassistant", "2026.11.0") in packages
-    assert ("homeassistant", "2026.11.1") in packages
+    assert ("homeassistant", "2026.11.2") in packages
     assert any(name.startswith("pyobjc-") for name, _ in packages)
     assert any(name.startswith("winrt-") for name, _ in packages)
 

@@ -5,9 +5,14 @@
 The **8.3.5b5** test package includes the approved #119 HGT retry correction.
 Publication is verified and the operator confirmed measured HGT available on
 b5. Existing entries, IDs and owned statistics remain; completed b3 cleanup
-stays closed. The next bounded correction preserves HGT ownership when a station
-changes/removes during a queued initial import. It adds native Recorder race
-regressions and remains unreleased; see [the failure and cleanup boundary](docs/HGT_PENDING_IMPORT_OWNERSHIP.md).
+stays closed. The HGT pending-import ownership correction is merged as
+[PR #121](https://github.com/martins-netizen/ha-meteoswiss/pull/121) with all
+actual merge checks passed; it remains unreleased. See
+[the failure and cleanup boundary](docs/HGT_PENDING_IMPORT_OWNERSHIP.md).
+Current CI maintenance advances the paired current HA/test fixture to
+**2026.11.2**, retaining the **2026.11.0** minimum, all 138 selections per lock
+and existing security/coverage gates. It changes no integration runtime or
+published package. [Maintenance contract](DEVELOPMENT.md#current-fixture-update).
 Full Gold and independent privacy/security/architecture assurance remain separate.
 
 This describes current fork work. Historical upstream release claims remain in

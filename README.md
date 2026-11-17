@@ -298,7 +298,7 @@ is not required.
 **8.3.5 support baseline.** The test line requires **HA 2026.11.0 or
 newer**. This Core baseline brings fixes for known vulnerabilities in
 dependencies shipped with older Core releases. CI tests **2026.11.0** and
-**2026.11.1** with their matching official test packages.
+**2026.11.2** with their matching official test packages.
 [Core security rationale](DEVELOPMENT.md#supported-home-assistant-versions)
 
 Published stable **8.3.4** declared **HA 2026.8.3** as its minimum. Its
