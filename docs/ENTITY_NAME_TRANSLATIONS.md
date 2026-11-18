@@ -75,9 +75,11 @@ Authoritative multilingual place aliases are a separate provider-data task;
 their absence is not a missing entity-name key. Browser-specific language
 behaviour is not independently exercised by these backend tests.
 
-The project records automated engineering evidence for the base names and the
-additional b4 observed-HGT entity. B1's reported visual acceptance remains
-bounded to its agreed scope; publication and focused acceptance of the new b4
-entity are separate. These results do not complete every Gold naming/locality
-rule or independent security review. The overall [Gold assessment](QUALITY_SCALE.md)
-remains separate. Custom integrations have no official HA quality tier.
+The complete native name inventory supplies the applicable entity-translations
+evidence through Gold, including the additional observed-HGT entity. B1 visual
+acceptance and the later b5/b6 bounded reports retain their original scope;
+they are not manual four-language browser or whole-registry audits. Locality
+aliases are provider data, not another entity-name rule. The
+[current Gold assessment](QUALITY_SCALE.md) combines this established evidence
+with the remaining source completion. Custom integrations have no official HA
+quality tier; independent security assurance remains separate.

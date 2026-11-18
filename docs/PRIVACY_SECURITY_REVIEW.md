@@ -1,13 +1,36 @@
 # Privacy, architecture and security: bounded review
 
-**B6 evidence boundary, 17 November 2026:** the test package combines the
+**Prepared post-b6 review, 17 November 2026:** the follow-up closes reproduced
+diagnostics-export and local state-clock gaps, aligns two optional-source
+transition logs with INFO, and supplies the project's engineering assessment
+of all **51 rules through Gold**. The [current security boundaries](GOLD_SECURITY_BOUNDARIES.md)
+separate that code/test evidence from provider retention, HA host controls,
+repository governance and independent assurance. The [quality matrix](QUALITY_SCALE.md),
+[completion review](GOLD_COMPLETION_REVIEW.md) and
+[evidence contract](GOLD_EVIDENCE_CONTRACT.md) define the rule-by-rule result
+and its checks. This prepared source is separate from published b6 and its
+accepted normal-operation check; it does not claim a new release, installation,
+official HA tier, penetration test or security certification.
+
+The [diagnostics correction](DIAGNOSTICS_PRIVACY_BOUNDARY.md) covers the real
+HTTP envelope, including stored repair metadata for unloaded entries. Typed
+configuration summaries omit unknown keys and values; redundant retired-station
+IDs are removed from the persistent notice while the exact cleanup confirmation
+list remains. The [warning](WARNING_STATE_CLOCK.md) and
+[weather forecast](WEATHER_FORECAST_STATE_CLOCK.md) clocks publish changes from
+existing snapshots without provider requests. The [logging correction](OUTAGE_LOG_LEVELS.md)
+retains generic, deduplicated outage/recovery messages and Core's native required
+source reporting. These changes add no API host, runtime dependency, account,
+credential, telemetry, SQL operation, purge or cleanup permission.
+
+**Published b6 boundary, 17 November 2026:** the test package combines the
 measured-HGT pending-write ownership and bounded precipitation corrections.
 There is no additional credential, endpoint, telemetry, persistent archive or
 automatic purge. [Dated source/package evidence](RELEASE_EVIDENCE_8.3.5b6.md)
 keeps automated checks, publication and installed acceptance separate. Prior
-b3 cleanup and b5 availability acceptance remain closed. These improvements
-do not establish full Gold or independent privacy/security/architecture
-certification; the remaining evidence gaps below stay open.
+b3 cleanup, b5 availability and b6 normal-operation acceptance remain closed.
+Those package-specific results do not establish independent privacy/security/
+architecture certification or substitute for the prepared engineering review.
 
 **Precipitation resource boundary included in 8.3.5b6:** a bounded metadata body could
 previously amplify into many duplicate historical downloads. The source and
@@ -22,7 +45,7 @@ finding, not evidence of a provider compromise or production incident. There
 is no new host, coordinate, credential, telemetry, dependency or persistent
 archive. [Exact contract and evidence limits](PRECIPITATION_RESOURCE_BOUNDS.md).
 
-**Current CI follow-up:** the paired current HA/official test fixture advances
+**CI update included in b6:** the paired current HA/official test fixture advanced
 to **2026.11.2**, with the **2026.11.0** minimum and all existing security,
 integrity, advisory and coverage gates retained. Only those two current package
 versions/hashes change; all other 136 current selections and the minimum lock
@@ -31,7 +54,7 @@ published package changes. This maintenance does not refresh the dated owner
 alert/settings inventory, provider-retention evidence or independent assurance.
 [Fixture contract](../DEVELOPMENT.md#current-fixture-update).
 
-**Current follow-up, 17 November 2026:** a source review of development
+**HGT ownership finding addressed in b6, 17 November 2026:** a source review of development
 `1d34e525d2938f6e265265a1efc80571ba9c1eca` found a narrowly reproduced HGT
 ownership race: queued initial imports could commit after station retirement
 had incorrectly discarded provenance. The correction included in b6 serializes
@@ -91,8 +114,14 @@ This changes the b3 policy beyond b2; historical b2 evidence below remains
 scoped to its published archive-and-keep runtime. It is not full Gold certification.
 
 
-**Review:** 11 November 2026 · **Base:** `11ef5eaf7cb93d28f1039216b05670750ad6de6a`.
-**Publication/readback evidence updated:** 15 November 2026; the original review scope below is unchanged.
+## Dated review and release record
+
+The following table and repository inventory retain the **11 November 2026**
+review scope and base `11ef5eaf7cb93d28f1039216b05670750ad6de6a`.
+Publication/readback notes were updated on 15 November and later release
+boundaries are labelled individually. Historical gaps describe those snapshots;
+the current rule assessment is linked above. No fresh owner-only inventory or
+credential-management evidence is inferred from subsequent code tests.
 
 This source/configuration review is not an independent penetration test,
 regulatory certification or assurance that every deployment is secure.
@@ -103,9 +132,9 @@ regulatory certification or assurance that every deployment is secure.
 | Architecture | Typed entry-owned runtime, borrowed HA session, source/coordinator separation, bounded parsing and independent optional-source failures; native lifecycle tests. | Strict typing and a separately distributed client-library boundary are not fully established. Large coordinator/sensor/config-flow modules retain maintenance costs. The published b1 typed shared-diagnostic lifecycle bounds ownership/handoff; ambiguous legacy groups still need review. Coverage is evidence, not architecture certification. |
 | Security | Fixed-host HTTPS/TLS, no redirects, wire/decompression limits, bounded timeouts/retries and cancellation tests. Hash-locked minimum/current fixtures, explicit Python/pip/certifi/uv floors, offline uv, pinned actions, least-privilege workflows and actual-merge verification. Exact PyPI vulnerability metadata checks returned no active advisories for either 138-pin test lock. | The owner-authenticated 11 November inventory below closes the previously inaccessible alert/settings check. This is a point-in-time inventory, not complete security clearance or an independent offensive assessment. Required approving reviews are zero; SonarCloud is checked in the project workflow but is not a ruleset-required check. |
 
-The engineering foundation is strong. An unqualified "top-level in every
-respect" statement would exceed this evidence. The [quality matrix](QUALITY_SCALE.md)
-retains open Gold work; custom integrations have no official quality tier.
+An unqualified "top-level in every respect" statement would exceed this dated
+evidence. The [quality matrix](QUALITY_SCALE.md) records the current engineering
+assessment; custom integrations have no official quality tier.
 
 
 ## 8.3.5b3: published and focused cleanup accepted
@@ -132,9 +161,10 @@ verified: ten head and nine actual merge checks passed; both HA jobs passed
 2,901 tests plus 83 subtests without SQLite ResourceWarning. It changed no
 component, version, workflow or lock. It requires no production update.
 
-The current [measured OGD HGT development](HGT_OGD_PLAN.md) is a separate runtime
-feature, not part of published b3. Full Gold, independent review, feature
-publication/acceptance and stable promotion remain separate work.
+Measured OGD HGT is absent from published b3. Its later b4/b5/b6 source,
+publication and acceptance boundaries are recorded above and in the
+[measured-HGT contract](HGT_OGD_PLAN.md). The b3 snapshot did not establish
+Gold engineering completion, independent review or later stable promotion.
 
 ## 8.3.5b2: fixed HGT archive test package
 
@@ -163,10 +193,11 @@ alternative-source entries use their configured base coordinates. Warning
 postcode and measured-pollen station are independent. HTTPS protects transport,
 but the receiving provider can see query parameters.
 
-Open-Meteo's [API privacy notice](https://open-meteo.com/en/terms#privacy) states
-that technical logs can include IP addresses and geographical coordinates and
-are deleted after 90 days. This is the provider's statement, not an independent
-retention audit or a guarantee by this fork. Other providers have their own
+At the 11 November review, Open-Meteo's
+[API privacy notice](https://open-meteo.com/en/terms#privacy) stated that technical
+logs can include IP addresses and geographical coordinates and are deleted
+after 90 days. This records the provider's statement at that review, without a
+new retention audit or a guarantee by this fork. Other providers have their own
 policies. No precision reduction or source selection is silently applied.
 
 ## Repository evidence and limits
@@ -186,7 +217,7 @@ email, local-user marker or `/Users/` path. Unknown secret formats, unreachable
 objects, external forks, release binaries, issue attachments, CI artifacts and
 HA installations are outside that result. It is not a perpetual absence guarantee.
 
-This follow-up adds Git exclusions for common local credentials/private keys.
+That review added Git exclusions for common local credentials/private keys.
 Ignore rules do not protect already tracked files and do not replace scanning.
 Review the actual diff/artifact before publication; report a suspected secret
 or vulnerability [privately](../SECURITY.md).
@@ -218,11 +249,11 @@ This updates the earlier review connection's unknown alert state.
 The 67 fixes were recorded on 10 November between 22:19:39 and 22:19:46 UTC.
 No alert was manually dismissed by this review. No secret values or raw error
 payloads were included in the supplied report. Optional scanning features were
-not enabled by this read-only assessment. A clean current inventory does not
+not enabled by this read-only assessment. A clean inventory at that date does not
 prove the absence of unknown vulnerabilities, unrecognised secret formats or
 exposure in every external artifact; the other scope limits above remain.
 
-## Follow-up priorities
+## Continuing operational and governance checks
 
 1. Review making SonarCloud required and retain the accepted dependency-update
    workflow. The published b1 [whole-lock gate](DEPENDENCY_ADVISORIES.md) now has
@@ -231,9 +262,11 @@ exposure in every external artifact; the other scope limits above remain.
    checks now pass; manual audit run 43389137603 also passed on the reviewed
    merge. Actual cron execution and failure-notification delivery remain separate.
    Fixed floors and this feed do not detect every future vulnerability.
-2. Continue bounded translation and device-lifecycle work; obtain independent
-   review of migrations and sensitive changes. Wind PR #97 is merged; release
-   and operator database acceptance remain separate.
+2. Review future migrations and sensitive changes on their own evidence.
+   The prepared rule index covers the existing translation and fixed-service
+   lifecycle contracts; it does not require a production orphan inventory or
+   a fresh four-language visual exercise. Closed release/operator checks above
+   remain closed. Independent assurance remains a separate undertaking.
 3. Retain dated owner-authenticated inventories as the repository changes.
    Future inaccessible APIs remain unknown, not empty alert lists.
 4. Verify HA account/network/backup controls separately. This repository review
@@ -317,12 +350,14 @@ second invocation with no write attempt. The operator reported successful b1
 production installation and visual inspection on 13 November. A bounded
 read-only report on 14 November matched all 44 tagged files and observed old
 arithmetic wind data plus new circular points; its isolated HGT legacy Repair
-remains a b1 issue addressed by the prepared follow-up. This has no pre-update
+was a b1 issue later addressed by the published b3 follow-up. This has no pre-update
 DB baseline and does not prove every historical row was retained. Its
 [focused acceptance plan](ACCEPTANCE_8.3.5b1.md) separates actual wind-history
 preservation, translated defaults and ordinary operation from automatic/native
-test evidence. Historical stale-device inventory, rule applicability and
-independent security/architecture review remain open. No operator DB read,
+test evidence. That b1 snapshot left historical stale-device inventory, rule
+applicability and independent security/architecture review open. The prepared
+rule assessment now supplies applicability and native lifecycle evidence;
+it does not infer a production inventory or independent assurance. No operator DB read,
 device command, installation, cleanup or new security guarantee follows from
 publication. A software rollback alone does not reverse Recorder metadata.
 

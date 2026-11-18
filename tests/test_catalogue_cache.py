@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import logging
 import math
 from dataclasses import FrozenInstanceError
 from types import SimpleNamespace
@@ -162,6 +163,7 @@ async def test_expired_catalogue_is_labelled_stale_and_user_retry_recovers(
     caplog,
     freezer,
 ):
+    caplog.set_level(logging.INFO, logger="custom_components.meteoswiss.stations_map")
     freezer.move_to("2026-10-16T13:00:00Z")
     session = async_get_clientsession(hass)
     loader = MeteoSwissStationsMap()
@@ -190,11 +192,14 @@ async def test_expired_catalogue_is_labelled_stale_and_user_retry_recovers(
             [
                 r
                 for r in caplog.records
-                if r.name.endswith("stations_map") and r.levelname == "WARNING"
+                if r.name.endswith("stations_map")
+                and r.getMessage() == "Weather station catalogue unavailable"
+                and r.levelno == logging.INFO
             ]
         )
         == 1
     )
+
     aioclient_mock.clear_requests()
     aioclient_mock.get(STATIONS_METADATA_URL, content=catalogue("Recovered"))
     await loader.load_stations(session, retry=True)
@@ -211,6 +216,16 @@ async def test_expired_catalogue_is_labelled_stale_and_user_retry_recovers(
         )
         == 1
     )
+    # A healthy cache hit is not another recovery transition.
+    await loader.load_stations(session)
+    transitions = [record for record in caplog.records
+                   if record.name.endswith("stations_map")
+                   and record.getMessage() in {
+                       "Weather station catalogue unavailable",
+                       "Weather station catalogue recovered",
+                   }]
+    assert len(transitions) == 2
+    assert all(record.levelno == logging.INFO for record in transitions)
 
 
 @pytest.mark.parametrize(

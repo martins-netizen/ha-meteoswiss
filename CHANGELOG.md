@@ -2,6 +2,23 @@
 
 ## [Unreleased]
 
+- Complete the engineering evidence through Gold with a reviewable 51-rule
+  index, native fixed-service and complete entity-metadata inventories, and
+  fresh current-run JUnit/coverage verification in both existing HA jobs.
+  Retain every strict coverage, dependency, security and workflow gate.
+- Minimize diagnostics at the complete native HTTP boundary: typed saved-config
+  allowlist, no redundant station IDs in persistent notices, and metadata-only
+  startup sanitization of the exact old notice before diagnostics registration.
+  Preserve dismissal, creation metadata and exact cleanup consent in its form.
+- Publish warning validity changes and forecast UTC-hour/snapshot expiry changes
+  through entity-owned local clocks. Preserve source polling, identifiers,
+  forecast subscribers, cancellation and queued-callback invalidation.
+- Use INFO for handwritten optional UV/catalogue outage and recovery messages,
+  retaining once-per-transition logging and native Core coordinator handling.
+- Reconcile README, architecture, source schedules, metadata/name guidance,
+  applicability and privacy/security boundaries. Preserve the dated b6 matrix
+  as historical evidence; no official tier, new package or HA update is implied.
+
 ## [8.3.5b6] — 2026-11-17 · HGT ownership and precipitation import bounds
 
 - Package the pending-import HGT ownership correction from PR #121 and bounded

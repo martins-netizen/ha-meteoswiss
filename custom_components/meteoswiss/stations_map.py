@@ -212,7 +212,7 @@ class MeteoSwissStationsMap:
                 csv.Error,
             ) as err:
                 if self.last_update_success is not False:
-                    _LOGGER.warning("Weather station catalogue unavailable")
+                    _LOGGER.info("Weather station catalogue unavailable")
                 self.last_update_success = False
                 self.last_exception = type(err).__name__
                 self._retry_at = time.monotonic() + CATALOGUE_RETRY_DELAY

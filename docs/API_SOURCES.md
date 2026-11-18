@@ -1,5 +1,14 @@
 # Sources, locations and update contracts
 
+**Post-b6 local state clocks:** warning validity and forecast UTC-hour/retained
+snapshot-expiry callbacks publish native states and subscribed forecasts from
+memory. They perform **no source request** and do not change any polling or
+retry schedule below. [Warning timing](WARNING_STATE_CLOCK.md),
+[forecast timing](WEATHER_FORECAST_STATE_CLOCK.md) and the
+[completion review](GOLD_COMPLETION_REVIEW.md) distinguish source refresh from
+local time projection. Optional UV/catalogue handwritten availability logs use
+one INFO message per outage/recovery, as [documented](OUTAGE_LOG_LEVELS.md).
+
 **Published 8.3.5b4 measured HGT source:** the importer uses official SwissMetNet
 `xno000d0/m0/y0` directly. Daily historical/recent and official monthly/annual
 products remain distinct; no forecast history is reused. See the

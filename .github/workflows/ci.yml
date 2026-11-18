@@ -122,12 +122,18 @@ jobs:
         run: python scripts/check_translations.py
 
       - name: Run regression tests with line and branch coverage
-        run: >-
-          pytest -q --cov=custom_components.meteoswiss --cov-branch
-          --cov-report=term-missing --cov-report=json:coverage.json
+        run: |
+          quality_prefix="$(python scripts/check_quality_rules.py prepare)"
+          pytest -q --cov=custom_components.meteoswiss --cov-branch \
+            --cov-report=term-missing --cov-report=json:coverage.json \
+            --junitxml="$(python scripts/check_quality_rules.py junit-path)" \
+            --junit-prefix="$quality_prefix"
 
       - name: Enforce per-module coverage and report the whole integration
         run: python scripts/check_quality_coverage.py >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Verify the 51-rule evidence index against this native run
+        run: python scripts/check_quality_rules.py verify
 
   hassfest:
     runs-on: ubuntu-latest

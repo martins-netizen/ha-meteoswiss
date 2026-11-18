@@ -1,5 +1,15 @@
 # Maintained fork: architecture and data contracts
 
+**Post-b6 Gold source completion:** diagnostics now minimize both typed saved
+configuration and the native domain-issue envelope, including the exact old
+persistent notice at startup. Warning and forecast entities own one local next
+time-boundary callback, invalidate queued generations and cancel on removal.
+Those callbacks publish retained data and forecasts without another HTTP fetch.
+The fixed seven service roles and metadata are checked in native HA; the
+[51-rule evidence contract](GOLD_EVIDENCE_CONTRACT.md) consumes the existing
+complete compatibility run. [The completion review](GOLD_COMPLETION_REVIEW.md)
+separates this prepared source from published b6 and installed acceptance.
+
 **8.3.5b6 scope:** the pending-import HGT ownership correction and bounded
 precipitation imports below are included in this test package. The
 [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)

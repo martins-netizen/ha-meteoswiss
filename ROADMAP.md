@@ -2,23 +2,26 @@
 
 ## Current engineering work
 
-The **8.3.5b6** test package brings together the merged
-[HGT pending-import ownership correction](docs/HGT_PENDING_IMPORT_OWNERSHIP.md),
-[bounded precipitation imports](docs/PRECIPITATION_RESOURCE_BOUNDS.md), and
-HA 2026.11.0/2026.11.2 compatibility checks. Existing entries, IDs, accepted b3
-cleanup and b5 availability evidence remain. The minimum stays 2026.11.0.
-Use [the catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-for availability and [the b6 update/check](docs/ACCEPTANCE_8.3.5b6.md).
+The prepared source completion covers the applicable engineering checklist
+through Gold: four disjoint runtime corrections and the evidence/documentation
+change, delivered together in one completion PR against the protected base.
+The earlier parallel-head delivery plan is superseded; strict base freshness
+and all existing checks remain. See [the bounded review](docs/GOLD_COMPLETION_REVIEW.md),
+[51-rule matrix](docs/QUALITY_SCALE.md) and [current-run evidence contract](docs/GOLD_EVIDENCE_CONTRACT.md).
+Source head/merge checks, publication and installed acceptance retain their
+own gates. The existing b3 cleanup and b5/b6 operator reports stay closed.
 
-PR #121 merged at `b936505d348c199717c00b3211def7fa6b3013c1`;
-PR #122 at `1439b83c8dedde1a89f62fcc4c0fd689f1b6baa6`;
-PR #123 at `8e6dc429e54f2973ac120601fc5134f882c535d9`.
-[Dated source and package evidence](docs/RELEASE_EVIDENCE_8.3.5b6.md) keeps actual
-merge checks, packaging, publication and installed acceptance separate.
-The next quality work remains the open Gold rules and independent review in
-[the quality assessment](docs/QUALITY_SCALE.md), not repeating accepted cleanup
-or adding a replacement archive. Full Gold and independent privacy/security/
-architecture assurance remain unestablished.
+Published **8.3.5b6** remains the test package for the earlier HGT ownership and
+bounded precipitation work; this source completion does not silently change its
+immutable contents. [The catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+is authoritative for available packages. Minimum Core remains 2026.11.0;
+current compatibility remains 2026.11.2. No new package is created by these PRs.
+
+Platinum typing/dependency architecture and any broader refactoring can follow
+as separate justified work. Provider retention, owner-authenticated settings,
+HA host/network/backup controls and independent external security assessment
+remain explicit [assurance boundaries](docs/GOLD_SECURITY_BOUNDARIES.md), not
+unimplemented Gold code rules or reasons to repeat accepted migrations.
 
 This describes current fork work. Historical upstream release claims remain in
 the changelog as history; they are not current certifications. Check the
