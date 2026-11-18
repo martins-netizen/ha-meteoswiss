@@ -1,30 +1,37 @@
 # Coordinator placement review
 
-**Review version:** 1.7 · **Updated:** 25 October 2026
-**Scope:** the released 8.3 runtime. The completed extraction sections below
-retain the sequence and evidence of the original reviews; they are not new
-architecture work to repeat. See [current release status](RELEASE_READINESS.md).
+**Review version:** 1.9 · **Updated:** 18 November 2026
+**Scope:** canonical source correction prepared after published b7, before
+stable 8.3.5. The completed extraction sections below retain the original
+sequence and evidence; they are not work to repeat. See
+[current source gates](COORDINATOR_CANONICAL_COMPLETION.md).
 
 The [HA common-modules rule](https://contributors.home-assistant.io/core/quality-scale/common-modules/)
-places DataUpdateCoordinator definitions in coordinator.py and the shared entity
-base in entity.py. Distinct source behaviour still needs explicit boundaries.
-This review records actual class definitions, not imports or type annotations.
+requires coordinator definitions in `coordinator.py` and shared entity bases in
+`entity.py`; it gives no exception for a specialized HGT coordinator. The b7
+review missed the ninth actual class in `hgt_ogd_coordinator.py`, so its passing
+index did not establish compliance. The prepared correction defines all nine
+classes in `coordinator.py`. The old HGT module explicitly re-exports the same
+class for compatibility; it is not another definition, subclass or wrapper.
+Separate source approval, native checks and actual-merge gates remain required.
 
-| Coordinator | Current defining module | Finding |
+| Coordinator | Canonical defining module in the correction | Finding |
 |---|---|---|
 | MeteoSwissDataUpdateCoordinator | coordinator.py | Canonical observation coordinator. |
-| MeteoSwissAlertsCoordinator | coordinator.py | Moved from binary_sensor.py in this follow-up. |
-| MeteoSwissForecastCoordinator | coordinator.py | Extracted ICON source client owns HTTP/parsing; the canonical coordinator retains caching, scheduling and failure/recovery lifecycle. |
-| MeteoSwissStationConditionCoordinator | coordinator.py | Optional station-local current model code; station_condition.py owns bounded HTTP/parsing and validity. The canonical coordinator owns catalogue resolution, caching and scheduling. |
-| OpenMeteoDataUpdateCoordinator | coordinator.py | Extracted current-condition client handles HTTP/parsing; HA coordinator retains cache, freshness, failure pause and lifecycle. |
-| OpenMeteoPollenCoordinator | coordinator.py | Source-only pollen/AQ client includes the separate optional UV request; the real HA coordinator retains current-hour validation, the shared AQ/UV result cache and transition logs. |
-| MeteoSwissPollenCoordinator | coordinator.py | Extracted measured-pollen client owns transport, parsing and freshness; HA coordinator owns scheduling and exception translation. |
-| MeteoSwissHourlyPrecipitationCoordinator | coordinator.py | Source-only hourly/archive client and amount parser in precipitation.py; explicit Recorder projection/import in precipitation_recorder.py; genuine HA coordinator composes both. |
+| MeteoSwissAlertsCoordinator | coordinator.py | Earlier extraction removed the binary_sensor.py definition. |
+| MeteoSwissForecastCoordinator | coordinator.py | Extracted ICON client owns HTTP/parsing; coordinator owns cache, scheduling and lifecycle. |
+| MeteoSwissStationConditionCoordinator | coordinator.py | Source client owns HTTP/parsing/validity; coordinator owns catalogue, cache and scheduling. |
+| OpenMeteoDataUpdateCoordinator | coordinator.py | Source client owns HTTP/parsing; coordinator owns cache, freshness and recovery. |
+| OpenMeteoPollenCoordinator | coordinator.py | Source client includes optional UV; coordinator owns hour validation, shared result cache and transition logs. |
+| MeteoSwissPollenCoordinator | coordinator.py | Source client owns transport/parsing/freshness; coordinator owns scheduling and translated failures. |
+| MeteoSwissHourlyPrecipitationCoordinator | coordinator.py | precipitation.py owns bounded source/parser work; precipitation_recorder.py owns native projection/import. |
+| MeteoSwissHgtCoordinator | coordinator.py | Moved from hgt_ogd_coordinator.py; hgt_ogd_manager.py retains station refresh/ownership and hgt_ogd_recorder.py retains native Recorder work. |
 
-There are eight real coordinator classes. MeteoSwissSensor/MeteoSwissWeather
-are coordinator-backed entities, not additional coordinator definitions. The
-shared station-catalogue loader is a locked metadata service, not a
-DataUpdateCoordinator. Shared entity bases already live in entity.py.
+There are **nine** real coordinator classes. Eight was the original pre-HGT
+milestone count. Coordinator-backed entities, the shared locked catalogue
+loader and the compatibility re-export are not extra coordinator definitions.
+Shared entity bases already live in `entity.py`. Source/data boundaries remain
+explicit even though the HA coordinator definitions share their canonical file.
 
 ## Completed platform dependency removal
 
@@ -209,9 +216,14 @@ cache TTLs and HA-owned sessions. No suppression, coverage exclusion or lowered
 threshold replaces an architecture boundary. Later changes must retain source
 and registered entity/Recorder lifecycle evidence.
 
-The agreed next feature release still includes official-catalogue location/POI
-selection. Its stored location, altitude, migration and translated UI contracts
-remain separate work before packaging and focused HA acceptance. This inventory
-does not change the running HA or grant an official quality tier. See the
-[quality evidence](QUALITY_PROGRESS_2026-10-22.md) and
-[next release plan](NEXT_RELEASE_PLAN.md).
+Official-catalogue location/POI routing and native settings contracts are
+already delivered; the original October
+[quality review](QUALITY_PROGRESS_2026-10-22.md) and [plan](NEXT_RELEASE_PLAN.md)
+retain that historical scope. The current specialized HGT boundary keeps
+source parsing, shared ownership/locking, native Recorder completion and Core
+scheduling explicit; see [its contract](HGT_OGD_PLAN.md) and
+[coordinator examples](COORDINATOR_EXAMPLES.md). This is a reviewed internal
+module layout, not a new standalone Python package or an official tier award.
+[Current rule evidence](QUALITY_SCALE.md) and [dated stages](RELEASE_EVIDENCE_8.3.5.md)
+separate measured b7 evidence, the canonical correction's pending source gates
+and future stable package/publication gates.

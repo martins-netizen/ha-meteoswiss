@@ -1,20 +1,33 @@
 # Privacy, architecture and security: bounded review
 
-**Approved source review, 18 November 2026:** signed #129 merge
-`8887597ebf8567b5969ee70b8f9dd6f261603aec` closes reproduced
-diagnostics-export and local state-clock gaps, aligns two optional-source
-transition logs with INFO, and supplies the project's engineering assessment
-of all **51 rules through Gold**. The [current security boundaries](GOLD_SECURITY_BOUNDARIES.md)
-separate that code/test evidence from provider retention, HA host controls,
-repository governance and independent assurance. The [quality matrix](QUALITY_SCALE.md),
-[completion review](GOLD_COMPLETION_REVIEW.md) and
-[evidence contract](GOLD_EVIDENCE_CONTRACT.md) define the rule-by-rule result
-and its completed source checks: ten trusted head checks and nine actual-merge
-checks, with fresh native evidence on HA 2026.11.0/2026.11.2. B7 prepares this
-source as a package with [separate evidence](RELEASE_EVIDENCE_8.3.5b7.md).
-Neither this review nor package preparation claims b7 publication/installation,
-an official HA tier, penetration test or security certification. The dated
-owner-authenticated inventory below remains unchanged.
+**Current source boundary, 18 November 2026:** published and bounded-accepted b7
+at `9ea96fc5a5306342eef0aa73ae50cc95bb844fb4` retains the diagnostics/time-clock
+corrections approved in #129. All ten b7 head and nine actual-merge checks
+passed. The overall documentation review subsequently found that the ninth HGT
+coordinator was outside the canonical module; the earlier human
+common-modules judgment was incomplete. The
+[canonical coordinator correction](COORDINATOR_CANONICAL_COMPLETION.md) must
+pass its own source review and actual-merge checks before complete Gold
+assessment closure and stable 8.3.5 packaging. The same corrective source
+fixes calculated forecast HGT's Swiss-midnight registered-state rollover using
+retained data. Neither correction expands privacy, request or deletion authority. The
+[dated record](RELEASE_EVIDENCE_8.3.5.md) retains actual publication and the
+bounded sight report; no independently audited HA installation is inferred.
+
+The [quality matrix](QUALITY_SCALE.md), [completion review](GOLD_COMPLETION_REVIEW.md),
+[evidence contract](GOLD_EVIDENCE_CONTRACT.md) and
+[security boundaries](GOLD_SECURITY_BOUNDARIES.md) distinguish code/test evidence
+from provider retention, deployment controls, repository governance and external
+assurance. No official HA tier, penetration test or security certification is
+claimed. The dated owner-authenticated inventory below remains unchanged.
+
+The pre-stable review initially suspected that two nonpersistent repair issues
+exported private placeholders. Actual Core `IssueEntry.to_json()` on both
+HA 2026.11.0 and 2026.11.2 omits placeholders for nonpersistent issues; changing
+only persistence to true makes positive-control placeholders appear. The
+suspected leaks were refuted, and the earlier tentative finding is withdrawn.
+No additional repair-UI or runtime privacy change follows from it. This scoped
+serialization result does not certify every arbitrary future issue or export.
 
 The [diagnostics correction](DIAGNOSTICS_PRIVACY_BOUNDARY.md) covers the real
 HTTP envelope, including stored repair metadata for unloaded entries. Typed
@@ -336,8 +349,13 @@ All ten corrected-head and nine actual-merge checks passed for PR #107,
 including SonarCloud without accepted issues. Manual workflow
 [run 43389137603](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/43389137603)
 also passed on the same reviewed merge: 140 package/version pairs, no active
-advisories and no unknown results. Actual cron execution and delivery of a
-failure notification have not been observed.
+advisories and no unknown results. At that 13 November observation, actual
+cron execution and failure-notification delivery were not yet observed.
+A later **14 November 2026** follow-up confirms scheduled
+[run 43593878148](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/43593878148),
+event `schedule`, successful at b2 source
+`f8ea38babdfd44354059927888fb54fd662e5696`. Failure-notification delivery remains
+unobserved; the dated owner-authenticated inventory is not refreshed.
 TLS certificate/hostname validation is explicit; the checker emits JSON without
 accepting a report path or writing files. A live known-result inventory
 is dated evidence and does not refresh the owner-only GitHub alert/settings

@@ -1,13 +1,12 @@
 # Correct an invalid saved forecast location
 
-## 8.3.5b5 update
+## 8.3.5 stable update
 
-The **8.3.5b5** recovery package retries temporary measured-HGT failures
-without changing existing entries, IDs or owned statistics. If choosing this
-published test release, update normally and follow the
-[short b5 check](ACCEPTANCE_8.3.5b5.md). Already completed obsolete-forecast
-cleanup stays complete. [Package notes](RELEASE_8.3.5b5.md) describe availability
-and the recovery limits.
+Stable 8.3.5 retains published b7's bounded HGT recovery, exact cleanup consent,
+privacy and lifecycle behavior. Use the [catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases),
+[package notes](RELEASE_8.3.5.md) and [stable guide](ACCEPTANCE_8.3.5.md).
+Completed b3 cleanup and b5/b6/b7 reports stay closed. An already accepted b7
+runtime needs no repeat migration, failure exercise or observation window.
 
 **Published 8.3.5b4 measured-HGT repairs:** after a weather-station change, **Remove
 unused official HGT statistics** lists the exact retired station products.
@@ -87,7 +86,8 @@ supported at the time. See the [current support policy](../DEVELOPMENT.md#suppor
 - [Registered weather/entity tests](../tests/test_forecast_location_routing.py):
   both current-weather sources, retained IDs and independent failure/recovery.
 - [Engineering checklist](QUALITY_SCALE.md): the accepted b1 repair follow-up
-  and remaining Gold work are recorded separately.
+  retains its recorded scope. The current matrix explicitly gates the later
+  canonical-coordinator finding before all-rule assessment closure.
 
 <a id="wind-statistics-preparation-blocked-unreleased"></a>
 

@@ -1,9 +1,10 @@
 # Remove an empty retired service group
 
-**Availability:** included in the published 8.3.5b6 test package, together with
-the shared-diagnostic lifecycle fix. Published stable 8.3.4 does not include
-this approval policy. The source candidate adds lifecycle evidence and updated
-documentation; the bounded manual policy itself is unchanged.
+**Availability:** included in the 8.3.5 test line and published b7, retained
+unchanged by stable 8.3.5 together with shared-diagnostic lifecycle protection.
+The previous stable 8.3.4 did not contain this manual approval policy. The
+[current dated record](RELEASE_EVIDENCE_8.3.5.md) separates completed b7
+checks/sight acceptance from stable package and publication gates.
 
 ## Use the existing device page
 
@@ -92,5 +93,5 @@ The [Gold evidence contract](GOLD_EVIDENCE_CONTRACT.md) and
 [completion review](GOLD_COMPLETION_REVIEW.md) separate the engineering source
 candidate from approved merges, package publication and actual installed
 operator evidence. This manual path alone is not complete Gold; custom
-integrations have no formal Home Assistant tier award. Existing published b6
+integrations have no formal Home Assistant tier award. Existing published b7
 acceptance retains its own scope.

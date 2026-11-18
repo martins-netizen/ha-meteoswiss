@@ -103,5 +103,9 @@ at 18:42:00 UTC on 23 October 2026 returned 120 hourly rows and daily aggregates
 for Kloten postal code, Säntis, Gotthardpass and Albert-Heim-Hütte SAC using their
 catalogue heights. This is source/request compatibility evidence, not a
 forecast-accuracy comparison. The HA tests use controlled source responses; they are
-not the operator's temporary-HA acceptance. The dialogs are now regression-tested; practical postcode/summit/pass/hut
-selection checks remain for the next reviewed candidate. No operator installation or release is performed by this package.
+not a complete operator installation audit. The original October practical
+selection exercises are historical; later completed bounded operator reports
+are not reopened. Current dialogs have native regression evidence. The
+[canonical coordinator correction](COORDINATOR_CANONICAL_COMPLETION.md) and
+future stable packaging require no new source switch, location exercise or
+operator observation window; see the [stable guide](ACCEPTANCE_8.3.5.md).

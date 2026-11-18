@@ -7,8 +7,11 @@ translated failure. Stable [8.3.3](RELEASE_8.3.3.md) is now published and its
 actual installation/normal operation is confirmed; see
 [release evidence](RELEASE_EVIDENCE_8.3.3.md). Earlier 8.3.2 retains its old messages.
 
-All 21 user-facing `UpdateFailed` sites use 19 stable keys in the integration's
-`exceptions` catalogue, with English, German, French and Italian messages.
+The original 8.3.3 scope covered 21 user-facing `UpdateFailed` sites and 19
+stable keys. The later measured-HGT coordinator adds three translated failure
+keys: `hgt_ogd_import_blocked`, `hgt_ogd_conflict` and
+`hgt_ogd_unavailable`. All use the integration's four-language `exceptions`
+catalogue; the canonical placement correction retains those error categories.
 HA receives the translation domain/key without a simultaneous inline English
 message. The [exception-translations rule](https://contributors.home-assistant.io/core/quality-scale/exception-translations/)
 describes this native mechanism.

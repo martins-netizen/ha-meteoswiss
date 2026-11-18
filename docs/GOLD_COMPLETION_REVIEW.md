@@ -1,12 +1,23 @@
-# Gold completion: approved source and b7 package boundary
+# Gold completion: source review and remaining corrections
 
-**Approved source:** [PR #129](https://github.com/martins-netizen/ha-meteoswiss/pull/129),
-signed merge `8887597ebf8567b5969ee70b8f9dd6f261603aec`, 18 November 2026.
-Its sole parent is published b6 at
-`cc4f494694609af28fd27c46c475a8270d3858ab`. The disjoint runtime corrections
-below and their evidence/documentation passed both source-head and actual-merge
-checks together. **8.3.5b7 prepares this approved source as a test package**;
-its package validation, publication and installed acceptance are separate.
+**Review update, 18 November 2026:** approved #129 at
+`8887597ebf8567b5969ee70b8f9dd6f261603aec` was packaged by
+[PR #130](https://github.com/martins-netizen/ha-meteoswiss/pull/130) at signed
+`9ea96fc5a5306342eef0aa73ae50cc95bb844fb4`. B7 completed its ten head and
+nine actual-merge checks, publication and a bounded positive operator sight
+report. [The dated record](RELEASE_EVIDENCE_8.3.5.md) preserves that evidence.
+
+The overall documentation review then found that the common-modules judgment
+had missed the ninth real coordinator: `MeteoSwissHgtCoordinator` was defined
+outside `coordinator.py`. There is no applicable exception. The
+[canonical coordinator correction](COORDINATOR_CANONICAL_COMPLETION.md) must
+receive its own source review, native validation and actual-merge checks before
+complete assessment closure and stable 8.3.5 packaging. It preserves the
+established data/lifecycle contracts and keeps the old module as a re-export
+of the single canonical class. The same corrective source fixes calculated
+HGT's midnight registered-state lag using retained daily data; its existing
+formula and availability remain. Complete native regressions must validate
+that new timer and its lifecycle. The future stable source merge is not known yet.
 
 ## Delivery preparation — historical record
 
@@ -46,9 +57,10 @@ HA **2026.11.0** and **2026.11.2** jobs each passed **3,510 tests plus 83
 subtests**, with five known upstream deprecations and no ResourceWarning,
 SQLite, thread or finalizer warnings. Strict coverage passed at
 **99.98382400517632%** combined: **4,801/4,802 statements** and
-**1,380/1,380 branches**. [The dated b7 source record](RELEASE_EVIDENCE_8.3.5b7.md)
-provides the exact commits, runs and remaining package gates. These source
-counts are not projected onto a future b7 package merge.
+**1,380/1,380 branches**. [The dated #129 source record](RELEASE_EVIDENCE_8.3.5b7.md)
+preserves these earlier metrics; [the dated record](RELEASE_EVIDENCE_8.3.5.md)
+adds the completed b7 result and remaining stable gates. These #129 source
+counts are not projected onto the separately recorded b7 or stable package results.
 
 Both existing compatibility jobs consume fresh JUnit and coverage from their
 single full run through the [evidence contract](GOLD_EVIDENCE_CONTRACT.md).
@@ -71,21 +83,23 @@ observed scope and are not repurposed as later package acceptance.
 
 ## What remains separate
 
-Source integration and its required head/merge checks are complete. B7 changes
-only two component version fields; all 50 non-version component files must
-match the approved source. Package preparation adds its own fixed publisher,
-independent refusal-path fixtures and current documentation. It retains the
-rule index, dependency locks and every existing workflow/check gate. A matching
-runtime tree does not bypass normal package approval or its own exact-head and
-actual-merge checks.
+B7's required checks, publication and bounded operator sight report are
+complete. Canonical coordinator placement and calculated-HGT midnight state
+publication remain a separate corrective source change, keeping version
+8.3.5b7 until its own approved merge.
+Future stable packaging can then change only the two component version fields
+relative to that newly approved source, retaining its other 50 component files.
+A fixed stable publisher must be pinned and tested against that actual source;
+its present planning does not establish readiness or publication. Neither a
+matching runtime tree nor the old checker result bypasses source/package
+approval, trusted head checks, normal signed merges or actual-merge checks.
 
-Publication and a normal existing-entry update follow their authorized release
-workflow. Use the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-for availability and [the short b7 protocol](ACCEPTANCE_8.3.5b7.md) after
-publication. Neither source completion nor these notes claim b7 is published,
-installed or accepted. Accepted b3 cleanup, b5 availability and b6 bounded
-normal operation stay closed; no repeated migration or destructive test is
-required.
+Stable publication follows its separately authorized workflow. Use the
+[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+for availability and [the stable guide](ACCEPTANCE_8.3.5.md) for an ordinary
+package update. An already accepted b7 runtime needs no repeat installation,
+migration, failure exercise or observation window solely for promotion.
+Accepted b3 cleanup and b5/b6/b7 reports stay closed.
 
 The project remains a **custom integration**, without an official Gold badge
 or manifest tier. Platinum typing/dependency work and broad architecture

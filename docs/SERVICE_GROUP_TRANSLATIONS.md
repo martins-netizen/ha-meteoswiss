@@ -1,8 +1,9 @@
 # Native names for the remaining service groups
 
-**Status:** unreleased development follow-up after the bounded device-removal
-policy in PR #104. Published stable 8.3.4 is unchanged. This updates display
-metadata, not sources, observations, forecast calculations or registry identities.
+**Status:** delivered in the 8.3.5 test line after PR #104, retained by
+published b7 and stable 8.3.5. Earlier stable 8.3.4 is unchanged. This updates
+display metadata, not sources, calculations or registry identities.
+[Dated stage evidence](RELEASE_EVIDENCE_8.3.5.md) records the separate package stage.
 
 The two diagnostic groups and forecast groups already use native HA device
 translations. This follow-up supplies the remaining current-weather,

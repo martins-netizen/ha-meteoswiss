@@ -1,6 +1,6 @@
 # Forecast sensors: today and tomorrow
 
-**Guide version:** 1.7 · **Updated:** 24 October 2026
+**Guide version:** 1.8 · **Updated:** 18 November 2026
 **Availability:** included in the **8.3.0** runtime accepted as b4.
 Use the [announced release](RELEASE_8.3.0.md); earlier beta notes describe their
 historical scopes, not instructions to reinstall an older beta.
@@ -70,7 +70,7 @@ Local times carry UTC offsets to distinguish repeated hours.
 ## Attributes and availability
 
 Find entities under **Settings → Devices & services → MeteoSwiss**. Inspect
-attributes in **Developer tools → States**. Entity IDs depend on your HA
+attributes in **Settings → Tools → States**. Entity IDs depend on your HA
 language and personal renaming; the internal keys below are stable.
 
 | Attribute | Meaning |
@@ -95,6 +95,32 @@ The existing coordinator refreshes hourly. Local timers update remaining-hour
 selection, midnight rollover and the age boundary without network requests.
 Unloading the entry removes those listeners.
 
+## Calculated HGT follows the Swiss day
+
+Calculated **HGT 12/20 today (forecast)** is a separate entity on the forecast
+device. The pre-stable correction publishes its registered value and
+`daily_mean_temperature` at Swiss midnight, rather than waiting for the next
+hourly source update. It selects the new day from the existing daily snapshot
+using `Europe/Zurich`, independently of the server or HA display timezone and
+with the actual 23-/25-hour clock-change days.
+
+One entity-owned local callback is active after the entity is added with a
+successful nonempty snapshot. A source update replaces it; failed/empty data
+cancels it, successful recovery schedules it again, and removal cancels it.
+An invalidated queued callback cannot publish or rearm after removal. The
+clock also works when entry polling is disabled and makes no provider request.
+
+The HGT sensor retains its existing coordinator-success availability; the
+three-hour scalar-sensor age limit described above is not newly applied to it.
+Its HGT 12/20 formula, IDs, unit, lack of a statistics state class and explicit
+obsolete-archive cleanup remain. It is still a forecast, not official measured
+HGT. A missing new-day mean produces the existing missing-value result rather
+than repeating yesterday as a fresh observation. See the
+[source-correction record](COORDINATOR_CANONICAL_COMPLETION.md) for the
+reproduced defect and validation boundary. Native
+[registered-state regressions](../tests/test_forecast_hgt_state_clock.py) cover
+the local clock and its lifecycle on the supported Core fixtures.
+
 ## Cards, automations and history
 
 Use an ordinary entity card or numeric-state condition with the numeric sensor.
@@ -112,7 +138,7 @@ at midnight and predictions change during the day; they must not become measured
 daily totals or long-term rainfall statistics. Normal Recorder history can show
 how a prediction changed. For measured rainfall use the
 [official hourly statistics](SENSORS.md#completed-hourly-precipitation-statistics).
-In the prepared b2 display correction, forecast cards/actions for an explicit
+In the released display correction, forecast cards/actions for an explicit
 catalogue selection use the new forecast weather entity. The original weather
 entity retains current conditions and its ID. Without a catalogue selection,
 its legacy forecast interface remains available; see [migration](FORECAST_DISPLAY.md).

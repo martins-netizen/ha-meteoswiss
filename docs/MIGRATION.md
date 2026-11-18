@@ -191,7 +191,9 @@ Upgrades retain the existing observation/pollen/warning choices and original
 forecast base until a deliberate change. The entry's **Configure (gear)** now
 edits weather station/base coordinates, measured-pollen station, forecast choice
 and warning postcode together. The HA home location remains a general HA setting.
-The older **three-dot menu → Reconfigure** path remains a forecast-only shortcut.
+On **8.3.2 and newer**, **three-dot menu → Reconfigure** opens that same
+complete settings transaction. The forecast-only shortcut describes 8.3.1 and
+older, rather than the current dialog.
 See [selection](FORECAST_LOCATION_SETUP.md) and [unified settings](CALENDAR_AND_LOCATION_SETTINGS.md).
 
 The observation interval field is no longer shown. New entries use 600 seconds;
@@ -214,7 +216,12 @@ The station's qualitative weather state is modelled at its own coordinates;
 numeric observations remain measurements. It does not borrow the selected
 POI's condition. [Source and failure limits](STATION_WEATHER_CONDITION.md).
 
-### Upgrading an accepted 8.3 beta
+### Historical accepted 8.3.0 and 8.3.1 beta upgrades
+
+The following describes those completed October transitions. For current
+8.3.5 selection and retained b7 acceptance, use the
+[stable guide](ACCEPTANCE_8.3.5.md); these are not instructions to repeat an old
+installation or observation window.
 
 B4 was the accepted runtime for stable 8.3.0; only its two component version files
 changed. Keep the existing entry and intended locations. After the stable release

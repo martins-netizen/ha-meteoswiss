@@ -1,6 +1,6 @@
 # Gold applicability: discovery and service-group lifecycle
 
-**Review version:** 1.2 · **Reviewed:** 18 November 2026
+**Review version:** 1.3 · **Reviewed:** 18 November 2026
 **Scope:** approved #129 source
 `8887597ebf8567b5969ee70b8f9dd6f261603aec`, based on published 8.3.5b6 at
 `cc4f494694609af28fd27c46c475a8270d3858ab`, with native fixed-topology evidence. Version 1.0 assessed the earlier development baseline
@@ -116,12 +116,16 @@ or a production historical registry audit.
 
 The [Gold evidence contract](GOLD_EVIDENCE_CONTRACT.md) records the source and
 test links checked by CI. The [completion review](GOLD_COMPLETION_REVIEW.md)
-and [quality matrix](QUALITY_SCALE.md) record the complete engineering source
-assessment. Source #129 has completed its own head and actual-merge checks.
-B7 prepares that source with [separate package evidence](RELEASE_EVIDENCE_8.3.5b7.md);
-no b7 publication or installed operator acceptance follows from the source
-result. Existing [provider evidence](PROVIDER_METADATA.md) and published b6
-evidence retain their own acceptance scope. No official
+and [quality matrix](QUALITY_SCALE.md) record the engineering source assessment.
+Source #129 and published b7 completed their own head and actual-merge checks;
+b7 also completed publication and a bounded sight report. The later
+[canonical coordinator finding](COORDINATOR_CANONICAL_COMPLETION.md) concerns a
+separate common-modules judgment, not the discovery/lifecycle decisions above.
+Its corrective source gates precede full assessment closure and future stable
+packaging. [Dated evidence](RELEASE_EVIDENCE_8.3.5.md) separates those stages,
+without reopening the accepted operator scopes. Existing
+[provider evidence](PROVIDER_METADATA.md) and historical release evidence
+retain their own scope. No official
 Home Assistant tier or independent certification is claimed.
 
 Reassess these decisions when adding a discoverable device, stored network

@@ -1,19 +1,18 @@
 # Sensor reference
 
-## 8.3.5b7 scope
+## Current contracts and planned stable scope
 
-**8.3.5b7** prepares approved #129: warning validity and forecast UTC-hour/age
-boundaries publish native states from retained data without extra polling.
-Diagnostics exports are minimized and optional-source outage/recovery logs use
-INFO. Complete native metadata/lifecycle evidence supports the project's
-51-rule Gold assessment; no official tier is claimed.
-Check the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-for availability, then use the existing entry and the
-[short b7 update and read-only check](ACCEPTANCE_8.3.5b7.md).
-[Package notes](RELEASE_8.3.5b7.md) keep source checks, package validation,
-publication and installed acceptance separate. B6's pending-import HGT ownership
-and bounded precipitation work, plus b5 recovery, remain. Accepted b3 cleanup
-and b5/b6 checks stay closed; no station change or repeated cleanup is needed.
+Published b7 supplies the official measured-HGT, circular-wind, native metadata
+and local warning/forecast clock contracts below. The
+[canonical coordinator correction](COORDINATOR_CANONICAL_COMPLETION.md) changes
+internal class placement and publishes calculated forecast HGT at Swiss
+midnight before stable 8.3.5, without a new sensor migration.
+Its separate source gates precede stable packaging.
+[Planned release notes](RELEASE_8.3.5.md) and [dated evidence](RELEASE_EVIDENCE_8.3.5.md)
+keep cumulative changes, source/package checks and publication distinct. Use the
+[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+for availability and [ordinary update guide](ACCEPTANCE_8.3.5.md) when choosing
+the stable label. Accepted b3/b5/b6/b7 scopes are not reopened.
 
 **HGT upgrade policy:** 8.3.5b3 includes the [recommended native cleanup](UPGRADING_8.3.5.md).
 After confirmed removal, no unused HGT forecast archive remains. Current
@@ -223,6 +222,10 @@ statistics provide the separate daily/monthly/annual long-term history. This
 feature is not in published b3 and does not alter the forecast below.
 
 `heating_degree_days` is a **forecast-based HGT 12/20 estimate for today**.
+The pre-stable correction advances its registered value and daily mean at
+Swiss midnight using the retained snapshot, without waiting for another poll.
+Its existing availability and no-LTS policy remain. See the
+[local HGT clock](FORECAST_SENSORS.md#calculated-hgt-follows-the-swiss-day).
 Historical published b2 adds
 `hgt_statistics_status` and `forecast_statistics_archive`. Compatible older
 statistics are retained under `sensor.meteoswiss_hgt_forecast_archive_<registry_id>`
@@ -272,8 +275,10 @@ Use the [verified catalogue](WARNING_CODES.md#numeric-warning-families):
 **0 is Wind; 4 is Slippery Roads.** Severity is a separate number from 1 to 5.
 The critical sensor's threshold is not a universal threshold for an awning.
 Own automations need availability, severity, timing and relevant-family rules.
-Warning sensors refresh every ten minutes; validity transitions are evaluated
-on state writes, without a separate second-by-second timer.
+Warning sources refresh every ten minutes. Each warning entity owns its next
+validity-boundary callback, which updates the registered state between provider
+polls without another HTTP request. This is not a second-by-second poll.
+See [the state-clock contract](WARNING_STATE_CLOCK.md).
 
 ## Shared diagnostics and inactive modules
 

@@ -1,20 +1,23 @@
 # Coordinator examples for contributors
 
-**Guide version:** 1.6 · **Updated:** 17 November 2026
-**Scope:** the 8.3.5b6 runtime, including retained saved forecast-location routing
-and station conditions. The [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-determines availability. [Package notes](RELEASE_8.3.5b6.md) distinguish source
-and package checks from publication and the [read-only installed check](ACCEPTANCE_8.3.5b6.md).
-This guide explains the implemented behaviour and ownership;
-it does not itself change HA configuration or polling. Use the [architecture](ARCHITECTURE.md) for the
-full contracts and [sensor guide](SENSORS.md) for end-user features.
+**Guide version:** 1.8 · **Updated:** 18 November 2026
+**Scope:** retained b7 source/data contracts, with the
+[canonical placement correction](COORDINATOR_CANONICAL_COMPLETION.md) prepared
+before stable 8.3.5. That source correction moves the real HGT coordinator into
+`coordinator.py` without changing its scheduling or ownership. Its own review,
+native and actual-merge gates remain pending. The
+[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+establishes availability; [planned notes](RELEASE_8.3.5.md) and
+[dated evidence](RELEASE_EVIDENCE_8.3.5.md) distinguish the stages. Accepted b7
+operator scope is not reopened. This guide does not change HA configuration or
+polling; see [architecture](ARCHITECTURE.md) and [sensors](SENSORS.md).
 
 ## Choose the existing data family
 
-Eight concrete coordinator classes are defined in
-[coordinator.py](../custom_components/meteoswiss/coordinator.py); the ninth,
-`MeteoSwissHgtCoordinator`, is in
-[hgt_ogd_coordinator.py](../custom_components/meteoswiss/hgt_ogd_coordinator.py). Setup creates
+The canonical correction defines all nine concrete coordinator classes in
+[coordinator.py](../custom_components/meteoswiss/coordinator.py).
+[hgt_ogd_coordinator.py](../custom_components/meteoswiss/hgt_ogd_coordinator.py)
+retains an explicit compatibility re-export of that same HGT class. Setup creates
 entry-owned instances in [typed runtime data](../custom_components/meteoswiss/runtime_data.py).
 Nine class definitions do not mean that every entry creates nine different
 classes: current-weather providers are alternatives, while hourly precipitation

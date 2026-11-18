@@ -8,8 +8,11 @@ The operator's Marketplace page displays installed **8.3.5b3** alongside
 The published [b3 manifest](https://github.com/martins-netizen/ha-meteoswiss/blob/8.3.5b3/hacs.json)
 and [current development manifest](https://github.com/martins-netizen/ha-meteoswiss/blob/development/hacs.json)
 both declare 2026.11.0. The immutable [8.3.4 manifest](https://github.com/martins-netizen/ha-meteoswiss/blob/8.3.4/hacs.json)
-declares 2026.8.3, and 8.3.4 remains the latest stable release. Do not rewrite
-an old tag or publish a new stable release merely to change this display.
+declares 2026.8.3; it was the latest stable in that reproduced case. Current
+8.3.5 packages require **2026.11.0**. Follow the
+[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases) for
+actual stable selection, and [current evidence](RELEASE_EVIDENCE_8.3.5.md) for
+the promotion stage. Do not rewrite an old tag or publish solely to change a display.
 
 ## Reproduced cause and evidence limit
 

@@ -1,27 +1,39 @@
 # Maintained fork: architecture and data contracts
 
-**Approved #129 Gold source completion, prepared for b7:** diagnostics minimize both typed saved
-configuration and the native domain-issue envelope, including the exact old
-persistent notice at startup. Warning and forecast entities own one local next
-time-boundary callback, invalidate queued generations and cancel on removal.
-Those callbacks publish retained data and forecasts without another HTTP fetch.
-The fixed seven service roles and metadata are checked in native HA; the
-[51-rule evidence contract](GOLD_EVIDENCE_CONTRACT.md) consumes the existing
-complete compatibility run. [The dated source result](RELEASE_EVIDENCE_8.3.5b7.md)
-records completed head/actual-merge checks at
-`8887597ebf8567b5969ee70b8f9dd6f261603aec` separately from b7 package validation,
-publication and installed acceptance.
+**Current review boundary, 18 November 2026:** published and bounded-accepted b7
+at `9ea96fc5a5306342eef0aa73ae50cc95bb844fb4` passed its ten head and nine
+actual-merge checks. The overall documentation review then found a ninth real
+coordinator defined outside `coordinator.py`, contrary to the common-modules
+rule. The [narrow correction](COORDINATOR_CANONICAL_COMPLETION.md) makes that
+file canonical while retaining the old module as a compatibility re-export.
+The same source correction fixes calculated HGT's Swiss-midnight registered-
+state rollover from retained data, without another source request. Its separate
+source review and actual-merge checks precede stable 8.3.5;
+no future source or package merge is claimed here. The
+[dated record](RELEASE_EVIDENCE_8.3.5.md) retains the b7 publication and bounded
+sight result. Existing b3/b5/b6/b7 acceptance stays closed; native regressions
+verify the new HGT clock without a repeat production migration or observation
+window.
 
-**B7 retains b6 source scope:** pending-import HGT ownership protection and
-bounded precipitation imports below keep existing identities and consent.
-The [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-determines availability; [package notes](RELEASE_8.3.5b7.md) and the
-[read-only installed check](ACCEPTANCE_8.3.5b7.md) retain separate source,
-package, publication and acceptance evidence. B7 preparation does not install it.
+Diagnostics minimize typed saved configuration and HA's native issue envelope.
+Warning/forecast entities own one next time-boundary callback, invalidate queued
+generations and cancel on removal. Those callbacks publish retained data without
+another HTTP fetch. The fixed seven service roles and semantic metadata are
+checked in native HA; the [51-rule contract](GOLD_EVIDENCE_CONTRACT.md) consumes
+the existing complete compatibility run. The [current matrix](QUALITY_SCALE.md)
+records project engineering evidence rather than an official tier.
+
+The cumulative stable changes include measured-HGT source polling and initial
+backfill relative to 8.3.4, explicit obsolete-forecast consent, retained wind
+arithmetic history, pending-import ownership and bounded precipitation work.
+The historical introduction labels below identify when each contract entered
+the test line; all are retained by stable 8.3.5.
 
 **Published 8.3.5b4 official measured HGT:** `hgt_ogd.py` validates bounded canonical
 station resources and completed UTC daily/monthly/annual products off the event
-loop. `hgt_ogd_coordinator.py` provides entry-owned optional polling;
+loop. `MeteoSwissHgtCoordinator` provides entry-owned optional polling. The
+canonical-placement correction defines it in `coordinator.py` and retains
+`hgt_ogd_coordinator.py` only as its compatibility re-export;
 `hgt_ogd_manager.py` shares source snapshots and per-station locks across entries
 and persists only station ownership. `hgt_ogd_recorder.py` performs native
 metadata preflight, bounded row comparison, exact-slot withdrawals, batched
@@ -68,9 +80,9 @@ scoped to its published archive-and-keep runtime. It is not full Gold certificat
 
 Maintain an independent community fork with reviewed fixes, its own releases
 and [HACS catalogue admission](HACS_ACCEPTANCE.md#hacs-catalogue-admission).
-The contracts below describe the 8.3 runtime, including the b7 source scope above.
+The contracts below describe the 8.3 runtime, including the retained 8.3.5 data behavior above.
 Dated release/review sections retain the conclusions at their stated time;
-the [current matrix](QUALITY_SCALE.md) governs the completed source assessment.
+the [current matrix](QUALITY_SCALE.md) records the source assessment and the remaining corrective-source gates.
 Preserve `meteoswiss`, config entries, unique IDs, entity IDs,
 and Recorder statistic IDs for retained entities. The legacy forecast-only
 season-HGT entity is explicitly retired rather than presented as a measured
@@ -163,8 +175,14 @@ preceding-hour probability intervals. Target dates use Europe/Zurich; UTC hour
 boundaries retain repeated DST intervals. Missing fields yield unknown, while
 failed/stale snapshots yield unavailable. Entity-owned point timers update hour,
 midnight and three-hour retrieval-age boundaries and are cancelled on unload.
-Forecast sensors have no measurement/total state class and retain numeric states
-with bounded peak-window attributes. See [the forecast guide](FORECAST_SENSORS.md).
+Those eight scalar sensors have no measurement/total state class and retain
+numeric states with bounded peak-window attributes. Calculated forecast HGT
+separately owns a local Swiss-midnight callback so its registered value and
+`daily_mean_temperature` advance together from the existing daily snapshot.
+It retains its own coordinator-success availability, HGT 12/20 formula and
+no-LTS policy; the scalar three-hour limit is not newly applied to HGT. Both
+clocks cancel on entity removal and add no source request. See
+[the forecast guide](FORECAST_SENSORS.md).
 
 ## Distinct forecast display
 
@@ -650,8 +668,9 @@ semantics, units and 24-row history stay unchanged. Direct-client tests verify
 borrowed-session ownership, message-free source errors and cancellation without passing
 an HA runtime/coordinator to the client. This is not a separately packaged library.
 The [placement review](COORDINATOR_LAYOUT_REVIEW.md) records the subsequent
-source extractions; the original seven coordinator definitions became canonical at that milestone. Full
-common-modules/Silver evidence remains open.
+source extractions; the original seven coordinator definitions became canonical
+at that milestone. The later ninth measured-HGT definition requires the
+[canonical placement correction](COORDINATOR_CANONICAL_COMPLETION.md).
 
 ## Modelled pollen/AQ and UV source boundary
 
@@ -722,7 +741,8 @@ and shared weather-data contract also require full line/branch coverage. Cache,
 diagnostics and the shared station catalogue now have the same CI requirement. The station client
 must retain 100% line and branch coverage, and the whole-integration
 floor is 99.0%. The [rule matrix](QUALITY_SCALE.md) records the applicable
-Bronze/Silver engineering evidence and remaining Gold work. The current gate in
+rule-by-rule engineering evidence and the separately recorded canonical
+coordinator correction. The current gate in
 `scripts/check_quality_coverage.py` is authoritative for the complete enforced
 module list; the global percentage does not certify every inactive module.
 CI runs minimum and current
@@ -755,7 +775,9 @@ with a translated repair instead of inventing a successful transfer.
 The [lifecycle contract](SHARED_DIAGNOSTIC_LIFECYCLE.md) records pending setup,
 cancellation, shutdown, conflicts and manual-removal limits. Native tests include
 retained Recorder rows; runtime code introduces no Recorder migration, SQL or
-automatic orphan deletion. Historical grouping and full Gold remain separate.
+automatic orphan deletion. These native tests are not a production historical
+registry audit or an official tier award; the [current matrix](QUALITY_SCALE.md)
+records the whole assessment and its canonical-coordinator correction.
 
 ## Published b2 HGT archive boundary
 

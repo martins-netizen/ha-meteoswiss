@@ -1,6 +1,45 @@
 # Publish the maintained fork
 
-## 8.3.5b6 publisher
+## Stable 8.3.5 publication: source correction first
+
+The [canonical coordinator correction](COORDINATOR_CANONICAL_COMPLETION.md)
+must be separately reviewed, validated and merged before stable packaging.
+Published b7 source `9ea96fc5a5306342eef0aa73ae50cc95bb844fb4` remains the
+historical tested/accepted package; it is not the final stable source pin.
+The future corrective-source merge and stable-package merge are not known yet.
+
+Preparation of fixed publisher V1.8 is parked until that actual approved source
+exists. Its future reviewed contract must verify the fixed repository/owner,
+protected development head, valid signature, sole approved source parent,
+two-file source-to-stable version change, other 50 component files and trusted
+actual-merge checks on HA 2026.11.0/2026.11.2. The old source pin or an unmerged
+feature head must never be accepted as a substitute. No current executable
+publication command or completed stable validation is claimed here.
+
+All 31 historical publisher/profile/release-fixture paths and the full records,
+bodies and tags of 23 existing releases, including b7, must be preserved. A
+future authorized stable publication must retain prior stable 8.3.4 / 437853341
+until its one exact new stable record can become latest. It must refuse any
+overwrite/retag and resolve an uncertain write with a read-only exact-commit
+check before retrying. Historical publishers below are not stable shortcuts.
+
+[Planned release notes](RELEASE_8.3.5.md), [dated evidence](RELEASE_EVIDENCE_8.3.5.md)
+and [normal update guidance](ACCEPTANCE_8.3.5.md) distinguish source, package,
+publication and bounded acceptance. Existing b7 sight acceptance stays closed;
+the source corrections and the later stable label require no repeat migration
+or new operator observation window. The
+[catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases) establishes
+availability. No publisher connects to HA or changes devices.
+
+## Historical publisher procedures below
+
+Everything below is dated release history, including older fixed profiles and
+their then-current latest/minimum values. Do not rerun those completed releases
+or use an old profile for stable 8.3.5. The current HACS minimum is 2026.11.0;
+older immutable tags retain their own declarations.
+
+
+## Historical 8.3.5b6 publisher
 
 The fixed `scripts/publish_meteoswiss_835_beta_v1.13.sh` is for **8.3.5b6**
 only. Its source is the actual approved #123 merge, not a feature-branch head.
@@ -547,8 +586,9 @@ version or green CI alone is not a published release.
 ## HACS and quality boundaries
 
 Use one software owner for `meteoswiss`; do not delete the configured HA entry
-to switch versions. `hide_default_branch:true`, country CH and minimumHA 2026.8.3
-remain. HACS validation is required for future changes. The separate
+to switch versions. Current `hide_default_branch:true`, country CH and minimum
+HA **2026.11.0** remain; older release minima in the historical procedures above
+retain their dated scope. HACS validation is required for future changes. The separate
 [catalogue submission](HACS_ACCEPTANCE.md#hacs-catalogue-admission) has now been
 approved and merged; no repeat submission is needed. The Home Assistant Quality
 Scale guides our documented engineering work; official tiers are not assigned

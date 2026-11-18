@@ -1,4 +1,27 @@
-# Next development: location selection, Silver and Gold
+# Next release: source corrections, then stable 8.3.5
+
+## Current next step
+
+Correct the actual measured-HGT coordinator placement through one narrow source
+PR before stable 8.3.5 promotion. The [completion note](COORDINATOR_CANONICAL_COMPLETION.md)
+records the finding, single canonical class and retained compatibility import.
+The same source PR fixes calculated forecast HGT's registered-state rollover at
+Swiss midnight from cached daily data, retaining its formula and availability.
+Do not treat the earlier complete checklist report as a substitute for this
+actual structural requirement. Complete native checks and a normal approved
+source merge must precede a fixed stable publisher pin.
+
+The planned stable package retains the approved release introduction and
+[cumulative upgrade guidance](RELEASE_8.3.5.md). B7 publication and its bounded
+positive operator sight report remain complete; no repeated migration or
+operator observation is required. [Current roadmap](../ROADMAP.md) and
+[dated evidence](RELEASE_EVIDENCE_8.3.5.md) govern the present stage.
+
+## Dated earlier implementation plans
+
+Everything below retains its original planning stage and measured results.
+Earlier “next”, “unreleased” and acceptance wording is historical, not another
+current action or an instruction to repeat completed installations.
 
 ## Next test-package boundary
 
@@ -22,6 +45,10 @@ This document does not approve a new feature, installation or release.
 
 
 ## Current next step: package the approved HGT recovery as 8.3.5b5
+
+**Historical 15 November step, now completed.** This old heading is retained
+for links; the actual current work is the canonical correction and stable
+promotion described at the top.
 
 PR #119 and all its exact-head/actual-merge checks are complete. The b5 package
 preserves that runtime apart from two version fields and includes a fixed

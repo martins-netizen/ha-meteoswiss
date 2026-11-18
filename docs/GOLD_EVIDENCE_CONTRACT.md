@@ -12,6 +12,16 @@ The complete, reviewable rule inventory is
 [quality matrix](QUALITY_SCALE.md); an automated result cannot award a tier,
 prove a human review happened or certify every installation.
 
+**Current boundary, 18 November 2026:** the implemented index/checker and native
+suite passed for published b7, but the human common-modules judgment missed the
+ninth real coordinator outside `coordinator.py`. That result did not establish
+structural compliance. The [canonical correction](COORDINATOR_CANONICAL_COMPLETION.md)
+adds explicit class-placement/alias evidence and the missing calculated-HGT
+midnight-state regressions. It must pass its own source,
+native and trusted head/actual-merge gates before all-rule closure and stable
+packaging. Earlier measured results and bounded operator acceptance retain
+their own scope; see the [current matrix](QUALITY_SCALE.md).
+
 ## Explicit kinds of evidence
 
 Each rule has its official identifier and tier, applicability, assessment,

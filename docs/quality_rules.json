@@ -65,7 +65,11 @@
       "documentation": [
         "docs/COORDINATOR_LAYOUT_REVIEW.md"
       ],
-      "tests": [],
+      "tests": [
+        "tests/test_common_modules.py::test_all_coordinator_and_base_entity_definitions_use_common_modules",
+        "tests/test_common_modules.py::test_common_module_guard_rejects_misplaced_aliased_classes",
+        "tests/test_common_modules.py::test_hgt_compatibility_alias_preserves_logger_interval_and_entry_ownership"
+      ],
       "rationale": "Shared coordinator/entity bases and typed entry ownership have been reviewed; this is a structural review rather than a runtime behavior assertion."
     },
     {
@@ -228,7 +232,9 @@
         "tests/test_warning_state_clock.py::test_entity_removal_cancels_queued_callback_without_affecting_siblings",
         "tests/test_weather_forecast_state_clock.py::test_unadded_forecast_entity_does_not_schedule_a_clock",
         "tests/test_weather_forecast_state_clock.py::test_unload_and_reload_cannot_rearm_removed_entity_clock",
-        "tests/test_weather_forecast_state_clock.py::test_swiss_midnight_removes_previous_day_from_daily_subscriber"
+        "tests/test_weather_forecast_state_clock.py::test_swiss_midnight_removes_previous_day_from_daily_subscriber",
+        "tests/test_forecast_hgt_state_clock.py::test_swiss_midnight_updates_registered_hgt_without_fetch",
+        "tests/test_forecast_hgt_state_clock.py::test_unload_cancels_hgt_midnight_callback_and_reload_retains_identity"
       ],
       "rationale": "Entity-owned coordinator subscriptions and time callbacks must attach on addition and be canceled on removal, including disabled polling."
     },
@@ -412,7 +418,8 @@
         "custom_components/meteoswiss/entity.py",
         "custom_components/meteoswiss/coordinator.py",
         "custom_components/meteoswiss/binary_sensor.py",
-        "custom_components/meteoswiss/weather.py"
+        "custom_components/meteoswiss/weather.py",
+        "custom_components/meteoswiss/sensor.py"
       ],
       "documentation": [
         "docs/API_SOURCES.md"
@@ -426,7 +433,8 @@
         "tests/test_weather_forecast_state_clock.py::test_registered_hour_rollover_and_subscribers_use_retained_snapshot",
         "tests/test_weather_forecast_state_clock.py::test_exact_snapshot_age_expiry_pushes_empty_forecasts_without_fetch",
         "tests/test_weather_forecast_state_clock.py::test_invalid_empty_or_expired_updates_cancel_clock_and_recovery_reschedules",
-        "tests/test_weather_forecast_state_clock.py::test_failed_source_does_not_rearm_or_change_observation_availability"
+        "tests/test_weather_forecast_state_clock.py::test_failed_source_does_not_rearm_or_change_observation_availability",
+        "tests/test_forecast_hgt_state_clock.py::test_failed_or_empty_source_cancels_hgt_clock_and_recovery_keeps_identity"
       ],
       "rationale": "Native states distinguish source failure, missing measurements, real zero and data expiry; warning/forecast expiry continues between requests."
     },
