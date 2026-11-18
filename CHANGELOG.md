@@ -2,6 +2,18 @@
 
 ## [Unreleased]
 
+No additional runtime changes are staged beyond the b7 package below.
+
+## [8.3.5b7] — 2026-11-18 · Gold privacy, state boundaries and quality evidence
+
+- Prepare approved signed source PR #129 at
+  `8887597ebf8567b5969ee70b8f9dd6f261603aec` as the b7 test package.
+  Change only two component version fields; retain all 50 non-version component
+  files, dependency locks, workflow/check policy and the exact 51-rule index.
+- Add fixed Publisher V1.14, current release/upgrade guidance and a short normal
+  existing-entry check. Preserve all 22 earlier releases/tags and latest stable
+  8.3.4. Package validation, publication and installed acceptance are separate;
+  availability follows the release catalogue.
 - Complete the engineering evidence through Gold with a reviewable 51-rule
   index, native fixed-service and complete entity-metadata inventories, and
   fresh current-run JUnit/coverage verification in both existing HA jobs.
@@ -17,7 +29,8 @@
   retaining once-per-transition logging and native Core coordinator handling.
 - Reconcile README, architecture, source schedules, metadata/name guidance,
   applicability and privacy/security boundaries. Preserve the dated b6 matrix
-  as historical evidence; no official tier, new package or HA update is implied.
+  as historical evidence; the completed source assessment is not an official
+  tier or independent certification. B7 preparation does not install HA.
 
 ## [8.3.5b6] — 2026-11-17 · HGT ownership and precipitation import bounds
 

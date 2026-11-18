@@ -23,4 +23,5 @@ and catalogue expiry, bounded retries, stale-data retention and recovery. They
 check transition counts and actual log-record levels, including private-error
 markers and healthy-cache reuse. Existing provider and availability tests remain
 part of both complete HA compatibility runs. No operator failure injection or
-repeated b6 installation is required for this logging correction.
+special logging-only installation or manufactured outage is required. B7's
+ordinary package update has its own [short check](ACCEPTANCE_8.3.5b7.md).

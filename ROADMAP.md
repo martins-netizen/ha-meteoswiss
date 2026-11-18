@@ -2,20 +2,24 @@
 
 ## Current engineering work
 
-The prepared source completion covers the applicable engineering checklist
-through Gold: four disjoint runtime corrections and the evidence/documentation
-change, delivered together in one completion PR against the protected base.
-The earlier parallel-head delivery plan is superseded; strict base freshness
-and all existing checks remain. See [the bounded review](docs/GOLD_COMPLETION_REVIEW.md),
-[51-rule matrix](docs/QUALITY_SCALE.md) and [current-run evidence contract](docs/GOLD_EVIDENCE_CONTRACT.md).
-Source head/merge checks, publication and installed acceptance retain their
-own gates. The existing b3 cleanup and b5/b6 operator reports stay closed.
+The applicable engineering checklist through Gold is complete in approved
+[PR #129](https://github.com/martins-netizen/ha-meteoswiss/pull/129), signed merge
+`8887597ebf8567b5969ee70b8f9dd6f261603aec`. All ten source-head checks and nine
+actual-merge checks passed; both native HA jobs passed 3,510 tests plus 83
+subtests. The [bounded review](docs/GOLD_COMPLETION_REVIEW.md),
+[51-rule matrix](docs/QUALITY_SCALE.md) and [fresh evidence contract](docs/GOLD_EVIDENCE_CONTRACT.md)
+record 26 automated verifications, 16 review judgments and nine reasoned
+exemptions. Original #125–#128 candidates were closed unmerged as replaced;
+strict base freshness and all existing checks remain.
 
-Published **8.3.5b6** remains the test package for the earlier HGT ownership and
-bounded precipitation work; this source completion does not silently change its
-immutable contents. [The catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-is authoritative for available packages. Minimum Core remains 2026.11.0;
-current compatibility remains 2026.11.2. No new package is created by these PRs.
+**8.3.5b7** prepares that source as a test package. Its own package checks,
+publication and focused installed acceptance remain separate;
+[staged evidence](docs/RELEASE_EVIDENCE_8.3.5b7.md) records their boundaries.
+Published **8.3.5b6** remains the earlier HGT/precipitation package, with bounded
+normal-operation acceptance. [The catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+is authoritative for available packages; these notes do not publish or install
+b7. Minimum Core remains 2026.11.0 and current compatibility 2026.11.2.
+Accepted b3 cleanup and b5/b6 reports stay closed. Stable 8.3.4 is unchanged.
 
 Platinum typing/dependency architecture and any broader refactoring can follow
 as separate justified work. Provider retention, owner-authenticated settings,

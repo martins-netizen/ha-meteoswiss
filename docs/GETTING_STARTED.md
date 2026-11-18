@@ -1,13 +1,21 @@
 # Set up MeteoSwiss
 
-## Measured-HGT recovery package
+## Current 8.3.5 test-package guide
 
-The **8.3.5b5** recovery package retries temporary measured-HGT failures
-without changing existing entries, IDs or owned statistics. If choosing this
-published test release, update normally and follow the
-[short b5 check](ACCEPTANCE_8.3.5b5.md). Already completed obsolete-forecast
-cleanup stays complete. [Package notes](RELEASE_8.3.5b5.md) describe availability
-and the recovery limits.
+**8.3.5b7** prepares the approved Gold source completion: smaller diagnostics,
+warning/forecast changes at local time boundaries and quieter optional-source
+transition logs. Check the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+for availability; preparation does not publish or install it. When choosing
+published b7, update the existing entry normally and follow the
+[short read-only check](ACCEPTANCE_8.3.5b7.md).
+[Package notes](RELEASE_8.3.5b7.md) distinguish the completed source assessment
+from package checks, publication and installed acceptance.
+
+B7 retains b6's HGT ownership and bounded precipitation imports, including b5's
+recovery after temporary measured-HGT failures. Completed obsolete-forecast
+cleanup and b5/b6 operator checks stay complete. No intermediate beta or
+recreated integration entry is required. Stable selection follows the
+[latest-stable page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest).
 
 **Published b4 test update:** [8.3.5b4](RELEASE_8.3.5b4.md) adds official measured
 HGT on the station device and separate long-term products. Publication is
@@ -19,7 +27,7 @@ is not repeated.
 **HGT upgrade policy:** 8.3.5b3 includes the [recommended native cleanup](UPGRADING_8.3.5.md).
 After confirmed removal, no unused HGT forecast archive remains. Current
 forecasts and ordinary history continue. Published b2 itself keeps its historical
-archive-and-keep behaviour; select the explicitly published b3 package for cleanup.
+archive-and-keep behaviour; use a published b3-or-later package for cleanup.
 
 ## Location privacy before setup
 
@@ -54,14 +62,15 @@ The fork retains the original MIT licence and attribution. It is not an official
 MeteoSwiss product. Forecasts depend on providers and are not a guarantee of the
 most accurate model in every situation. A failed warning feed is not an all-clear.
 
-## Updating an existing 8.3.4/8.3.5b1 installation
+## Updating an existing installation
 
-Start with [the current upgrade instructions](UPGRADING_8.3.5.md). Published
-b3 recommends confirmed complete removal of obsolete forecast statistics; b2
-is historical archive-and-keep behaviour. Use the existing entry and exact
-native repair targets. Do not purge unrelated series. The separate
-[official measured-HGT feature](HGT_OGD_PLAN.md) is included in published b4 and
-is not installed by selecting b3.
+Start with [the current upgrade instructions](UPGRADING_8.3.5.md). Keep the
+existing entry and select the published target directly; intermediate betas
+are unnecessary. For users who still have attributable obsolete HGT forecasts,
+b3 and later recommend confirmed removal through the exact native repair
+targets. Completed cleanup stays complete. Do not purge unrelated series.
+The separate [official measured-HGT feature](HGT_OGD_PLAN.md), included from b4,
+imports observations rather than preserving old forecast statistics.
 
 ## 1. Check prerequisites
 

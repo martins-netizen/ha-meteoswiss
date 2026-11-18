@@ -1,17 +1,21 @@
 # 8.3.5 upgrade: remove obsolete HGT forecast statistics
 
-## 8.3.5b6: update the existing entry
+## 8.3.5b7: update the existing entry
 
-Choose **8.3.5b6** only when it appears in the
+Choose **8.3.5b7** only when it appears in the
 [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases).
-Update the existing integration normally and follow the
-[short b6 read-only check](ACCEPTANCE_8.3.5b6.md). Keep the station, entry,
+These preparation notes do not publish or install it. Update the existing
+integration normally and follow the
+[short b7 read-only check](ACCEPTANCE_8.3.5b7.md). Keep the station, entry,
 entity IDs and statistics. No intermediate beta, station change, entry
 recreation or destructive test is required. Core **2026.11.0 or newer** is
 required; an installation on **2026.11.2** already meets that minimum.
 
-B6 includes HGT ownership protection for pending imports and bounded hourly
-precipitation source work. It retains the b5 retry correction. Previously
+B7 packages the approved #129 diagnostics, local warning/forecast clock and
+optional-source log corrections and complete Gold source evidence. It retains
+b6's HGT ownership protection for pending imports, bounded hourly precipitation
+source work and b5's retry correction. See [package notes](RELEASE_8.3.5b7.md).
+No automatic statistics deletion follows from the diagnostics metadata update. Previously
 completed obsolete-forecast cleanup stays complete. New upgrading users receive
 the existing explicit cleanup repair only if attributable obsolete forecasts
 are found; read the confirmation boundary below before choosing deletion.
@@ -19,7 +23,7 @@ are found; read the confirmation boundary below before choosing deletion.
 Measured-HGT backfill remains automatic for an enabled station entry with
 Recorder. Keep forecasts, wind and precipitation in place. See
 [the permanent-removal boundary](HGT_OGD_PLAN.md#ownership-and-complete-removal)
-before deliberately removing the integration. B6 prevents premature ownership
+before deliberately removing the integration. The retained b6 correction prevents premature ownership
 loss; it does not adopt already-unowned rows from a statistic-ID prefix.
 
 **Published b4 adds a separate measured-HGT feature.** This guide's
@@ -62,7 +66,7 @@ a repair; the destructive action has one explicit confirmation.
 1. Keep an existing usable protected backup outside HA if a recovery point is
    required. Do not remove/recreate the integration, entities or dashboards.
 2. Update the existing Marketplace/HACS installation to an explicitly released
-   8.3.5b3 package, using the ordinary installation procedure.
+   b3-or-later 8.3.5 package, using the ordinary installation procedure.
 3. Open **Settings → System → Repairs → Remove obsolete HGT forecast statistics**.
    Review the exact statistic IDs shown. They are forecasts, not OGD observations.
 4. Confirm **Permanently remove old HGT forecasts**. This is irreversible within
