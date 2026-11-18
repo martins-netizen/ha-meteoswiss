@@ -1,15 +1,19 @@
 # Sensor reference
 
-## 8.3.5b6 scope
+## 8.3.5b7 scope
 
-**8.3.5b6** includes the pending-import HGT ownership correction and bounded
-hourly-precipitation imports, retaining b5's recovery after temporary HGT
-failures. Check the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+**8.3.5b7** prepares approved #129: warning validity and forecast UTC-hour/age
+boundaries publish native states from retained data without extra polling.
+Diagnostics exports are minimized and optional-source outage/recovery logs use
+INFO. Complete native metadata/lifecycle evidence supports the project's
+51-rule Gold assessment; no official tier is claimed.
+Check the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
 for availability, then use the existing entry and the
-[short b6 update and read-only check](ACCEPTANCE_8.3.5b6.md).
-[Package notes](RELEASE_8.3.5b6.md) keep source checks, publication and installed
-acceptance separate. Completed b3 cleanup and b5 availability acceptance stay
-closed; no station change, removal or repeated cleanup is needed for this check.
+[short b7 update and read-only check](ACCEPTANCE_8.3.5b7.md).
+[Package notes](RELEASE_8.3.5b7.md) keep source checks, package validation,
+publication and installed acceptance separate. B6's pending-import HGT ownership
+and bounded precipitation work, plus b5 recovery, remain. Accepted b3 cleanup
+and b5/b6 checks stay closed; no station change or repeated cleanup is needed.
 
 **HGT upgrade policy:** 8.3.5b3 includes the [recommended native cleanup](UPGRADING_8.3.5.md).
 After confirmed removal, no unused HGT forecast archive remains. Current

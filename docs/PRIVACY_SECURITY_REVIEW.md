@@ -1,6 +1,7 @@
 # Privacy, architecture and security: bounded review
 
-**Prepared post-b6 review, 17 November 2026:** the follow-up closes reproduced
+**Approved source review, 18 November 2026:** signed #129 merge
+`8887597ebf8567b5969ee70b8f9dd6f261603aec` closes reproduced
 diagnostics-export and local state-clock gaps, aligns two optional-source
 transition logs with INFO, and supplies the project's engineering assessment
 of all **51 rules through Gold**. The [current security boundaries](GOLD_SECURITY_BOUNDARIES.md)
@@ -8,9 +9,12 @@ separate that code/test evidence from provider retention, HA host controls,
 repository governance and independent assurance. The [quality matrix](QUALITY_SCALE.md),
 [completion review](GOLD_COMPLETION_REVIEW.md) and
 [evidence contract](GOLD_EVIDENCE_CONTRACT.md) define the rule-by-rule result
-and its checks. This prepared source is separate from published b6 and its
-accepted normal-operation check; it does not claim a new release, installation,
-official HA tier, penetration test or security certification.
+and its completed source checks: ten trusted head checks and nine actual-merge
+checks, with fresh native evidence on HA 2026.11.0/2026.11.2. B7 prepares this
+source as a package with [separate evidence](RELEASE_EVIDENCE_8.3.5b7.md).
+Neither this review nor package preparation claims b7 publication/installation,
+an official HA tier, penetration test or security certification. The dated
+owner-authenticated inventory below remains unchanged.
 
 The [diagnostics correction](DIAGNOSTICS_PRIVACY_BOUNDARY.md) covers the real
 HTTP envelope, including stored repair metadata for unloaded entries. Typed
@@ -30,7 +34,7 @@ automatic purge. [Dated source/package evidence](RELEASE_EVIDENCE_8.3.5b6.md)
 keeps automated checks, publication and installed acceptance separate. Prior
 b3 cleanup, b5 availability and b6 normal-operation acceptance remain closed.
 Those package-specific results do not establish independent privacy/security/
-architecture certification or substitute for the prepared engineering review.
+architecture certification or substitute for the completed source engineering review.
 
 **Precipitation resource boundary included in 8.3.5b6:** a bounded metadata body could
 previously amplify into many duplicate historical downloads. The source and

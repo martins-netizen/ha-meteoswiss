@@ -1,6 +1,6 @@
 # Sources, locations and update contracts
 
-**Post-b6 local state clocks:** warning validity and forecast UTC-hour/retained
+**Approved #129 source, prepared for 8.3.5b7:** warning validity and forecast UTC-hour/retained
 snapshot-expiry callbacks publish native states and subscribed forecasts from
 memory. They perform **no source request** and do not change any polling or
 retry schedule below. [Warning timing](WARNING_STATE_CLOCK.md),
@@ -15,13 +15,13 @@ products remain distinct; no forecast history is reused. See the
 [source, time, correction and removal contract](HGT_OGD_PLAN.md). Published
 8.3.5b3 does not include this feature.
 
-**8.3.5b6 scope:** the pending-import HGT ownership correction and bounded
-precipitation imports retain the existing providers and location choices.
+**Retained b6 source scope:** pending-import HGT ownership and bounded
+precipitation imports keep the existing providers and location choices.
+B7 packages that behavior with the #129 local state/privacy corrections above.
 Check the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-for availability and follow the [normal update and read-only check](ACCEPTANCE_8.3.5b6.md).
-[Package notes](RELEASE_8.3.5b6.md) distinguish engineering checks from publication
-and installed acceptance; completed b3 cleanup and b5 observed-day availability
-acceptance stay closed.
+for availability and follow the [normal b7 update and read-only check](ACCEPTANCE_8.3.5b7.md).
+[Package notes](RELEASE_8.3.5b7.md) distinguish source/package checks, publication
+and installed acceptance; completed b3 cleanup and b5/b6 acceptance stay closed.
 
 This describes requests made by the current maintained integration. Provider
 publication, the integration's polling interval and its cache lifetime are

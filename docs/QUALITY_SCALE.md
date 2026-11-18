@@ -1,11 +1,15 @@
 # Quality evidence through Gold
 
-**Review baseline:** published 8.3.5b6, 17 November 2026.
-**Current scope:** the prepared source completion described in
-[GOLD_COMPLETION_REVIEW.md](GOLD_COMPLETION_REVIEW.md). Source integration,
-successful exact-head and actual-merge checks, publication and installed
-acceptance retain separate evidence. The b6 update's positive bounded operator
-report does not accept subsequent source changes.
+**Current source:** approved #129, signed merge
+`8887597ebf8567b5969ee70b8f9dd6f261603aec`, 18 November 2026.
+All ten source-head and nine actual-merge checks passed; the fresh assessment
+contains 26 automated verifications, 16 documented review judgments and nine
+reasoned exemptions. [The dated source evidence](RELEASE_EVIDENCE_8.3.5b7.md)
+records the completed result; [the completion review](GOLD_COMPLETION_REVIEW.md)
+retains the delivery rationale and preparation history. **8.3.5b7** prepares that source; its package validation, publication
+and installed acceptance retain [separate evidence](RELEASE_EVIDENCE_8.3.5b7.md).
+Published b6's positive bounded operator report does not accept later source
+changes or install b7.
 
 The checklist covers **all 51 rules through Gold**: 20 Bronze, 10 Silver and
 21 Gold. The [official tiers](https://contributors.home-assistant.io/core/quality-scale/tiers/)
@@ -29,7 +33,7 @@ unchanged strict per-module coverage gate still applies.
 | Reasoned exemption | The requirement does not apply for the recorded service-specific reason. | A missing capability implemented by changing a label. |
 | Custom branding route | Bundled assets and Marketplace/HACS catalogue admission. | A separate Core branding submission. |
 
-The prepared completion replaces remaining evidence gaps with native contracts
+The approved source completion replaces remaining evidence gaps with native contracts
 and fixes reproduced diagnostics/time-boundary defects. Historical production
 orphan inventories, manual exercise of every error and four separate browser
 language rounds are not invented additional Gold prerequisites. Their absence
@@ -132,8 +136,9 @@ Hassfest, least-privilege CI and strict coverage remain. Unknown audit outcomes
 are failures, not empty alert lists.
 
 The [b6 publication record](RELEASE_EVIDENCE_8.3.5b6.md), accepted b3 cleanup
-and bounded b5/b6 reports remain separate historical facts. This source work
-does not repeat installation, delete production statistics or promote a stable
-release. Use the [catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+and bounded b5/b6 reports remain separate historical facts. The
+[b7 package record](RELEASE_EVIDENCE_8.3.5b7.md) and
+[short installed check](ACCEPTANCE_8.3.5b7.md) do not reopen those reports,
+delete production statistics or promote a stable release. Use the [catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
 for published availability. The [b6 baseline assessment](QUALITY_SCALE_B6_BASELINE.md)
 preserves the earlier tables and all dated metrics without rewriting history.

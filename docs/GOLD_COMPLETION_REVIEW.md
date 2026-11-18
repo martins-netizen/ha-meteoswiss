@@ -1,17 +1,27 @@
-# Gold completion: prepared source review
+# Gold completion: approved source and b7 package boundary
 
-**Baseline:** published 8.3.5b6 at
-`cc4f494694609af28fd27c46c475a8270d3858ab`, reviewed 17 November 2026.
-The runtime corrections below have disjoint source boundaries and were
-validated separately and together. They are delivered with the evidence and
-documentation in **one completion PR** against the current protected base.
-This delivery route was reconciled on 18 November 2026: the strict GitHub
-up-to-date rule makes the earlier parallel-head/exact-four-merge plan unsuitable
-after its first squash merge. The successful heads of #125, #126, #127 and #128
-remain candidate evidence; those PRs are superseded by this combined proposal,
-without claiming that they were merged or closed. No protection is relaxed.
-This completion adds no component version, package, tag, release or installed
-acceptance.
+**Approved source:** [PR #129](https://github.com/martins-netizen/ha-meteoswiss/pull/129),
+signed merge `8887597ebf8567b5969ee70b8f9dd6f261603aec`, 18 November 2026.
+Its sole parent is published b6 at
+`cc4f494694609af28fd27c46c475a8270d3858ab`. The disjoint runtime corrections
+below and their evidence/documentation passed both source-head and actual-merge
+checks together. **8.3.5b7 prepares this approved source as a test package**;
+its package validation, publication and installed acceptance are separate.
+
+## Delivery preparation — historical record
+
+The original review on **17 November 2026** used published b6 at
+`cc4f494694609af28fd27c46c475a8270d3858ab` as its baseline. Four disjoint
+runtime candidates and an evidence/documentation change were validated
+separately and together. At that preparation stage, their individual head
+checks did not establish an integrated merge, package or installed acceptance.
+The delivery route was reconciled on **18 November 2026**: the strict
+up-to-date rule made the earlier parallel-head/exact-four-merge plan
+unsuitable after its first squash merge. One regular completion PR preserved
+that rule and all required checks. Original #125–#128 were closed unmerged as
+replaced after #129's actual checks passed. Their successful candidate heads
+remain historical evidence, not four unperformed merges or a second delivery
+plan. Source completion itself created no component version or release.
 
 ## Necessary changes
 
@@ -25,43 +35,57 @@ acceptance.
 
 The [privacy](DIAGNOSTICS_PRIVACY_BOUNDARY.md), [warning](WARNING_STATE_CLOCK.md),
 [forecast](WEATHER_FORECAST_STATE_CLOCK.md) and [logging](OUTAGE_LOG_LEVELS.md)
-guides retain their precise behavior and limitations. The four runtime changes
-do not overlap; the shared changelog and current matrix are consolidated here.
+guides retain precise behavior and limitations. The four runtime changes do
+not overlap; the shared changelog and current matrix are consolidated here.
 
 ## Native evidence and interpretation
 
-Each runtime correction has its complete native suite on both supported HA
-fixtures, **2026.11.0** and **2026.11.2**, including the existing strict coverage,
-translation and installed-environment checks. The final combined source runs
-the whole suite once per fixture with the [fresh evidence contract](GOLD_EVIDENCE_CONTRACT.md).
-Required behavior references must actually run and pass. The index separates
-automated evidence, documented human review and nine reasoned exemptions;
-it cannot award a tier or certify a human judgment.
+All **ten** trusted source-head and **nine** actual-merge checks passed. Three
+actual development push workflows succeeded at attempt one. Both actual native
+HA **2026.11.0** and **2026.11.2** jobs each passed **3,510 tests plus 83
+subtests**, with five known upstream deprecations and no ResourceWarning,
+SQLite, thread or finalizer warnings. Strict coverage passed at
+**99.98382400517632%** combined: **4,801/4,802 statements** and
+**1,380/1,380 branches**. [The dated b7 source record](RELEASE_EVIDENCE_8.3.5b7.md)
+provides the exact commits, runs and remaining package gates. These source
+counts are not projected onto a future b7 package merge.
 
-[The matrix](QUALITY_SCALE.md) covers all 20 Bronze, 10 Silver and 21 Gold
-rules. Device classes/categories/defaults are checked against an independently
+Both existing compatibility jobs consume fresh JUnit and coverage from their
+single full run through the [evidence contract](GOLD_EVIDENCE_CONTRACT.md).
+Required behavior references actually ran and passed. [The matrix](QUALITY_SCALE.md)
+covers all **51 rules**: 20 Bronze, 10 Silver and 21 Gold. The index distinguishes
+**26 automated verifications**, **16 documented review judgments** and **nine
+reasoned exemptions**. Automation validates fresh evidence and references;
+it does not award a tier or replace human judgment.
+
+Device classes/categories/defaults are checked against an independently
 specified 45-entity base inventory and optional measured HGT. Existing native
 names/icons/errors cover DE/EN/FR/IT. [Eight fixed-role cases](FIXED_SERVICE_TOPOLOGY.md)
 cover both providers, optional recovery, complete Configure/Reconfigure
 transactions, native entry retirement and shared handoff.
 
-These are the actual rules. A production historical-orphan inventory, station
-place-name aliases, a manual trigger of every failure or four fresh browser
-language rounds are not additional requirements invented to defer closure.
-Existing manual reports remain bounded and are not repurposed as new evidence.
+A production historical-orphan inventory, station place-name aliases, manual
+triggering of every failure or four fresh browser language rounds are not
+additional Gold prerequisites. Existing operator reports retain their narrower
+observed scope and are not repurposed as later package acceptance.
 
 ## What remains separate
 
-The combined completion PR must pass its own exact-head and actual-merge GitHub
-checks. The earlier four candidate heads do not substitute for that combined
-run, and no original candidate is to be merged as part of the superseded
-parallel-head plan. The runtime and test bytes retain their complete native
-validation; this delivery clarification is a documentation-only follow-up.
-A matching code tree does not bypass normal approval. Closing the superseded
-PRs is a separate explicit action after the replacement is ready.
-Publication, installation and a focused operator report follow their own
-authorized release workflow; a source PR does not claim that they occurred.
-Published b3/b5/b6 acceptance is not reopened.
+Source integration and its required head/merge checks are complete. B7 changes
+only two component version fields; all 50 non-version component files must
+match the approved source. Package preparation adds its own fixed publisher,
+independent refusal-path fixtures and current documentation. It retains the
+rule index, dependency locks and every existing workflow/check gate. A matching
+runtime tree does not bypass normal package approval or its own exact-head and
+actual-merge checks.
+
+Publication and a normal existing-entry update follow their authorized release
+workflow. Use the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+for availability and [the short b7 protocol](ACCEPTANCE_8.3.5b7.md) after
+publication. Neither source completion nor these notes claim b7 is published,
+installed or accepted. Accepted b3 cleanup, b5 availability and b6 bounded
+normal operation stay closed; no repeated migration or destructive test is
+required.
 
 The project remains a **custom integration**, without an official Gold badge
 or manifest tier. Platinum typing/dependency work and broad architecture

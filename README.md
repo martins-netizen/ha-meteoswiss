@@ -15,23 +15,24 @@ This is an independent community project, not an official MeteoSwiss product.
 This guide describes the **8.3 series**; [8.3.0 release notes](docs/RELEASE_8.3.0.md)
 explain the changes from 8.2.0. Use a published release, not a branch.
 
-**Included in 8.3.5b6:** measured-HGT ownership remains protected while native
-Recorder imports are pending, including cancellation during a station change or
-removal. Official hourly precipitation imports validate canonical station
-assets, deduplicate a maximum four-file plan and share a five-minute source/
-parser-wait budget. Valid partial files and real zero remain usable; source
-failures stay visible. Existing entries, IDs, statistics and bounded HGT retries
-are retained. No replacement archive or new cleanup is introduced.
+**8.3.5b7 Gold engineering package:** the approved Gold source completion minimizes
+native diagnostics downloads, publishes warning/forecast changes at local time
+boundaries and uses INFO for optional-source outage/recovery transitions.
+The complete 51-rule engineering assessment has passed source head and actual-
+merge checks. This is a custom integration without an official Gold award or
+independent security certification.
 
 Check the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-for availability before selecting **8.3.5b6**. Use the
-[short normal update and read-only check](docs/ACCEPTANCE_8.3.5b6.md),
-[release notes](docs/RELEASE_8.3.5b6.md) and
-[precise resource limits](docs/PRECIPITATION_RESOURCE_BOUNDS.md).
-Previously completed b3 cleanup and b5 measured-HGT availability checks remain
-complete. B6 is a test prerelease; stable selection follows the latest-stable
-page. Source tests, publication and acceptance of an installed package are
-separate; full Gold and independent assurance are not claimed.
+for availability before selecting **8.3.5b7**; these notes do not publish or
+install it. Use the [short normal update and read-only check](docs/ACCEPTANCE_8.3.5b7.md),
+[release notes](docs/RELEASE_8.3.5b7.md) and
+[staged evidence](docs/RELEASE_EVIDENCE_8.3.5b7.md).
+Published **8.3.5b6** remains the earlier bounded-accepted test package until
+superseded in the catalogue. B7 retains its HGT ownership/recovery and
+[precipitation resource limits](docs/PRECIPITATION_RESOURCE_BOUNDS.md).
+Existing entries, IDs and statistics remain; accepted b3 cleanup and b5/b6
+checks stay complete. Source validation, package checks, publication and
+installed acceptance have separate evidence. **8.3.4 remains latest stable.**
 
 **Published [8.3.5b4 test package](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b4):**
 official measured HGT 12/20 history, initial backfill, continuing source
@@ -60,7 +61,7 @@ boundary. **8.3.4 remains latest stable.** HA **2026.11.0 or newer** is required
 
 | Package | Required HA Core |
 |---|---|
-| 8.3.5b1 / b2 / b3 / b4 / b5 / b6 | 2026.11.0 or newer |
+| 8.3.5b1 / b2 / b3 / b4 / b5 / b6 / b7 | 2026.11.0 or newer |
 | Latest stable 8.3.4 | 2026.8.3 or newer |
 
 The HA 2026.11.1 Marketplace page can show an installed beta together with the
@@ -193,10 +194,12 @@ HA compatibility jobs check fresh JUnit/coverage from their single full run.
 No new source requests, credentials, station discovery or deletion permission
 is introduced. Existing names, IDs, personal choices and statistics remain.
 
-Source/PR validation, publication and installed acceptance remain separate.
-The corrections and evidence are delivered in one protected-base completion
-PR; the earlier individual candidates remain historical validation, as explained
-in the [delivery review](docs/GOLD_COMPLETION_REVIEW.md#what-remains-separate).
+[PR #129](https://github.com/martins-netizen/ha-meteoswiss/pull/129) completed
+source head and actual-merge checks at `8887597ebf8567b5969ee70b8f9dd6f261603aec`.
+The earlier #125–#128 candidates were closed unmerged as replaced.
+[B7 preparation](docs/RELEASE_EVIDENCE_8.3.5b7.md) packages this approved source;
+its package checks, publication and installed acceptance remain separate, as
+explained in the [delivery review](docs/GOLD_COMPLETION_REVIEW.md#what-remains-separate).
 Use the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
 for availability; published b6 and its accepted bounded operator check do not
 include these later source changes. [Security boundaries](docs/GOLD_SECURITY_BOUNDARIES.md)
@@ -272,7 +275,9 @@ package-merge jobs passed **2,225 tests plus 83 subtests** on HA 2026.8.3 and
 [8.3.4 setup guide](https://github.com/martins-netizen/ha-meteoswiss/blob/8.3.4/docs/GETTING_STARTED.md).
 
 Native icons and translated errors are retained from stable 8.3.3. The
-[Gold checklist](docs/QUALITY_SCALE.md) still has separate remaining work.
+[51-rule Gold source assessment](docs/QUALITY_SCALE.md) is complete at approved
+#129. B7 package validation, publication and its focused installed check retain
+separate evidence; no official tier or independent certification is claimed.
 
 **8.3.5 test-line wind-statistics change.** Wind direction uses HA's circular angle
 statistics after a verified migration. Existing arithmetic statistics are kept

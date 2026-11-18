@@ -1,21 +1,23 @@
 # Maintained fork: architecture and data contracts
 
-**Post-b6 Gold source completion:** diagnostics now minimize both typed saved
+**Approved #129 Gold source completion, prepared for b7:** diagnostics minimize both typed saved
 configuration and the native domain-issue envelope, including the exact old
 persistent notice at startup. Warning and forecast entities own one local next
 time-boundary callback, invalidate queued generations and cancel on removal.
 Those callbacks publish retained data and forecasts without another HTTP fetch.
 The fixed seven service roles and metadata are checked in native HA; the
 [51-rule evidence contract](GOLD_EVIDENCE_CONTRACT.md) consumes the existing
-complete compatibility run. [The completion review](GOLD_COMPLETION_REVIEW.md)
-separates this prepared source from published b6 and installed acceptance.
+complete compatibility run. [The dated source result](RELEASE_EVIDENCE_8.3.5b7.md)
+records completed head/actual-merge checks at
+`8887597ebf8567b5969ee70b8f9dd6f261603aec` separately from b7 package validation,
+publication and installed acceptance.
 
-**8.3.5b6 scope:** the pending-import HGT ownership correction and bounded
-precipitation imports below are included in this test package. The
-[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-determines availability; [package notes](RELEASE_8.3.5b6.md) and the
-[read-only installed check](ACCEPTANCE_8.3.5b6.md) retain separate source,
-package, publication and acceptance evidence.
+**B7 retains b6 source scope:** pending-import HGT ownership protection and
+bounded precipitation imports below keep existing identities and consent.
+The [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+determines availability; [package notes](RELEASE_8.3.5b7.md) and the
+[read-only installed check](ACCEPTANCE_8.3.5b7.md) retain separate source,
+package, publication and acceptance evidence. B7 preparation does not install it.
 
 **Published 8.3.5b4 official measured HGT:** `hgt_ogd.py` validates bounded canonical
 station resources and completed UTC daily/monthly/annual products off the event
@@ -66,7 +68,9 @@ scoped to its published archive-and-keep runtime. It is not full Gold certificat
 
 Maintain an independent community fork with reviewed fixes, its own releases
 and [HACS catalogue admission](HACS_ACCEPTANCE.md#hacs-catalogue-admission).
-The contracts below describe the 8.3 runtime, including the b6 scope above.
+The contracts below describe the 8.3 runtime, including the b7 source scope above.
+Dated release/review sections retain the conclusions at their stated time;
+the [current matrix](QUALITY_SCALE.md) governs the completed source assessment.
 Preserve `meteoswiss`, config entries, unique IDs, entity IDs,
 and Recorder statistic IDs for retained entities. The legacy forecast-only
 season-HGT entity is explicitly retired rather than presented as a measured
