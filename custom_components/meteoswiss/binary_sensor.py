@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import UTC, datetime, timedelta
+from functools import partial
 from typing import Any, Final, Literal
 
 from homeassistant.components.binary_sensor import (
@@ -14,6 +17,8 @@ from homeassistant.components.binary_sensor import (
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.device_registry import DeviceEntryType
 from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.event import async_track_point_in_utc_time
+from homeassistant.util import dt as dt_util
 
 from .alerts import WeatherAlert
 from .const import (
@@ -139,6 +144,58 @@ class MeteoSwissAlertsBinarySensor(MeteoSwissCoordinatorEntity, BinarySensorEnti
             model="Alerts",
         )
         self._postal_code = postal_code
+        self._cancel_timer: Callable[[], None] | None = None
+        self._clock_generation = 0
+
+    async def async_added_to_hass(self) -> None:
+        await super().async_added_to_hass()
+        self.async_on_remove(self._cancel_clock)
+        self._schedule_clock()
+
+    @callback
+    def _cancel_clock(self) -> None:
+        """Invalidate callbacks that may already be queued as well as the timer."""
+        self._clock_generation += 1
+        if self._cancel_timer is not None:
+            self._cancel_timer()
+            self._cancel_timer = None
+
+    @callback
+    def _schedule_clock(self) -> None:
+        """Publish time-only validity changes without fetching warning data."""
+        self._cancel_clock()
+        if not self.coordinator.last_update_success or not self.coordinator.data:
+            return
+        now = dt_util.utcnow()
+        deadlines = []
+        for alert in self.coordinator.data:
+            if alert.outlook:
+                continue
+            if alert.valid_from is not None and alert.valid_from > now:
+                deadlines.append(alert.valid_from)
+            # Existing validity includes the exact end instant. The largest
+            # representable datetime has no representable following instant.
+            if (
+                alert.valid_to is not None
+                and alert.valid_to < datetime.max.replace(tzinfo=UTC)
+            ):
+                expires = alert.valid_to + timedelta(microseconds=1)
+                if expires > now:
+                    deadlines.append(expires)
+        if deadlines:
+            self._cancel_timer = async_track_point_in_utc_time(
+                self.hass,
+                partial(self._handle_clock, self._clock_generation),
+                min(deadlines),
+            )
+
+    @callback
+    def _handle_clock(self, generation: int, _now: datetime) -> None:
+        if generation != self._clock_generation:
+            return
+        self._cancel_timer = None
+        self.async_write_ha_state()
+        self._schedule_clock()
 
     def _matches_alert_timing(self, alert: WeatherAlert) -> bool:
         """Return whether an alert matches this entity's timing mode."""
@@ -199,4 +256,5 @@ class MeteoSwissAlertsBinarySensor(MeteoSwissCoordinatorEntity, BinarySensorEnti
     @callback
     def _handle_coordinator_update(self) -> None:
         """Handle updated data from coordinator."""
+        self._schedule_clock()
         self.async_write_ha_state()

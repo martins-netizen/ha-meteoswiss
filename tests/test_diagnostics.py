@@ -78,8 +78,8 @@ async def test_diagnostics_redact_location_and_station_identifiers(hass) -> None
         assert config_data[key] == REDACTED
 
     assert config_options[CONF_POLLEN_STATION] == REDACTED
-    assert config_data["safe_setting"] == "visible"
-    assert config_options["safe_option"] == "visible-option"
+    assert "safe_setting" not in config_data
+    assert "safe_option" not in config_options
 
 
 async def test_diagnostics_summarize_data_without_exposing_values_or_errors(

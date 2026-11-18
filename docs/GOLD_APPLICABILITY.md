@@ -1,13 +1,15 @@
 # Gold applicability: discovery and service-group lifecycle
 
-**Review version:** 1.0 · **Reviewed:** 10 November 2026
-**Scope:** development after HGT PR #92, commit
-`4e86e0653aa8218edc4b725bc029cc54d0552458`.
+**Review version:** 1.1 · **Reviewed:** 17 November 2026
+**Scope:** published 8.3.5b6 baseline
+`cc4f494694609af28fd27c46c475a8270d3858ab` and the source candidate's new native
+fixed-topology evidence. Version 1.0 assessed the earlier development baseline
+`4e86e0653aa8218edc4b725bc029cc54d0552458` on 10 November.
 
 This records the project's engineering assessment against the current Home
-Assistant rules. Custom integrations have no official quality tiers. A reasoned
-exemption describes applicability; it does not implement a missing capability or
-complete Gold. This documentation review changes no component or HA registry.
+Assistant rules. Custom integrations have no official quality tiers. Discovery
+exceptions and the reviewed lifecycle behavior below are separate decisions.
+This documentation and test follow-up changes no component or HA registry.
 
 ## Discovery: two rules do not apply to this service
 
@@ -28,7 +30,7 @@ They must not be presented as network discovery. The
 [source guide](API_SOURCES.md) records their requests and schedules; this review
 adds no network scanning, new requests, permissions or configuration fields.
 
-## Seven virtual groups need a separate lifecycle assessment
+## Seven virtual groups have a fixed service lifecycle
 
 The integration exposes a fixed service-group layout. These are the existing
 device-registry identifiers, with `<entry_id>` denoting the HA config entry:
@@ -51,37 +53,50 @@ layout. Configured sources do not enumerate appliances newly paired to a hub or
 added to a cloud account. A new catalogue station becomes a selectable data
 source; it does not automatically become another HA device.
 
-The official [dynamic-devices rule](https://contributors.home-assistant.io/core/quality-scale/dynamic-devices/)
-requires devices appearing after setup to be added without reloading. Its
-documented exception concerns a single fixed device that shares the config
-entry's lifetime. Our seven groups, including shared diagnostics, do not fit
-that literal exception. The matrix therefore records **bounded fixed-group
-evidence**, leaving the overall rule partial for review; it does not turn the
-former exemption candidate into a blanket exemption.
+## Lifecycle rules: reviewed behavior for the current model
 
-The same single-device exception appears in
-[stale-devices](https://contributors.home-assistant.io/core/quality-scale/stale-devices/).
-That rule also remains partial. Current station changes reuse the groups, but
-historical orphaned groups have not been independently inventoried. The
-unreleased [native removal policy](DEVICE_REMOVAL.md) implements
-`async_remove_config_entry_device` only for an unambiguous empty service shell
-whose reviewed entry-group identifier refers to an entry that no longer exists.
-Current/shared groups and every registered entity binding remain protected.
-The original applicability assessment introduced no automatic cleanup, deletion
-permission, registry migration or production inventory. The source follow-up
-below is a separate bounded registry-ownership change.
+Both official lifecycle rules document an exception for one fixed device with
+the same lifetime as its config entry. The seven groups here do not fit that
+literal exception. Their current behavior is reviewed directly against the
+rules, with the complete [fixed-topology contract](FIXED_SERVICE_TOPOLOGY.md)
+and native lifecycle evidence.
 
-The separate unreleased [shared-diagnostic lifecycle follow-up](SHARED_DIAGNOSTIC_LIFECYCLE.md)
-adds an explicit runtime owner and native registry-preserving handoff for the
-two helpers. Changed startup order retains their device IDs; peer source
-coordinators are not reloaded. Ambiguous legacy ownership blocks the optional
-helpers with a repair rather than deleting/merging records. This is additional
-bounded lifecycle evidence, not a historical orphan inventory or a broader
-dynamic/stale-device exemption. The later manual removal hook adds no automatic
-cleanup; its source-history and native UI/Recorder evidence retain the same
-historical-inventory and overall-Gold boundaries.
+| Rule | Project assessment | Behavior and evidence |
+|---|---|---|
+| [dynamic-devices](https://contributors.home-assistant.io/core/quality-scale/dynamic-devices/) | Reviewed; met for the current fixed service model | The complete role set is registered during setup, before optional source results. Failure, recovery and catalogue changes do not introduce another device role. Shared diagnostic helpers can be added to an already loaded peer during ownership handoff, retaining registry IDs without a peer reload or source refresh. There is no hub/account inventory to enumerate. |
+| [stale-devices](https://contributors.home-assistant.io/core/quality-scale/stale-devices/) | Reviewed; met for the current fixed service model and conservative manual fallback | Station, coordinates, postcode, pollen and forecast-point changes reuse the roles and their bindings. Core removes the departing entry's five local groups; shared groups transfer to a loaded peer and disappear with the final entry. The native manual-removal hook covers attributable empty retired shells while protecting current, bound and ambiguous records. Source outages do not establish removal. |
 
-## Evidence and remaining boundaries
+The [native removal policy](DEVICE_REMOVAL.md) and
+[shared-diagnostic lifecycle](SHARED_DIAGNOSTIC_LIFECYCLE.md) are included in the
+published 8.3.5b6 test package. The shared lifecycle has an explicit runtime
+owner and registry-preserving handoff. Changed startup order retains device
+IDs, and ambiguous legacy ownership blocks only the optional helpers with a
+repair instead of deleting or merging records.
+
+Manual `async_remove_config_entry_device` approval remains limited to an
+unambiguous empty service shell whose reviewed identifier refers to an entry
+that no longer exists. Current/shared groups, disabled or linked devices and
+every registered entity binding remain protected. This evidence follow-up
+does not widen that approval, add automatic cleanup or change Recorder history.
+
+This closes the former partial lifecycle assessment for the supported fixed
+service model. It establishes neither a production orphan inventory nor a
+blanket exemption for future device models. Unknown historical records retain
+their conservative ownership protection; inventing an external inventory or
+guessing at deletion would not strengthen this contract.
+
+## Native evidence and release boundaries
+
+The new eight cases in
+[test_fixed_service_topology.py](../tests/test_fixed_service_topology.py)
+pass on native Home Assistant 2026.11.0 and 2026.11.2. Both current providers
+retain all seven groups through optional initial failure, recovery and another
+failure. Configure and Reconfigure round trips change the configured station
+or coordinates, warning postcode, pollen station and forecast point while preserving
+all IDs, bindings and user choices, with no entity/device deletion. Native
+entry removal transfers live shared helpers to an already loaded peer without
+its reload or refresh, retires the removed entry's five local groups, and
+clears current groups after the final entry is removed.
 
 Existing native HA tests in
 [test_provider_device_metadata.py](../tests/test_provider_device_metadata.py)
@@ -91,15 +106,24 @@ personal names, icons, aliases, hidden/disabled choices and display precision;
 the station-change tests prohibit entity/device removal calls.
 [test_diagnostic_defaults.py](../tests/test_diagnostic_defaults.py) additionally
 covers retained diagnostic registration choices and enabling the existing
-helpers. This is automated evidence, not a fresh manual registry audit or a
-test of a newly paired device. [Provider evidence](PROVIDER_METADATA.md)
-retains its original release and operator-acceptance boundaries.
+helpers. [test_diagnostic_lifecycle.py](../tests/test_diagnostic_lifecycle.py)
+covers pending setup, disabled records, registry conflicts, rollback and
+Recorder history during handoff. The
+[native device-removal tests](../tests/test_device_removal.py) cover the real
+admin UI path, refusal cases and retained Recorder history. These are automated
+fixed-service lifecycle proofs, rather than a test of a newly paired appliance
+or a production historical registry audit.
+
+The [Gold evidence contract](GOLD_EVIDENCE_CONTRACT.md) records the source and
+test links checked by CI. The [completion review](GOLD_COMPLETION_REVIEW.md)
+and [quality matrix](QUALITY_SCALE.md) record the complete engineering source
+assessment. Candidate source evidence does not establish that its PRs have
+merged, that a new package has been published or that the candidate has passed
+installed operator checks. Existing [provider evidence](PROVIDER_METADATA.md)
+and published b6 evidence retain their own acceptance scope. No official
+Home Assistant tier or independent certification is claimed.
 
 Reassess these decisions when adding a discoverable device, stored network
 address, hub/account inventory or dynamically created service group. Such work
 needs identity, hot-addition, removal and shared-ownership tests. Existing
 registry choices and Recorder history must remain part of that review.
-
-The [Gold matrix](QUALITY_SCALE.md) keeps device classes/wind statistics,
-entity translations and historical stale-device handling open. This assessment
-does not raise the overall engineering result to completed Gold.

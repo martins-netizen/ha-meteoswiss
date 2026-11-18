@@ -1,11 +1,20 @@
 # Foehn and HGT metadata: numeric codes, predictions and statistics
 
+## Current metadata evidence
+
+The source completion's independent native semantic inventory checks every
+base entity and optional measured HGT for both providers: device class, native
+unit, state class, category and initial registration default. See
+[the current matrix](QUALITY_SCALE.md) and [evidence contract](GOLD_EVIDENCE_CONTRACT.md).
+It retains existing circular-wind and compound HGT semantics without a new
+metadata migration. The dated rationale and release boundaries below remain.
+
 ## Measured-HGT availability
 
 The **8.3.5b5** recovery package retries temporary measured-HGT failures
 without changing existing entries, IDs or owned statistics. If choosing this
-published test release, update normally and follow the
-[short b5 check](ACCEPTANCE_8.3.5b5.md). Already completed obsolete-forecast
+test release, the later b6 package retains that correction. Use the release
+catalogue and [normal b6 check](ACCEPTANCE_8.3.5b6.md) when selecting b6. Already completed obsolete-forecast
 cleanup stays complete. [Package notes](RELEASE_8.3.5b5.md) describe availability
 and the recovery limits.
 

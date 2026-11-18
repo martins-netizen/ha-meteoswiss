@@ -132,14 +132,16 @@ async def test_native_shared_series_station_change_consent_and_final_removal_lea
     assert current.extra_state_attributes["statistic_ids"] == statistic_ids("ber")
     assert set(manager.known) == {"klo", "ber"}
     issue = ir.async_get(hass).async_get_issue(DOMAIN, mgr.CLEANUP_ISSUE)
-    assert issue.is_fixable and all(
-        "klo" in s for s in issue.translation_placeholders["statistic_ids"].splitlines()
-    )
+    assert issue.is_fixable and issue.translation_placeholders is None
     flow = await repairs.async_create_fix_flow(
         hass, mgr.CLEANUP_ISSUE, {"kind": mgr.CLEANUP_ISSUE}
     )
     flow.hass = hass
-    assert (await flow.async_step_init({}))["type"] == "form"
+    form = await flow.async_step_init({})
+    assert form["type"] == "form"
+    assert form["description_placeholders"]["statistic_ids"].splitlines() == sorted(
+        statistic_ids("klo").values()
+    )
     assert len(await rec.async_metadata(hass, {"klo"})) == 3
     assert (await flow.async_step_confirm({}))["type"] == "create_entry"
     assert (

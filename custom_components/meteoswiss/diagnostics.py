@@ -2,36 +2,42 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from datetime import UTC, datetime
 from typing import Any
 
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.redact import async_redact_data
+from homeassistant.helpers.redact import REDACTED
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .cache import get_all_cache_stats
 from .const import (
+    CONF_DATA_SOURCE,
     CONF_FORECAST_LOCATION,
     CONF_LATITUDE,
     CONF_LONGITUDE,
     CONF_POLLEN_STATION,
+    CONF_POLLEN_STATION_CODE,
     CONF_POSTAL_CODE,
     CONF_STATION_ID,
     CONF_STATION_NAME,
+    CONF_UPDATE_INTERVAL,
     DATA_SOURCE_METEOSWISS,
     DATA_SOURCE_OPENMETEO,
+    MIN_UPDATE_INTERVAL,
 )
 from .forecast_location_config import resolve_forecast_target
 from .runtime_data import MeteoSwissConfigEntry
 from .stations_map import get_stations_map
 from .version import __version__
-from .weather_data import forecast_datetime
+from .weather_data import forecast_datetime, weather_number
 
 TO_REDACT = {
     CONF_FORECAST_LOCATION,
     CONF_LATITUDE,
     CONF_LONGITUDE,
     CONF_POLLEN_STATION,
+    CONF_POLLEN_STATION_CODE,
     CONF_POSTAL_CODE,
     CONF_STATION_ID,
     CONF_STATION_NAME,
@@ -152,6 +158,22 @@ def _data_source(value: Any) -> str:
     )
 
 
+def _config_diagnostics(config: Mapping[str, Any]) -> dict[str, Any]:
+    """Export only typed settings and fixed redacted location-field markers."""
+    result: dict[str, Any] = {key: REDACTED for key in TO_REDACT if key in config}
+    if CONF_DATA_SOURCE in config:
+        result[CONF_DATA_SOURCE] = _data_source(config[CONF_DATA_SOURCE])
+    if CONF_UPDATE_INTERVAL in config:
+        value = config[CONF_UPDATE_INTERVAL]
+        interval = (
+            weather_number(value, MIN_UPDATE_INTERVAL)
+            if type(value) in (int, float)
+            else None
+        )
+        result[CONF_UPDATE_INTERVAL] = interval if interval is not None else "invalid"
+    return result
+
+
 def _safe_timestamp(value: Any) -> str | None:
     if isinstance(value, datetime):
         return value.astimezone(UTC).isoformat() if value.tzinfo is not None else None
@@ -196,8 +218,8 @@ async def async_get_config_entry_diagnostics(
     return {
         "integration_version": __version__,
         "config_entry": {
-            "data": async_redact_data(dict(entry.data), TO_REDACT),
-            "options": async_redact_data(dict(entry.options), TO_REDACT),
+            "data": _config_diagnostics(entry.data),
+            "options": _config_diagnostics(entry.options),
             "version": entry.version,
             "minor_version": entry.minor_version,
         },

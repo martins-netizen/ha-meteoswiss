@@ -1,0 +1,903 @@
+{
+  "schema_version": 1,
+  "assessment": "custom-integration-engineering",
+  "official_tiers": "https://contributors.home-assistant.io/core/quality-scale/tiers/",
+  "rules": [
+    {
+      "id": "action-setup",
+      "tier": "bronze",
+      "applicability": "exempt",
+      "assessment": "exempt",
+      "source": [
+        "custom_components/meteoswiss/__init__.py"
+      ],
+      "documentation": [
+        "docs/USAGE.md"
+      ],
+      "tests": [],
+      "rationale": "The integration registers no custom actions. The standard weather.get_forecasts action belongs to Home Assistant.",
+      "official_rule": "https://contributors.home-assistant.io/core/quality-scale/action-setup/"
+    },
+    {
+      "id": "appropriate-polling",
+      "tier": "bronze",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/coordinator.py",
+        "custom_components/meteoswiss/const.py"
+      ],
+      "documentation": [
+        "docs/API_SOURCES.md"
+      ],
+      "tests": [
+        "tests/test_options_migration.py::test_new_setup_and_options_do_not_offer_polling",
+        "tests/test_reliability.py::test_new_entry_uses_developer_polling_after_options_reload"
+      ],
+      "rationale": "Source-specific intervals and developer-owned observation polling are retained without a new setup/options interval control."
+    },
+    {
+      "id": "brands",
+      "tier": "bronze",
+      "applicability": "custom-route",
+      "assessment": "reviewed",
+      "source": [
+        "custom_components/meteoswiss/brand/icon.png",
+        "custom_components/meteoswiss/brand/icon@2x.png"
+      ],
+      "documentation": [
+        "docs/HACS_ACCEPTANCE.md"
+      ],
+      "tests": [],
+      "rationale": "Bundled HACS assets and catalogue admission follow the custom integration route; the separate Core brands submission is not claimed."
+    },
+    {
+      "id": "common-modules",
+      "tier": "bronze",
+      "applicability": "applicable",
+      "assessment": "reviewed",
+      "source": [
+        "custom_components/meteoswiss/coordinator.py",
+        "custom_components/meteoswiss/entity.py",
+        "custom_components/meteoswiss/runtime_data.py",
+        "custom_components/meteoswiss/hgt_ogd_coordinator.py"
+      ],
+      "documentation": [
+        "docs/COORDINATOR_LAYOUT_REVIEW.md"
+      ],
+      "tests": [],
+      "rationale": "Shared coordinator/entity bases and typed entry ownership have been reviewed; this is a structural review rather than a runtime behavior assertion."
+    },
+    {
+      "id": "config-flow",
+      "tier": "bronze",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/config_flow.py"
+      ],
+      "documentation": [
+        "docs/GETTING_STARTED.md",
+        "docs/CALENDAR_AND_LOCATION_SETTINGS.md"
+      ],
+      "tests": [
+        "tests/test_config_flow.py::test_user_flow_success_and_connection_recovery",
+        "tests/test_shared_reconfigure.py::test_all_locations_apply_together_without_replacing_entities"
+      ],
+      "rationale": "Native setup and existing-entry dialogs validate both providers and preserve entry identity on confirmation."
+    },
+    {
+      "id": "config-flow-test-coverage",
+      "tier": "bronze",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/config_flow.py",
+        "scripts/check_quality_coverage.py"
+      ],
+      "documentation": [
+        "docs/GOLD_EVIDENCE_CONTRACT.md"
+      ],
+      "tests": [
+        "tests/test_config_flow.py::test_validation_uses_real_coordinator_contract",
+        "tests/test_config_flow.py::test_duplicate_flow_aborts_before_network"
+      ],
+      "rationale": "The existing full line/branch config-flow gate is retained alongside real flow-manager success, errors, cancellation and duplicate contracts."
+    },
+    {
+      "id": "dependency-transparency",
+      "tier": "bronze",
+      "applicability": "exempt",
+      "assessment": "exempt",
+      "source": [
+        "custom_components/meteoswiss/manifest.json"
+      ],
+      "documentation": [
+        "docs/API_SOURCES.md"
+      ],
+      "tests": [],
+      "rationale": "The manifest has no additional distributed runtime requirements. Home Assistant-provided and public service dependencies are documented.",
+      "official_rule": "https://contributors.home-assistant.io/core/quality-scale/dependency-transparency/"
+    },
+    {
+      "id": "docs-actions",
+      "tier": "bronze",
+      "applicability": "exempt",
+      "assessment": "exempt",
+      "source": [
+        "custom_components/meteoswiss/__init__.py"
+      ],
+      "documentation": [
+        "docs/USAGE.md"
+      ],
+      "tests": [],
+      "rationale": "No integration-specific actions exist. Documentation explains the standard Home Assistant forecast action instead.",
+      "official_rule": "https://contributors.home-assistant.io/core/quality-scale/docs-actions/"
+    },
+    {
+      "id": "docs-conditions",
+      "tier": "bronze",
+      "applicability": "exempt",
+      "assessment": "exempt",
+      "source": [
+        "custom_components/meteoswiss/__init__.py"
+      ],
+      "documentation": [
+        "docs/USAGE.md"
+      ],
+      "tests": [],
+      "rationale": "No integration or device-specific condition exists. Ordinary Home Assistant state and numeric conditions remain available.",
+      "official_rule": "https://contributors.home-assistant.io/core/quality-scale/docs-conditions/"
+    },
+    {
+      "id": "docs-high-level-description",
+      "tier": "bronze",
+      "applicability": "applicable",
+      "assessment": "reviewed",
+      "source": [
+        "custom_components/meteoswiss/manifest.json"
+      ],
+      "documentation": [
+        "README.md",
+        "docs/GETTING_STARTED.md"
+      ],
+      "tests": [],
+      "rationale": "The introduction describes purpose, independent project ownership, provider provenance and geographical/service limitations."
+    },
+    {
+      "id": "docs-installation-instructions",
+      "tier": "bronze",
+      "applicability": "applicable",
+      "assessment": "reviewed",
+      "source": [
+        "custom_components/meteoswiss/manifest.json"
+      ],
+      "documentation": [
+        "docs/GETTING_STARTED.md",
+        "docs/UPGRADING_8.3.5.md"
+      ],
+      "tests": [],
+      "rationale": "Installation, retained-entry updates, backups and restart requirements are documented separately from runtime acceptance."
+    },
+    {
+      "id": "docs-removal-instructions",
+      "tier": "bronze",
+      "applicability": "applicable",
+      "assessment": "reviewed",
+      "source": [
+        "custom_components/meteoswiss/__init__.py"
+      ],
+      "documentation": [
+        "docs/USAGE.md"
+      ],
+      "tests": [],
+      "rationale": "Removal instructions distinguish entry removal, package removal, dependent consumers and retained Recorder history."
+    },
+    {
+      "id": "docs-triggers",
+      "tier": "bronze",
+      "applicability": "exempt",
+      "assessment": "exempt",
+      "source": [
+        "custom_components/meteoswiss/__init__.py"
+      ],
+      "documentation": [
+        "docs/USAGE.md"
+      ],
+      "tests": [],
+      "rationale": "No integration or device-specific trigger exists. Ordinary Home Assistant state triggers are documented.",
+      "official_rule": "https://contributors.home-assistant.io/core/quality-scale/docs-triggers/"
+    },
+    {
+      "id": "entity-event-setup",
+      "tier": "bronze",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/sensor.py",
+        "custom_components/meteoswiss/binary_sensor.py",
+        "custom_components/meteoswiss/weather.py",
+        "custom_components/meteoswiss/entity.py"
+      ],
+      "documentation": [
+        "docs/GOLD_EVIDENCE_CONTRACT.md"
+      ],
+      "tests": [
+        "tests/test_reliability.py::test_complete_entry_with_recorder_removes_all_polling_listeners",
+        "tests/test_warning_state_clock.py::test_unload_reload_retains_ids_and_old_callbacks_cannot_rearm",
+        "tests/test_warning_state_clock.py::test_entity_removal_cancels_queued_callback_without_affecting_siblings",
+        "tests/test_weather_forecast_state_clock.py::test_unadded_forecast_entity_does_not_schedule_a_clock",
+        "tests/test_weather_forecast_state_clock.py::test_unload_and_reload_cannot_rearm_removed_entity_clock",
+        "tests/test_weather_forecast_state_clock.py::test_swiss_midnight_removes_previous_day_from_daily_subscriber"
+      ],
+      "rationale": "Entity-owned coordinator subscriptions and time callbacks must attach on addition and be canceled on removal, including disabled polling."
+    },
+    {
+      "id": "entity-unique-id",
+      "tier": "bronze",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/entity.py",
+        "custom_components/meteoswiss/sensor.py",
+        "custom_components/meteoswiss/binary_sensor.py",
+        "custom_components/meteoswiss/weather.py"
+      ],
+      "documentation": [
+        "docs/ENTITY_NAME_TRANSLATIONS.md",
+        "docs/FIXED_SERVICE_TOPOLOGY.md"
+      ],
+      "tests": [
+        "tests/test_entity_name_translations.py::test_all_existing_entity_bindings_and_choices_survive_language_round_trip",
+        "tests/test_fixed_service_topology.py::test_complete_settings_roundtrip_reuses_seven_groups_and_user_choices"
+      ],
+      "rationale": "All active family identities and shared diagnostic identities survive native language/settings reloads and ownership changes."
+    },
+    {
+      "id": "has-entity-name",
+      "tier": "bronze",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/entity.py",
+        "custom_components/meteoswiss/sensor.py",
+        "custom_components/meteoswiss/weather.py"
+      ],
+      "documentation": [
+        "docs/ENTITY_NAME_TRANSLATIONS.md"
+      ],
+      "tests": [
+        "tests/test_entity_name_translations.py::test_every_exposed_name_is_resolved_by_ha_in_each_language"
+      ],
+      "rationale": "Native registry and runtime names are resolved in each supported language and retain contextual device naming."
+    },
+    {
+      "id": "runtime-data",
+      "tier": "bronze",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/runtime_data.py",
+        "custom_components/meteoswiss/__init__.py",
+        "custom_components/meteoswiss/diagnostic_lifecycle.py"
+      ],
+      "documentation": [
+        "docs/SHARED_DIAGNOSTIC_LIFECYCLE.md"
+      ],
+      "tests": [
+        "tests/test_diagnostic_lifecycle.py::test_owner_departure_hands_off_without_peer_reload_or_lost_choices"
+      ],
+      "rationale": "Typed entry data owns coordinators and the borrowed session; shared helper handoff does not reload the peer entry."
+    },
+    {
+      "id": "test-before-configure",
+      "tier": "bronze",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/config_flow.py",
+        "custom_components/meteoswiss/forecast_location_config.py"
+      ],
+      "documentation": [
+        "docs/FORECAST_LOCATION_SETUP.md"
+      ],
+      "tests": [
+        "tests/test_config_flow.py::test_validation_uses_real_coordinator_contract",
+        "tests/test_shared_reconfigure.py::test_source_and_forecast_failures_retry_without_partial_writes"
+      ],
+      "rationale": "The actual current-source and selected forecast point are validated before committing a new configuration."
+    },
+    {
+      "id": "test-before-setup",
+      "tier": "bronze",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/__init__.py"
+      ],
+      "documentation": [
+        "docs/API_SOURCES.md"
+      ],
+      "tests": [
+        "tests/test_reliability.py::test_initial_failure_does_not_close_ha_session_or_leave_entry_data"
+      ],
+      "rationale": "A required initial current-source failure remains retryable and leaves the Home Assistant-owned HTTP session open."
+    },
+    {
+      "id": "unique-config-entry",
+      "tier": "bronze",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/config_flow.py"
+      ],
+      "documentation": [
+        "docs/GETTING_STARTED.md"
+      ],
+      "tests": [
+        "tests/test_config_flow.py::test_duplicate_flow_aborts_before_network",
+        "tests/test_shared_reconfigure.py::test_duplicate_appearing_before_commit_is_rejected"
+      ],
+      "rationale": "Duplicate identities include legacy entries and concurrent flows; a forecast-only selection is intentionally not a separate entry."
+    },
+    {
+      "id": "action-exceptions",
+      "tier": "silver",
+      "applicability": "exempt",
+      "assessment": "exempt",
+      "source": [
+        "custom_components/meteoswiss/__init__.py"
+      ],
+      "documentation": [
+        "docs/USAGE.md"
+      ],
+      "tests": [],
+      "rationale": "There are no integration-specific actions that could need action exception translation.",
+      "official_rule": "https://contributors.home-assistant.io/core/quality-scale/action-exceptions/"
+    },
+    {
+      "id": "config-entry-unloading",
+      "tier": "silver",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/__init__.py",
+        "custom_components/meteoswiss/diagnostic_lifecycle.py"
+      ],
+      "documentation": [
+        "docs/SHARED_DIAGNOSTIC_LIFECYCLE.md"
+      ],
+      "tests": [
+        "tests/test_reliability.py::test_complete_entry_with_recorder_removes_all_polling_listeners",
+        "tests/test_fixed_service_topology.py::test_native_entry_removal_transfers_only_shared_roles_without_peer_reload"
+      ],
+      "rationale": "Native unload/reload releases entry callbacks and shared ownership while retaining registry identities and the borrowed session."
+    },
+    {
+      "id": "docs-configuration-parameters",
+      "tier": "silver",
+      "applicability": "applicable",
+      "assessment": "reviewed",
+      "source": [
+        "custom_components/meteoswiss/config_flow.py"
+      ],
+      "documentation": [
+        "docs/CALENDAR_AND_LOCATION_SETTINGS.md",
+        "docs/USAGE.md"
+      ],
+      "tests": [],
+      "rationale": "The complete Configure/Reconfigure transaction and separate station, forecast, warning and pollen purposes are documented."
+    },
+    {
+      "id": "docs-installation-parameters",
+      "tier": "silver",
+      "applicability": "applicable",
+      "assessment": "reviewed",
+      "source": [
+        "custom_components/meteoswiss/config_flow.py"
+      ],
+      "documentation": [
+        "docs/GETTING_STARTED.md",
+        "docs/FORECAST_LOCATION_SETUP.md"
+      ],
+      "tests": [],
+      "rationale": "Setup parameters explain provider selection, station/base location, explicit pollen station and verified forecast point selection."
+    },
+    {
+      "id": "entity-unavailable",
+      "tier": "silver",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/entity.py",
+        "custom_components/meteoswiss/coordinator.py",
+        "custom_components/meteoswiss/binary_sensor.py",
+        "custom_components/meteoswiss/weather.py"
+      ],
+      "documentation": [
+        "docs/API_SOURCES.md"
+      ],
+      "tests": [
+        "tests/test_reliability.py::test_warning_feed_becomes_unavailable_and_recovers",
+        "tests/test_http_sources.py::test_warning_redirect_is_unavailable_not_all_clear",
+        "tests/test_warning_state_clock.py::test_published_start_and_inclusive_end_update_registered_states_without_fetch",
+        "tests/test_warning_state_clock.py::test_overlapping_windows_update_each_state_and_shared_attributes",
+        "tests/test_warning_state_clock.py::test_source_failure_cancels_retained_window_and_recovery_rearms_clock",
+        "tests/test_weather_forecast_state_clock.py::test_registered_hour_rollover_and_subscribers_use_retained_snapshot",
+        "tests/test_weather_forecast_state_clock.py::test_exact_snapshot_age_expiry_pushes_empty_forecasts_without_fetch",
+        "tests/test_weather_forecast_state_clock.py::test_invalid_empty_or_expired_updates_cancel_clock_and_recovery_reschedules",
+        "tests/test_weather_forecast_state_clock.py::test_failed_source_does_not_rearm_or_change_observation_availability"
+      ],
+      "rationale": "Native states distinguish source failure, missing measurements, real zero and data expiry; warning/forecast expiry continues between requests."
+    },
+    {
+      "id": "integration-owner",
+      "tier": "silver",
+      "applicability": "applicable",
+      "assessment": "reviewed",
+      "source": [
+        "custom_components/meteoswiss/manifest.json"
+      ],
+      "documentation": [
+        "SECURITY.md",
+        "docs/MAINTENANCE.md"
+      ],
+      "tests": [],
+      "rationale": "The public owner and reporting routes are explicit. Review counts, Sonar ruleset enforcement and repository settings require separate administrative evidence."
+    },
+    {
+      "id": "log-when-unavailable",
+      "tier": "silver",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/coordinator.py",
+        "custom_components/meteoswiss/stations_map.py"
+      ],
+      "documentation": [
+        "docs/API_SOURCES.md"
+      ],
+      "tests": [
+        "tests/test_entity_warning_contracts.py::test_warning_failure_logs_only_once_and_recovers",
+        "tests/test_uv_availability.py::test_uv_outage_is_local_private_once_and_recovers",
+        "tests/test_catalogue_cache.py::test_expired_catalogue_is_labelled_stale_and_user_retry_recovers"
+      ],
+      "rationale": "Handwritten optional-source outage/recovery logs use the official INFO level and one transition per state change, with sensitive values omitted."
+    },
+    {
+      "id": "parallel-updates",
+      "tier": "silver",
+      "applicability": "applicable",
+      "assessment": "reviewed",
+      "source": [
+        "custom_components/meteoswiss/sensor.py",
+        "custom_components/meteoswiss/binary_sensor.py",
+        "custom_components/meteoswiss/weather.py",
+        "custom_components/meteoswiss/pollen_sensor.py"
+      ],
+      "documentation": [
+        "docs/API_SOURCES.md"
+      ],
+      "tests": [],
+      "rationale": "Diagnostic polling uses a bounded platform semaphore; coordinator-driven entities do not individually poll providers. Values are reviewed at platform boundaries."
+    },
+    {
+      "id": "reauthentication-flow",
+      "tier": "silver",
+      "applicability": "exempt",
+      "assessment": "exempt",
+      "source": [
+        "custom_components/meteoswiss/config_flow.py"
+      ],
+      "documentation": [
+        "docs/API_SOURCES.md"
+      ],
+      "tests": [],
+      "rationale": "The public data providers require no user credentials, account or authentication token.",
+      "official_rule": "https://contributors.home-assistant.io/core/quality-scale/reauthentication-flow/"
+    },
+    {
+      "id": "test-coverage",
+      "tier": "silver",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "scripts/check_quality_coverage.py",
+        "scripts/check_quality_rules.py",
+        ".github/workflows/ci.yml"
+      ],
+      "documentation": [
+        "DEVELOPMENT.md",
+        "docs/GOLD_EVIDENCE_CONTRACT.md"
+      ],
+      "tests": [
+        "tests/test_quality_rules.py::test_empty_fabricated_or_inconsistent_coverage_is_rejected",
+        "tests/test_quality_rules.py::test_source_changed_during_run_invalidates_evidence"
+      ],
+      "rationale": "The single native suite produces fresh branch coverage for every component module; existing per-module, aggregate and stricter full-coverage gates remain required."
+    },
+    {
+      "id": "devices",
+      "tier": "gold",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/entity.py",
+        "custom_components/meteoswiss/diagnostic_lifecycle.py"
+      ],
+      "documentation": [
+        "docs/PROVIDER_METADATA.md",
+        "docs/FIXED_SERVICE_TOPOLOGY.md"
+      ],
+      "tests": [
+        "tests/test_fixed_service_topology.py::test_optional_failure_and_recovery_keep_all_service_roles",
+        "tests/test_provider_device_metadata.py::test_existing_current_group_is_corrected_in_place_without_losing_choices"
+      ],
+      "rationale": "All seven virtual service roles retain their identities and provider provenance through setup, settings changes and shared-owner removal."
+    },
+    {
+      "id": "diagnostics",
+      "tier": "gold",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/diagnostics.py",
+        "custom_components/meteoswiss/repair_issues.py",
+        "custom_components/meteoswiss/__init__.py"
+      ],
+      "documentation": [
+        "docs/GOLD_EVIDENCE_CONTRACT.md"
+      ],
+      "tests": [
+        "tests/test_diagnostics.py::test_nested_location_fields_names_keys_error_urls_and_cache_values_are_private",
+        "tests/test_diagnostics_privacy_boundary.py::test_typed_config_summary_omits_unknown_values_and_private_key_names",
+        "tests/test_diagnostics_privacy_boundary.py::test_startup_scrubs_old_persistent_notice_before_native_http_snapshot",
+        "tests/test_diagnostics_privacy_boundary.py::test_normal_manager_resync_clears_old_placeholders_and_keeps_exact_consent",
+        "tests/test_diagnostics_privacy_boundary.py::test_cancelled_diagnostics_propagates_without_source_or_recorder_io"
+      ],
+      "rationale": "The actual native diagnostics response must omit sensitive registry issue placeholders as well as integration data for loaded and unloaded entries."
+    },
+    {
+      "id": "discovery",
+      "tier": "gold",
+      "applicability": "exempt",
+      "assessment": "exempt",
+      "source": [
+        "custom_components/meteoswiss/config_flow.py"
+      ],
+      "documentation": [
+        "docs/GOLD_APPLICABILITY.md"
+      ],
+      "tests": [],
+      "rationale": "The manually configured public weather service has no discoverable local appliance, bus or account-owned device inventory. Catalogue lookup is explicit data selection.",
+      "official_rule": "https://contributors.home-assistant.io/core/quality-scale/discovery/"
+    },
+    {
+      "id": "discovery-update-info",
+      "tier": "gold",
+      "applicability": "exempt",
+      "assessment": "exempt",
+      "source": [
+        "custom_components/meteoswiss/config_flow.py",
+        "custom_components/meteoswiss/http.py"
+      ],
+      "documentation": [
+        "docs/GOLD_APPLICABILITY.md"
+      ],
+      "tests": [],
+      "rationale": "No discovered host or address is stored. Provider DNS and manually confirmed station/forecast choices are separate data-selection concerns.",
+      "official_rule": "https://contributors.home-assistant.io/core/quality-scale/discovery-update-info/"
+    },
+    {
+      "id": "docs-data-update",
+      "tier": "gold",
+      "applicability": "applicable",
+      "assessment": "reviewed",
+      "source": [
+        "custom_components/meteoswiss/coordinator.py",
+        "custom_components/meteoswiss/forecast_summary.py"
+      ],
+      "documentation": [
+        "docs/API_SOURCES.md"
+      ],
+      "tests": [],
+      "rationale": "Documentation distinguishes request schedules, provider publication, caching, observed timestamps and expiry rather than promising an unattested refresh cadence."
+    },
+    {
+      "id": "docs-examples",
+      "tier": "gold",
+      "applicability": "applicable",
+      "assessment": "reviewed",
+      "source": [
+        "custom_components/meteoswiss/weather.py",
+        "custom_components/meteoswiss/sensor.py"
+      ],
+      "documentation": [
+        "docs/COORDINATOR_EXAMPLES.md",
+        "docs/USAGE.md"
+      ],
+      "tests": [],
+      "rationale": "Examples cover standard forecasts, read-only cards and escaped warnings. Their usefulness and safety remain reviewed documentation claims."
+    },
+    {
+      "id": "docs-known-limitations",
+      "tier": "gold",
+      "applicability": "applicable",
+      "assessment": "reviewed",
+      "source": [
+        "custom_components/meteoswiss/forecast_summary.py",
+        "custom_components/meteoswiss/hgt_ogd.py",
+        "custom_components/meteoswiss/precipitation.py"
+      ],
+      "documentation": [
+        "docs/API_SOURCES.md",
+        "docs/SENSOR_METADATA.md",
+        "docs/PRECIPITATION_RESOURCE_BOUNDS.md"
+      ],
+      "tests": [],
+      "rationale": "Known source geography, completeness, timestamp, archive and metadata limitations are explicit without claiming every provider measurement is present."
+    },
+    {
+      "id": "docs-supported-devices",
+      "tier": "gold",
+      "applicability": "applicable",
+      "assessment": "reviewed",
+      "source": [
+        "custom_components/meteoswiss/stations_map.py",
+        "custom_components/meteoswiss/const.py"
+      ],
+      "documentation": [
+        "docs/POLLEN_STATIONS.md",
+        "docs/API_SOURCES.md"
+      ],
+      "tests": [],
+      "rationale": "The supported service/station families and their geography replace a fictional physical hardware compatibility list."
+    },
+    {
+      "id": "docs-supported-functions",
+      "tier": "gold",
+      "applicability": "applicable",
+      "assessment": "reviewed",
+      "source": [
+        "custom_components/meteoswiss/sensor.py",
+        "custom_components/meteoswiss/binary_sensor.py",
+        "custom_components/meteoswiss/weather.py"
+      ],
+      "documentation": [
+        "docs/SENSORS.md",
+        "docs/FORECAST_SENSORS.md"
+      ],
+      "tests": [],
+      "rationale": "Current observation, forecast, warning, pollen, air-quality and HGT functions are documented with retired entities distinguished."
+    },
+    {
+      "id": "docs-troubleshooting",
+      "tier": "gold",
+      "applicability": "applicable",
+      "assessment": "reviewed",
+      "source": [
+        "custom_components/meteoswiss/repair_issues.py",
+        "custom_components/meteoswiss/repairs.py"
+      ],
+      "documentation": [
+        "docs/USAGE.md",
+        "docs/REPAIRS.md"
+      ],
+      "tests": [],
+      "rationale": "Troubleshooting covers source outages, missing data, selected-location recovery, metadata refresh and repair confirmation."
+    },
+    {
+      "id": "docs-use-cases",
+      "tier": "gold",
+      "applicability": "applicable",
+      "assessment": "reviewed",
+      "source": [
+        "custom_components/meteoswiss/sensor.py",
+        "custom_components/meteoswiss/weather.py"
+      ],
+      "documentation": [
+        "README.md",
+        "docs/USAGE.md"
+      ],
+      "tests": [],
+      "rationale": "Getting-started use cases and ordinary Home Assistant examples explain distinct providers and weather families without actuating external devices."
+    },
+    {
+      "id": "dynamic-devices",
+      "tier": "gold",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/sensor.py",
+        "custom_components/meteoswiss/entity.py",
+        "custom_components/meteoswiss/diagnostic_lifecycle.py"
+      ],
+      "documentation": [
+        "docs/FIXED_SERVICE_TOPOLOGY.md",
+        "docs/GOLD_APPLICABILITY.md"
+      ],
+      "tests": [
+        "tests/test_fixed_service_topology.py::test_optional_failure_and_recovery_keep_all_service_roles",
+        "tests/test_fixed_service_topology.py::test_complete_settings_roundtrip_reuses_seven_groups_and_user_choices"
+      ],
+      "rationale": "The reviewed service has seven integration-defined roles and no dynamic upstream device inventory. Native optional recovery and confirmed settings changes preserve every role without remove/recreate."
+    },
+    {
+      "id": "entity-category",
+      "tier": "gold",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/sensor.py",
+        "custom_components/meteoswiss/pollen_sensor.py",
+        "custom_components/meteoswiss/binary_sensor.py"
+      ],
+      "documentation": [
+        "docs/SENSOR_METADATA.md",
+        "docs/DIAGNOSTIC_DEFAULTS.md"
+      ],
+      "tests": [
+        "tests/test_gold_entity_metadata.py::test_all_45_base_entities_have_reviewed_native_metadata",
+        "tests/test_gold_entity_metadata.py::test_recorder_adds_observed_hgt_only_for_its_official_provider"
+      ],
+      "rationale": "Diagnostic helpers are categorized and disabled by default; measured/modelled weather, pollen and air-quality values remain ordinary entities."
+    },
+    {
+      "id": "entity-device-class",
+      "tier": "gold",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/sensor.py",
+        "custom_components/meteoswiss/pollen_sensor.py",
+        "custom_components/meteoswiss/binary_sensor.py"
+      ],
+      "documentation": [
+        "docs/SENSOR_METADATA.md",
+        "docs/DIAGNOSTIC_DEFAULTS.md"
+      ],
+      "tests": [
+        "tests/test_gold_entity_metadata.py::test_all_45_base_entities_have_reviewed_native_metadata",
+        "tests/test_gold_entity_metadata.py::test_recorder_adds_observed_hgt_only_for_its_official_provider"
+      ],
+      "rationale": "An independent quantity inventory checks every native class, unit and state class; no unsuitable Home Assistant class is invented for Foehn, pollen, UV or degree days."
+    },
+    {
+      "id": "entity-disabled-by-default",
+      "tier": "gold",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/sensor.py",
+        "custom_components/meteoswiss/pollen_sensor.py",
+        "custom_components/meteoswiss/binary_sensor.py"
+      ],
+      "documentation": [
+        "docs/SENSOR_METADATA.md",
+        "docs/DIAGNOSTIC_DEFAULTS.md"
+      ],
+      "tests": [
+        "tests/test_gold_entity_metadata.py::test_all_45_base_entities_have_reviewed_native_metadata",
+        "tests/test_gold_entity_metadata.py::test_recorder_adds_observed_hgt_only_for_its_official_provider"
+      ],
+      "rationale": "Only the two diagnostic helpers are disabled on a new entry; all ordinary values stay enabled and existing user choices are preserved."
+    },
+    {
+      "id": "entity-translations",
+      "tier": "gold",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/strings.json",
+        "custom_components/meteoswiss/translations/en.json",
+        "custom_components/meteoswiss/translations/de.json",
+        "custom_components/meteoswiss/translations/fr.json",
+        "custom_components/meteoswiss/translations/it.json"
+      ],
+      "documentation": [
+        "docs/ENTITY_NAME_TRANSLATIONS.md"
+      ],
+      "tests": [
+        "tests/test_entity_name_translations.py::test_every_exposed_name_is_resolved_by_ha_in_each_language",
+        "tests/test_hgt_ogd_lifecycle.py::test_native_observed_entity_uses_translated_name_and_distinct_identity"
+      ],
+      "rationale": "Every active base entity name resolves through native Home Assistant translations in four languages; observed HGT is checked independently with real Recorder."
+    },
+    {
+      "id": "exception-translations",
+      "tier": "gold",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/strings.json",
+        "custom_components/meteoswiss/entity.py",
+        "custom_components/meteoswiss/coordinator.py"
+      ],
+      "documentation": [
+        "docs/EXCEPTION_TRANSLATIONS.md"
+      ],
+      "tests": [
+        "tests/test_exception_translations.py::test_ha_serves_every_actual_update_failure_message"
+      ],
+      "rationale": "All actual update-failure keys resolve through Home Assistant in the four supported languages without raw provider error details."
+    },
+    {
+      "id": "icon-translations",
+      "tier": "gold",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/icons.json",
+        "custom_components/meteoswiss/strings.json"
+      ],
+      "documentation": [
+        "docs/ICON_TRANSLATIONS.md"
+      ],
+      "tests": [
+        "tests/test_icon_translations.py::test_every_icon_uses_an_existing_translation_in_all_languages",
+        "tests/test_icon_translations.py::test_user_name_and_icon_survive_native_entry_reload"
+      ],
+      "rationale": "Frontend icon resolution follows existing translation keys and personal registry icons survive native reload."
+    },
+    {
+      "id": "reconfiguration-flow",
+      "tier": "gold",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/config_flow.py",
+        "custom_components/meteoswiss/forecast_location_config.py"
+      ],
+      "documentation": [
+        "docs/CALENDAR_AND_LOCATION_SETTINGS.md"
+      ],
+      "tests": [
+        "tests/test_shared_reconfigure.py::test_all_locations_apply_together_without_replacing_entities",
+        "tests/test_shared_reconfigure.py::test_cancellation_at_every_stage_discards_all_pending_changes",
+        "tests/test_shared_reconfigure.py::test_concurrent_external_settings_win_without_partial_commit"
+      ],
+      "rationale": "Both existing-entry routes use one atomic native transaction, retain identity and discard all staged changes on cancellation or concurrency conflict."
+    },
+    {
+      "id": "repair-issues",
+      "tier": "gold",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/repair_issues.py",
+        "custom_components/meteoswiss/repairs.py",
+        "custom_components/meteoswiss/hgt_cleanup.py"
+      ],
+      "documentation": [
+        "docs/REPAIRS.md",
+        "docs/UPGRADING_8.3.5.md"
+      ],
+      "tests": [
+        "tests/test_forecast_repairs.py::test_provider_outages_do_not_raise_configuration_repairs",
+        "tests/test_forecast_repairs.py::test_entry_issues_are_private_deduplicated_and_removed_independently"
+      ],
+      "rationale": "Known persistent configuration and HGT ownership problems have native translated repairs; a source outage never becomes a configuration repair and opening a repair cannot authorize deletion."
+    },
+    {
+      "id": "stale-devices",
+      "tier": "gold",
+      "applicability": "applicable",
+      "assessment": "automated",
+      "source": [
+        "custom_components/meteoswiss/device_removal.py",
+        "custom_components/meteoswiss/diagnostic_lifecycle.py"
+      ],
+      "documentation": [
+        "docs/FIXED_SERVICE_TOPOLOGY.md",
+        "docs/DEVICE_REMOVAL.md",
+        "docs/GOLD_APPLICABILITY.md"
+      ],
+      "tests": [
+        "tests/test_fixed_service_topology.py::test_native_entry_removal_transfers_only_shared_roles_without_peer_reload",
+        "tests/test_device_removal.py::test_native_admin_websocket_removes_only_the_confirmed_empty_shell",
+        "tests/test_device_removal.py::test_unknown_or_malformed_identifiers_are_never_guessed"
+      ],
+      "rationale": "Current role ownership is maintained through real registry lifecycle. Only certainly attributable empty retired shells can be removed through the native admin path; unknown historical ownership is not guessed."
+    }
+  ]
+}

@@ -178,74 +178,39 @@ Read the [plain-language overview](docs/GETTING_STARTED.md#what-this-fork-provid
 
 ## Quality goals: Bronze, Silver and Gold
 
-We follow the [Home Assistant Integration Quality Scale](https://contributors.home-assistant.io/core/quality-scale/)
-as an engineering checklist, with rule-by-rule code, test and documentation
-evidence. The following summarises the **8.3 series**, with the b4 runtime and
-the bounded repair/map and 8.3.2b1 shared-settings follow-ups accepted by the operator. Home Assistant's [custom-integration guidance](https://contributors.home-assistant.io/marketplace/guides/integrations/#keep-up-with-home-assistant)
-explains that custom integrations have no official quality tiers; Bronze,
-Silver and Gold below identify the rules we use to guide improvements.
+The source completion follows **all 51 Home Assistant rules through Gold**:
+20 Bronze prerequisites, 10 Silver prerequisites and 21 Gold rules. The
+[current matrix](docs/QUALITY_SCALE.md), [exact evidence index](docs/quality_rules.json)
+and [completion review](docs/GOLD_COMPLETION_REVIEW.md) link each applicable
+contract to source, native tests or a recorded review; exemptions explain why.
+Custom integrations have no official HA quality tier, so this is an engineering
+assessment rather than a badge or manifest claim.
 
-| Goal | What it means for you | Current evidence and remaining work |
-|---|---|---|
-| **Bronze: a sound foundation** | Setup in HA, stable entity identities, tested setup and clear instructions. | The checklist records setup/configuration tests, identity checks, installation guides and valid bundled brand images. |
-| **Silver: reliable operation** | Clear unavailable states, recovery from source failures, clean unloading and a maintained support route. | All applicable Silver rules have recorded evidence, including more than 95% coverage per module. The checklist also records the underlying Bronze rules; focused b4 HA acceptance is operator-confirmed. |
-| **Gold: a more complete user experience** | Easier configuration, useful diagnostics, translations and actionable help. | The shared location dialog and actionable repair notices have bounded evidence; the repair/map follow-up was accepted in 8.3.1b1. Icons/error translations are released in 8.3.3; diagnostic defaults and bounded provider/service metadata are delivered in stable 8.3.4, first introduced in the accepted 8.3.4b1 beta. Remaining work includes device classes/wind statistics, entity translations and historical stale-device handling. The discovery-rule applicability review documents two service-specific exemptions and retains the limits of fixed-group lifecycle evidence. The five-step shared-Reconfigure check was reported positive on Core 2026.10.4. |
+The completion corrects diagnostic-download privacy and time-only warning and
+forecast state updates, aligns optional-source transition logs and verifies
+the fixed seven service groups and complete entity metadata. Both existing
+HA compatibility jobs check fresh JUnit/coverage from their single full run.
+No new source requests, credentials, station discovery or deletion permission
+is introduced. Existing names, IDs, personal choices and statistics remain.
 
-The [rule-by-rule assessment](docs/QUALITY_SCALE.md) links the scope, test evidence
-and remaining work; the [discovery and device-lifecycle review](docs/GOLD_APPLICABILITY.md)
-explains applicability and the seven virtual service groups.
+Source/PR validation, publication and installed acceptance remain separate.
+The corrections and evidence are delivered in one protected-base completion
+PR; the earlier individual candidates remain historical validation, as explained
+in the [delivery review](docs/GOLD_COMPLETION_REVIEW.md#what-remains-separate).
+Use the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+for availability; published b6 and its accepted bounded operator check do not
+include these later source changes. [Security boundaries](docs/GOLD_SECURITY_BOUNDARIES.md)
+keep provider retention, HA host controls and independent assurance explicit.
+The dated owner-authenticated security inventory remains scoped to
+**11 November 2026**, not a fresh alert clearance.
+
 [HACS catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-catalogue-admission)
-is complete and provides a separate distribution/review milestone. We keep the
-quality checklist as a transparent engineering record, without an awarded-tier
-badge or manifest claim.
-
-The [privacy, architecture and security review](docs/PRIVACY_SECURITY_REVIEW.md)
-records verified controls and remaining checks. Providers receive the source IP
-and requested location; diagnostic redaction does not hide those requests from
-the provider. See [location privacy before setup](docs/GETTING_STARTED.md#location-privacy-before-setup).
-
-**8.3.5 test-line diagnostic names:** the two optional technical helpers
-and their shared service groups have translated default names in DE/EN/FR/IT.
-Existing IDs, personal names and enabled/disabled choices are retained. Technical
-states/attributes keep their compatibility format; see [names and limits](docs/DIAGNOSTIC_TRANSLATIONS.md).
-The [dated security inventory](docs/PRIVACY_SECURITY_REVIEW.md#owner-authenticated-alert-inventory)
-records no open alerts as of 11 November 2026; it is separate from Gold completion.
-
-**8.3.5 test-line dependency-security gate:** CI checks every package/version in both
-universal test locks against known advisories, including foreign-platform
-selections. Active advisories and unknown results fail the existing `tests`
-merge gate. A separate daily workflow uses the same read-only check; see
-[scope, failure handling and limits](docs/DEPENDENCY_ADVISORIES.md).
-
-**8.3.5 test-line shared-diagnostic lifecycle:** keep both helper entity/device
-IDs and personal settings when their owner unloads or another entry starts
-first. A loaded peer takes over through its existing platform; its weather
-coordinators are not reloaded. Ambiguous historical bindings raise a translated
-repair instead of being merged or deleted. See [ownership and recovery](docs/SHARED_DIAGNOSTIC_LIFECYCLE.md).
-
-**8.3.5 test-line manual device removal:** HA's normal device-page confirmation can
-remove an unambiguous empty service shell for an entry that no longer exists.
-Current, disabled, shared, bound or linked groups stay protected. This adds no
-automatic cleanup or production orphan claim; see [approval and limits](docs/DEVICE_REMOVAL.md).
-
-**8.3.5 test-line service-group names:** current weather, modelled air quality/pollen,
-warnings and measured pollen use native DE/EN/FR/IT labels. English defaults,
-raw station/postcode text, existing IDs and personal names remain intact.
-See [names, language changes and retained history](docs/SERVICE_GROUP_TRANSLATIONS.md).
-
-**Complete name coverage:** native tests verify all 45 registered entities per
-provider in DE/EN/FR/IT, including personal choices and device-name inheritance.
-See the [entity-name inventory and remaining acceptance](docs/ENTITY_NAME_TRANSLATIONS.md).
-
-**Accepted 8.3.1b1 follow-up:** [actionable repair notices](docs/REPAIRS.md) guide
-users from an invalid saved forecast location to the existing settings. Official
-station-map links help find nearby SwissMetNet stations. The operator confirmed
-the requested version/visual check on 26 October. Published stable [8.3.1](docs/RELEASE_8.3.1.md) retains that runtime.
-The published [8.3.2b1 follow-up](docs/RELEASE_8.3.2b1.md) adds the complete
-Reconfigure route. The operator reported all five focused steps positive on
-HA Core **2026.10.4**. Stable [8.3.2](docs/RELEASE_8.3.2.md) was published on
-28 October; on 30 October the operator confirmed its HACS download, restart
-and working operation. See [the bounded evidence](docs/RELEASE_EVIDENCE_8.3.2.md).
+and accepted previous releases remain recorded distribution milestones.
+[Four-language names](docs/ENTITY_NAME_TRANSLATIONS.md), [icons](docs/ICON_TRANSLATIONS.md),
+[errors](docs/EXCEPTION_TRANSLATIONS.md), [shared diagnostic ownership](docs/SHARED_DIAGNOSTIC_LIFECYCLE.md)
+and [conservative native device removal](docs/DEVICE_REMOVAL.md) retain their
+tested contracts. The [dependency advisory gate](docs/DEPENDENCY_ADVISORIES.md)
+still rejects active or unknown findings for either complete universal lock.
 
 ## Start here
 

@@ -196,9 +196,6 @@ class HgtOgdManager:
                         severity=ir.IssueSeverity.WARNING,
                         translation_key=CLEANUP_ISSUE,
                         data={"kind": CLEANUP_ISSUE},
-                        translation_placeholders={
-                            "statistic_ids": "\n".join(sorted(plan.metadata))
-                        },
                     )
                 ir.async_delete_issue(self.hass, DOMAIN, BLOCKED_ISSUE)
         except Exception:
@@ -267,6 +264,32 @@ class HgtOgdManager:
                 severity=ir.IssueSeverity.WARNING,
                 translation_key=BLOCKED_ISSUE,
             )
+
+
+@callback
+def async_clear_retired_issue_placeholders(hass: HomeAssistant) -> None:
+    """Remove obsolete location metadata from this integration's stored notice."""
+    issue = ir.async_get(hass).async_get_issue(DOMAIN, CLEANUP_ISSUE)
+    if (
+        issue is None
+        or not issue.is_persistent
+        or issue.translation_placeholders is None
+    ):
+        return
+    ir.async_create_issue(
+        hass,
+        DOMAIN,
+        CLEANUP_ISSUE,
+        breaks_in_ha_version=issue.breaks_in_ha_version,
+        config_entry_id=issue.config_entry_id,
+        data=issue.data,
+        is_fixable=issue.is_fixable,
+        is_persistent=issue.is_persistent,
+        issue_domain=issue.issue_domain,
+        learn_more_url=issue.learn_more_url,
+        severity=issue.severity,
+        translation_key=issue.translation_key,
+    )
 
 
 @callback

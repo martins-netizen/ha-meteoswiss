@@ -1,8 +1,9 @@
 # Remove an empty retired service group
 
-**Availability:** unreleased development follow-up to the shared-diagnostic
-lifecycle fix. Published stable 8.3.4 does not include this approval policy.
-This is a bounded manual path, not automatic cleanup or a completed registry audit.
+**Availability:** included in the published 8.3.5b6 test package, together with
+the shared-diagnostic lifecycle fix. Published stable 8.3.4 does not include
+this approval policy. The source candidate adds lifecycle evidence and updated
+documentation; the bounded manual policy itself is unchanged.
 
 ## Use the existing device page
 
@@ -15,7 +16,7 @@ never automatically remove a device.
 Current weather, forecast/HGT, warnings, modelled pollen/AQ, measured pollen and
 both shared diagnostic groups remain protected. A provider outage or disabled
 entity/device does not establish that a group is obsolete. Use the existing
-entry's settings to change its source or location.
+entry's settings to change its configured station or location.
 
 HA discovers removal support per integration, so Delete may also appear on a
 protected group. HA refuses the request when the record fails the checks below.
@@ -68,8 +69,28 @@ split/corrupt read snapshots; unready/shutdown contexts and read failures. A
 real temporary Recorder database retains historical rows after removing an
 eligible shell; current weather identities and values remain unchanged.
 
-The module joins the existing full line/branch gate. Dependency locks,
+The module remains in the existing full line/branch gate. Dependency locks,
 security floors, four-language catalogues and supported HA versions retain
-their requirements. Release, operator acceptance and a production historical
-inventory remain separate. The broader [stale-device assessment](GOLD_APPLICABILITY.md)
-stays partial; this path does not complete Gold or justify the single-device exception.
+their requirements. A production historical registry inventory is not claimed.
+
+The [fixed service-topology evidence](FIXED_SERVICE_TOPOLOGY.md) adds eight
+native cases on HA 2026.11.0 and 2026.11.2. They verify all seven groups across
+optional source failure/recovery, complete Configure/Reconfigure selection
+round trips and removal of both shared-owner provider orders. Source changes
+retain the groups; native entry removal retires its five local groups, hands
+shared groups to a loaded peer without its reload or refresh, and clears the
+current groups after the final entry. These tests add no removal permission.
+
+The [lifecycle applicability review](GOLD_APPLICABILITY.md) now records the
+dynamic/stale rules as met for that fixed service model and this conservative
+manual fallback. It does not use the literal single-fixed-device exception for
+seven groups, extend the classifier to unknown historical records or require
+an invented provider inventory. A future dynamic device model needs a new
+identity, hot-addition and removal assessment.
+
+The [Gold evidence contract](GOLD_EVIDENCE_CONTRACT.md) and
+[completion review](GOLD_COMPLETION_REVIEW.md) separate the engineering source
+candidate from approved merges, package publication and actual installed
+operator evidence. This manual path alone is not complete Gold; custom
+integrations have no formal Home Assistant tier award. Existing published b6
+acceptance retains its own scope.

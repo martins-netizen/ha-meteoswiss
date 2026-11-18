@@ -9,6 +9,7 @@ from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.device_registry import AnyDeviceEntry
+from homeassistant.helpers.typing import ConfigType
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .alerts import MeteoSwissAlertsAPI
@@ -41,7 +42,7 @@ from .forecast_location_config import resolve_forecast_target
 from .hgt_cleanup import async_clear_cleanup_issue, async_setup_cleanup
 from .hgt_ogd import HgtError
 from .hgt_ogd_coordinator import MeteoSwissHgtCoordinator
-from .hgt_ogd_manager import get_hgt_manager
+from .hgt_ogd_manager import async_clear_retired_issue_placeholders, get_hgt_manager
 from .localization import async_load_warning_labels
 from .precipitation import (
     ARCHIVE_LOOKBACK_MONTHS,
@@ -101,6 +102,12 @@ def _keep_coordinator_polling(
 ) -> None:
     """Keep a coordinator without entity listeners polling until unload."""
     entry.async_on_unload(coordinator.async_add_listener(lambda: None))
+
+
+async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
+    """Minimize old notice metadata before HA exposes this domain's diagnostics."""
+    async_clear_retired_issue_placeholders(hass)
+    return True
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -> bool:

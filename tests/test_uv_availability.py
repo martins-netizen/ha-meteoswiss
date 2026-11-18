@@ -115,6 +115,14 @@ async def test_uv_outage_is_local_private_once_and_recovers(
         messages = [r.getMessage() for r in caplog.records
                     if r.name == coordinator.logger.name]
         assert messages.count("Optional UV response recovered") == 1
+        transitions = [record for record in caplog.records
+                       if record.name == coordinator.logger.name
+                       and record.getMessage() in {
+                           "Optional UV response unavailable",
+                           "Optional UV response recovered",
+                       }]
+        assert len(transitions) == 2
+        assert all(record.levelno == logging.INFO for record in transitions)
     logs = "\n".join(logging.Formatter().format(r) for r in caplog.records
                      if r.name.startswith("custom_components.meteoswiss"))
     assert all(secret not in logs for secret in (
