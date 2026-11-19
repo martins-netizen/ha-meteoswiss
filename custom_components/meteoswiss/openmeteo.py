@@ -20,6 +20,7 @@ from .http import FORECAST_HOST, async_get_json
 from .retry import async_retry_with_backoff
 from .weather_data import (
     forecast_datetime,
+    known_weather_code,
     weather_condition,
     weather_number,
 )
@@ -60,10 +61,8 @@ WMO_CODE_DESCRIPTIONS: dict[int, dict[str, str]] = {
 }
 
 
-def _code(raw: Any) -> int | None:
-    """Only known integral WMO codes can describe the weather."""
-    value = weather_number(raw)
-    return int(value) if value in WMO_WEATHER_CODES else None
+type _HourlyRow = dict[str, float | str | None]
+type _CurrentData = dict[str, float | str | list[_HourlyRow] | None]
 
 
 class OpenMeteoCurrentError(Exception):
@@ -98,7 +97,7 @@ class OpenMeteoCurrentClient:
         return weather_info["description"]
 
     @async_retry_with_backoff(max_attempts=4, base_delay=1.0, max_delay=10.0)
-    async def _async_request(self) -> Any:
+    async def _async_request(self) -> object:
         """Retry transport failures only, without logging private request URLs."""
         if self._session is None:
             raise RuntimeError("No session provided")
@@ -135,7 +134,7 @@ class OpenMeteoCurrentClient:
         ):
             raise OpenMeteoCurrentError from None
 
-    def parse_response(self, data: Any) -> dict[str, Any]:
+    def parse_response(self, data: object) -> _CurrentData:
         """Keep valid individual values; reject an empty current source."""
         if not isinstance(data, dict) or not isinstance(data.get("current"), dict):
             raise TypeError("Invalid current weather response")
@@ -144,7 +143,7 @@ class OpenMeteoCurrentClient:
         timestamp = forecast_datetime(raw_time)
         if timestamp is None:
             raise ValueError("Invalid current weather timestamp")
-        result = {
+        measurements = {
             SENSOR_TEMPERATURE: weather_number(current.get("temperature_2m")),
             SENSOR_HUMIDITY: weather_number(
                 current.get("relative_humidity_2m"), 0, 100
@@ -157,25 +156,25 @@ class OpenMeteoCurrentClient:
             SENSOR_PRESSURE: weather_number(current.get("pressure_msl"), 0),
             "uv_index": weather_number(current.get("uv_index"), 0),
         }
-        if all(value is None for value in result.values()):
+        if all(value is None for value in measurements.values()):
             raise ValueError("No usable current weather values")
-        code = _code(current.get("weather_code"))
+        code = known_weather_code(current.get("weather_code"))
         is_day = weather_number(current.get("is_day"), 0, 1)
-        result.update(
-            weather_code=code,
-            weather_condition=weather_condition(
+        return {
+            **measurements,
+            "weather_code": code,
+            "weather_condition": weather_condition(
                 code, is_day=bool(is_day) if is_day in (0, 1) else None
             ),
-            weather_description=self.get_weather_description(code),
-            last_update=timestamp.isoformat(),
+            "weather_description": self.get_weather_description(code),
+            "last_update": timestamp.isoformat(),
             # Current precipitation is the provider's backwards-looking interval
             # amount, NOT an hourly total or a precipitation rate.
-            precipitation_interval_seconds=weather_number(current.get("interval"), 1),
-            hourly_forecast=self._parse_hourly(data.get("hourly")),
-        )
-        return result
+            "precipitation_interval_seconds": weather_number(current.get("interval"), 1),
+            "hourly_forecast": self._parse_hourly(data.get("hourly")),
+        }
 
-    def _parse_hourly(self, hourly: Any) -> list[dict[str, Any]]:
+    def _parse_hourly(self, hourly: object) -> list[_HourlyRow]:
         """Optional legacy preview must never invalidate current observations.
 
         HA weather forecasts use the independent ICON Seamless coordinator.
@@ -195,7 +194,7 @@ class OpenMeteoCurrentClient:
             return []
         now_hour = datetime.now(UTC).replace(minute=0, second=0, microsecond=0)
         end = now_hour + timedelta(hours=24)
-        result = []
+        result: list[_HourlyRow] = []
         previous = None
         for index, raw_time in enumerate(hourly.get("time", [])):
             timestamp = forecast_datetime(raw_time)
@@ -220,7 +219,7 @@ class OpenMeteoCurrentClient:
             temperature = weather_number(values["temperature_2m"])
             if temperature is None:
                 continue
-            code = _code(values["weather_code"])
+            code = known_weather_code(values["weather_code"])
             result.append(
                 {
                     "datetime": timestamp.isoformat(),
