@@ -1,26 +1,28 @@
-# Next release: stable 8.3.5 packaging
+# Release planning: published 8.3.5 and dated earlier plans
 
 ## Current next step
 
-Prepare stable **8.3.5** from actual approved corrective source
-`115ddad474dcae15aa49fb5f368cbed600adf80d`, signed
-[PR #131](https://github.com/martins-netizen/ha-meteoswiss/pull/131), merged on
-**19 November 2026 at 06:07:36 UTC / 07:07:36 CET**. The
-[completion record](COORDINATOR_CANONICAL_COMPLETION.md) explains the canonical
-ninth coordinator and calculated-HGT Swiss-midnight registered-state fix.
-Those source corrections are no longer future work.
+**Stable [8.3.5](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5)
+is published**, release **450993306**, on **19 November 2026 at 07:12:57 UTC /
+08:12:57 CET**. Its tag points to the actual signed package merge
+`cc158cbdce07f015952275fba72e3c0160c63c80` from approved
+[PR #132](https://github.com/martins-netizen/ha-meteoswiss/pull/132). Package
+checks and independent publication readback are complete. The
+[dated evidence](RELEASE_EVIDENCE_8.3.5.md) records the exact source/package
+boundary, English body hash and preservation of the 23 older releases/tags.
 
-The prepared stable package changes only two component version fields relative
-to that source and adds fixed publisher **V1.9** with refusal-path tests. Normal
-package approval, trusted exact-head checks, signed actual package merge and
-authorized publication remain separate. The package merge SHA and publication
-receipt are not known until those steps occur.
+There is no remaining 8.3.5 packaging or publication step. Further development
+must select a separately justified scope from the [current roadmap](../ROADMAP.md).
+The completed #131 canonical-coordinator and HGT clock corrections are included
+in this release; a new package or publisher run is unnecessary.
 
-The approved introduction and [cumulative notes](RELEASE_8.3.5.md) are retained.
-B7 publication and its bounded positive operator sight report remain complete;
-no repeated migration, failure exercise or operator observation is required.
-[Current roadmap](../ROADMAP.md) and [dated evidence](RELEASE_EVIDENCE_8.3.5.md)
-govern the present stage. Availability follows the release catalogue.
+Users choosing stable 8.3.5 can follow the [normal existing-entry update](ACCEPTANCE_8.3.5.md)
+and complete its ordinary update restart once. Publication does not confirm
+installation. The positive bounded b7 sight report and earlier cleanup reports
+stay closed; no repeated migration, failure exercise or operator observation
+window is required. The [approved cumulative notes](RELEASE_8.3.5.md) remain
+unchanged. Future stable selection follows the
+[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases).
 
 ## Dated earlier implementation plans
 
