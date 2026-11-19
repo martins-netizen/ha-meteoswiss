@@ -2,28 +2,30 @@
 
 ## Current engineering work
 
-Published b7 source `9ea96fc5a5306342eef0aa73ae50cc95bb844fb4` completed its
-checks, publication and bounded positive operator sight report. Its earlier
-51-rule report passed the implemented native/reference checks. Overall review
-then found an incomplete structural judgment: the ninth actual HGT coordinator
-was outside the canonical `coordinator.py` module. The rule has no exception.
+The pre-stable correction is merged as signed
+[PR #131](https://github.com/martins-netizen/ha-meteoswiss/pull/131), source
+`115ddad474dcae15aa49fb5f368cbed600adf80d`. It puts the single actual HGT
+coordinator beside the other eight in `coordinator.py`, preserving its old
+import path as an explicit re-export. The same source publishes calculated HGT
+at Swiss midnight from the retained daily snapshot; its formula, availability
+and identities remain. [The completion record](docs/COORDINATOR_CANONICAL_COMPLETION.md)
+retains the original missed structural judgment and the native clock/lifecycle
+evidence rather than treating b7's old passing index as proof of that judgment.
 
-The current next step is the [narrow source correction](docs/COORDINATOR_CANONICAL_COMPLETION.md):
-one actual HGT class beside the other eight, with an explicit old-path
-compatibility re-export. The same correction publishes calculated HGT at
-Swiss midnight from the retained snapshot, fixing a registered-state lag until
-the next provider poll. Its existing formula and availability stay unchanged.
-Complete native checks,
-exact-head checks, normal source approval and actual-merge verification precede
-stable packaging. No native gate, policy or supported fixture is weakened.
+The next step is **stable 8.3.5 packaging** on this actual approved source.
+Only two component version fields change; the remaining 50 component files,
+locks, workflows, policies and exact quality index stay protected. New fixed
+publisher **V1.9** verifies the direct source-to-package boundary and preserves
+all older release records/tags. Package approval, actual-merge checks and
+authorized publication remain separate; no future package merge is invented.
 
-**Stable 8.3.5** remains planned after that correction. Its version-only package
-will be frozen to the separately approved actual corrective source, not old b7
-by assumption. The [dated record](docs/RELEASE_EVIDENCE_8.3.5.md),
-[draft cumulative notes](docs/RELEASE_8.3.5.md) and
-[stable guide](docs/ACCEPTANCE_8.3.5.md) retain those stages. An accepted b7
-runtime does not need another migration, installation or observation window
-solely for this correction; native regressions verify the new HGT clock. Earlier b3/b5/b6/b7 reports stay closed.
+The [dated record](docs/RELEASE_EVIDENCE_8.3.5.md),
+[cumulative release notes](docs/RELEASE_8.3.5.md) and
+[stable guide](docs/ACCEPTANCE_8.3.5.md) describe these stages. B7 publication and
+its positive bounded sight report remain complete. Earlier b3/b5/b6/b7 reports
+stay closed; promotion does not require another migration, failure exercise or
+operator observation window. Choose the stable label only when published and
+complete the ordinary existing-entry update/restart once.
 
 The [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
 remains authoritative. Minimum Core is **2026.11.0**, current compatibility

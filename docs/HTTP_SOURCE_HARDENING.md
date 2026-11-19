@@ -2,8 +2,8 @@
 
 **Historical baseline:** included in the 8.3 runtime; the original accepted b4
 was the stable promotion source. The later precipitation plan/deadline
-hardening below shipped in b6 and is retained by published b7. Planned stable
-8.3.5 follows the canonical-coordinator correction without changing HTTP contracts.
+hardening below shipped in b6 and is retained by published b7. Stable 8.3.5
+uses approved corrective source #131 without changing HTTP contracts.
 See [current dated evidence](RELEASE_EVIDENCE_8.3.5.md) for source and package gates.
 **Review date:** 22 October 2026. This is scoped hardening, not a penetration test.
 

@@ -1,0 +1,428 @@
+#!/bin/bash
+# Publish only the approved stable 8.3.5 package from the Mac.
+# GitHub only: no Home Assistant connection, installation, restart or device call.
+set -Eeuo pipefail
+export GH_HOST=github.com
+umask 077
+if [[ "${1:-}" = '--help' ]] || [[ "${1:-}" = '-h' ]]; then
+  printf '%s\n' 'bash publish_meteoswiss_835_stable_v1.9.sh --check|--publish APPROVED_MERGE_COMMIT' 'Checks the exact commit read-only with --check; --publish creates stable 8.3.5 as the latest release.' 'Requires python3, gh and existing GitHub authentication. No HA changes.'
+  exit 0
+fi
+if [[ "$#" -ne 2 ]] || { [[ "$1" != '--check' ]] && [[ "$1" != '--publish' ]]; } || ! [[ "$2" =~ ^[0-9a-f]{40}$ ]]; then
+  printf '%s\n' 'Usage: bash publish_meteoswiss_835_stable_v1.9.sh --check|--publish APPROVED_MERGE_COMMIT' >&2
+  exit 2
+fi
+# Frozen to the actual signed PR #131 correction merge; package checks remain required.
+# Keep this flag and REVIEWED_SOURCE consistent; no tools or receipt paths run first.
+PUBLISHER_SOURCE_FROZEN=1
+if [[ "${PUBLISHER_SOURCE_FROZEN}" != '1' ]]; then
+  printf '%s\n' 'STOP: Stable Publisher V1.9 is not frozen to the approved PR #131 corrective merge.' >&2
+  exit 1
+fi
+for program in gh python3; do
+  command -v "${program}" >/dev/null || { printf 'Missing: %s\n' "${program}" >&2; exit 1; }
+done
+RUN_ID="$(date +%Y%m%d-%H%M%S)-$$"
+DIAG_DIR="${HOME}/Downloads/HA/05_Diagnose"
+REPORT="${DIAG_DIR}/meteoswiss_835_stable_release_v1.9_${RUN_ID}.json"
+LOG="${DIAG_DIR}/meteoswiss_835_stable_release_v1.9_${RUN_ID}.log"
+mkdir -p "${DIAG_DIR}"
+exec > >(tee -a "${LOG}") 2>&1
+printf '%s\n' '=== MeteoSwiss · 8.3.5 stable publication V1.9 ===' "Approved merge: $2" 'GitHub stable release 8.3.5; no Home Assistant changes.'
+python3 - "$2" "${REPORT}" "$1" <<'PY_PUBLISH'
+"""Package the reviewed PR #131 corrective source as stable 8.3.5 with version-only component changes."""
+from __future__ import annotations
+
+import base64
+import datetime as dt
+import hashlib
+import json
+import posixpath
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+REPOSITORY = 'martins-netizen/ha-meteoswiss'
+API_PREFIX = 'repos/' + REPOSITORY
+# Actual signed PR #131 correction merge; the earlier bounded b7 sight report remains closed.
+REVIEWED_SOURCE = '115ddad474dcae15aa49fb5f368cbed600adf80d'
+PRESERVED_TAGS = {'8.2.0': '5a0bf684eb44fd54c4e91d7cbce9e90798b72fa5', '8.2.0b1': 'abbb6b7701134ac2573f35b425ab3f0697a80540', '8.2.0b2': '80bf9195ecc3d42d9e4d1beb4ce8143e2c2df2c8', '8.3.0': '3ca9a1c166920fbdda88d15238affafe520f4b68', '8.3.0b1': 'a6b9df9f57dec3e93c8f698133cdb0e7e4c3e937', '8.3.0b2': '50b5711213bd8a1706871718a283b9fcb4db257d', '8.3.0b3': '9d75aa8673c417f24caaa1f83181b5ef811d56fc', '8.3.0b4': 'a8728e35837cc93ccc0ef0780e8f3dc2c0b65ce5', '8.3.1': 'fa298ca72bf62da727797f9bfcacf95c83ffeaf1', '8.3.1b1': 'c7b20c78d4273a33ba8c6f06c1834fc2f22c8665', '8.3.2': 'aea4c5eab0534a6e675a4f564bde7521df193c58', '8.3.2b1': '5a39c3cdbf31f0807f52bcb4acb26190cc1e8423', '8.3.3': '3d4fad2330c89f134eba208e8b2db55705177e7d', '8.3.3b1': 'd9fbc3fd49220b0ecc019d2babe0c173c46986f5', '8.3.4': 'f4479897023fa35d7c2fcb4c4859c4de8861fdda', '8.3.4b1': '1e5c5d1a7fc1c18d520e99189ae4dd5894621706', '8.3.5b1': 'af1220249e672bd8a6742c73022a7c42aca2f20a', '8.3.5b2': 'f8ea38babdfd44354059927888fb54fd662e5696', '8.3.5b3': 'b6c4502e5cdeb48121be628fdb7eda579df4f7c3', '8.3.5b4': 'a6a233513ac8e7c5937f9c41eee085e76108e801', '8.3.5b5': 'ba8a15aa282aa7b67d16c83cca6f99e38ee2bf4b', '8.3.5b6': 'cc4f494694609af28fd27c46c475a8270d3858ab', '8.3.5b7': '9ea96fc5a5306342eef0aa73ae50cc95bb844fb4'}
+PRESERVED_RELEASE_IDS = {'8.3.5b7': 450428545, '8.3.5b6': 449276745, '8.3.5b5': 447678651, '8.3.5b4': 446375287, '8.3.5b3': 446112927, '8.3.5b2': 445608354, '8.3.5b1': 444798178, '8.3.4': 437853341, '8.3.4b1': 437718127, '8.3.3': 429354633, '8.3.3b1': 429321251, '8.3.2': 426633496, '8.3.2b1': 425962004, '8.3.1': 424249153, '8.3.1b1': 423899845, '8.3.0': 422817883, '8.3.0b4': 422790421, '8.3.0b3': 422744751, '8.3.0b2': 422656379, '8.3.0b1': 422558946, '8.2.0': 420392277, '8.2.0b2': 420331076, '8.2.0b1': 418588999}
+STABLE_RELEASE_ID = 437853341
+SOURCE_RELEASE_ID = 450428545
+SOURCE_RELEASE_BODY_SHA256 = '411798d81ccf78d1c5014579b69b1d84db734617b3880b736f85da7c757708f6'
+TAG = '8.3.5'
+TITLE = 'MeteoSwiss 8.3.5'
+NOTES_HEADING = '# MeteoSwiss 8.3.5\n'
+RELEASE_URL = 'https://github.com/' + REPOSITORY + '/releases/tag/' + TAG
+REQUIRED_CHECKS = {'tests', 'HA 2026.11.0', 'HA 2026.11.2', 'hassfest', 'Analyze Python', 'HACS validation', 'SonarCloud Code Analysis', 'Universal test locks', 'Test dependency advisories'}
+
+
+class PublicationError(RuntimeError):
+    """A bounded public diagnostic, without subprocess stderr or credentials."""
+
+
+def require_source_frozen():
+    """Never operate on a feature candidate in place of its approved source merge."""
+    if not isinstance(REVIEWED_SOURCE, str) or not re.fullmatch(r'[0-9a-f]{40}', REVIEWED_SOURCE):
+        raise PublicationError('Stable publisher is not frozen to the approved PR #131 corrective merge.')
+
+
+def api(path, *, method='GET', body=None, missing_ok=False):
+    """Use the user's existing gh authentication, with fixed host and repository."""
+    if (not path.startswith(API_PREFIX + '/') and path != API_PREFIX
+            and not (method == 'GET' and path == 'user')):
+        raise PublicationError('Repository path is not allowed.')
+    if method != 'GET' and not (method == 'POST' and path == API_PREFIX + '/releases'):
+        raise PublicationError('GitHub write is not allowed.')
+    args = ['gh', 'api', '--hostname', 'github.com', '--method', method,
+            '-H', 'Accept: application/vnd.github+json', path]
+    if body is not None:
+        args += ['--input', '-']
+    result = subprocess.run(args, input=json.dumps(body) if body is not None else None,
+                            text=True, capture_output=True, timeout=90, check=False)
+    if result.returncode:
+        if missing_ok and re.search(r'HTTP\s+404\b', result.stderr):
+            return None
+        raise PublicationError('GitHub request failed: ' + method + ' ' + path)
+    try:
+        return json.loads(result.stdout)
+    except (ValueError, TypeError) as exc:
+        raise PublicationError('GitHub response is not valid JSON.') from exc
+
+
+def read_file(commit, path):
+    data = api(API_PREFIX + '/contents/' + path + '?ref=' + commit)
+    if data.get('encoding') != 'base64' or data.get('size', 0) > 1024 * 1024:
+        raise PublicationError('Unexpected source format: ' + path)
+    try:
+        return base64.b64decode(data['content'], validate=False).decode('utf-8')
+    except (ValueError, KeyError, UnicodeError) as exc:
+        raise PublicationError('Source file is unreadable: ' + path) from exc
+
+
+def tree_files(commit):
+    data = api(API_PREFIX + '/git/trees/' + commit + '?recursive=1')
+    if data.get('truncated') is not False or not isinstance(data.get('tree'), list):
+        raise PublicationError('Repository tree is incomplete.')
+    if any(row.get('type') not in {'tree', 'blob'}
+           and row.get('path', '').startswith('custom_components/meteoswiss/')
+           for row in data['tree']):
+        raise PublicationError('Component tree contains an unsupported Git entry.')
+    return {row['path']: (row['mode'], row['sha']) for row in data['tree'] if row.get('type') == 'blob'}
+
+
+def check_statuses(commit):
+    data = api(API_PREFIX + '/commits/' + commit + '/check-runs?per_page=100')
+    runs = data.get('check_runs') if isinstance(data, dict) else None
+    if (not isinstance(runs, list) or type(data.get('total_count')) is not int
+            or data['total_count'] != len(runs) or len(runs) > 100):
+        raise PublicationError('Check list is incomplete or exceeds the bounded request.')
+    latest = {}
+    for row in runs:
+        if (not isinstance(row, dict) or type(row.get('id')) is not int
+                or not isinstance(row.get('name'), str) or not row['name']
+                or row.get('head_sha') != commit):
+            raise PublicationError('Check identity or commit differs.')
+        if row.get('id', -1) > latest.get(row['name'], {}).get('id', -2):
+            latest[row['name']] = row
+    if not REQUIRED_CHECKS <= latest.keys():
+        raise PublicationError('Required checks are missing for the merge commit.')
+    if any(latest[name].get('app', {}).get('id') != (12526 if name == 'SonarCloud Code Analysis' else 57789 if name == 'CodeQL' else 15368) or latest[name].get('head_sha') != commit
+           for name in REQUIRED_CHECKS):
+        raise PublicationError('Required check provenance or commit differs.')
+    for name, app_id in {'CodeQL': 57789, 'update-pip-graph': 15368}.items():
+        if name in latest and (latest[name].get('app', {}).get('id') != app_id or latest[name].get('head_sha') != commit):
+            raise PublicationError('Optional check provenance or commit differs.')
+    if any(row.get('status') != 'completed' or row.get('conclusion') != 'success' for row in latest.values()):
+        raise PublicationError('Merge checks have not all succeeded.')
+    combined = api(API_PREFIX + '/commits/' + commit + '/status?per_page=100')
+    statuses = combined.get('statuses') if isinstance(combined, dict) else None
+    if (not isinstance(statuses, list) or type(combined.get('total_count')) is not int
+            or combined['total_count'] != len(statuses) or len(statuses) > 100
+            or combined.get('sha') != commit):
+        raise PublicationError('Status list is incomplete or belongs to another commit.')
+    if (combined.get('state') not in {'success', 'pending'}
+            or any(not isinstance(row, dict) or row.get('state') != 'success' for row in statuses)):
+        raise PublicationError('Another commit status is not successful.')
+    return sorted(latest)
+
+
+def tag_commit(tag=TAG):
+    data = api(API_PREFIX + '/git/ref/tags/' + tag, missing_ok=True)
+    if data is None:
+        return None
+    obj = data.get('object', {})
+    for _ in range(5):
+        if obj.get('type') == 'commit':
+            return obj.get('sha')
+        if obj.get('type') != 'tag' or not re.fullmatch(r'[0-9a-f]{40}', obj.get('sha', '')):
+            break
+        obj = api(API_PREFIX + '/git/tags/' + obj['sha']).get('object', {})
+    raise PublicationError('Existing tag could not be resolved to a unique commit.')
+
+
+def release_notes(commit):
+    text = read_file(commit, 'docs/RELEASE_8.3.5.md')
+    marker = '\nThis community fork builds on '
+    if marker not in text or not text.startswith(NOTES_HEADING):
+        raise PublicationError('Approved release notes were not recognised.')
+    body = 'This community fork builds on ' + text.split(marker, 1)[1].lstrip()
+    def absolute_link(match):
+        target = match[1]
+        if target.startswith(('https://', 'http://', '#')):
+            return match[0]
+        path, separator, anchor = target.partition('#')
+        path = posixpath.normpath(posixpath.join('docs', path))
+        if path.startswith('../') or path.startswith('/') or ':' in path:
+            raise PublicationError('Unexpected relative release link.')
+        return '](https://github.com/' + REPOSITORY + '/blob/' + commit + '/' + path + (separator + anchor if separator else '') + ')'
+    return re.sub(r'\]\(([^)]+)\)', absolute_link, body)
+
+
+def verify_release(release, commit):
+    if (type(release.get('id')) is not int or release['id'] <= 0
+            or release.get('tag_name') != TAG or release.get('name') != TITLE
+            or release.get('draft') is not False
+            or release.get('prerelease') is not False or release.get('html_url') != RELEASE_URL):
+        raise PublicationError('Release is not the expected published stable release.')
+    if tag_commit() != commit:
+        raise PublicationError('Release tag does not point to the approved merge commit.')
+
+
+def verify_latest_stable(expected=None):
+    """Before creation require 8.3.4; afterwards require this exact new release."""
+    new_publication = expected is not None
+    expected = expected if expected is not None else {'id': STABLE_RELEASE_ID, 'tag_name': '8.3.4'}
+    stable = api(API_PREFIX + '/releases/latest')
+    if (stable.get('id') != expected['id'] or stable.get('tag_name') != expected['tag_name']
+            or stable.get('draft') is not False or stable.get('prerelease') is not False
+            or (new_publication and any(stable.get(field) != expected.get(field)
+                                        for field in ('name', 'body', 'html_url')))):
+        raise PublicationError('Latest stable release is not the expected publication.')
+    return stable
+
+
+def verify_approved_merge(commit):
+    """Only a signed regular package squash of the reviewed source is eligible."""
+    data = api(API_PREFIX + '/git/commits/' + commit)
+    identity = data.get('author', {})
+    committer = data.get('committer', {})
+    if (data.get('sha') != commit
+            or [row.get('sha') for row in data.get('parents', [])] != [REVIEWED_SOURCE]
+            or data.get('verification', {}).get('verified') is not True
+            or data.get('verification', {}).get('reason') != 'valid'
+            or identity.get('name') != 'martins-netizen'
+            or identity.get('email') != '299523863+martins-netizen@users.noreply.github.com'
+            or committer.get('name') != 'GitHub'
+            or committer.get('email') != 'noreply@github.com'):
+        raise PublicationError('Package commit is not the approved signed regular merge.')
+
+
+def prior_releases():
+    """Read the complete bounded existing release records, including bodies."""
+    rows = api(API_PREFIX + '/releases?per_page=100')
+    if not isinstance(rows, list) or len(rows) > len(PRESERVED_TAGS) + 1:
+        raise PublicationError('Existing release inventory is incomplete or unexpected.')
+    names = [row.get('tag_name') for row in rows]
+    if (len(set(names)) != len(names)
+            or not set(names) <= set(PRESERVED_TAGS) | {TAG}):
+        raise PublicationError('Existing release inventory contains unexpected tags.')
+    previous = {row['tag_name']: row for row in rows if row['tag_name'] != TAG}
+    if (set(previous) != set(PRESERVED_TAGS)
+            or any(previous[name].get('id') != release_id
+                   for name, release_id in PRESERVED_RELEASE_IDS.items())):
+        raise PublicationError('Existing release identities differ from the reviewed inventory.')
+    stable = previous['8.3.4']
+    source = previous['8.3.5b7']
+    if (stable.get('id') != STABLE_RELEASE_ID or stable.get('draft') is not False
+            or stable.get('prerelease') is not False):
+        raise PublicationError('The previous stable release differs from the reviewed baseline.')
+    if (source.get('id') != SOURCE_RELEASE_ID or source.get('draft') is not False
+            or source.get('prerelease') is not True):
+        raise PublicationError('The accepted beta publication differs from the reviewed baseline.')
+    body = source.get('body')
+    if not isinstance(body, str) or hashlib.sha256(body.encode('utf-8')).hexdigest() != SOURCE_RELEASE_BODY_SHA256:
+        raise PublicationError('The accepted beta release notes differ from the verified publication.')
+    return previous
+
+
+def verify_prior_releases(previous):
+    if prior_releases() != previous:
+        raise PublicationError('An existing release record changed; no old record was overwritten.')
+
+
+def publish(commit, receipt, *, allow_write=False):
+    require_source_frozen()
+    if not re.fullmatch(r'[0-9a-f]{40}', commit):
+        raise PublicationError('The full approved commit is missing.')
+    account = api('user')
+    if account.get('login') != 'martins-netizen' or account.get('id') != 299523863:
+        raise PublicationError('Use the existing martins-netizen GitHub account.')
+    repo = api(API_PREFIX)
+    if (repo.get('id') != 1333898084 or repo.get('full_name') != REPOSITORY
+            or repo.get('owner', {}).get('login') != 'martins-netizen'
+            or repo.get('owner', {}).get('id') != 299523863
+            or repo.get('default_branch') != 'development'
+            or repo.get('private') is not False or repo.get('archived') is not False
+            or repo.get('permissions', {}).get('push') is not True):
+        raise PublicationError('Repository, default branch or existing write permission differs.')
+    branch = api(API_PREFIX + '/branches/development')
+    if branch.get('commit', {}).get('sha') != commit or branch.get('protected') is not True:
+        raise PublicationError('Protected development head is not the approved merge.')
+    verify_approved_merge(commit)
+    previous_releases = prior_releases()
+    accepted = tree_files(REVIEWED_SOURCE)
+    candidate = tree_files(commit)
+    prefix = 'custom_components/meteoswiss/'
+    before = {k: v for k, v in accepted.items() if k.startswith(prefix)}
+    after = {k: v for k, v in candidate.items() if k.startswith(prefix)}
+    if any(mode != '100644' for mode, _ in after.values()):
+        raise PublicationError('All component files must be regular non-executable files.')
+    version_paths = {prefix + 'manifest.json', prefix + 'version.py'}
+    identical_before = {k: v for k, v in before.items() if k not in version_paths}
+    identical_after = {k: v for k, v in after.items() if k not in version_paths}
+    if len(before) != 52 or before.keys() != after.keys() or identical_before != identical_after:
+        raise PublicationError('Component code differs from the reviewed PR #131 corrective source.')
+    source_manifest = json.loads(read_file(REVIEWED_SOURCE, prefix + 'manifest.json'))
+    expected_manifest = {**source_manifest, 'version': TAG}
+    expected_version = read_file(REVIEWED_SOURCE, prefix + 'version.py').replace(
+        '__version__ = "8.3.5b7"', '__version__ = "' + TAG + '"'
+    )
+    if (source_manifest.get('version') != '8.3.5b7'
+            or json.loads(read_file(commit, prefix + 'manifest.json')) != expected_manifest
+            or read_file(commit, prefix + 'version.py') != expected_version):
+        raise PublicationError('Only the reviewed stable 8.3.5 version bump is allowed in component files.')
+    source_hacs = json.loads(read_file(REVIEWED_SOURCE, 'hacs.json'))
+    if (source_hacs.get('hide_default_branch') is not True
+            or source_hacs.get('country') != 'CH'
+            or source_hacs.get('homeassistant') != '2026.11.0'
+            or json.loads(read_file(commit, 'hacs.json')) != source_hacs):
+        raise PublicationError('HACS manifest differs from the reviewed branch-hiding change.')
+    for tag, expected in PRESERVED_TAGS.items():
+        if tag_commit(tag) != expected:
+            raise PublicationError('An existing immutable tag differs: ' + tag)
+    stable = previous_releases['8.3.4']
+    workflows_before = {k: v for k, v in accepted.items() if k.startswith('.github/workflows/')}
+    workflows_after = {k: v for k, v in candidate.items() if k.startswith('.github/workflows/')}
+    if workflows_before != workflows_after:
+        raise PublicationError('Workflow files differ from the checked source.')
+    def ci_policy(path):
+        return (path.startswith('.github/') or path.startswith('requirements')
+                or path in {'pyproject.toml', 'pytest.ini', '.coveragerc', 'docs/quality_rules.json'}
+                or (path.startswith('scripts/check_') and path.endswith('.py')))
+    if accepted.get('docs/quality_rules.json', (None, None))[0] != '100644':
+        raise PublicationError('The reviewed Gold evidence policy is missing or not a regular file.')
+    policy_before = {path: value for path, value in accepted.items() if ci_policy(path)}
+    policy_after = {path: value for path, value in candidate.items() if ci_policy(path)}
+    if policy_before != policy_after:
+        raise PublicationError('CI policy, dependency locks or validation scripts differ from the reviewed source.')
+    def frozen_publication_path(path):
+        name = posixpath.basename(path)
+        return ((path.startswith('scripts/') and name.startswith(('publish_', 'veroeffentliche_')) and name.endswith('.sh'))
+                or (path.startswith('tests/') and name.startswith('test_') and 'publisher' in name and name.endswith('.py'))
+                or (path.startswith('tests/fixtures/') and 'release' in name))
+    frozen_before = {path: value for path, value in accepted.items() if frozen_publication_path(path)}
+    if any(candidate.get(path) != value for path, value in frozen_before.items()):
+        raise PublicationError('An existing publisher or frozen publication profile differs from the reviewed source.')
+    manifest = json.loads(read_file(commit, prefix + 'manifest.json'))
+    version = read_file(commit, prefix + 'version.py')
+    if manifest.get('domain') != 'meteoswiss' or manifest.get('version') != TAG or '__version__ = "' + TAG + '"' not in version:
+        raise PublicationError('Manifest, module version or domain does not match.')
+    checks = check_statuses(commit)
+    body = release_notes(commit)
+    receipt.update({'component_files_identical': 50, 'version_files_checked': 2, 'hide_default_branch': True, 'workflow_files_unchanged': True, 'ci_policy_files_unchanged': True,
+                    'checks_successful': checks, 'frozen_publication_profiles_unchanged': True, 'prerelease': False, 'existing_tags_unchanged': True, 'country': 'CH',
+                    'reviewed_source': REVIEWED_SOURCE, 'stable_release_id': stable['id'],
+                    'previous_stable_release_id': STABLE_RELEASE_ID, 'accepted_beta_release_id': SOURCE_RELEASE_ID})
+    existing_tag = tag_commit()
+    if existing_tag is not None and existing_tag != commit:
+        raise PublicationError('Existing stable tag points to another commit; nothing was changed.')
+    existing = api(API_PREFIX + '/releases/tags/' + TAG, missing_ok=True)
+    if existing is not None:
+        verify_release(existing, commit)
+        if existing.get('body') != body:
+            raise PublicationError('Existing release notes differ; the release was not overwritten.')
+        verify_latest_stable(existing)
+        verify_prior_releases(previous_releases)
+        receipt['preserved_release_records_verified'] = len(previous_releases)
+        receipt.update({'status': 'already_published_and_verified', 'release_created': False,
+                        'release_url': RELEASE_URL, 'release_id': existing['id'], 'published_at': existing.get('published_at'),
+                        'stable_release_id': existing['id'], 'latest_stable_verified': True})
+        return receipt
+    # Recheck the mutable branch immediately before the only remote write.
+    if api(API_PREFIX + '/branches/development').get('commit', {}).get('sha') != commit:
+        raise PublicationError('Development moved during preflight.')
+    verify_latest_stable()
+    verify_prior_releases(previous_releases)
+    receipt['preserved_release_records_verified'] = len(previous_releases)
+    if not allow_write:
+        receipt.update({'status': 'ready_to_publish', 'release_created': False})
+        return receipt
+    receipt['release_write_attempted'] = True
+    created = api(API_PREFIX + '/releases', method='POST', body={
+        'tag_name': TAG, 'target_commitish': commit, 'name': TITLE, 'body': body,
+        'draft': False, 'prerelease': False, 'make_latest': 'true',
+        'generate_release_notes': False,
+    })
+    verify_release(created, commit)
+    confirmed = api(API_PREFIX + '/releases/tags/' + TAG)
+    verify_release(confirmed, commit)
+    if confirmed.get('body') != body or confirmed.get('id') != created.get('id'):
+        raise PublicationError('Published release notes could not be verified.')
+    for tag, expected in PRESERVED_TAGS.items():
+        if tag_commit(tag) != expected:
+            raise PublicationError('An existing tag changed during publication.')
+    verify_latest_stable(confirmed)
+    verify_prior_releases(previous_releases)
+    receipt.update({'status': 'published_and_verified', 'release_created': True,
+                    'release_url': RELEASE_URL, 'release_id': confirmed['id'], 'published_at': confirmed.get('published_at'),
+                    'stable_release_id': confirmed['id'], 'latest_stable_verified': True})
+    return receipt
+
+
+def main(commit, report_path, mode="--check"):
+    require_source_frozen()
+    report = Path(report_path)
+    if report.exists():
+        raise PublicationError('The local report path already exists.')
+    receipt = {'tool_version': 'MeteoSwiss Stable 8.3.5 Publisher V1.9',
+               'repository': REPOSITORY, 'tag_name': TAG,
+               'approved_publication_commit': commit, 'reviewed_source_commit': REVIEWED_SOURCE, 'focused_ha_ui_acceptance': 'operator_confirmed_8.3.5b7',
+               'hacs_stable_upgrade': 'pending_8.3.5', 'mode': mode,
+               'status': 'not_published', 'release_write_attempted': False,
+               'ha_writes_performed': False, 'core_restarted': False,
+               'device_service_calls_sent': False}
+    with report.open('x', encoding='utf-8') as handle:
+        code = 0
+        try:
+            if mode not in {"--check", "--publish"}:
+                raise PublicationError("Use --check or --publish.")
+            publish(commit, receipt, allow_write=mode == "--publish")
+        except Exception as exc:
+            code = 1
+            receipt['status'] = 'publication_result_unconfirmed' if receipt['release_write_attempted'] else 'stopped_before_publication'
+            receipt['error_type'] = type(exc).__name__
+            if isinstance(exc, PublicationError):
+                receipt['reason'] = str(exc)
+            print('STOP: ' + receipt.get('reason', 'Publication not fully verified (' + type(exc).__name__ + ').'))
+            if receipt['release_write_attempted']:
+                print('A GitHub release may already exist. Run --check with the same commit before another publication attempt; do not delete or retag it.')
+        receipt['checked_at_utc'] = dt.datetime.now(dt.timezone.utc).isoformat()
+        json.dump(receipt, handle, ensure_ascii=False, indent=2, allow_nan=False)
+        handle.write('\n')
+    if code == 0:
+        print('=== READY TO PUBLISH (READ ONLY) ===' if receipt['status'] == 'ready_to_publish' else '=== STABLE RELEASE VERIFIED ===')
+        print('Version:', TAG)
+        print('Release:', RELEASE_URL)
+        print('50 component files match the reviewed source; two version files were checked separately.')
+        print('Home Assistant was not changed or restarted.')
+    print('Report:', report)
+    return code
+
+
+if __name__ == '__main__':
+    raise SystemExit(main(sys.argv[1], sys.argv[2], sys.argv[3]))
+PY_PUBLISH
+printf '%s\n' "Log: ${LOG}" 'Send the JSON and log to record the confirmed publication status.'

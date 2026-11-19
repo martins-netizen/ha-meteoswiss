@@ -1,27 +1,26 @@
 # Maintenance and release procedure
 
-## Corrective source before stable 8.3.5
+## Stable 8.3.5 on approved corrective source
 
-Published b7 completed its own checks, publication and bounded sight report.
-The overall documentation review subsequently found a
-[canonical coordinator placement gap](COORDINATOR_CANONICAL_COMPLETION.md).
-Prepare that narrow source correction first, keeping version 8.3.5b7. Its own
-native validation, source approval, normal signed merge and trusted actual-merge
-checks must pass before complete Gold assessment closure and stable packaging.
-Accepted b3/b5/b6/b7 operator scopes stay closed; internal class placement does
-not require another migration or observation window.
+The pre-stable correction is complete in signed approved #131,
+`115ddad474dcae15aa49fb5f368cbed600adf80d`. All ten exact-head and nine actual-
+merge checks passed. The [completion record](COORDINATOR_CANONICAL_COMPLETION.md)
+retains the canonical ninth coordinator and calculated-HGT midnight fixes and
+their concrete native/structural regressions. B7 publication and bounded sight
+acceptance remain complete; earlier b3/b5/b6/b7 operator scopes stay closed.
 
-The future stable package must be pinned to the actual approved corrective
-source merge. Only then can the stable two-version-field comparison, the other
-50 component files and a fixed publisher be verified against that source.
-V1.8 publisher preparation is parked until that pin exists; it is not yet a
-ready publication procedure. Preserve all 23 existing releases/tags and 31
-historical publisher/profile/release-fixture paths, including b7. Never rewrite
-an old tag or body. Use [planned notes](RELEASE_8.3.5.md),
-[dated evidence](RELEASE_EVIDENCE_8.3.5.md), [publication guidance](PUBLISHING.md)
-and [ordinary update guidance](ACCEPTANCE_8.3.5.md). The
-[catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases) establishes
-availability; documentation alone changes no HA installation.
+Prepare stable 8.3.5 with only the two component version fields changed relative
+to that source, preserving its other 50 component files and protected policies.
+Fixed publisher **V1.9** is bound to the actual corrective source; unpublished
+V1.8 preparation with the old pin is parked. Review the final package, trusted
+exact-head checks, normal approved signed package merge and actual-merge checks
+before authorized publication. Preserve all 23 prior release records/tags and
+31 historical publication-profile paths. Never rewrite an old tag or body.
+Use [cumulative notes](RELEASE_8.3.5.md), [dated evidence](RELEASE_EVIDENCE_8.3.5.md),
+[publication guidance](PUBLISHING.md) and [ordinary update guidance](ACCEPTANCE_8.3.5.md).
+The [catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+establishes availability. No extra migration or operator observation window
+follows solely from this promotion; documentation changes no HA installation.
 
 ## Working procedure
 

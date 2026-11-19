@@ -1,12 +1,13 @@
 # Sources, locations and update contracts
 
-**Current source contracts and planned stable scope:** published b7 provides the
-contracts below. The [canonical coordinator correction](COORDINATOR_CANONICAL_COMPLETION.md)
-relocates its measured-HGT coordinator before stable packaging and fixes the
-local Swiss-midnight state publication of calculated forecast HGT. Source
-requests, polling schedules and existing availability contracts are retained. Its own source approval and actual-merge checks
-precede the future stable package. Use the
-[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases),
+**Current source contracts:** approved signed #131 at
+`115ddad474dcae15aa49fb5f368cbed600adf80d` supplies the contracts below. The
+[canonical coordinator correction](COORDINATOR_CANONICAL_COMPLETION.md) keeps
+measured-HGT scheduling/ownership and fixes local Swiss-midnight state
+publication of calculated forecast HGT. Source requests, polling schedules and
+existing availability contracts remain. Stable packaging is a two-version-
+field promotion from that actual source, with separate package/publication
+gates. Use the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases),
 [cumulative notes](RELEASE_8.3.5.md) and [dated evidence](RELEASE_EVIDENCE_8.3.5.md)
 for availability and stage. Completed b3 cleanup and b5/b6/b7 reports stay closed.
 

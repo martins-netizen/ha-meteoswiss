@@ -15,34 +15,33 @@ This is an independent community project, not an official MeteoSwiss product.
 This guide describes the **8.3 series**; [8.3.0 release notes](docs/RELEASE_8.3.0.md)
 explain the changes from 8.2.0. Use a published release, not a branch.
 
-**Current release and 8.3.5 work:** published **8.3.5b7** includes official
-measured heating degree days, more private diagnostics and local warning/
-forecast state clocks. Its source/package checks, publication and bounded
-positive operator sight report are complete. Use the
+**About 8.3.5:** this version brings together official measured heating degree
+days, more private diagnostics, reliable local state clocks and our engineering
+evidence through Gold. It uses the reviewed source in
+[PR #131](https://github.com/martins-netizen/ha-meteoswiss/pull/131), signed merge
+`115ddad474dcae15aa49fb5f368cbed600adf80d`. The
+[cumulative release notes](docs/RELEASE_8.3.5.md) explain changes since stable 8.3.4.
+Choose an actually published package from the
 [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-and [latest-stable page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
-for actual package selection; previous stable 8.3.4 remains an immutable baseline.
+or [latest-stable page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest).
+This source guide is not an availability or installation record. Published
+beta packages and earlier releases remain immutable.
 
-The overall review found a structural gap in the earlier Gold
-assessment: the ninth HGT coordinator was defined outside the canonical
-module. A [narrow source correction](docs/COORDINATOR_CANONICAL_COMPLETION.md)
-places the single actual class in `coordinator.py` and retains an explicit
-compatibility re-export at the old path. The same corrective source also
-[advances calculated HGT at Swiss midnight](docs/FORECAST_SENSORS.md#calculated-hgt-follows-the-swiss-day),
-so yesterday's registered value does not remain until the next source poll.
-Its own complete source checks and normal approved merge precede stable
-packaging; no exception or weaker gate is used. **8.3.5 remains a planned stable release**, with
-[draft cumulative notes](docs/RELEASE_8.3.5.md) and
-[dated evidence](docs/RELEASE_EVIDENCE_8.3.5.md), rather than a publication claim.
+The [pre-stable source review](docs/COORDINATOR_CANONICAL_COMPLETION.md) corrected
+the ninth coordinator's canonical placement and
+[calculated HGT at Swiss midnight](docs/FORECAST_SENSORS.md#calculated-hgt-follows-the-swiss-day).
+Native registered-state tests cover the new HGT clock and lifecycle, including
+23-/25-hour days and disabled polling. The stable package changes only two
+component version fields relative to that approved source; its other 50
+component files and all existing security/quality policies remain.
 
-Already accepted b7 behavior needs no repeated installation, migration or
-operator observation window for this source correction; the new HGT clock
-contract is covered by its own native regression tests. Future
-stable packaging must use the actual approved corrective source. If choosing
-that stable label once published, update the existing entry normally with its
-ordinary restart; follow the [stable guide](docs/ACCEPTANCE_8.3.5.md).
+Already accepted b7 behavior needs no repeated migration, failure exercise or
+operator observation window. When choosing stable 8.3.5 after publication,
+update the existing entry normally and complete its ordinary update restart
+once; follow the [stable guide](docs/ACCEPTANCE_8.3.5.md).
 Earlier users need no intermediate beta or entry recreation. Keep the station,
-options, names, dashboards and retained IDs.
+options, names, dashboards and retained IDs. The [dated record](docs/RELEASE_EVIDENCE_8.3.5.md)
+separates completed source/beta evidence from stable package/publication gates.
 
 **Official measured HGT:** a distinct last-observed-day sensor and station-specific
 daily/monthly/annual statistics import official SwissMetNet products, backfill
@@ -61,7 +60,7 @@ before deletion. Accepted b3 cleanup and b5/b6/b7 reports stay complete.
 
 | Package | Required HA Core |
 |---|---|
-| Planned 8.3.5 / published 8.3.5b1–b7 | 2026.11.0 or newer |
+| 8.3.5 and 8.3.5b1–b7 | 2026.11.0 or newer |
 | Earlier stable 8.3.4 | 2026.8.3 or newer |
 
 The 2026.11 baseline addresses known vulnerabilities in libraries pinned by
@@ -160,24 +159,24 @@ Read the [plain-language overview](docs/GETTING_STARTED.md#what-this-fork-provid
 ## Quality goals: Bronze, Silver and Gold
 
 The [matrix](docs/QUALITY_SCALE.md) covers all **51 Home Assistant rules through
-Gold**: 20 Bronze, 10 Silver and 21 Gold. The earlier b7 native/index report
-passed its implemented checks; later overall review exposed the missed ninth
-coordinator placement in the `common-modules` judgment. The
-[canonical correction](docs/COORDINATOR_CANONICAL_COMPLETION.md) fixes that actual
-source boundary before stable closure. Native timing/privacy, fixed-service,
-metadata and four-language evidence retain their declared scopes.
+Gold**: 20 Bronze, 10 Silver and 21 Gold. The
+[reviewed source](docs/COORDINATOR_CANONICAL_COMPLETION.md) includes the single
+canonical definition of all nine coordinators, native timing/privacy contracts,
+fixed-service lifecycle, complete metadata and four-language evidence.
+The earlier missed ninth-coordinator judgment and its concrete correction stay
+visible in the [dated evidence](docs/RELEASE_EVIDENCE_8.3.5.md).
 
 The exact [rule index](docs/quality_rules.json),
 [fresh-evidence contract](docs/GOLD_EVIDENCE_CONTRACT.md) and
-[completion review](docs/GOLD_COMPLETION_REVIEW.md) bind source/tests/review
-judgments. All source checks and the normal approved merge remain required for
-the correction; an automated reference check cannot certify a human review.
-Custom integrations have no official HA quality-tier award or independent
-security certification from this process.
+[completion review](docs/GOLD_COMPLETION_REVIEW.md) distinguish 26 automated
+verifications, 16 documented reviews and nine reasoned exemptions. An automated
+reference check does not itself perform a human review. This is the project's
+engineering assessment, without an official HA quality-tier award or
+independent security certification.
 
 B7 publication and bounded sight acceptance are complete; prior b3/b5/b6/b7
-reports remain closed. [Current evidence](docs/RELEASE_EVIDENCE_8.3.5.md) keeps
-those observations separate from corrective source and planned stable gates.
+reports stay closed. [Current evidence](docs/RELEASE_EVIDENCE_8.3.5.md) keeps
+source, package and publication gates separate.
 [Security boundaries](docs/GOLD_SECURITY_BOUNDARIES.md) retain provider
 retention, host controls and independent assurance. The owner-only inventory
 remains dated **11 November 2026**, not a fresh alert clearance.
@@ -209,14 +208,14 @@ release **450428545**, was independently verified on **18 November 2026 at
 report. Earlier [stable 8.3.4](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4)
 and all previous tags/notes remain unchanged.
 
-**8.3.5** is the planned stable release after the
-[canonical source correction](docs/COORDINATOR_CANONICAL_COMPLETION.md), its own
-complete checks and approved merge. Version fields and the fixed stable
-publisher will then be frozen to that actual source. This source documentation
-neither publishes stable 8.3.5 nor installs it; do not download an unapproved
-branch in place of a published package.
+**8.3.5** includes the signed corrective source
+`115ddad474dcae15aa49fb5f368cbed600adf80d`. The fixed stable publisher verifies
+that source boundary, the package's trusted checks and all retained historical
+releases. [Dated evidence](docs/RELEASE_EVIDENCE_8.3.5.md) distinguishes package
+approval and publication from source validation. Choose a published package
+from the catalogue; a branch is not an available release.
 
-The [planned cumulative notes](docs/RELEASE_8.3.5.md) cover measured HGT, consented
+The [cumulative release notes](docs/RELEASE_8.3.5.md) cover measured HGT, consented
 obsolete-forecast cleanup, circular wind history, translated names/shared
 lifecycle, bounded precipitation, diagnostics privacy and local state clocks.
 The minimum remains **2026.11.0**, current compatibility **2026.11.2**. An older

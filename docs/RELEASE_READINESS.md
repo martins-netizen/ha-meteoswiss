@@ -2,18 +2,24 @@
 
 ## Current 8.3.5 boundary
 
-Published b7 completed its source/package checks, publication and bounded
-positive sight report. Overall review then identified one actual
-`common-modules` placement deviation: the ninth measured-HGT coordinator was
-outside `coordinator.py`. The [source correction](COORDINATOR_CANONICAL_COMPLETION.md)
-precedes stable packaging; no exemption or gate relaxation is used. The same
-source correction fixes calculated forecast HGT's Swiss-midnight state update
-from retained data, without another source poll or a new availability rule.
+The pre-stable source correction is complete in signed approved
+[PR #131](https://github.com/martins-netizen/ha-meteoswiss/pull/131), source
+`115ddad474dcae15aa49fb5f368cbed600adf80d`. All ten head and nine actual-merge
+checks passed; both actual Core fixtures passed 3,622 tests plus 83 subtests,
+strict coverage and fresh 51-rule verification. It fixes the previously missed
+ninth coordinator's canonical placement and calculated HGT's Swiss-midnight
+registered-state update without a new source call, migration or availability
+age rule. [The completion record](COORDINATOR_CANONICAL_COMPLETION.md) preserves
+both reproduced gaps and the concrete corrective evidence.
 
-Stable 8.3.5 remains a planned promotion after that correction's normal review,
-complete native checks and approved merge. [Current evidence](RELEASE_EVIDENCE_8.3.5.md)
-keeps historical b7 results, the correction and future stable gates separate.
-The [catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+Stable **8.3.5** is now prepared as a two-version-field promotion from that exact
+source, retaining its other 50 component files and existing policies/locks.
+Fixed Publisher V1.9 and refusal-path tests belong to this package preparation.
+Package approval, exact-head checks, actual signed package merge and its checks,
+and authorized publication remain required in their own scope.
+[Current evidence](RELEASE_EVIDENCE_8.3.5.md) keeps those stages separate from
+completed b7 publication and bounded acceptance. The
+[catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
 remains authoritative for actual availability. Earlier operator reports stay
 closed; no repeated installation or observation window is invented.
 

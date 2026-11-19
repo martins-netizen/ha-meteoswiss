@@ -1,21 +1,26 @@
-# Next release: source corrections, then stable 8.3.5
+# Next release: stable 8.3.5 packaging
 
 ## Current next step
 
-Correct the actual measured-HGT coordinator placement through one narrow source
-PR before stable 8.3.5 promotion. The [completion note](COORDINATOR_CANONICAL_COMPLETION.md)
-records the finding, single canonical class and retained compatibility import.
-The same source PR fixes calculated forecast HGT's registered-state rollover at
-Swiss midnight from cached daily data, retaining its formula and availability.
-Do not treat the earlier complete checklist report as a substitute for this
-actual structural requirement. Complete native checks and a normal approved
-source merge must precede a fixed stable publisher pin.
+Prepare stable **8.3.5** from actual approved corrective source
+`115ddad474dcae15aa49fb5f368cbed600adf80d`, signed
+[PR #131](https://github.com/martins-netizen/ha-meteoswiss/pull/131), merged on
+**19 November 2026 at 06:07:36 UTC / 07:07:36 CET**. The
+[completion record](COORDINATOR_CANONICAL_COMPLETION.md) explains the canonical
+ninth coordinator and calculated-HGT Swiss-midnight registered-state fix.
+Those source corrections are no longer future work.
 
-The planned stable package retains the approved release introduction and
-[cumulative upgrade guidance](RELEASE_8.3.5.md). B7 publication and its bounded
-positive operator sight report remain complete; no repeated migration or
-operator observation is required. [Current roadmap](../ROADMAP.md) and
-[dated evidence](RELEASE_EVIDENCE_8.3.5.md) govern the present stage.
+The prepared stable package changes only two component version fields relative
+to that source and adds fixed publisher **V1.9** with refusal-path tests. Normal
+package approval, trusted exact-head checks, signed actual package merge and
+authorized publication remain separate. The package merge SHA and publication
+receipt are not known until those steps occur.
+
+The approved introduction and [cumulative notes](RELEASE_8.3.5.md) are retained.
+B7 publication and its bounded positive operator sight report remain complete;
+no repeated migration, failure exercise or operator observation is required.
+[Current roadmap](../ROADMAP.md) and [dated evidence](RELEASE_EVIDENCE_8.3.5.md)
+govern the present stage. Availability follows the release catalogue.
 
 ## Dated earlier implementation plans
 
@@ -47,8 +52,8 @@ This document does not approve a new feature, installation or release.
 ## Current next step: package the approved HGT recovery as 8.3.5b5
 
 **Historical 15 November step, now completed.** This old heading is retained
-for links; the actual current work is the canonical correction and stable
-promotion described at the top.
+for links; the actual current work is stable packaging on approved #131
+source, described at the top.
 
 PR #119 and all its exact-head/actual-merge checks are complete. The b5 package
 preserves that runtime apart from two version fields and includes a fixed

@@ -1,17 +1,15 @@
 # Gold engineering and security boundaries
 
-**Review update, 18 November 2026.** Signed #129 merge
-`8887597ebf8567b5969ee70b8f9dd6f261603aec` supplied the project's assessment of
-51 rules through Gold and the privacy/time-clock fixes below. Its ten head and
-nine actual-merge checks passed. Published b7 subsequently completed its own
-checks, publication and bounded sight report. The overall documentation review
-then found an incomplete common-modules judgment: the ninth HGT coordinator
-was defined outside `coordinator.py`. The
-[canonical coordinator correction](COORDINATOR_CANONICAL_COMPLETION.md) must
-pass separate source review and actual-merge checks before all-rule closure
-and future stable packaging. The corrective source also updates calculated
-forecast HGT at Swiss midnight using retained data. Neither correction expands
-source or cleanup permissions.
+**Review update, 19 November 2026.** Approved signed #131 at
+`115ddad474dcae15aa49fb5f368cbed600adf80d` completes the canonical coordinator
+and calculated-HGT midnight corrections after published b7. All ten trusted
+head and nine actual-merge checks passed, including both native Core suites
+and fresh 51-rule evidence. The earlier source #129 supplied the privacy/
+time-clock fixes below; the b7 package and bounded sight report retain their
+own completed scope. The missed ninth-coordinator judgment was corrected with
+concrete structural/native evidence, not an exception. Neither pre-stable
+correction adds a source request, credential, archive or cleanup permission.
+Stable packaging and authorized publication remain separate.
 
 The [quality matrix](QUALITY_SCALE.md), [completion review](GOLD_COMPLETION_REVIEW.md),
 [evidence contract](GOLD_EVIDENCE_CONTRACT.md) and

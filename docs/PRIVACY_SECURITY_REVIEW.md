@@ -1,18 +1,17 @@
 # Privacy, architecture and security: bounded review
 
-**Current source boundary, 18 November 2026:** published and bounded-accepted b7
-at `9ea96fc5a5306342eef0aa73ae50cc95bb844fb4` retains the diagnostics/time-clock
-corrections approved in #129. All ten b7 head and nine actual-merge checks
-passed. The overall documentation review subsequently found that the ninth HGT
-coordinator was outside the canonical module; the earlier human
-common-modules judgment was incomplete. The
-[canonical coordinator correction](COORDINATOR_CANONICAL_COMPLETION.md) must
-pass its own source review and actual-merge checks before complete Gold
-assessment closure and stable 8.3.5 packaging. The same corrective source
-fixes calculated forecast HGT's Swiss-midnight registered-state rollover using
-retained data. Neither correction expands privacy, request or deletion authority. The
-[dated record](RELEASE_EVIDENCE_8.3.5.md) retains actual publication and the
-bounded sight report; no independently audited HA installation is inferred.
+**Current source boundary, 19 November 2026:** approved signed #131 at
+`115ddad474dcae15aa49fb5f368cbed600adf80d` follows published, bounded-accepted
+b7 and retains the diagnostics/time-clock corrections approved in #129. All
+ten #131 head and nine actual-merge checks passed; both actual Core fixtures
+passed 3,622 tests plus 83 subtests and fresh 51-rule verification. The overall
+review's missed ninth-coordinator judgment is corrected by
+[canonical placement](COORDINATOR_CANONICAL_COMPLETION.md), not by an exemption.
+The same source updates calculated forecast HGT at Swiss midnight using retained
+data. Neither correction expands privacy, request or deletion authority.
+[The dated record](RELEASE_EVIDENCE_8.3.5.md) separates completed source/beta
+evidence from the prepared stable package and authorized publication. No new
+independently audited HA installation is inferred.
 
 The [quality matrix](QUALITY_SCALE.md), [completion review](GOLD_COMPLETION_REVIEW.md),
 [evidence contract](GOLD_EVIDENCE_CONTRACT.md) and

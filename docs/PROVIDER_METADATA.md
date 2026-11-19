@@ -61,4 +61,5 @@ discovery exemptions and explains why seven service groups do not fit the
 single-device lifecycle exception. Those remaining entity/translation/lifecycle
 questions were limits of the original 8.3.4 review, not new operator tasks.
 [Current evidence](QUALITY_SCALE.md) records later native coverage and the
-separately identified canonical-coordinator correction before stable promotion.
+canonical-coordinator correction completed in approved #131 before the
+separate stable package/publication stages.

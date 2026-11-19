@@ -1,29 +1,26 @@
 # Set up MeteoSwiss
 
-## Current release and planned 8.3.5 guide
+## Choose a published version
 
-Published **8.3.5b7** includes measured HGT, explicit obsolete-forecast cleanup,
-stronger diagnostic privacy and the diagnostics/time-clock corrections. The
-18 November overall documentation review then found a remaining
-[canonical coordinator placement gap](COORDINATOR_CANONICAL_COMPLETION.md)
-and a calculated-HGT day-change delay. The corrective source advances that
-forecast at Swiss midnight without another download and must pass its own
-review and actual-merge checks
-before stable **8.3.5** is packaged. Use the
+This guide describes the maintained integration, including **8.3.5** measured
+HGT, explicit obsolete-forecast cleanup, stronger diagnostic privacy and local
+warning/forecast clocks. Calculated HGT also follows Swiss midnight from cached
+daily data, without another source download. Read the
+[cumulative release notes](RELEASE_8.3.5.md) for changes since stable 8.3.4.
+
+Choose an actually published package from the
 [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-for available versions. The preceding stable package is 8.3.4; these
-[planned release notes](RELEASE_8.3.5.md) do not publish or install 8.3.5.
-Read the [upgrade guide](UPGRADING_8.3.5.md) and
-[normal update guide](ACCEPTANCE_8.3.5.md).
+or [latest-stable page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest).
+Repository preparation alone does not establish availability. Existing users
+update their existing entry directly; intermediate betas and entry recreation
+are unnecessary. Complete the ordinary update restart once. The
+[upgrade guide](UPGRADING_8.3.5.md) and [normal update guide](ACCEPTANCE_8.3.5.md)
+explain the retained entry, measured history and any explicit cleanup consent.
 
-These source corrections do not reopen the accepted b7 sight report or require
-another migration or operator observation window; native regressions verify the
-HGT clock. If choosing
-the stable label after publication, update normally with its ordinary restart.
-Earlier users update their existing entry directly; intermediate betas and entry
-recreation are unnecessary. Completed b3 cleanup and b5/b6/b7 reports stay
-closed. Official measured HGT and obsolete forecast statistics are distinct;
-the upgrade guide explains any explicit cleanup consent.
+Completed b3 cleanup and b5/b6/b7 operator reports stay closed. The reviewed
+pre-stable source fixes have their own native regressions and require no repeat
+migration, failure exercise or new operator observation window. Official
+measured HGT and obsolete forecast statistics remain distinct.
 
 ## Location privacy before setup
 

@@ -1,16 +1,17 @@
 # Coordinator examples for contributors
 
-**Guide version:** 1.8 · **Updated:** 18 November 2026
-**Scope:** retained b7 source/data contracts, with the
-[canonical placement correction](COORDINATOR_CANONICAL_COMPLETION.md) prepared
-before stable 8.3.5. That source correction moves the real HGT coordinator into
-`coordinator.py` without changing its scheduling or ownership. Its own review,
-native and actual-merge gates remain pending. The
+**Guide version:** 1.9 · **Updated:** 19 November 2026
+**Scope:** approved #131 source, including the
+[completed canonical placement](COORDINATOR_CANONICAL_COMPLETION.md). The single
+actual HGT class now resides in `coordinator.py`, with its former module as a
+same-class re-export; measured-HGT scheduling and ownership remain. Native
+source and actual-merge checks are complete. The
 [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-establishes availability; [planned notes](RELEASE_8.3.5.md) and
-[dated evidence](RELEASE_EVIDENCE_8.3.5.md) distinguish the stages. Accepted b7
-operator scope is not reopened. This guide does not change HA configuration or
-polling; see [architecture](ARCHITECTURE.md) and [sensors](SENSORS.md).
+establishes availability; [cumulative notes](RELEASE_8.3.5.md) and
+[dated evidence](RELEASE_EVIDENCE_8.3.5.md) distinguish source, package and
+publication stages. Accepted b7 operator scope is not reopened. This guide does
+not change HA configuration or polling; see [architecture](ARCHITECTURE.md)
+and [sensors](SENSORS.md).
 
 ## Choose the existing data family
 

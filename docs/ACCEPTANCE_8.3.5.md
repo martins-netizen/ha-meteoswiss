@@ -1,6 +1,6 @@
 # 8.3.5: normal update and retained acceptance
 
-**Protocol version:** 1.0 · **Updated:** 18 November 2026
+**Protocol version:** 1.1 · **Updated:** 19 November 2026
 
 Choose stable **8.3.5** only when it is listed in the
 [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases).
@@ -10,12 +10,12 @@ is **2026.11.0**; an installation on **2026.11.2** already meets that minimum.
 ## Already using the accepted b7 runtime
 
 The positive focused b7 sight report remains complete. Coordinator placement
-and calculated-HGT Swiss-midnight state publication receive their own source/
-native validation before stable packaging. The clock corrects yesterday's
-registered value lingering until a provider refresh; the later stable version
-bump must match that separately approved corrective source. No repeat
-migration, failure exercise or operator observation window is required. If choosing the stable label when
-published, use the existing entry's ordinary Marketplace update and complete
+and calculated-HGT Swiss-midnight state publication are included in approved
+[source PR #131](COORDINATOR_CANONICAL_COMPLETION.md), with their own native
+layout/registered-state/lifecycle evidence. Stable packaging retains that
+source apart from two version fields. No repeat migration, failure exercise
+or operator observation window is required. When choosing stable 8.3.5 after
+publication, use the existing entry's ordinary Marketplace update and complete
 its normal update restart once. No additional acceptance checklist is imposed.
 
 ## Upgrading from stable 8.3.4 or an earlier version
