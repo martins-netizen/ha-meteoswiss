@@ -107,12 +107,17 @@ completed successfully on that exact merge on 13 November 2026. All steps
 passed; the job checked 140 package/version pairs with zero active advisories
 and zero unknown results. This accepts the hosted manual workflow, including
 its isolated bootstrap/parser installation. The default branch is development;
-the workflow declares a daily 05:17 UTC schedule. No actual cron run or failure
-notification delivery has been observed, and no alert/settings inventory is
-refreshed by a successful run.
+the workflow declares a daily 05:17 UTC schedule. Actual scheduling was later
+confirmed by [run 43593878148](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/43593878148),
+created **14 November 2026 at 12:15:09 UTC**, event `schedule`, successful at
+b2 source `f8ea38babdfd44354059927888fb54fd662e5696`. Failure-notification
+delivery remains unobserved. A successful run does not refresh owner-only
+alert/settings evidence.
 
 PyPI coverage and publication delay limit what this feed can establish. A clean
 result does not prove absence of unknown vulnerabilities, malicious packages,
 OS/container/action issues or exposure in an installed HA environment. The
-dated owner-authenticated GitHub inventory is separate. Full Gold, independent
-security review and operator acceptance are not established by this CI change.
+dated owner-authenticated GitHub inventory is separate. This CI change alone
+does not establish a Gold assessment, independent security review or installed
+operator acceptance; [current project evidence](RELEASE_EVIDENCE_8.3.5.md) records
+those later source/package milestones within their own scopes.

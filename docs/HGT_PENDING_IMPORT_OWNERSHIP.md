@@ -1,9 +1,11 @@
 # HGT ownership while Recorder writes are pending
 
-**Package scope: included in 8.3.5b6.** Availability follows the
+**Package scope:** introduced in b6 and retained by published b7. Planned stable
+8.3.5 follows the separately gated canonical-coordinator correction without
+changing the ownership contracts below. Availability follows the
 [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases),
 with source/package checks and installed acceptance recorded separately in the
-[package notes](RELEASE_8.3.5b6.md). The original review on 17 November 2026
+[stable evidence](RELEASE_EVIDENCE_8.3.5.md). The original review on 17 November 2026
 used development `1d34e525d2938f6e265265a1efc80571ba9c1eca`.
 This correction is not in the immutable published 8.3.5b5 package.
 
@@ -67,7 +69,8 @@ statistics retain their existing contracts.
 ## Upgrade and recovery boundary
 
 No new user action is needed for the correction itself after the ordinary
-update to a listed b6 package. Follow the [read-only b6 check](ACCEPTANCE_8.3.5b6.md)
+update to a published package containing it. Follow the
+[stable guide](ACCEPTANCE_8.3.5.md), retaining completed b7 acceptance,
 and keep the existing entry and station. Do not switch stations,
 remove entries, delete data or repeat the accepted b3 cleanup as a test.
 Follow the existing [ownership/removal guide](HGT_OGD_PLAN.md#ownership-and-complete-removal)

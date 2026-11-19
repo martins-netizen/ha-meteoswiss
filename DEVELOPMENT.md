@@ -182,14 +182,19 @@ subset after the same bootstrap security check. It uses no integration data or
 GitHub/API secret and does not install an HA fixture. The HA compatibility
 jobs remain offline for uv. A separate daily/manual `Dependency audit` workflow
 uses identical steps, `contents: read`, pinned actions and no persisted checkout
-credentials. Actual GitHub scheduling/notification behaviour needs its own
-acceptance after merge.
+credentials. Actual scheduled execution and notification delivery need
+separate evidence, as recorded below.
 
 Manual hosted acceptance passed on 13 November 2026 in
 [run 43389137603](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/43389137603),
 at reviewed merge `b144a0b73d81358f27fd6ecd89a47120c8a0a1b9`: all steps passed,
 140 package/version pairs, zero active advisories and zero unknown results.
-Actual cron execution and failure-notification delivery have not been observed.
+A later actual scheduled execution is confirmed by
+[run 43593878148](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/43593878148),
+created **14 November 2026 at 12:15:09 UTC**, event `schedule`, completed
+successfully at b2 source `f8ea38babdfd44354059927888fb54fd662e5696`.
+Failure-notification delivery remains unobserved; successful execution does not
+refresh owner-only alert/settings evidence.
 
 From a supported hash-installed maintenance environment:
 

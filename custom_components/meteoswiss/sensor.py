@@ -6,6 +6,7 @@ import logging
 from collections.abc import Callable
 from dataclasses import dataclass, replace
 from datetime import UTC, date, datetime, timedelta
+from functools import partial
 from typing import Any, Final
 
 from homeassistant.components.sensor import (
@@ -867,6 +868,9 @@ class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntit
         self._entry = entry
         self._hgt_statistics_status = "pending"
         self._hgt_statistics_archive = None
+        self._hgt_clock_active = False
+        self._hgt_clock_generation = 0
+        self._hgt_clock_cancel: Callable[[], None] | None = None
         self._forecast_target = resolve_forecast_target(entry.data, None, None)
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_heating_degree_days"
         self._attr_device_info = forecast_device_info(entry.entry_id, self._forecast_target)
@@ -883,6 +887,9 @@ class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntit
 
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
+        self._hgt_clock_active = True
+        self.async_on_remove(self._stop_hgt_clock)
+        self._schedule_hgt_clock()
         from .repair_issues import async_sync_hgt_statistics_issue
         from .hgt_cleanup import SIGNAL
         from homeassistant.helpers.dispatcher import async_dispatcher_connect
@@ -906,6 +913,52 @@ class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntit
             lambda: async_sync_hgt_statistics_issue(self.hass, self._entry, False)
         )
         self.async_on_remove(async_at_started(self.hass, self._start_hgt_statistics))
+
+    @callback
+    def _cancel_hgt_clock(self) -> None:
+        """Cancel the entity's local calendar callback and invalidate old work."""
+        self._hgt_clock_generation += 1
+        if self._hgt_clock_cancel is not None:
+            self._hgt_clock_cancel()
+            self._hgt_clock_cancel = None
+
+    @callback
+    def _stop_hgt_clock(self) -> None:
+        self._hgt_clock_active = False
+        self._cancel_hgt_clock()
+
+    @callback
+    def _schedule_hgt_clock(self) -> None:
+        """Publish the retained forecast's new Swiss date without fetching data."""
+        self._cancel_hgt_clock()
+        if (
+            not self._hgt_clock_active
+            or not self.coordinator.last_update_success
+            or not self.coordinator.data
+        ):
+            return
+        local_now = dt_util.utcnow().astimezone(FORECAST_TIME_ZONE)
+        midnight = (local_now + timedelta(days=1)).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
+        self._hgt_clock_cancel = async_track_point_in_utc_time(
+            self.hass,
+            partial(self._handle_hgt_clock, self._hgt_clock_generation),
+            midnight,
+        )
+
+    @callback
+    def _handle_hgt_clock(self, generation: int, _now: datetime) -> None:
+        if not self._hgt_clock_active or generation != self._hgt_clock_generation:
+            return
+        self._hgt_clock_cancel = None
+        self.async_write_ha_state()
+        self._schedule_hgt_clock()
+
+    @callback
+    def _handle_coordinator_update(self) -> None:
+        self._schedule_hgt_clock()
+        super()._handle_coordinator_update()
 
     @callback
     def _start_hgt_statistics(self, hass: HomeAssistant) -> None:

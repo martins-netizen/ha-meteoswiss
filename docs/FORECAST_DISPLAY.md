@@ -83,8 +83,11 @@ unload. Invalid saved selections remain explicitly unavailable.
 
 ## Focused follow-up check
 
-Keep the existing temporary HA entry and its backup. After the follow-up is
-reviewed, published and installed, check these changed display paths:
+**Historical October acceptance example:** these display corrections shipped
+in the 8.3.0 runtime. The original targeted checks below retain their past
+scope; they are not open requirements for stable 8.3.5 or the accepted b7
+runtime. Use the [current stable guide](ACCEPTANCE_8.3.5.md). The original
+example kept the temporary HA entry and backup and checked these paths:
 
 - Select **Säntis** deliberately. Station and POI remain distinct choices. The
   forecast group identifies Säntis; its current model hour and daily/hourly
@@ -96,10 +99,10 @@ reviewed, published and installed, check these changed display paths:
 - Change the selected point, then explicitly reset to the base location.
   Check the updated label, retained IDs and unchanged other source settings.
 - Keep `unknown` daily values around the 25 October clock change separate from
-  source `unavailable`; the [known calendar-day limitation](FORECAST_SENSORS.md)
-  is unchanged by this display correction.
+  source `unavailable`; the then-observed calendar limitation was subsequently
+  corrected by [complete Swiss-day reconstruction](CALENDAR_AND_LOCATION_SETTINGS.md#complete-swiss-calendar-days).
 
 The earlier [8.3.0b1 protocol](ACCEPTANCE_8.3.0b1.md) is preserved as the published
-baseline. Continue its remaining pass/hut, language and new-entry checks using
-the follow-up's forecast device. Completed installation/restore evidence is not
-reopened; no new blanket 24-hour wait is required.
+baseline. Its original pass/hut, language and new-entry exercises do not
+reopen completed operator reports. Existing installation/restore evidence stays
+closed; no blanket 24-hour wait or repeated b7 acceptance is required.

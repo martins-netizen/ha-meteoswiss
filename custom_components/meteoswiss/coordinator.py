@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import csv
 import io
 import logging
@@ -11,6 +12,7 @@ from typing import Any
 
 import aiohttp
 from homeassistant.core import HomeAssistant
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.util import dt as dt_util
 
@@ -35,6 +37,9 @@ from .const import (
     STAC_COLLECTION,
 )
 from .forecast import IconForecastClient, IconForecastError
+from .hgt_ogd import HgtError, station_code
+from .hgt_ogd import REFRESH_INTERVAL as HGT_REFRESH_INTERVAL
+from .hgt_ogd_manager import get_hgt_manager
 from .http import MAX_CSV_BYTES, OGD_HOST, async_get_bytes, async_get_json
 from .openmeteo import OpenMeteoCurrentClient, OpenMeteoCurrentError
 from .pollen_meteoswiss import (
@@ -54,6 +59,7 @@ from .precipitation_recorder import (
     MeteoSwissPrecipitationImporter,
 )
 from .retry import async_retry_with_backoff
+from .runtime_data import MeteoSwissConfigEntry
 from .station_condition import (
     STATION_CONDITION_INTERVAL,
     StationConditionClient,
@@ -65,6 +71,10 @@ from .weather_data import forecast_datetime, validate_observation_time
 from .weather_data import parse_reference_timestamp as _parse_reference_timestamp
 
 _LOGGER = logging.getLogger(__name__)
+# Keep the established HGT log namespace while its class uses the common module.
+_HGT_LOGGER = logging.getLogger(f"{__package__}.hgt_ogd_coordinator")
+_HGT_INITIAL_RETRY_SECONDS = 60
+_HGT_MAX_RETRY_SECONDS = 15 * 60
 
 # MeteoSwiss CSV parameter IDs (10-minute granularity)
 # These are the column headers in the CSV files from data.geo.admin.ch
@@ -1070,3 +1080,80 @@ class MeteoSwissHourlyPrecipitationCoordinator(DataUpdateCoordinator[dict[str, A
                 translation_domain=DOMAIN,
                 translation_key="precipitation_queue_failed",
             ) from None
+
+
+class MeteoSwissHgtCoordinator(DataUpdateCoordinator[dict]):
+    """No new source coordinates, sessions or provider credentials."""
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        entry: MeteoSwissConfigEntry,
+        station: str,
+        session: aiohttp.ClientSession,
+    ) -> None:
+        self.station = station_code(station)
+        self.manager = get_hgt_manager(hass)
+        self.manager.register(entry.entry_id, self.station, session)
+        entry.async_on_unload(
+            lambda: self.manager.release(entry.entry_id, self.station)
+        )
+        self.issue_id = f"hgt_ogd_import_blocked_{entry.entry_id}"
+        self._next_retry_seconds = _HGT_INITIAL_RETRY_SECONDS
+        entry.async_on_unload(
+            lambda: ir.async_delete_issue(hass, DOMAIN, self.issue_id)
+        )
+        super().__init__(
+            hass,
+            _HGT_LOGGER,
+            name=f"{DOMAIN}_hgt_ogd",
+            config_entry=entry,
+            update_interval=HGT_REFRESH_INTERVAL,
+        )
+
+    async def _async_update_data(self) -> dict:
+        cancelled = False
+        try:
+            data = await self.manager.async_refresh(self.station, datetime.now(UTC))
+            ir.async_delete_issue(self.hass, DOMAIN, self.issue_id)
+            self._next_retry_seconds = _HGT_INITIAL_RETRY_SECONDS
+            return data
+        except asyncio.CancelledError:
+            cancelled = True
+            raise
+        except HgtError as error:
+            if str(error) in {"statistics_conflict", "ownership_unavailable"}:
+                ir.async_create_issue(
+                    self.hass,
+                    DOMAIN,
+                    self.issue_id,
+                    is_fixable=False,
+                    is_persistent=False,
+                    severity=ir.IssueSeverity.WARNING,
+                    translation_key="hgt_ogd_import_blocked",
+                )
+                raise UpdateFailed(
+                    translation_domain=DOMAIN, translation_key="hgt_ogd_conflict"
+                ) from None
+            raise UpdateFailed(
+                retry_after=self._transient_retry_delay(),
+                translation_domain=DOMAIN,
+                translation_key="hgt_ogd_unavailable",
+            ) from None
+        except Exception:
+            raise UpdateFailed(
+                retry_after=self._transient_retry_delay(),
+                translation_domain=DOMAIN,
+                translation_key="hgt_ogd_unavailable",
+            ) from None
+        finally:
+            # Ownership was persisted before native writes. Leave it intact on
+            # unload; the next normal refresh or removal inspects it after commit.
+            if not cancelled:
+                await self.manager.async_sync_issue()
+
+    def _transient_retry_delay(self) -> int:
+        """Use Core's single polling timer; do not strand failures for six hours."""
+        retry_after = self._next_retry_seconds
+        self._next_retry_seconds = min(retry_after * 2, _HGT_MAX_RETRY_SECONDS)
+        return retry_after

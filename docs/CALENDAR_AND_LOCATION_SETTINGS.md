@@ -108,6 +108,11 @@ The selected model remains `meteoswiss_icon_seamless`.
 
 ## Focused HA checks after the new package is announced
 
+**Historical October protocol:** these targeted examples describe the original
+calendar/settings correction and its later reported acceptance. They are not
+new required location changes, language rounds or an observation window for
+stable 8.3.5. Current users follow the [stable guide](ACCEPTANCE_8.3.5.md).
+
 1. Keep the existing test-system backup and entry. Confirm the new installed
    version; the old b2 package does not contain these changes.
 2. Open the gear and check that weather station, measured-pollen station,

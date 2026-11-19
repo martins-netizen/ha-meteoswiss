@@ -2,7 +2,21 @@
 
 ## [Unreleased]
 
-No additional runtime changes are staged beyond the b7 package below.
+- Correct the actual ninth coordinator placement before stable 8.3.5. The
+  measured-HGT class becomes canonical in `coordinator.py`; its old module
+  re-exports that same class for compatibility. Keep constructor, retry,
+  failure/ownership, identifiers and source/Recorder contracts.
+- Publish calculated forecast HGT from the retained daily snapshot at each
+  Swiss midnight. Its registered value and daily-mean attribute advance without
+  waiting for the next source poll; local callbacks are cancelled on removal.
+  Retain its existing availability, formula, identities and statistics policy.
+- Reconcile current documentation overall: honest nine-class inventory and
+  common-modules finding, measured-HGT vs forecast/wind history, current UI,
+  source schedules, lifecycle/removal, actual scheduled-audit evidence and
+  publication/acceptance stages. Preserve all dated release evidence.
+- Retain the agreed serious, clear stable 8.3.5 introduction as a future draft.
+  Stable versions/publisher follow only after a separately approved corrective
+  source merge and complete validation; no stable publication is implied.
 
 ## [8.3.5b7] — 2026-11-18 · Gold privacy, state boundaries and quality evidence
 

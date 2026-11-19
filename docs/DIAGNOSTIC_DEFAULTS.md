@@ -1,6 +1,6 @@
 # Diagnostic defaults and virtual service metadata
 
-**Status:** Delivered in published [stable 8.3.4](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4), the current normal update target, on 7 November 2026. See [publication evidence](RELEASE_EVIDENCE_8.3.4.md). The behaviour first shipped in 8.3.4b1; its operator-confirmed normal operation on HA Core 2026.11.0 / HA OS 18.4 remains [bounded beta evidence](RELEASE_EVIDENCE_8.3.4b1.md). Stable retains that runtime unchanged apart from two version fields.
+**Status:** Delivered in published [stable 8.3.4](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4), the preceding stable baseline, on 7 November 2026. See [publication evidence](RELEASE_EVIDENCE_8.3.4.md). The behaviour first shipped in 8.3.4b1; its operator-confirmed normal operation on HA Core 2026.11.0 / HA OS 18.4 remains [bounded beta evidence](RELEASE_EVIDENCE_8.3.4b1.md). Stable retains that runtime unchanged apart from two version fields.
 
 ## Two optional diagnostic helpers
 
@@ -26,13 +26,13 @@ condition coordinator resolves its own catalogue through `get_stations_map`;
 it does not depend on the optional catalogue entity being enabled. The existing
 redacted integration diagnostics remain available independently of these helpers.
 
-**Unreleased naming follow-up:** the two helpers and their shared service groups
+**Naming follow-up, retained by published b7 and stable 8.3.5:** the two helpers and their shared service groups
 use native DE/EN/FR/IT name translations. English defaults are unchanged.
 Retained entries keep IDs, personal names/icons/aliases/areas and their enabled
 choice; ordinary state strings and technical attribute keys are preserved.
 See [diagnostic names and evidence](DIAGNOSTIC_TRANSLATIONS.md).
 
-**Unreleased lifecycle follow-up:** a typed shared owner hands these helpers to
+**Lifecycle follow-up, retained by published b7 and stable 8.3.5:** a typed shared owner hands these helpers to
 a loaded remaining entry without changing entity/device IDs, personal choices
 or the peer's weather coordinators. New helpers stay disabled; user-disabled
 service groups stay disabled. Conflicts require review rather than deletion.

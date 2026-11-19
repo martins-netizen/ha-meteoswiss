@@ -1,13 +1,13 @@
 # Bounded hourly precipitation imports
 
-**Package scope: included in 8.3.5b6.** This source hardening was reviewed on
-17 November 2026. Availability follows the
-[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases);
-[package notes](RELEASE_8.3.5b6.md) separate source checks, packaging,
-publication and installed acceptance. Use the [normal b6 update and read-only check](ACCEPTANCE_8.3.5b6.md).
-Accepted b3 cleanup and b5 HGT availability remain closed. No operator cleanup,
-station change, forced source failure or repeated installation is required to
-complete the installed check. Native regressions exercise the resource boundary.
+**Package scope:** introduced in b6 and retained by published b7. Planned stable
+8.3.5 follows the separately gated canonical-coordinator correction; the
+precipitation contracts remain. The original review was on 17 November 2026.
+Use the [catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases),
+[package notes](RELEASE_8.3.5.md), [dated evidence](RELEASE_EVIDENCE_8.3.5.md)
+and [stable guide](ACCEPTANCE_8.3.5.md). Completed b3/b5/b6/b7 scopes stay closed;
+no cleanup, station change, forced outage or repeat installation is required to
+accept the same runtime. Native regressions exercise this resource boundary.
 
 ## Why per-response limits were insufficient
 
@@ -105,6 +105,7 @@ inputs before I/O, whole-plan rejection, date boundaries, source/header errors,
 deadline exhaustion, real zero, cancellation and late real-executor completion.
 Native Recorder semantic tests retain interval, metadata and correction checks.
 The exact local results belong to the reviewed source candidate; hosted checks,
-approved source merge, b6 package checks, publication and installed acceptance
-remain separate evidence. This bounded
+approved source merge and each package/publication retain separate evidence.
+Published b7 and its bounded sight report are recorded in the stable promotion
+record; no repeated operator observation is required. This bounded
 hardening is not an independent security or full Gold certification.

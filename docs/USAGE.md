@@ -266,12 +266,27 @@ records means a failed importer update, preserving the previously stored data.
 
 Daily HGT 12/20 remains a forecast-based calculation: at a daily mean of 12 °C
 or lower, HGT is 20 minus that mean; above 12 °C it is zero. Missing/non-finite
-temperatures remain missing. Existing season helper functions are tested, but
-this change does not introduce a measured seasonal HGT archive or new sensors.
+temperatures remain missing. That entity is a forecast, without a measurement
+state class; ordinary Recorder history follows its usual retention. The
+forecast-only season entity is retired. The [upgrade guide](UPGRADING_8.3.5.md)
+explains explicit recommended cleanup of attributable obsolete forecasts.
 The entity reads an existing valid daily mean immediately on initial addition,
-and uses the current Europe/Zurich calendar day on each state write. Missing,
+and uses the current Europe/Zurich calendar day on each state write. The
+pre-stable correction adds its own Swiss-midnight callback, so the registered
+value and daily mean advance without waiting for the next source poll. It
+retains availability and does not add the scalar three-hour age rule; see the
+[HGT clock](FORECAST_SENSORS.md#calculated-hgt-follows-the-swiss-day). Missing,
 boolean or non-finite means stay unknown. Availability follows the independent
 forecast coordinator; a failed forecast does not make old HGT data current.
+
+**Official measured HGT is separate:** a MeteoSwiss measurement station with
+Recorder imports official daily/monthly/annual HGT 12/20 products, backfills
+available history and continues source corrections. Find the distinct
+last-observed-day entity on the weather-station device. Use each product
+statistic ID with native Statistics graph `change`; gaps remain missing and
+source zero remains zero. This is a climatic index, not building energy use.
+[HGT sources, charts, recovery and removal](HGT_OGD_PLAN.md) explain availability
+and ownership; forecasts are never relabeled as observations.
 
 ### Warning state labels
 
@@ -391,8 +406,14 @@ In **Settings → Devices & services → MeteoSwiss**, open the relevant entry's
 and choose **Delete**. Remove or adjust automations and dashboards referring to
 its entities. To uninstall the custom component afterwards, remove its software
 in **Settings → Marketplace** (HA 2026.11+) or HACS (older HA), then restart HA.
-Marketplace provides a restart repair for removal. Existing Recorder retention/purging remains governed by HA;
-uninstalling is not an instruction to delete historical statistics or backups.
+Marketplace provides a restart repair for removal. **Measured-HGT exception:**
+removing the final integration entry removes its owned official daily/monthly/
+annual HGT products, including retired stations; configured peers protect shared
+history. Keep the files installed while native entry removal runs if that
+lifecycle cleanup is intended. Read [ownership/removal](HGT_OGD_PLAN.md#ownership-and-complete-removal)
+and retain Recorder plus ownership storage together in a usable protected
+backup when a recovery point is needed. Ordinary sensor history and unrelated
+statistics follow HA retention; uninstalling files does not delete backups.
 Do not use removal/re-addition as an update or troubleshooting procedure.
 
 ## Diagnostic version fields

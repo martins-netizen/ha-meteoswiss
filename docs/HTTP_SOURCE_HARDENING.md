@@ -2,13 +2,15 @@
 
 **Historical baseline:** included in the 8.3 runtime; the original accepted b4
 was the stable promotion source. The later precipitation plan/deadline
-hardening described below is unreleased.
+hardening below shipped in b6 and is retained by published b7. Planned stable
+8.3.5 follows the canonical-coordinator correction without changing HTTP contracts.
+See [current dated evidence](RELEASE_EVIDENCE_8.3.5.md) for source and package gates.
 **Review date:** 22 October 2026. This is scoped hardening, not a penetration test.
 
 ## Contract
 
 **17 November follow-up:** per-response limits alone did not bound a metadata
-plan containing many repeated historical URLs. The unreleased precipitation
+plan containing many repeated historical URLs. The retained precipitation
 hardening validates exact canonical station assets, deduplicates the whole plan,
 caps it at four CSV files before CSV I/O and shares one 300-second source/parser
 wait deadline. Present malformed relevant assets and non-CSV schemas are
@@ -36,6 +38,7 @@ review rather than silently broadening this boundary.
 | JSON, including STAC metadata | 2 MiB | 2 MiB |
 | Station catalogue | 2 MiB | 2 MiB |
 | Current/recent weather CSV and measured pollen | 16 MiB | 16 MiB |
+| Official HGT daily/monthly/annual CSV | 16 MiB | 16 MiB |
 | Hourly historical decade CSV | 64 MiB | 64 MiB |
 
 Limits are enforced while streaming, independently of Content-Length. The

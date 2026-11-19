@@ -18,8 +18,8 @@ once per integration and have one runtime owner. All seven use native
 
 | Role | Device identifier | What a source or settings change does |
 |---|---|---|
-| Current weather | `<entry_id>` | Station or Open-Meteo coordinates change the data and default display metadata. |
-| Forecast/HGT | `calculated_<entry_id>` | Forecast-point changes reuse the group; optional measured HGT uses that same group. |
+| Current weather | `<entry_id>` | Station or Open-Meteo coordinates change the data and default display metadata. Optional measured HGT belongs to the MeteoSwiss measurement-station group. |
+| Forecast/HGT | `calculated_<entry_id>` | Forecast-point changes reuse the group for forecasts and calculated forecast HGT; measured station HGT is separate. |
 | Warnings | `alerts_<entry_id>` | Postcode changes reuse the group. An empty warning list is a valid result. |
 | Modelled pollen and air quality | `pollen_<entry_id>` | The existing base location selects data for the same role. |
 | Measured pollen | `ms_pollen_<entry_id>` | Pollen-station changes reuse the group. |

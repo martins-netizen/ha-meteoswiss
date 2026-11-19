@@ -1,30 +1,29 @@
 # Maintenance and release procedure
 
-## 8.3.5b6 maintenance scope
+## Corrective source before stable 8.3.5
 
-The **8.3.5b6** test package includes the HGT pending-import ownership and
-precipitation source/import corrections. Use [the package boundary](RELEASE_8.3.5b6.md)
-and [dated evidence](RELEASE_EVIDENCE_8.3.5b6.md); source checks alone establish
-neither publication nor live acceptance. [The catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-determines availability. Keep the existing entry and use the
-[short read-only check](ACCEPTANCE_8.3.5b6.md). Accepted b3 cleanup and b5
-availability remain closed; full Gold and independent assurance remain separate.
+Published b7 completed its own checks, publication and bounded sight report.
+The overall documentation review subsequently found a
+[canonical coordinator placement gap](COORDINATOR_CANONICAL_COMPLETION.md).
+Prepare that narrow source correction first, keeping version 8.3.5b7. Its own
+native validation, source approval, normal signed merge and trusted actual-merge
+checks must pass before complete Gold assessment closure and stable packaging.
+Accepted b3/b5/b6/b7 operator scopes stay closed; internal class placement does
+not require another migration or observation window.
 
-**B4 publication complete:** source PR #115, package PR #116 and the actual
-8.3.5b4 release are independently verified. All 50 non-version component files,
-nineteen earlier releases/tags and stable 8.3.4 are preserved. Keep the
-[native commit/cleanup contracts](HGT_OGD_PLAN.md) and
-[b4 publication evidence](RELEASE_EVIDENCE_8.3.5b4.md). Do not repeat publication.
-Future tagged READMEs use release-catalogue availability wording; see
-[immutable package snapshots](PUBLISHING.md#availability-wording-in-immutable-package-snapshots).
+The future stable package must be pinned to the actual approved corrective
+source merge. Only then can the stable two-version-field comparison, the other
+50 component files and a fixed publisher be verified against that source.
+V1.8 publisher preparation is parked until that pin exists; it is not yet a
+ready publication procedure. Preserve all 23 existing releases/tags and 31
+historical publisher/profile/release-fixture paths, including b7. Never rewrite
+an old tag or body. Use [planned notes](RELEASE_8.3.5.md),
+[dated evidence](RELEASE_EVIDENCE_8.3.5.md), [publication guidance](PUBLISHING.md)
+and [ordinary update guidance](ACCEPTANCE_8.3.5.md). The
+[catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases) establishes
+availability; documentation alone changes no HA installation.
 
-**Measured-HGT development gate:** require native backfill/correction/change,
-source-withdrawal, duplicate-entry, station-change, repair-confirmation and final
-entry-removal tests on both supported HAs. Retain 100% line/branch coverage of
-all four HGT OGD modules. Do not release this runtime under an existing immutable
-tag; package separately after successful head and actual-merge checks. Existing
-b3 installation/cleanup acceptance and PR #114 test-only verification stay closed.
-See [the feature contract](HGT_OGD_PLAN.md).
+## Working procedure
 
 1. Keep `main` aligned with `LNKtwo/main`; review upstream changes before
    integrating them into `development`. Keep individual upstream PR branches

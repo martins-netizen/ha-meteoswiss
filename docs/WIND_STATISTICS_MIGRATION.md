@@ -1,16 +1,18 @@
 # Wind direction: preserve arithmetic history, start circular statistics
 
-**Fixed HGT test package:** use [8.3.5b2](RELEASE_8.3.5b2.md) once published;
-follow the [archive-and-keep update](UPGRADING_8.3.5.md) and
-[focused HGT check](ACCEPTANCE_8.3.5b2.md). B1 does not contain this fix.
+**8.3.5 stable scope:** this migration was introduced in the test line and is
+retained unchanged from the published b7 runtime. Use the
+[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+for availability and the [stable update guide](ACCEPTANCE_8.3.5.md). Earlier
+accepted operator checks stay closed; no repeated migration is required.
 
-**Status:** Published in test prerelease 8.3.5b1; stable 8.3.4 is unchanged.
-
-For concrete update actions, read the [archive-and-keep guide](UPGRADING_8.3.5.md).
-The prepared HGT follow-up retains the existing wind archive IDs and uses the
-same verified native rename/readback boundary. It also lets Core recompute
-statistics Repairs after successful preparation; it does not suppress valid
-issues or turn archived arithmetic averages into circular measurements.
+The [current upgrade guide](UPGRADING_8.3.5.md) recommends explicitly confirmed
+removal of obsolete **HGT forecasts**. Wind is a different boundary: its older
+arithmetic averages are intentional retained history under an archive ID. The
+integration does not delete or reinterpret that archive to silence a notice.
+Native rename/readback checks protect the old rows before circular statistics
+start at the retained wind sensor ID. This is not b2's historical HGT
+archive-and-keep policy.
 
 For equal durations, 350° and 10° have a circular mean of north (0°), not
 the old arithmetic 180°. HA [stops a series when its mean algorithm changes](https://www.home-assistant.io/docs/configuration/long-term-statistics/#when-the-unit-or-the-state-class-changes).

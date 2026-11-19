@@ -1,7 +1,9 @@
 # Translated diagnostic names without changing identity
 
-**Status:** Unreleased follow-up after wind-statistics PR #97. Published stable
-8.3.4 is unchanged. The two optional helpers remain disabled on first creation.
+**Status:** delivered in the 8.3.5 test line and published b7, retained by
+stable 8.3.5. The previous stable 8.3.4 is unchanged. The two optional helpers
+remain disabled on first creation. [Dated stage evidence](RELEASE_EVIDENCE_8.3.5.md)
+keeps package and publication gates distinct from completed b7 acceptance.
 
 The station-catalogue and cache-statistics helpers previously hard-coded English
 entity and service-device names. They now use HA's native `translation_key`
@@ -62,7 +64,7 @@ all exposed families through HA in the four languages. It distinguishes the
 Gold entity-name rule from unchanged technical state/attribute contracts and
 the separate task of obtaining authoritative place aliases.
 
-The separate unreleased [lifecycle follow-up](SHARED_DIAGNOSTIC_LIFECYCLE.md)
+The separate, now-delivered [lifecycle follow-up](SHARED_DIAGNOSTIC_LIFECYCLE.md)
 now bounds shared ownership and handoff while retaining both entity/device
 identities and personal choices. Its failure/repair, concurrency and Recorder
 tests do not turn the earlier naming tests into a complete historical orphan

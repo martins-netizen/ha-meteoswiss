@@ -1,15 +1,24 @@
 # Quality evidence through Gold
 
-**Current source:** approved #129, signed merge
-`8887597ebf8567b5969ee70b8f9dd6f261603aec`, 18 November 2026.
-All ten source-head and nine actual-merge checks passed; the fresh assessment
-contains 26 automated verifications, 16 documented review judgments and nine
-reasoned exemptions. [The dated source evidence](RELEASE_EVIDENCE_8.3.5b7.md)
-records the completed result; [the completion review](GOLD_COMPLETION_REVIEW.md)
-retains the delivery rationale and preparation history. **8.3.5b7** prepares that source; its package validation, publication
-and installed acceptance retain [separate evidence](RELEASE_EVIDENCE_8.3.5b7.md).
-Published b6's positive bounded operator report does not accept later source
-changes or install b7.
+**Current review, 18 November 2026:** published and bounded-accepted b7 at signed
+`9ea96fc5a5306342eef0aa73ae50cc95bb844fb4` passed all ten head and nine
+actual-merge checks on HA 2026.11.0/2026.11.2. Its index reported 26 automated
+verifications, 16 documented review judgments and nine reasoned exemptions.
+The overall documentation review then found a missed structural judgment:
+`MeteoSwissHgtCoordinator` was a ninth real coordinator defined outside
+`coordinator.py`. The official common-modules rule provides no exemption for
+that placement. A passing evidence checker did not establish that human review.
+
+The [canonical coordinator correction](COORDINATOR_CANONICAL_COMPLETION.md)
+prepares one actual class definition in `coordinator.py` and an explicit
+compatibility re-export at the old path. The corrective source also adds the
+missing calculated-HGT Swiss-midnight state callback; native tests must cover
+its registered state and lifecycle. Its own source review, native checks
+and trusted head/actual-merge gates must succeed before the assessment can be
+closed and stable 8.3.5 packaged. The [dated record](RELEASE_EVIDENCE_8.3.5.md)
+retains the real b7 results, publication and bounded sight report. Those
+operator scopes remain closed; no repeated migration or observation window is
+needed; the new HGT clock receives its own native regression evidence.
 
 The checklist covers **all 51 rules through Gold**: 20 Bronze, 10 Silver and
 21 Gold. The [official tiers](https://contributors.home-assistant.io/core/quality-scale/tiers/)
@@ -33,8 +42,9 @@ unchanged strict per-module coverage gate still applies.
 | Reasoned exemption | The requirement does not apply for the recorded service-specific reason. | A missing capability implemented by changing a label. |
 | Custom branding route | Bundled assets and Marketplace/HACS catalogue admission. | A separate Core branding submission. |
 
-The approved source completion replaces remaining evidence gaps with native contracts
-and fixes reproduced diagnostics/time-boundary defects. Historical production
+Approved #129 supplied native contracts and reproduced diagnostics/time-boundary
+fixes. The later canonical-placement finding requires the explicit correction
+and source gates above before claiming closure of every rule. Historical production
 orphan inventories, manual exercise of every error and four separate browser
 language rounds are not invented additional Gold prerequisites. Their absence
 is not hidden: existing operator reports retain their narrower observed scope.
@@ -46,7 +56,7 @@ is not hidden: existing operator reports retain their narrower observed scope.
 | `action-setup` | Reasoned exemption | The integration registers no custom actions. [Evidence](USAGE.md). |
 | `appropriate-polling` | Native contract + review | Source-specific intervals and developer-owned observation polling are retained without a new setup/options interval control. [Evidence](API_SOURCES.md). |
 | `brands` | Custom branding route | Bundled HACS assets and catalogue admission follow the custom integration route; the separate Core brands submission is not claimed. [Evidence](HACS_ACCEPTANCE.md). |
-| `common-modules` | Reviewed source or guide | Shared coordinator/entity bases and typed entry ownership have been reviewed; this is a structural review rather than a runtime behavior assertion. [Evidence](COORDINATOR_LAYOUT_REVIEW.md). |
+| `common-modules` | Corrective source review pending | The b7 review missed the ninth HGT coordinator outside the canonical module. The prepared correction places all nine definitions in `coordinator.py`, with only a compatibility re-export at the old path. No exemption is claimed. [Inventory](COORDINATOR_LAYOUT_REVIEW.md) and [source gates](COORDINATOR_CANONICAL_COMPLETION.md). |
 | `config-flow` | Native contract + review | Native setup and existing-entry dialogs validate both providers and preserve entry identity on confirmation. [Evidence](GETTING_STARTED.md). |
 | `config-flow-test-coverage` | Native contract + review | The existing full line/branch config-flow gate is retained alongside real flow-manager success, errors, cancellation and duplicate contracts. [Evidence](GOLD_EVIDENCE_CONTRACT.md). |
 | `dependency-transparency` | Reasoned exemption | The manifest has no additional distributed runtime requirements. [Evidence](API_SOURCES.md). |

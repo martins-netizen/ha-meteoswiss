@@ -1,27 +1,24 @@
 # Sources, locations and update contracts
 
-**Approved #129 source, prepared for 8.3.5b7:** warning validity and forecast UTC-hour/retained
-snapshot-expiry callbacks publish native states and subscribed forecasts from
-memory. They perform **no source request** and do not change any polling or
-retry schedule below. [Warning timing](WARNING_STATE_CLOCK.md),
-[forecast timing](WEATHER_FORECAST_STATE_CLOCK.md) and the
-[completion review](GOLD_COMPLETION_REVIEW.md) distinguish source refresh from
-local time projection. Optional UV/catalogue handwritten availability logs use
-one INFO message per outage/recovery, as [documented](OUTAGE_LOG_LEVELS.md).
+**Current source contracts and planned stable scope:** published b7 provides the
+contracts below. The [canonical coordinator correction](COORDINATOR_CANONICAL_COMPLETION.md)
+relocates its measured-HGT coordinator before stable packaging and fixes the
+local Swiss-midnight state publication of calculated forecast HGT. Source
+requests, polling schedules and existing availability contracts are retained. Its own source approval and actual-merge checks
+precede the future stable package. Use the
+[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases),
+[cumulative notes](RELEASE_8.3.5.md) and [dated evidence](RELEASE_EVIDENCE_8.3.5.md)
+for availability and stage. Completed b3 cleanup and b5/b6/b7 reports stay closed.
 
-**Published 8.3.5b4 measured HGT source:** the importer uses official SwissMetNet
-`xno000d0/m0/y0` directly. Daily historical/recent and official monthly/annual
-products remain distinct; no forecast history is reused. See the
-[source, time, correction and removal contract](HGT_OGD_PLAN.md). Published
-8.3.5b3 does not include this feature.
-
-**Retained b6 source scope:** pending-import HGT ownership and bounded
-precipitation imports keep the existing providers and location choices.
-B7 packages that behavior with the #129 local state/privacy corrections above.
-Check the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-for availability and follow the [normal b7 update and read-only check](ACCEPTANCE_8.3.5b7.md).
-[Package notes](RELEASE_8.3.5b7.md) distinguish source/package checks, publication
-and installed acceptance; completed b3 cleanup and b5/b6 acceptance stay closed.
+Warning validity and forecast model-hour/snapshot-expiry callbacks publish
+states from retained memory without an additional request themselves. They do
+not change polling schedules. [Warning timing](WARNING_STATE_CLOCK.md),
+[forecast timing](WEATHER_FORECAST_STATE_CLOCK.md) and
+[log levels](OUTAGE_LOG_LEVELS.md) retain exact behavior. Cumulatively from
+8.3.4, official measured HGT adds backfill/polling of existing SwissMetNet assets;
+its daily/monthly/annual products remain separate, with bounded recovery and
+ownership. The coordinator-placement and calculated-HGT midnight corrections
+add no request; HGT's local callback publishes retained daily data. [HGT source/time/removal contract](HGT_OGD_PLAN.md).
 
 This describes requests made by the current maintained integration. Provider
 publication, the integration's polling interval and its cache lifetime are
@@ -88,8 +85,10 @@ these official completed-hour aggregates for historical hourly amounts.
 
 For provider time/encoding/missing-value rules, see
 [MeteoSwiss download documentation](https://opendatadocs.meteoswiss.ch/general/download).
-Its recommended conditional requests/jitter are follow-up transport improvements,
-not existing features implied by this page. MeteoSwiss supplies the measurements;
+For observation/hourly-precipitation transport, recommended conditional
+requests/jitter remain follow-up improvements. The separate measured-HGT client
+already implements the conditional ETag reads stated in its source row; this
+is not a blanket claim that every source has conditional requests or jitter. MeteoSwiss supplies the measurements;
 geo.admin.ch/swisstopo supplies their delivery infrastructure.
 
 ## Forecast and alternative current weather

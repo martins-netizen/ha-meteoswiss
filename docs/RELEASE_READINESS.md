@@ -1,4 +1,27 @@
-# Release readiness: 8.3.5b6 test package and stable 8.3.4
+# Release readiness: current 8.3.5 work and dated history
+
+## Current 8.3.5 boundary
+
+Published b7 completed its source/package checks, publication and bounded
+positive sight report. Overall review then identified one actual
+`common-modules` placement deviation: the ninth measured-HGT coordinator was
+outside `coordinator.py`. The [source correction](COORDINATOR_CANONICAL_COMPLETION.md)
+precedes stable packaging; no exemption or gate relaxation is used. The same
+source correction fixes calculated forecast HGT's Swiss-midnight state update
+from retained data, without another source poll or a new availability rule.
+
+Stable 8.3.5 remains a planned promotion after that correction's normal review,
+complete native checks and approved merge. [Current evidence](RELEASE_EVIDENCE_8.3.5.md)
+keeps historical b7 results, the correction and future stable gates separate.
+The [catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+remains authoritative for actual availability. Earlier operator reports stay
+closed; no repeated installation or observation window is invented.
+
+## Dated earlier release records
+
+The following records retain their original dates, counts and then-open scope.
+They are historical evidence, not current instructions to rerun completed
+packages or a current list of remaining Gold work.
 
 ## 8.3.5b6 package boundary
 

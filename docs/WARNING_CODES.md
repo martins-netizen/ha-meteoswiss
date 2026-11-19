@@ -55,8 +55,8 @@ Own dashboard/automation filters can hide a family even when HA has received it.
 
 This capability is independent of standalone river-gauge measurements or the
 full SLF avalanche bulletin, neither of which this integration supplies. The
-unused `slf.py` and `hydro.py` placeholders are removed in unreleased development
-after 8.2.0; the shared warning feed is retained. A shared hazard warning is not
+unused `slf.py` and `hydro.py` placeholders were removed in the released 8.3
+runtime after 8.2.0; the shared warning feed is retained. A shared hazard warning is not
 a replacement for those more detailed products.
 
 ## Provenance of the numeric mapping

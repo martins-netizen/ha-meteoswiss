@@ -1,33 +1,29 @@
 # Set up MeteoSwiss
 
-## Current 8.3.5 test-package guide
+## Current release and planned 8.3.5 guide
 
-**8.3.5b7** prepares the approved Gold source completion: smaller diagnostics,
-warning/forecast changes at local time boundaries and quieter optional-source
-transition logs. Check the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-for availability; preparation does not publish or install it. When choosing
-published b7, update the existing entry normally and follow the
-[short read-only check](ACCEPTANCE_8.3.5b7.md).
-[Package notes](RELEASE_8.3.5b7.md) distinguish the completed source assessment
-from package checks, publication and installed acceptance.
+Published **8.3.5b7** includes measured HGT, explicit obsolete-forecast cleanup,
+stronger diagnostic privacy and the diagnostics/time-clock corrections. The
+18 November overall documentation review then found a remaining
+[canonical coordinator placement gap](COORDINATOR_CANONICAL_COMPLETION.md)
+and a calculated-HGT day-change delay. The corrective source advances that
+forecast at Swiss midnight without another download and must pass its own
+review and actual-merge checks
+before stable **8.3.5** is packaged. Use the
+[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+for available versions. The preceding stable package is 8.3.4; these
+[planned release notes](RELEASE_8.3.5.md) do not publish or install 8.3.5.
+Read the [upgrade guide](UPGRADING_8.3.5.md) and
+[normal update guide](ACCEPTANCE_8.3.5.md).
 
-B7 retains b6's HGT ownership and bounded precipitation imports, including b5's
-recovery after temporary measured-HGT failures. Completed obsolete-forecast
-cleanup and b5/b6 operator checks stay complete. No intermediate beta or
-recreated integration entry is required. Stable selection follows the
-[latest-stable page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest).
-
-**Published b4 test update:** [8.3.5b4](RELEASE_8.3.5b4.md) adds official measured
-HGT on the station device and separate long-term products. Publication is
-[independently verified](RELEASE_EVIDENCE_8.3.5b4.md); installing b3 does not add
-this importer. If choosing b4, keep the existing entry and follow the
-[short read-only check](ACCEPTANCE_8.3.5b4.md). The accepted b3 forecast cleanup
-is not repeated.
-
-**HGT upgrade policy:** 8.3.5b3 includes the [recommended native cleanup](UPGRADING_8.3.5.md).
-After confirmed removal, no unused HGT forecast archive remains. Current
-forecasts and ordinary history continue. Published b2 itself keeps its historical
-archive-and-keep behaviour; use a published b3-or-later package for cleanup.
+These source corrections do not reopen the accepted b7 sight report or require
+another migration or operator observation window; native regressions verify the
+HGT clock. If choosing
+the stable label after publication, update normally with its ordinary restart.
+Earlier users update their existing entry directly; intermediate betas and entry
+recreation are unnecessary. Completed b3 cleanup and b5/b6/b7 reports stay
+closed. Official measured HGT and obsolete forecast statistics are distinct;
+the upgrade guide explains any explicit cleanup consent.
 
 ## Location privacy before setup
 

@@ -1,6 +1,6 @@
 # Current-weather provenance and station-group preservation
 
-**Status:** Delivered in published [stable 8.3.4](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4), the current normal update target, on 7 November 2026. See [publication evidence](RELEASE_EVIDENCE_8.3.4.md). The behaviour first shipped in 8.3.4b1; its operator-confirmed normal operation on HA Core 2026.11.0 / HA OS 18.4 remains [bounded beta evidence](RELEASE_EVIDENCE_8.3.4b1.md). Stable retains that runtime unchanged apart from two version fields.
+**Status:** Delivered in published [stable 8.3.4](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4), the preceding stable baseline, on 7 November 2026. See [publication evidence](RELEASE_EVIDENCE_8.3.4.md). The behaviour first shipped in 8.3.4b1; its operator-confirmed normal operation on HA Core 2026.11.0 / HA OS 18.4 remains [bounded beta evidence](RELEASE_EVIDENCE_8.3.4b1.md). Stable retains that runtime unchanged apart from two version fields.
 
 ## Correct the selected current source
 
@@ -58,5 +58,7 @@ source switch, repeated acceptance or device deletion is requested. Publication
 and the bounded operator report remain separate from automated tests.
 The [discovery and lifecycle review](GOLD_APPLICABILITY.md) records the two
 discovery exemptions and explains why seven service groups do not fit the
-single-device lifecycle exception. Remaining entity classes, translations and
-historical obsolete-group questions prevent a complete Gold claim.
+single-device lifecycle exception. Those remaining entity/translation/lifecycle
+questions were limits of the original 8.3.4 review, not new operator tasks.
+[Current evidence](QUALITY_SCALE.md) records later native coverage and the
+separately identified canonical-coordinator correction before stable promotion.

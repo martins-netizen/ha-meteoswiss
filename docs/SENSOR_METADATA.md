@@ -11,14 +11,13 @@ metadata migration. The dated rationale and release boundaries below remain.
 
 ## Measured-HGT availability
 
-The **8.3.5b7** package preparation retains measured-HGT recovery/ownership and
-bounded precipitation work. It adds the approved #129 diagnostics and local
-state-clock corrections with complete metadata evidence. Check the
-[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-for availability and use the [normal b7 check](ACCEPTANCE_8.3.5b7.md) when
-choosing that test package. [Package notes](RELEASE_8.3.5b7.md) keep source
-validation, publication and installed acceptance separate. Completed b3 cleanup
-and b5/b6 checks stay complete.
+Stable **8.3.5** retains published b7's measured-HGT recovery/ownership,
+bounded precipitation work and complete semantic metadata evidence. It adds no
+new runtime metadata transition beyond those documented below. Use the
+[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases),
+[cumulative notes](RELEASE_8.3.5.md) and [stable update guide](ACCEPTANCE_8.3.5.md).
+Completed b3 cleanup and b5/b6/b7 reports remain closed; stable publication has
+[its own evidence](RELEASE_EVIDENCE_8.3.5.md).
 
 **Published 8.3.5b4 measured HGT:** the new observed-day entity has a distinct
 `heating_degree_days_observed` unique-ID suffix and the existing station device.

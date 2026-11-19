@@ -15,85 +15,65 @@ This is an independent community project, not an official MeteoSwiss product.
 This guide describes the **8.3 series**; [8.3.0 release notes](docs/RELEASE_8.3.0.md)
 explain the changes from 8.2.0. Use a published release, not a branch.
 
-**8.3.5b7 Gold engineering package:** the approved Gold source completion minimizes
-native diagnostics downloads, publishes warning/forecast changes at local time
-boundaries and uses INFO for optional-source outage/recovery transitions.
-The complete 51-rule engineering assessment has passed source head and actual-
-merge checks. This is a custom integration without an official Gold award or
-independent security certification.
+**Current release and 8.3.5 work:** published **8.3.5b7** includes official
+measured heating degree days, more private diagnostics and local warning/
+forecast state clocks. Its source/package checks, publication and bounded
+positive operator sight report are complete. Use the
+[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+and [latest-stable page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
+for actual package selection; previous stable 8.3.4 remains an immutable baseline.
 
-Check the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-for availability before selecting **8.3.5b7**; these notes do not publish or
-install it. Use the [short normal update and read-only check](docs/ACCEPTANCE_8.3.5b7.md),
-[release notes](docs/RELEASE_8.3.5b7.md) and
-[staged evidence](docs/RELEASE_EVIDENCE_8.3.5b7.md).
-Published **8.3.5b6** remains the earlier bounded-accepted test package until
-superseded in the catalogue. B7 retains its HGT ownership/recovery and
-[precipitation resource limits](docs/PRECIPITATION_RESOURCE_BOUNDS.md).
-Existing entries, IDs and statistics remain; accepted b3 cleanup and b5/b6
-checks stay complete. Source validation, package checks, publication and
-installed acceptance have separate evidence. **8.3.4 remains latest stable.**
+The overall review found a structural gap in the earlier Gold
+assessment: the ninth HGT coordinator was defined outside the canonical
+module. A [narrow source correction](docs/COORDINATOR_CANONICAL_COMPLETION.md)
+places the single actual class in `coordinator.py` and retains an explicit
+compatibility re-export at the old path. The same corrective source also
+[advances calculated HGT at Swiss midnight](docs/FORECAST_SENSORS.md#calculated-hgt-follows-the-swiss-day),
+so yesterday's registered value does not remain until the next source poll.
+Its own complete source checks and normal approved merge precede stable
+packaging; no exception or weaker gate is used. **8.3.5 remains a planned stable release**, with
+[draft cumulative notes](docs/RELEASE_8.3.5.md) and
+[dated evidence](docs/RELEASE_EVIDENCE_8.3.5.md), rather than a publication claim.
 
-**Published [8.3.5b4 test package](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b4):**
-official measured HGT 12/20 history, initial backfill, continuing source
-corrections and explicit ownership/removal. Published on **15 November 2026**;
-release/tag/body and retention of all nineteen earlier releases are independently
-confirmed. Keep the existing entry and update normally if choosing this test
-release. Publication is complete; focused measured-HGT availability was later
-operator-confirmed on b5. [Release notes](docs/RELEASE_8.3.5b4.md),
-[publication evidence](docs/RELEASE_EVIDENCE_8.3.5b4.md) and
-[the short read-only check](docs/ACCEPTANCE_8.3.5b4.md) explain the new entity and
-station-specific statistics. Removing the final integration entry also removes
-its owned OGD HGT products; normal sensor history and unrelated statistics remain.
+Already accepted b7 behavior needs no repeated installation, migration or
+operator observation window for this source correction; the new HGT clock
+contract is covered by its own native regression tests. Future
+stable packaging must use the actual approved corrective source. If choosing
+that stable label once published, update the existing entry normally with its
+ordinary restart; follow the [stable guide](docs/ACCEPTANCE_8.3.5.md).
+Earlier users need no intermediate beta or entry recreation. Keep the station,
+options, names, dashboards and retained IDs.
 
-**Earlier accepted cleanup, retained in later 8.3.5 betas:** [8.3.5b3](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b3)
-packages the native **Remove obsolete HGT forecast statistics** repair. It
-recommends complete removal of old forecast statistics after one clear
-confirmation. Current forecasts, ordinary history and unrelated statistics are
-retained; no unused replacement HGT archive remains after completed cleanup.
-Published on **15 November 2026**; the operator confirmed the focused native
-cleanup successful. See [publication and acceptance evidence](docs/RELEASE_EVIDENCE_8.3.5b3.md).
-[Release notes](docs/RELEASE_8.3.5b3.md), [upgrade instructions](docs/UPGRADING_8.3.5.md)
-and [the short focused check](docs/ACCEPTANCE_8.3.5b3.md) explain the deletion
-boundary. **8.3.4 remains latest stable.** HA **2026.11.0 or newer** is required.
+**Official measured HGT:** a distinct last-observed-day sensor and station-specific
+daily/monthly/annual statistics import official SwissMetNet products, backfill
+available observations and continue corrections. Forecasts remain predictions.
+[Chart, source and removal guidance](docs/HGT_OGD_PLAN.md) explains UTC periods,
+gaps, real zero and ownership. Removing the final integration entry removes its
+owned OGD-HGT products; ordinary sensor history and unrelated statistics remain.
 
-**Package-specific HA minimum:**
+**Obsolete HGT forecasts:** the native **Settings → System → Repairs → Remove
+obsolete HGT forecast statistics** repair recommends complete removal of
+attributable old forecasts after explicit confirmation. Opening/cancelling
+deletes nothing. Completed cleanup leaves no unused replacement HGT archive.
+The deliberately retained [wind arithmetic archive](docs/WIND_STATISTICS_MIGRATION.md)
+is separate historical data. Read [upgrade and recovery boundaries](docs/UPGRADING_8.3.5.md)
+before deletion. Accepted b3 cleanup and b5/b6/b7 reports stay complete.
 
 | Package | Required HA Core |
 |---|---|
-| 8.3.5b1 / b2 / b3 / b4 / b5 / b6 / b7 | 2026.11.0 or newer |
-| Latest stable 8.3.4 | 2026.8.3 or newer |
+| Planned 8.3.5 / published 8.3.5b1–b7 | 2026.11.0 or newer |
+| Earlier stable 8.3.4 | 2026.8.3 or newer |
 
-The HA 2026.11.1 Marketplace page can show an installed beta together with the
-minimum of the stable release it is following. The beta still requires
-2026.11.0. See [the reproduced display mismatch](docs/MARKETPLACE_VERSION_DISPLAY.md).
-Marketplace may also read the README from the installed immutable tag. B4's
-tagged README retains its preparation wording; the release catalogue and
-[current publication evidence](docs/RELEASE_EVIDENCE_8.3.5b4.md) confirm availability.
-A documentation update on development does not change that tagged snapshot.
+The 2026.11 baseline addresses known vulnerabilities in libraries pinned by
+older Core versions. Keep Core maintained; the minimum is not permanent
+security clearance. CI checks **2026.11.0** and **2026.11.2** with matching
+fixtures. [Support rationale](DEVELOPMENT.md#supported-home-assistant-versions).
 
-**Existing users, including b2:** update the existing entry normally; then use
-**Settings → System → Repairs** if old HGT forecasts are found. Opening or
-cancelling the repair deletes nothing. Confirming permanently removes the exact
-listed old statistics and metadata. Earlier daily series, b2 archives and
-attributable retired season series are covered, including disabled forecast
-sensors. Read [ownership/conflict limits](docs/UPGRADING_8.3.5.md) before confirming.
-No Mac script or entry recreation is needed. B2 itself retains its historical
-archive-and-keep behaviour; the new cleanup is included in b3.
-
-**In 8.3.5b4: official measured HGT 12/20.** A separate observed-day
-sensor and station-specific daily/monthly/annual statistics import the official
-OGD products, backfill available observations and recheck corrections. Forecasts
-keep their existing identity. This feature is **not in published b3**. B4 is
-published; focused availability is accepted on b5. See [sources, charts and removal](docs/HGT_OGD_PLAN.md).
-Removing the final MeteoSwiss integration entry also removes its owned OGD HGT
-statistics; normal sensor history and unrelated series are retained.
-
-**Available in the community catalogue.** On HA **2026.11 or newer**, open
-**Settings → Marketplace** and search for **MeteoSwiss**. On older HA versions,
-use HACS. Check that the repository is **martins-netizen/ha-meteoswiss**.
-Existing HACS installations migrate automatically when HA upgrades to 2026.11;
-do not reinstall HACS or recreate the MeteoSwiss entry.
+On supported HA, open **Settings → Marketplace**, search **MeteoSwiss** and
+check **martins-netizen/ha-meteoswiss**. Existing HACS installations migrate
+with HA 2026.11; do not reinstall HACS or recreate the entry. Marketplace can
+show the stable release's minimum beside an installed beta; the
+[display guide](docs/MARKETPLACE_VERSION_DISPLAY.md) records that earlier case.
 
 ## Four places: what each one is used for
 
@@ -179,41 +159,35 @@ Read the [plain-language overview](docs/GETTING_STARTED.md#what-this-fork-provid
 
 ## Quality goals: Bronze, Silver and Gold
 
-The source completion follows **all 51 Home Assistant rules through Gold**:
-20 Bronze prerequisites, 10 Silver prerequisites and 21 Gold rules. The
-[current matrix](docs/QUALITY_SCALE.md), [exact evidence index](docs/quality_rules.json)
-and [completion review](docs/GOLD_COMPLETION_REVIEW.md) link each applicable
-contract to source, native tests or a recorded review; exemptions explain why.
-Custom integrations have no official HA quality tier, so this is an engineering
-assessment rather than a badge or manifest claim.
+The [matrix](docs/QUALITY_SCALE.md) covers all **51 Home Assistant rules through
+Gold**: 20 Bronze, 10 Silver and 21 Gold. The earlier b7 native/index report
+passed its implemented checks; later overall review exposed the missed ninth
+coordinator placement in the `common-modules` judgment. The
+[canonical correction](docs/COORDINATOR_CANONICAL_COMPLETION.md) fixes that actual
+source boundary before stable closure. Native timing/privacy, fixed-service,
+metadata and four-language evidence retain their declared scopes.
 
-The completion corrects diagnostic-download privacy and time-only warning and
-forecast state updates, aligns optional-source transition logs and verifies
-the fixed seven service groups and complete entity metadata. Both existing
-HA compatibility jobs check fresh JUnit/coverage from their single full run.
-No new source requests, credentials, station discovery or deletion permission
-is introduced. Existing names, IDs, personal choices and statistics remain.
+The exact [rule index](docs/quality_rules.json),
+[fresh-evidence contract](docs/GOLD_EVIDENCE_CONTRACT.md) and
+[completion review](docs/GOLD_COMPLETION_REVIEW.md) bind source/tests/review
+judgments. All source checks and the normal approved merge remain required for
+the correction; an automated reference check cannot certify a human review.
+Custom integrations have no official HA quality-tier award or independent
+security certification from this process.
 
-[PR #129](https://github.com/martins-netizen/ha-meteoswiss/pull/129) completed
-source head and actual-merge checks at `8887597ebf8567b5969ee70b8f9dd6f261603aec`.
-The earlier #125–#128 candidates were closed unmerged as replaced.
-[B7 preparation](docs/RELEASE_EVIDENCE_8.3.5b7.md) packages this approved source;
-its package checks, publication and installed acceptance remain separate, as
-explained in the [delivery review](docs/GOLD_COMPLETION_REVIEW.md#what-remains-separate).
-Use the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-for availability; published b6 and its accepted bounded operator check do not
-include these later source changes. [Security boundaries](docs/GOLD_SECURITY_BOUNDARIES.md)
-keep provider retention, HA host controls and independent assurance explicit.
-The dated owner-authenticated security inventory remains scoped to
-**11 November 2026**, not a fresh alert clearance.
+B7 publication and bounded sight acceptance are complete; prior b3/b5/b6/b7
+reports remain closed. [Current evidence](docs/RELEASE_EVIDENCE_8.3.5.md) keeps
+those observations separate from corrective source and planned stable gates.
+[Security boundaries](docs/GOLD_SECURITY_BOUNDARIES.md) retain provider
+retention, host controls and independent assurance. The owner-only inventory
+remains dated **11 November 2026**, not a fresh alert clearance.
 
-[HACS catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-catalogue-admission)
-and accepted previous releases remain recorded distribution milestones.
-[Four-language names](docs/ENTITY_NAME_TRANSLATIONS.md), [icons](docs/ICON_TRANSLATIONS.md),
+[HACS catalogue admission](docs/HACS_ACCEPTANCE.md#hacs-catalogue-admission),
+[four-language names](docs/ENTITY_NAME_TRANSLATIONS.md), [icons](docs/ICON_TRANSLATIONS.md),
 [errors](docs/EXCEPTION_TRANSLATIONS.md), [shared diagnostic ownership](docs/SHARED_DIAGNOSTIC_LIFECYCLE.md)
 and [conservative native device removal](docs/DEVICE_REMOVAL.md) retain their
-tested contracts. The [dependency advisory gate](docs/DEPENDENCY_ADVISORIES.md)
-still rejects active or unknown findings for either complete universal lock.
+contracts. Complete advisory auditing rejects active or unknown findings for
+both supported universal locks.
 
 ## Start here
 
@@ -226,64 +200,29 @@ still rejects active or unknown findings for either complete universal lock.
 
 ## Release status
 
-**[Stable 8.3.4 is published](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4)
-and is the normal installation and update target.** Publication on
-**7 November 2026 at 21:24:27 UTC** was independently verified, including the
-release tag, approved English notes and selection as latest stable. See the
-[publication evidence](docs/RELEASE_EVIDENCE_8.3.4.md).
+The [catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases) and
+[latest-stable page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
+identify actually available packages. Published
+[8.3.5b7](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b7),
+release **450428545**, was independently verified on **18 November 2026 at
+19:02:40 UTC** and subsequently received a positive bounded operator sight
+report. Earlier [stable 8.3.4](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4)
+and all previous tags/notes remain unchanged.
 
-Compared with 8.3.3, this maintenance and quality release provides:
+**8.3.5** is the planned stable release after the
+[canonical source correction](docs/COORDINATOR_CANONICAL_COMPLETION.md), its own
+complete checks and approved merge. Version fields and the fixed stable
+publisher will then be frozen to that actual source. This source documentation
+neither publishes stable 8.3.5 nor installs it; do not download an unapproved
+branch in place of a published package.
 
-- **Verified HA 2026.11 support**, using the matching official HA test package
-  and reproducible dependency locks.
-- **A cleaner first setup**, with optional diagnostic helpers initially disabled.
-  Existing enabled helpers, personal settings, names, icons and IDs are retained.
-- **Clearer data-source information**, including modelled Open-Meteo current
-  conditions and explicit virtual data-service groups.
-
-Read [what the update means for existing users](docs/RELEASE_8.3.4.md#why-upgrade-from-833).
-Use **Settings → Marketplace** on HA 2026.11+, or HACS on older HA. Keep the
-existing configured entry, actually Download/Redownload **8.3.4** and restart HA
-once, following the [short stable update](docs/ACCEPTANCE_8.3.4.md). Refreshing
-repository information alone does not download files. The
-[latest stable page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
-is authoritative.
-
-**Earlier beta 8.3.4b1 is provenance, not the current installation target.**
-Its normal operation was operator-confirmed on **HA Core 2026.11.0 / HA OS 18.4**.
-Stable 8.3.4 retains all 39 non-version component files from that accepted beta;
-only two version fields change. Historical beta references and their
-[bounded evidence](docs/RELEASE_EVIDENCE_8.3.4b1.md) remain accurate. The HGT
-statistics follow-up stays outside this stable release.
-
-Earlier stable **8.3.3** remains an immutable previous release and recovery
-option. Its actual installation and normal operation were operator-confirmed
-on 30 October; see [that release's evidence](docs/RELEASE_EVIDENCE_8.3.3.md).
-Earlier beta, shared-settings, clean-install and restore checks remain complete
-within their recorded scopes. An intermediate beta or older stable download
-is not required.
-
-**8.3.5 support baseline.** The test line requires **HA 2026.11.0 or
-newer**. This Core baseline brings fixes for known vulnerabilities in
-dependencies shipped with older Core releases. CI tests **2026.11.0** and
-**2026.11.2** with their matching official test packages.
-[Core security rationale](DEVELOPMENT.md#supported-home-assistant-versions)
-
-Published stable **8.3.4** declared **HA 2026.8.3** as its minimum. Its
-package-merge jobs passed **2,225 tests plus 83 subtests** on HA 2026.8.3 and
-2026.11.0. For installations on older HA, follow the
-[8.3.4 setup guide](https://github.com/martins-netizen/ha-meteoswiss/blob/8.3.4/docs/GETTING_STARTED.md).
-
-Native icons and translated errors are retained from stable 8.3.3. The
-[51-rule Gold source assessment](docs/QUALITY_SCALE.md) is complete at approved
-#129. B7 package validation, publication and its focused installed check retain
-separate evidence; no official tier or independent certification is claimed.
-
-**8.3.5 test-line wind-statistics change.** Wind direction uses HA's circular angle
-statistics after a verified migration. Existing arithmetic statistics are kept
-under a separate archive ID; new circular statistics use the original sensor.
-Review [chart impact, repair notices and rollback](docs/WIND_STATISTICS_MIGRATION.md)
-before updating. Calm wind has no direction and is reported as unknown.
+The [planned cumulative notes](docs/RELEASE_8.3.5.md) cover measured HGT, consented
+obsolete-forecast cleanup, circular wind history, translated names/shared
+lifecycle, bounded precipitation, diagnostics privacy and local state clocks.
+The minimum remains **2026.11.0**, current compatibility **2026.11.2**. An older
+HA can consult 8.3.4's [tagged setup guide](https://github.com/martins-netizen/ha-meteoswiss/blob/8.3.4/docs/GETTING_STARTED.md).
+Completed b3 cleanup and b5/b6/b7 operator reports stay closed; no intermediate
+package, repeated migration or new observation window is required.
 
 ## Data and compatibility
 
@@ -343,8 +282,9 @@ For installation or update:
    On older HA, restart after the HACS download before adding the integration.
    Choose weather source, measured-pollen station, observation station/base
    coordinates, warning postcode and the independent forecast town/POI.
-5. Existing users retain their HA entry. **Configure** edits the three MeteoSwiss
-   location choices together; the HA home location remains in HA's own settings.
+5. Existing users retain their HA entry. **Configure** edits the weather
+   station/base, measured-pollen station, forecast point and warning postcode
+   together; the HA home location remains in HA's own settings.
 
 New observation entries refresh automatically every **600 seconds**; existing
 individual intervals remain effective. No polling field is shown. The

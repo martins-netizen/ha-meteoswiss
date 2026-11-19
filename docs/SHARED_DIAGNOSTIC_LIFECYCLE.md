@@ -1,8 +1,9 @@
 # Shared diagnostic lifecycle and retained identity
 
-**Status: unreleased source follow-up.** Publication and operator acceptance are
-separate. Published 8.3.4 does not acquire this behaviour merely because the
-source has changed.
+**Status:** delivered in the 8.3.5 test line and published b7, retained
+unchanged by stable 8.3.5. Earlier stable 8.3.4 does not acquire this behavior
+retroactively. [Current evidence](RELEASE_EVIDENCE_8.3.5.md) records b7 checks,
+publication and bounded sight acceptance separately from stable package gates.
 
 ## What changes
 
@@ -101,10 +102,13 @@ The lifecycle module also requires full
 line/branch coverage. Dependency locks, CI permissions and version floors are
 unchanged by this runtime follow-up.
 
-Historical duplicate groups, generic dynamic/stale-device applicability,
-remaining translations, strict typing/client packaging and independent review
-remain separate. This is bounded engineering evidence, not completed Gold or
-an official quality tier for this custom integration.
+These tests do not independently inventory historical duplicate groups. Later
+[fixed-service](FIXED_SERVICE_TOPOLOGY.md) and native metadata/name evidence
+addressed the current lifecycle/translation assessment; the
+[canonical coordinator correction](COORDINATOR_CANONICAL_COMPLETION.md) is
+recorded separately. Platinum typing/client packaging and independent assurance
+remain distinct scopes. This is bounded engineering evidence, not an official
+quality-tier award for a custom integration.
 
 Primary guidance: [HA device registry](https://contributors.home-assistant.io/core/integrations/device-registry/),
 [dynamic devices](https://contributors.home-assistant.io/core/quality-scale/dynamic-devices/)

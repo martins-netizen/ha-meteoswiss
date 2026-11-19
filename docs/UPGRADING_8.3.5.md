@@ -1,45 +1,42 @@
 # 8.3.5 upgrade: remove obsolete HGT forecast statistics
 
-## 8.3.5b7: update the existing entry
+## Update the existing entry
 
-Choose **8.3.5b7** only when it appears in the
+Choose stable **8.3.5** only when it appears in the
 [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases).
-These preparation notes do not publish or install it. Update the existing
-integration normally and follow the
-[short b7 read-only check](ACCEPTANCE_8.3.5b7.md). Keep the station, entry,
-entity IDs and statistics. No intermediate beta, station change, entry
-recreation or destructive test is required. Core **2026.11.0 or newer** is
-required; an installation on **2026.11.2** already meets that minimum.
+Update the existing integration normally and follow the
+[stable update guide](ACCEPTANCE_8.3.5.md). Keep the station, entry, options and
+retained entity/statistic IDs. No intermediate beta, station change or entry
+recreation is required. Core **2026.11.0 or newer** is required; **2026.11.2**
+already meets that minimum. Preparation does not establish publication.
 
-B7 packages the approved #129 diagnostics, local warning/forecast clock and
-optional-source log corrections and complete Gold source evidence. It retains
-b6's HGT ownership protection for pending imports, bounded hourly precipitation
-source work and b5's retry correction. See [package notes](RELEASE_8.3.5b7.md).
-No automatic statistics deletion follows from the diagnostics metadata update. Previously
-completed obsolete-forecast cleanup stays complete. New upgrading users receive
-the existing explicit cleanup repair only if attributable obsolete forecasts
-are found; read the confirmation boundary below before choosing deletion.
+Stable packaging follows the separately reviewed
+[canonical coordinator correction](COORDINATOR_CANONICAL_COMPLETION.md), whose
+actual approved merge is not established by this guide. The published b7 data,
+diagnostics, warning/forecast clock, measured-HGT recovery/ownership, wind and
+precipitation contracts are retained. Calculated forecast HGT additionally
+advances at Swiss midnight from the cached daily data, fixing yesterday's
+registered value remaining until the next poll. This is a state-publication
+change, not a new source, statistics series or deletion. See the
+[cumulative notes](RELEASE_8.3.5.md). These source corrections do not require
+repeat migration or a new
+operator observation window. If choosing the stable label when published,
+use the ordinary package update. Earlier b3 cleanup and b5/b6/b7 reports stay closed.
 
-Measured-HGT backfill remains automatic for an enabled station entry with
-Recorder. Keep forecasts, wind and precipitation in place. See
-[the permanent-removal boundary](HGT_OGD_PLAN.md#ownership-and-complete-removal)
-before deliberately removing the integration. The retained b6 correction prevents premature ownership
-loss; it does not adopt already-unowned rows from a statistic-ID prefix.
+No automatic statistics deletion follows from stable promotion or diagnostic
+metadata sanitization. New upgrading users can receive the existing explicit
+repair only if attributable obsolete forecasts are found. Read the confirmation
+boundary below. B2's original archive-and-keep behavior remains historical;
+stable 8.3.5 retains b3's confirmed-complete-cleanup policy.
 
-**Published b4 adds a separate measured-HGT feature.** This guide's
-accepted b3 forecast cleanup remains unchanged and is not repeated. The new
-OGD importer is included in published b4; installing b3 does not install it. Its
-[usage/removal guide](HGT_OGD_PLAN.md) explains independent station-specific
-measured histories, initial backfill and continuing corrections. Keep the
-existing entry; never substitute an old forecast archive for observations.
-
-**Package:** the native cleanup is included in published **8.3.5b3**. Its
-[publication and focused operator acceptance](RELEASE_EVIDENCE_8.3.5b3.md) are
-complete. New upgrading users can follow the [focused b3 check](ACCEPTANCE_8.3.5b3.md).
-Published b2 retains its archive-and-keep behaviour; its immutable
-[notes](RELEASE_8.3.5b2.md) and [accepted scope](ACCEPTANCE_8.3.5b2.md) remain
-historical evidence. HA **2026.11.0 or newer** is required. Stable **8.3.4**
-remains latest until explicitly superseded.
+Official measured HGT is separate from those old predictions. With an enabled
+MeteoSwiss station entry and Recorder, initial backfill and continuing source
+corrections are automatic; forecasts are never relabeled as observations.
+Keep forecasts, wind and precipitation in place. Read the
+[measured-history removal boundary](HGT_OGD_PLAN.md#ownership-and-complete-removal)
+before deliberately removing the final integration entry. That action removes
+its owned OGD-HGT products. Pending-write safeguards retain provenance on
+uncertainty; they do not adopt already-unowned rows from a statistic-ID prefix.
 
 ## Recommended default: remove obsolete forecast statistics
 

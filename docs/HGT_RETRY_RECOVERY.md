@@ -1,9 +1,10 @@
 # Measured HGT: bounded recovery after a transient failure
 
-**Package scope: 8.3.5b5.** Published 8.3.5b4 retains the previous six-hour
-failure cadence. Choose a published b5 package from the release catalogue to
-receive this change. Publication, installation and live acceptance are separate;
-the existing b4 release and tag remain unchanged.
+**Package scope:** introduced in b5, retained by published b7 and stable
+8.3.5. Earlier immutable b4 retains its six-hour failure cadence. Choose a
+current published package through the [catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+and [stable guide](ACCEPTANCE_8.3.5.md); completed b5/b6/b7 operator reports stay
+closed. [Dated stage evidence](RELEASE_EVIDENCE_8.3.5.md) retains separate gates.
 
 ## What changes
 
@@ -48,7 +49,7 @@ station change, entry recreation or repeated legacy-forecast cleanup is needed.
 The accepted b3 forecast cleanup and published b4 feature remain separate.
 
 For a focused check, read the measured entity's current state and source day,
-and inspect its own statistic IDs under Developer tools → Statistics. During
+and inspect its own statistic IDs under Settings → Tools → Statistics. During
 an unsuccessful attempt the state remains unavailable; after verified recovery
 the sensor reports `statistics_status: ready`. Missing source values remain
 gaps, not invented zeroes. A single ready snapshot is not a guarantee about
