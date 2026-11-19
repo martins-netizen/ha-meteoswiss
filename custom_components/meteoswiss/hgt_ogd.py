@@ -7,6 +7,7 @@ import io
 import json
 import math
 import re
+from collections.abc import Mapping
 from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
@@ -23,6 +24,7 @@ from .http import (
 from .retry import async_retry_with_backoff
 
 if TYPE_CHECKING:
+    from homeassistant.components.recorder.models import StatisticData
     from homeassistant.core import HomeAssistant
 
 PERIODS = {"daily": "xno000d0", "monthly": "xno000m0", "annual": "xno000y0"}
@@ -77,11 +79,11 @@ def parse_hgt(content: bytes, station: str, period: str, now: datetime) -> HgtVa
         or not required <= set(reader.fieldnames)
     ):
         raise HgtError("invalid_source")
-    values = {}
+    values: HgtValues = {}
     for index, row in enumerate(reader):
         if index >= MAX_POINTS:
             raise HgtError("invalid_source")
-        if (point := _read_hgt_row(row, station, period, now, required)) is None:
+        if (point := _read_hgt_row(row, station, period, now)) is None:
             continue
         start, amount = point
         if start in values and values[start] != amount:
@@ -91,16 +93,22 @@ def parse_hgt(content: bytes, station: str, period: str, now: datetime) -> HgtVa
 
 
 def _read_hgt_row(
-    row: dict, station: str, period: str, now: datetime, required: set[str]
+    row: Mapping[str | None, object], station: str, period: str, now: datetime
 ) -> tuple[datetime, int | None] | None:
     """Validate one official interval without inferring missing observations."""
-    if None in row or any(row.get(key) is None for key in required):
+    station_field = row.get("station_abbr")
+    timestamp = row.get("reference_timestamp")
+    amount = row.get(PERIODS[period])
+    if (
+        None in row
+        or not isinstance(station_field, str)
+        or not isinstance(timestamp, str)
+        or not isinstance(amount, str)
+    ):
         raise HgtError("invalid_source")
-    if row["station_abbr"].strip().lower() != station:
+    if station_field.strip().lower() != station:
         raise HgtError("foreign_station")
-    start = datetime.strptime(
-        row["reference_timestamp"].strip(), "%d.%m.%Y %H:%M"
-    ).replace(tzinfo=UTC)
+    start = datetime.strptime(timestamp.strip(), "%d.%m.%Y %H:%M").replace(tzinfo=UTC)
     if (
         start.hour
         or start.minute
@@ -111,7 +119,7 @@ def _read_hgt_row(
     end = period_end(start, period)
     if end > now:
         return None
-    raw = row[PERIODS[period]].strip()
+    raw = amount.strip()
     if not raw:
         return start, None
     number = float(raw)
@@ -125,10 +133,10 @@ def _read_hgt_row(
     return start, round(number * 10)
 
 
-def project_hgt(values: HgtValues) -> list[dict]:
+def project_hgt(values: HgtValues) -> list[StatisticData]:
     """Raw official period amount plus cumulative known amounts; never fill gaps."""
     total = 0
-    rows = []
+    rows: list[StatisticData] = []
     for start, amount in sorted(values.items()):
         if amount is not None:
             total += amount

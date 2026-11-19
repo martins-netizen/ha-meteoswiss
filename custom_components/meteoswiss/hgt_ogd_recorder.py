@@ -9,7 +9,7 @@ from datetime import UTC, datetime, timedelta
 from functools import partial
 
 from homeassistant.components.recorder import get_instance
-from homeassistant.components.recorder.models import StatisticMeanType
+from homeassistant.components.recorder.models import StatisticData, StatisticMeanType
 from homeassistant.components.recorder.statistics import (
     async_add_external_statistics,
     get_last_statistics,
@@ -105,7 +105,7 @@ async def _rows(hass: HomeAssistant, ids: set[str]) -> dict[str, list[dict]]:
     return await get_instance(hass).async_add_executor_job(read)
 
 
-def _equal(actual: dict, expected: dict) -> bool:
+def _equal(actual: dict, expected: StatisticData) -> bool:
     return all(
         actual.get(k) is not None
         and math.isclose(actual[k], expected[k], rel_tol=1e-12, abs_tol=1e-6)
@@ -117,7 +117,7 @@ def _plan_product(
     station: str,
     period: str,
     values: dict,
-    projected: list[dict],
+    projected: list[StatisticData],
     rows: list[dict],
     metadata: dict,
 ) -> tuple:

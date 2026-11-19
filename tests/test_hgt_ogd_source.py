@@ -131,6 +131,8 @@ def test_invalid_amounts_are_not_silently_coerced(value):
         b"a;b\n1;2",
         b"station_abbr;reference_timestamp;xno000d0;xno000d0\n",
         b"station_abbr;reference_timestamp;xno000d0\nklo;14.11.2026 00:00",
+        b"xno000d0;station_abbr;reference_timestamp\n0;klo",
+        b"reference_timestamp;xno000d0;station_abbr\n14.11.2026 00:00;0",
         b"station_abbr;reference_timestamp;xno000d0\nklo;14.11.2026 00:00;1;extra",
     ],
 )

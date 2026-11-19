@@ -114,8 +114,9 @@ Writable HA test configuration uses a temporary directory in both fixtures.
 
 After the native checks above, CI runs mypy on the shared retry decorator,
 its call-site contract, the ICON forecast and MeteoSwiss warning clients, both
-pollen clients, the Open-Meteo current-weather client and the shared weather
-normalisation functions in the **current** HA environment. From the repository
+pollen clients, the Open-Meteo current-weather client, shared weather
+normalisation, the measured HGT source and the shared HTTP transport in the
+**current** HA environment. From the repository
 root, use the same interpreter and install the checker together with the current
 fixture so pip validates their shared dependencies.
 This step accepts only hash-pinned wheels and stops if a compatible wheel is missing.
@@ -128,7 +129,8 @@ python -m mypy --strict --explicit-package-bases --follow-imports=silent \
   custom_components/meteoswiss/retry.py custom_components/meteoswiss/forecast.py \
   custom_components/meteoswiss/alerts.py custom_components/meteoswiss/pollen_meteoswiss.py \
   custom_components/meteoswiss/pollen_openmeteo.py custom_components/meteoswiss/openmeteo.py \
-  custom_components/meteoswiss/weather_data.py tests/typing/retry_contract.py
+  custom_components/meteoswiss/weather_data.py custom_components/meteoswiss/hgt_ogd.py \
+  custom_components/meteoswiss/http.py tests/typing/retry_contract.py
 ```
 
 The contract checks return types, keyword and positional arguments, and
@@ -145,6 +147,9 @@ client aligns pollen and air quality with the current provider hour and uses
 the same HTTP session for the optional UV request. The current-weather client
 checks the measurements before attaching the provider timestamp and optional
 hourly preview. Only recognised integral WMO codes map to HA weather conditions.
+For official station heating degree days, the source keeps missing amounts and
+measured zeroes distinct and projects completed UTC periods to native Recorder
+statistics. The HTTP transport handles bounded reads and conditional requests.
 
 ### Current fixture update
 
