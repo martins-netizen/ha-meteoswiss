@@ -190,7 +190,8 @@ remains dated **11 November 2026**, not a fresh alert clearance.
 [errors](docs/EXCEPTION_TRANSLATIONS.md), [shared diagnostic ownership](docs/SHARED_DIAGNOSTIC_LIFECYCLE.md)
 and [conservative native device removal](docs/DEVICE_REMOVAL.md) retain their
 contracts. CI runs strict type checks on the shared retry decorator, the ICON
-forecast client, the warning client and both pollen clients.
+forecast client, the warning client, both pollen clients, the Open-Meteo
+current-weather client and shared weather normalisation.
 The [developer guide](DEVELOPMENT.md#strict-type-checking) shows how to run them. The dependency audit covers both HA fixtures and the type checker.
 
 ## Start here

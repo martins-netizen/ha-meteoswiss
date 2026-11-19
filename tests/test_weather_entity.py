@@ -540,6 +540,13 @@ def test_shared_condition_and_time_contracts_reject_bad_values(raw):
     assert weather_number(raw) is None
 
 
+def test_numeric_string_weather_codes_preserve_only_recognised_integral_values():
+    assert weather_condition("0.0", is_day=False) == "clear-night"
+    assert weather_condition("63.0") == "rainy"
+    assert weather_condition("63.5") is None
+    assert weather_condition("64") is None
+
+
 async def test_weather_logs_do_not_dump_location_or_current_payload(hass, caplog):
     current = MeteoSwissDataUpdateCoordinator(
         hass, station_id="KLO", update_interval=600

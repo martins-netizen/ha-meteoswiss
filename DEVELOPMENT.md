@@ -113,8 +113,9 @@ Writable HA test configuration uses a temporary directory in both fixtures.
 ### Strict type checking
 
 After the native checks above, CI runs mypy on the shared retry decorator,
-its call-site contract, the ICON forecast client, the MeteoSwiss warning client
-and both pollen clients in the **current** HA environment. From the repository
+its call-site contract, the ICON forecast and MeteoSwiss warning clients, both
+pollen clients, the Open-Meteo current-weather client and the shared weather
+normalisation functions in the **current** HA environment. From the repository
 root, use the same interpreter and install the checker together with the current
 fixture so pip validates their shared dependencies.
 This step accepts only hash-pinned wheels and stops if a compatible wheel is missing.
@@ -126,7 +127,8 @@ python -m pip check
 python -m mypy --strict --explicit-package-bases --follow-imports=silent \
   custom_components/meteoswiss/retry.py custom_components/meteoswiss/forecast.py \
   custom_components/meteoswiss/alerts.py custom_components/meteoswiss/pollen_meteoswiss.py \
-  custom_components/meteoswiss/pollen_openmeteo.py tests/typing/retry_contract.py
+  custom_components/meteoswiss/pollen_openmeteo.py custom_components/meteoswiss/openmeteo.py \
+  custom_components/meteoswiss/weather_data.py tests/typing/retry_contract.py
 ```
 
 The contract checks return types, keyword and positional arguments, and
@@ -140,7 +142,9 @@ returns a list of parsed alerts on a successful request. Its tests distinguish
 an empty warning feed from a transport or parsing failure. The measured pollen
 client distinguishes a missing station count from a measured zero. The modelled
 client aligns pollen and air quality with the current provider hour and uses
-the same HTTP session for the optional UV request.
+the same HTTP session for the optional UV request. The current-weather client
+checks the measurements before attaching the provider timestamp and optional
+hourly preview. Only recognised integral WMO codes map to HA weather conditions.
 
 ### Current fixture update
 

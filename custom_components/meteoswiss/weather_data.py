@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Mapping
 from datetime import UTC, datetime, timedelta
 from typing import Any
 from zoneinfo import ZoneInfo
@@ -12,7 +13,7 @@ from .const import WMO_WEATHER_CODES
 FORECAST_TIME_ZONE = ZoneInfo("Europe/Zurich")
 
 
-def forecast_datetime(value: float | str | None) -> datetime | None:
+def forecast_datetime(value: object) -> datetime | None:
     """Normalize provider Unix seconds or legacy local strings to aware UTC.
 
     New requests use Unix seconds: the two 02:00 hours at the autumn DST
@@ -34,16 +35,25 @@ def forecast_datetime(value: float | str | None) -> datetime | None:
         return None
 
 
-def weather_condition(code: int | None, is_day: bool | None = None) -> str | None:
+def known_weather_code(raw: object) -> int | None:
+    """Return only integral codes present in the WMO condition table."""
+    value = weather_number(raw)
+    return int(value) if value in WMO_WEATHER_CODES else None
+
+
+def weather_condition(code: object, is_day: bool | None = None) -> str | None:
     """Unknown input stays unknown; provider daylight distinguishes night."""
-    condition = WMO_WEATHER_CODES.get(weather_number(code))
+    known_code = known_weather_code(code)
+    if known_code is None:
+        return None
+    condition = WMO_WEATHER_CODES[known_code]
     if condition == "sunny" and is_day is False:
         return "clear-night"
     return condition
 
 
 def validate_observation_time(
-    data: dict, max_age: timedelta = timedelta(hours=1)
+    data: Mapping[str, object], max_age: timedelta = timedelta(hours=1)
 ) -> None:
     """A successful download must not make stale measurements current."""
     timestamp = forecast_datetime(data.get("last_update"))

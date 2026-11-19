@@ -11,6 +11,8 @@
   the warning postcode when constructing the client.
 - Extend strict type checking to the MeteoSwiss station pollen client and the
   Open-Meteo client for modelled pollen, air quality and UV.
+- Check the Open-Meteo current-weather client and shared weather data helpers
+  with strict mypy, including observation timestamps and WMO condition codes.
 
 ## [8.3.5] — 2026-11-19
 
