@@ -13,6 +13,8 @@
   Open-Meteo client for modelled pollen, air quality and UV.
 - Check the Open-Meteo current-weather client and shared weather data helpers
   with strict mypy, including observation timestamps and WMO condition codes.
+- Extend strict type checking to official station heating-degree-day data, its
+  projection into Recorder statistics and the shared HTTP transport.
 
 ## [8.3.5] — 2026-11-19
 
