@@ -1,23 +1,28 @@
-# Gold completion: source review and remaining corrections
+# Gold completion: reviewed source and separate stable promotion
 
-**Review update, 18 November 2026:** approved #129 at
-`8887597ebf8567b5969ee70b8f9dd6f261603aec` was packaged by
-[PR #130](https://github.com/martins-netizen/ha-meteoswiss/pull/130) at signed
-`9ea96fc5a5306342eef0aa73ae50cc95bb844fb4`. B7 completed its ten head and
-nine actual-merge checks, publication and a bounded positive operator sight
-report. [The dated record](RELEASE_EVIDENCE_8.3.5.md) preserves that evidence.
+**Review update, 19 November 2026:** approved signed
+[PR #131](https://github.com/martins-netizen/ha-meteoswiss/pull/131) at
+`115ddad474dcae15aa49fb5f368cbed600adf80d` is the stable promotion baseline.
+Its exact tree is `98fbd1b49500503c2994292957674f0ac00a1aa6`, with sole parent
+published b7 `9ea96fc5a5306342eef0aa73ae50cc95bb844fb4`. All ten trusted head
+and nine actual-merge checks passed. Both actual supported Core jobs passed
+**3,622 tests plus 83 subtests**, five known upstream warnings and strict
+coverage gates. [Dated evidence](RELEASE_EVIDENCE_8.3.5.md) records source,
+package and publication stages separately.
 
-The overall documentation review then found that the common-modules judgment
-had missed the ninth real coordinator: `MeteoSwissHgtCoordinator` was defined
-outside `coordinator.py`. There is no applicable exception. The
-[canonical coordinator correction](COORDINATOR_CANONICAL_COMPLETION.md) must
-receive its own source review, native validation and actual-merge checks before
-complete assessment closure and stable 8.3.5 packaging. It preserves the
-established data/lifecycle contracts and keeps the old module as a re-export
-of the single canonical class. The same corrective source fixes calculated
-HGT's midnight registered-state lag using retained daily data; its existing
-formula and availability remain. Complete native regressions must validate
-that new timer and its lifecycle. The future stable source merge is not known yet.
+The overall pre-stable review found that the earlier common-modules judgment
+had missed the ninth real HGT coordinator outside `coordinator.py`. No exception
+applied. [The completed correction](COORDINATOR_CANONICAL_COMPLETION.md) places
+the single actual class beside the other eight and keeps the former module as
+an explicit re-export. Structural inventory, aliased-import refusal cases and
+native logger/interval/ownership contracts cover that gap. The same source
+fixes calculated forecast HGT's registered-state lag at Swiss midnight, with
+native 23-/25-hour, disabled-polling, recovery and timer-removal evidence.
+Formula, availability, IDs and source/Recorder boundaries remain.
+
+B7's successful measured checks, publication and bounded positive sight report
+remain valid in their own scope. They did not prove the missed placement
+judgment and are not relabeled as later stable package acceptance.
 
 ## Delivery preparation — historical record
 
@@ -83,16 +88,15 @@ observed scope and are not repurposed as later package acceptance.
 
 ## What remains separate
 
-B7's required checks, publication and bounded operator sight report are
+B7's required checks, publication and bounded operator sight report remain
 complete. Canonical coordinator placement and calculated-HGT midnight state
-publication remain a separate corrective source change, keeping version
-8.3.5b7 until its own approved merge.
-Future stable packaging can then change only the two component version fields
-relative to that newly approved source, retaining its other 50 component files.
-A fixed stable publisher must be pinned and tested against that actual source;
-its present planning does not establish readiness or publication. Neither a
-matching runtime tree nor the old checker result bypasses source/package
-approval, trusted head checks, normal signed merges or actual-merge checks.
+publication are completed in approved #131, retaining version 8.3.5b7 until
+packaging. The prepared stable promotion changes only two component version
+fields relative to that actual source, retaining its other 50 component files.
+Fixed Publisher V1.9 verifies that source boundary and preserves all old
+profiles, release records and tags. Package review, trusted head checks, normal
+signed package merge, actual-merge verification and authorized publication
+remain distinct stages. A matching runtime tree does not bypass these gates.
 
 Stable publication follows its separately authorized workflow. Use the
 [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)

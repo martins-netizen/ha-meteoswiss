@@ -1,14 +1,14 @@
 # Sensor reference
 
-## Current contracts and planned stable scope
+## Current contracts and 8.3.5 scope
 
 Published b7 supplies the official measured-HGT, circular-wind, native metadata
 and local warning/forecast clock contracts below. The
 [canonical coordinator correction](COORDINATOR_CANONICAL_COMPLETION.md) changes
 internal class placement and publishes calculated forecast HGT at Swiss
-midnight before stable 8.3.5, without a new sensor migration.
-Its separate source gates precede stable packaging.
-[Planned release notes](RELEASE_8.3.5.md) and [dated evidence](RELEASE_EVIDENCE_8.3.5.md)
+midnight, without a new sensor migration. It is approved and merged as #131;
+its actual source is the separate stable packaging baseline.
+[Cumulative release notes](RELEASE_8.3.5.md) and [dated evidence](RELEASE_EVIDENCE_8.3.5.md)
 keep cumulative changes, source/package checks and publication distinct. Use the
 [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
 for availability and [ordinary update guide](ACCEPTANCE_8.3.5.md) when choosing

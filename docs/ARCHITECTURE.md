@@ -1,19 +1,19 @@
 # Maintained fork: architecture and data contracts
 
-**Current review boundary, 18 November 2026:** published and bounded-accepted b7
-at `9ea96fc5a5306342eef0aa73ae50cc95bb844fb4` passed its ten head and nine
-actual-merge checks. The overall documentation review then found a ninth real
-coordinator defined outside `coordinator.py`, contrary to the common-modules
-rule. The [narrow correction](COORDINATOR_CANONICAL_COMPLETION.md) makes that
-file canonical while retaining the old module as a compatibility re-export.
-The same source correction fixes calculated HGT's Swiss-midnight registered-
-state rollover from retained data, without another source request. Its separate
-source review and actual-merge checks precede stable 8.3.5;
-no future source or package merge is claimed here. The
-[dated record](RELEASE_EVIDENCE_8.3.5.md) retains the b7 publication and bounded
-sight result. Existing b3/b5/b6/b7 acceptance stays closed; native regressions
-verify the new HGT clock without a repeat production migration or observation
-window.
+**Current review boundary, 19 November 2026:** approved signed #131 at
+`115ddad474dcae15aa49fb5f368cbed600adf80d` includes the contracts below and
+closes the two concrete pre-stable findings. All nine coordinator definitions
+are canonical in `coordinator.py`, with the former HGT module retained as an
+explicit same-class re-export. Calculated forecast HGT publishes its new Swiss
+day from retained data at midnight, without another source request. Both
+changes have their own structural/native/lifecycle evidence. All ten exact-
+head and nine actual-merge checks passed; see the
+[dated record](RELEASE_EVIDENCE_8.3.5.md) for exact source and actual test results.
+The stable package changes only two component version fields relative to this
+source; package checks and authorized publication remain distinct stages.
+
+Existing b3/b5/b6/b7 acceptance stays closed. Native regressions verify the new
+HGT clock without a repeat production migration or observation window.
 
 Diagnostics minimize typed saved configuration and HA's native issue envelope.
 Warning/forecast entities own one next time-boundary callback, invalidate queued
@@ -82,7 +82,8 @@ Maintain an independent community fork with reviewed fixes, its own releases
 and [HACS catalogue admission](HACS_ACCEPTANCE.md#hacs-catalogue-admission).
 The contracts below describe the 8.3 runtime, including the retained 8.3.5 data behavior above.
 Dated release/review sections retain the conclusions at their stated time;
-the [current matrix](QUALITY_SCALE.md) records the source assessment and the remaining corrective-source gates.
+the [current matrix](QUALITY_SCALE.md) records the source assessment, including
+approved corrective #131, separately from stable package/publication gates.
 Preserve `meteoswiss`, config entries, unique IDs, entity IDs,
 and Recorder statistic IDs for retained entities. The legacy forecast-only
 season-HGT entity is explicitly retired rather than presented as a measured

@@ -1,6 +1,6 @@
 # Forecast sensors: today and tomorrow
 
-**Guide version:** 1.8 · **Updated:** 18 November 2026
+**Guide version:** 1.9 · **Updated:** 19 November 2026
 **Availability:** included in the **8.3.0** runtime accepted as b4.
 Use the [announced release](RELEASE_8.3.0.md); earlier beta notes describe their
 historical scopes, not instructions to reinstall an older beta.
@@ -98,7 +98,7 @@ Unloading the entry removes those listeners.
 ## Calculated HGT follows the Swiss day
 
 Calculated **HGT 12/20 today (forecast)** is a separate entity on the forecast
-device. The pre-stable correction publishes its registered value and
+device. Approved source #131 publishes its registered value and
 `daily_mean_temperature` at Swiss midnight, rather than waiting for the next
 hourly source update. It selects the new day from the existing daily snapshot
 using `Europe/Zurich`, independently of the server or HA display timezone and

@@ -1,19 +1,21 @@
 # Coordinator placement review
 
-**Review version:** 1.9 · **Updated:** 18 November 2026
-**Scope:** canonical source correction prepared after published b7, before
-stable 8.3.5. The completed extraction sections below retain the original
-sequence and evidence; they are not work to repeat. See
-[current source gates](COORDINATOR_CANONICAL_COMPLETION.md).
+**Review version:** 1.10 · **Updated:** 19 November 2026
+**Scope:** canonical correction completed in approved signed #131, source
+`115ddad474dcae15aa49fb5f368cbed600adf80d`, before stable 8.3.5 packaging.
+The completed extraction sections below retain the original sequence and
+evidence; they are not work to repeat. See the
+[source completion record](COORDINATOR_CANONICAL_COMPLETION.md).
 
 The [HA common-modules rule](https://contributors.home-assistant.io/core/quality-scale/common-modules/)
 requires coordinator definitions in `coordinator.py` and shared entity bases in
 `entity.py`; it gives no exception for a specialized HGT coordinator. The b7
 review missed the ninth actual class in `hgt_ogd_coordinator.py`, so its passing
-index did not establish compliance. The prepared correction defines all nine
-classes in `coordinator.py`. The old HGT module explicitly re-exports the same
+index did not establish compliance. Approved #131 defines all nine classes
+in `coordinator.py`. The old HGT module explicitly re-exports the same
 class for compatibility; it is not another definition, subclass or wrapper.
-Separate source approval, native checks and actual-merge gates remain required.
+The [dated record](RELEASE_EVIDENCE_8.3.5.md) retains its native source checks,
+regular approval and actual-merge evidence separately from stable packaging.
 
 | Coordinator | Canonical defining module in the correction | Finding |
 |---|---|---|
@@ -225,5 +227,5 @@ scheduling explicit; see [its contract](HGT_OGD_PLAN.md) and
 [coordinator examples](COORDINATOR_EXAMPLES.md). This is a reviewed internal
 module layout, not a new standalone Python package or an official tier award.
 [Current rule evidence](QUALITY_SCALE.md) and [dated stages](RELEASE_EVIDENCE_8.3.5.md)
-separate measured b7 evidence, the canonical correction's pending source gates
-and future stable package/publication gates.
+separate measured b7 evidence, the completed canonical-source correction
+and remaining stable package/publication gates.

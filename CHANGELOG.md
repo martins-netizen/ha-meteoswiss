@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+No additional runtime scope is included in the prepared stable promotion.
+
+## [8.3.5] — prepared stable package · 2026-11-19
+
+This section records preparation, not publication. Availability follows the
+[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases).
+The package is based on signed corrective source [PR #131](https://github.com/martins-netizen/ha-meteoswiss/pull/131)
+at `115ddad474dcae15aa49fb5f368cbed600adf80d`. Change the two component version
+fields to 8.3.5; preserve its other 50 component files and all existing gates.
+Add fixed stable Publisher V1.9 with exact source/package binding and refusal
+cases. Normal package approval, actual-merge checks and authorized publication
+remain separate. [Cumulative notes](docs/RELEASE_8.3.5.md) cover changes since 8.3.4.
+
 - Correct the actual ninth coordinator placement before stable 8.3.5. The
   measured-HGT class becomes canonical in `coordinator.py`; its old module
   re-exports that same class for compatibility. Keep constructor, retry,
@@ -14,9 +27,10 @@
   common-modules finding, measured-HGT vs forecast/wind history, current UI,
   source schedules, lifecycle/removal, actual scheduled-audit evidence and
   publication/acceptance stages. Preserve all dated release evidence.
-- Retain the agreed serious, clear stable 8.3.5 introduction as a future draft.
-  Stable versions/publisher follow only after a separately approved corrective
-  source merge and complete validation; no stable publication is implied.
+- Retain the agreed serious, clear stable 8.3.5 introduction. The corrective
+  source is regularly merged as #131; the stable package and its publisher bind
+  to that actual source. B7 sight acceptance and earlier cleanup reports stay
+  closed; the new HGT clock has its own native regression evidence.
 
 ## [8.3.5b7] — 2026-11-18 · Gold privacy, state boundaries and quality evidence
 

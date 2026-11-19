@@ -1,8 +1,8 @@
 # HGT ownership while Recorder writes are pending
 
-**Package scope:** introduced in b6 and retained by published b7. Planned stable
-8.3.5 follows the separately gated canonical-coordinator correction without
-changing the ownership contracts below. Availability follows the
+**Package scope:** introduced in b6 and retained by published b7. Stable 8.3.5
+uses approved corrective source #131 without changing the ownership contracts
+below. Availability follows the
 [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases),
 with source/package checks and installed acceptance recorded separately in the
 [stable evidence](RELEASE_EVIDENCE_8.3.5.md). The original review on 17 November 2026

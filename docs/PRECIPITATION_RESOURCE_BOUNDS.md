@@ -1,8 +1,7 @@
 # Bounded hourly precipitation imports
 
-**Package scope:** introduced in b6 and retained by published b7. Planned stable
-8.3.5 follows the separately gated canonical-coordinator correction; the
-precipitation contracts remain. The original review was on 17 November 2026.
+**Package scope:** introduced in b6 and retained by published b7. Stable 8.3.5
+uses approved corrective source #131; precipitation contracts remain. The original review was on 17 November 2026.
 Use the [catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases),
 [package notes](RELEASE_8.3.5.md), [dated evidence](RELEASE_EVIDENCE_8.3.5.md)
 and [stable guide](ACCEPTANCE_8.3.5.md). Completed b3/b5/b6/b7 scopes stay closed;

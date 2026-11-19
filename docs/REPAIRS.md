@@ -86,8 +86,8 @@ supported at the time. See the [current support policy](../DEVELOPMENT.md#suppor
 - [Registered weather/entity tests](../tests/test_forecast_location_routing.py):
   both current-weather sources, retained IDs and independent failure/recovery.
 - [Engineering checklist](QUALITY_SCALE.md): the accepted b1 repair follow-up
-  retains its recorded scope. The current matrix explicitly gates the later
-  canonical-coordinator finding before all-rule assessment closure.
+  retains its recorded scope. The current matrix records the completed
+  canonical-coordinator correction in approved #131 with its own evidence.
 
 <a id="wind-statistics-preparation-blocked-unreleased"></a>
 

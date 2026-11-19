@@ -1,35 +1,54 @@
 # Publish the maintained fork
 
-## Stable 8.3.5 publication: source correction first
+## Stable 8.3.5 publication: approved source, then package gates
 
-The [canonical coordinator correction](COORDINATOR_CANONICAL_COMPLETION.md)
-must be separately reviewed, validated and merged before stable packaging.
-Published b7 source `9ea96fc5a5306342eef0aa73ae50cc95bb844fb4` remains the
-historical tested/accepted package; it is not the final stable source pin.
-The future corrective-source merge and stable-package merge are not known yet.
+The [pre-stable source correction](COORDINATOR_CANONICAL_COMPLETION.md) is
+regularly approved and merged as signed #131,
+`115ddad474dcae15aa49fb5f368cbed600adf80d`. All ten head and nine actual-merge
+checks passed. This exact source includes the canonical ninth coordinator and
+calculated-HGT Swiss-midnight state fix; old b7 is a preserved historical
+package, not the stable source pin.
 
-Preparation of fixed publisher V1.8 is parked until that actual approved source
-exists. Its future reviewed contract must verify the fixed repository/owner,
-protected development head, valid signature, sole approved source parent,
-two-file source-to-stable version change, other 50 component files and trusted
-actual-merge checks on HA 2026.11.0/2026.11.2. The old source pin or an unmerged
-feature head must never be accepted as a substitute. No current executable
-publication command or completed stable validation is claimed here.
+The prepared package changes only `manifest.json` and `version.py` to 8.3.5,
+retaining all other 50 component files, 20 protected policy files including the
+exact rule index, locks and all 31 historical publication-profile paths.
+Fixed [Stable Publisher V1.9](../scripts/publish_meteoswiss_835_stable_v1.9.sh)
+verifies the approved signed package commit, its sole exact source parent,
+protected development head, component/policy preservation and all trusted
+actual-package-merge checks. Its [refusal-path tests](../tests/test_release_835_stable_publisher.py)
+cover the publication transition. The earlier unpublished V1.8 preparation
+was parked with the old b7 source pin and is not the operative route.
 
-All 31 historical publisher/profile/release-fixture paths and the full records,
-bodies and tags of 23 existing releases, including b7, must be preserved. A
-future authorized stable publication must retain prior stable 8.3.4 / 437853341
-until its one exact new stable record can become latest. It must refuse any
-overwrite/retag and resolve an uncertain write with a read-only exact-commit
-check before retrying. Historical publishers below are not stable shortcuts.
+After the stable **package PR** is normally approved and merged and all actual
+checks pass, use its full 40-character **package merge SHA** for the read-only
+`--check` mode. `--publish` additionally needs matching publication authorization:
 
-[Planned release notes](RELEASE_8.3.5.md), [dated evidence](RELEASE_EVIDENCE_8.3.5.md)
-and [normal update guidance](ACCEPTANCE_8.3.5.md) distinguish source, package,
-publication and bounded acceptance. Existing b7 sight acceptance stays closed;
-the source corrections and the later stable label require no repeat migration
-or new operator observation window. The
-[catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases) establishes
-availability. No publisher connects to HA or changes devices.
+```sh
+bash scripts/publish_meteoswiss_835_stable_v1.9.sh --check APPROVED_PACKAGE_MERGE_SHA
+bash scripts/publish_meteoswiss_835_stable_v1.9.sh --publish APPROVED_PACKAGE_MERGE_SHA
+```
+
+Replace the placeholder only with the verified package merge, never #131's
+source SHA or an unmerged head. A source check, prepared command or matching
+runtime tree does not publish a stable package. No package merge or release
+receipt is invented by this guide.
+
+The publisher preserves full records, bodies and tags of **23** existing
+releases, including accepted b7 and prior stable **8.3.4 / 437853341**. Before
+publication that prior stable must remain latest; afterward only the exact
+approved new stable 8.3.5 record may replace it. The single new release uses
+`draft=false`, `prerelease=false`, `make_latest=true` and the exact English
+notes/title. It refuses overwrites/retags, validates exact readback and resolves
+an uncertain write through read-only inspection before another attempt.
+Historical publishers below are not stable shortcuts.
+
+[Cumulative release notes](RELEASE_8.3.5.md), [dated evidence](RELEASE_EVIDENCE_8.3.5.md)
+and [normal update guidance](ACCEPTANCE_8.3.5.md) keep source, package,
+publication and bounded acceptance distinct. Existing b7 sight acceptance stays
+closed; no repeated migration or operator observation window follows solely
+from promotion. Availability follows the
+[catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases).
+No publisher connects to HA or changes devices.
 
 ## Historical publisher procedures below
 

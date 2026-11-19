@@ -1,22 +1,23 @@
 # MeteoSwiss 8.3.5
 
-**Notes version:** 1.0 · **Planned stable scope:** 18 November 2026
+**Notes version:** 1.1 · **Prepared stable package:** 19 November 2026
+
+**Preparation status:** source PR #131 is approved and merged. Package approval,
+actual package-merge checks and authorized publication remain separate. These
+prepared notes do not establish an available release; use the release catalogue.
 
 This community fork builds on [LNKtwo/ha-meteoswiss](https://github.com/LNKtwo/ha-meteoswiss)
 and retains its MIT licence and attribution. It is not an official MeteoSwiss product.
 
 This release marks an important milestone for the project. It adds official measured heating degree days, improves diagnostic privacy and completes our engineering assessment against all 51 Home Assistant quality rules through Gold. Seven beta releases and extensive testing in Home Assistant have helped shape this release.
 
-The changes below are the planned cumulative scope from **stable 8.3.4**.
-Before stable packaging, a corrective source change places the ninth HGT
-coordinator definition in the canonical module and fixes calculated forecast
-HGT's registered-state rollover at Swiss midnight. Its other data contracts
-and the completed bounded operator sight report remain. The stable package
-must be based on that correction's separately approved actual source merge;
-this draft is not an installable stable package or a publication claim. Use the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-for availability; these notes do not publish or install a package. The
-preceding stable package is **8.3.4**; current stable selection follows the
-catalogue. Older releases and their original notes remain immutable.
+This release brings together changes since **stable 8.3.4**. It is based on
+reviewed [source PR #131](https://github.com/martins-netizen/ha-meteoswiss/pull/131),
+including canonical coordinator placement and calculated HGT's reliable Swiss
+midnight update. The [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+and [latest-stable page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
+identify available packages. Earlier releases, tags and their original notes
+remain unchanged.
 
 ## What improves for existing users
 
@@ -55,8 +56,7 @@ catalogue. Older releases and their original notes remain immutable.
   cancellation races. Hourly precipitation imports validate/deduplicate at most
   four canonical CSVs within one 300-second awaited-work budget, retaining valid
   partial files and real zero. The lookback is not a retention purge.
-- **Engineering evidence through Gold:** after the separately reviewed
-  canonical coordinator correction, the planned stable assessment covers
+- **Engineering evidence through Gold:** the reviewed source assessment covers
   20 Bronze, 10 Silver and 21 Gold rules: 26 automated verifications, 16
   documented review judgments and nine reasoned exemptions. Fresh native
   JUnit/coverage checks, service-lifecycle and complete entity-metadata
@@ -65,10 +65,9 @@ catalogue. Older releases and their original notes remain immutable.
 The [quality matrix](QUALITY_SCALE.md),
 [canonical correction](COORDINATOR_CANONICAL_COMPLETION.md),
 [security boundaries](GOLD_SECURITY_BOUNDARIES.md) and [source contracts](API_SOURCES.md)
-provide precise evidence. The completed b7 checklist report did not detect the
-ninth coordinator-placement gap; this stable work corrects that implementation
-boundary before claiming closure. This is the
-project's engineering assessment, without an official Home Assistant tier or
+provide precise evidence, including the canonical coordinator review and its
+structural/native regressions. This is the project's engineering assessment,
+without an official Home Assistant tier or
 independent privacy/security certification. Optional UV/catalogue outage and
 recovery messages use generic INFO text once per transition; supported Core
 versions keep their native reporting for required coordinator failures.
@@ -90,12 +89,12 @@ options; intermediate betas and entry recreation are unnecessary. Complete the
 ordinary update restart once. Review the [upgrade guide](UPGRADING_8.3.5.md)
 and the [focused normal-update guide](ACCEPTANCE_8.3.5.md).
 
-If already running the accepted **8.3.5b7** runtime, the planned coordinator
-placement and calculated-HGT midnight corrections receive their own source/
-native checks before promotion. The new callback changes state-publication
-timing; it does not require a migration or repeat the earlier bounded sight
-acceptance. No repeated failure test or operator observation window is imposed. If choosing the stable
-label when published, use the normal package update and its ordinary restart.
+If already running the accepted **8.3.5b7** runtime, the canonical coordinator
+and calculated-HGT midnight fixes add no migration or new source. Their own
+native regressions cover the state-publication change and lifecycle. Earlier
+bounded sight acceptance remains complete; no repeated failure test or operator
+observation window is imposed. Choose the published stable label through the
+normal package update and complete its ordinary restart once.
 
 ### Obsolete HGT forecasts: the recommended cleanup
 
@@ -146,11 +145,10 @@ postcode or coordinates and the request's source IP. Diagnostic redaction is
 not global anonymization of ordinary state attributes, cards, logs or provider
 records. The source table and dated provider/owner reviews retain their scope.
 
-The planned source corrections and stable packaging add no host,
-request, runtime dependency, source account, telemetry or deletion authority
-beyond b7. The placement and midnight-state corrections receive normal review;
-subsequent stable packaging must retain that approved source apart from the
-two version fields and preserve existing quality/security gates. [Dated evidence](RELEASE_EVIDENCE_8.3.5.md)
-records the completed b7 checks, publication and bounded sight report separately
-from stable packaging and authorized publication. The earlier releases and
-their notes remain preserved; stable availability follows the catalogue.
+The reviewed pre-stable corrections add no host, request, runtime dependency,
+source account, telemetry or deletion authority beyond b7. Stable packaging
+retains the approved source apart from two version fields and preserves
+existing quality/security gates. [Dated evidence](RELEASE_EVIDENCE_8.3.5.md)
+records source validation, package checks and publication separately, retaining
+the completed beta checks and bounded sight report. Stable availability follows
+the catalogue.

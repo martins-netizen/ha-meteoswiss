@@ -10,9 +10,9 @@ retained entity/statistic IDs. No intermediate beta, station change or entry
 recreation is required. Core **2026.11.0 or newer** is required; **2026.11.2**
 already meets that minimum. Preparation does not establish publication.
 
-Stable packaging follows the separately reviewed
-[canonical coordinator correction](COORDINATOR_CANONICAL_COMPLETION.md), whose
-actual approved merge is not established by this guide. The published b7 data,
+Stable packaging uses the approved
+[canonical coordinator correction](COORDINATOR_CANONICAL_COMPLETION.md), signed
+source `115ddad474dcae15aa49fb5f368cbed600adf80d` from PR #131. The published b7 data,
 diagnostics, warning/forecast clock, measured-HGT recovery/ownership, wind and
 precipitation contracts are retained. Calculated forecast HGT additionally
 advances at Swiss midnight from the cached daily data, fixing yesterday's

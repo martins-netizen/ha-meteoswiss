@@ -1,11 +1,11 @@
 # Official measured HGT 12/20: use, sources and removal
 
-## Current measured-HGT contracts and planned stable scope
+## Current measured-HGT contracts and 8.3.5 scope
 
 Published b7 supplies the measured-HGT contracts below. The
 [canonical coordinator correction](COORDINATOR_CANONICAL_COMPLETION.md) moves
-its coordinator definition without changing those contracts and must pass its
-own source gates before stable **8.3.5** packaging. The future package retains
+its coordinator definition without changing those contracts. Approved #131
+is the source baseline for prepared stable **8.3.5** packaging, which retains
 [pending-import ownership protection](HGT_PENDING_IMPORT_OWNERSHIP.md) and
 [bounded recovery](HGT_RETRY_RECOVERY.md). Availability follows the
 [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases);
@@ -16,8 +16,8 @@ closed; no destructive installation test is required for this promotion.
 Measured HGT was introduced in b4, corrected through later betas and retained
 in published b7. It is new relative to stable 8.3.4. The
 [current dated record](RELEASE_EVIDENCE_8.3.5.md) distinguishes completed b7
-source/publication/sight evidence from the correction's source gates and future
-stable package gates. The
+source/publication/sight evidence from approved corrective-source validation
+and separate stable package/publication gates. The
 [frozen b4](RELEASE_EVIDENCE_8.3.5b4.md) and
 [b5](RELEASE_EVIDENCE_8.3.5b5.md) records retain their historical metrics.
 

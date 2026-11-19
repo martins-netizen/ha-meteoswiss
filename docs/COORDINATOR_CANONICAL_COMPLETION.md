@@ -1,7 +1,13 @@
 # Coordinator placement and HGT midnight correction before stable 8.3.5
 
-**Review date:** 18 November 2026 · **Stage:** source correction prepared before
-stable promotion; normal source approval and actual-merge checks remain separate.
+**Review date:** 18 November 2026 · **Completion update:** 19 November 2026
+
+**Stage:** approved correction regularly merged as signed
+[PR #131](https://github.com/martins-netizen/ha-meteoswiss/pull/131), source
+`115ddad474dcae15aa49fb5f368cbed600adf80d`, exact tree
+`98fbd1b49500503c2994292957674f0ac00a1aa6`. Stable packaging is a separate
+version-only promotion from this source; its own approval and publication
+remain separate. [Dated evidence](RELEASE_EVIDENCE_8.3.5.md) records actual gates.
 
 ## Finding and prior evidence
 
@@ -22,20 +28,20 @@ An official HA tier or independent security certification was never awarded.
 
 ## Narrow correction
 
-Place the **single actual** measured-HGT coordinator definition in
+The correction places the **single actual** measured-HGT coordinator definition in
 [coordinator.py](../custom_components/meteoswiss/coordinator.py), alongside the
-other eight. Retain [hgt_ogd_coordinator.py](../custom_components/meteoswiss/hgt_ogd_coordinator.py)
+other eight. It retains [hgt_ogd_coordinator.py](../custom_components/meteoswiss/hgt_ogd_coordinator.py)
 as an explicit compatibility re-export of that same class, without a second
 definition, wrapper or inheritance-only substitute. This also retains the
 component path inventory and historical publisher fixtures.
 
-Keep the source reader, shared station ownership/locking and native Recorder
-adapter in their existing HGT modules. Constructor, translated failures,
+The source reader, shared station ownership/locking and native Recorder
+adapter stay in their existing HGT modules. Constructor, translated failures,
 bounded retry, polling and unload semantics remain their existing contracts.
 Retained entity/statistic IDs, provenance and cleanup consent do not change.
 The correction introduces no source request, session, stored archive, purge,
 credential or device operation. Native lifecycle/recovery regressions and a
-complete class-definition inventory must validate the actual final source.
+complete class-definition inventory validate the actual corrected source.
 
 ## Calculated HGT midnight state correction
 
@@ -69,14 +75,20 @@ privacy or repair-UI change in this source PR.
 
 ## Delivery and acceptance
 
-The correction is a source PR before stable packaging. It must complete its
-own exact-head checks, normal approved merge and actual-merge verification.
-Future stable 8.3.5 packaging must freeze to that actual approved source, not
-silently treat b7 as already containing the placement fix. The stable publisher
-must then be pinned and validated before publication; old fixed profiles/tags
-remain immutable. No earlier successful check bypasses those source gates.
+The correction received its own native review and trusted exact-head checks,
+then normal approval and a signed squash merge as #131. The actual source
+identity above is the stable promotion baseline; b7 did not already contain
+these fixes. The [dated evidence](RELEASE_EVIDENCE_8.3.5.md) records the actual
+source validation and separate package boundary. A prepared publisher or a
+matching source tree does not itself establish stable publication.
 
-The b7 operator sight report remains closed. The corrective source receives
+Stable 8.3.5 changes only the two component version fields relative to that
+source. Fixed Publisher V1.9 validates the direct parent, exact component
+preservation, policies, package checks and publication readback. Old fixed
+profiles and tags stay immutable. Package review, actual-merge checks and
+authorized publication remain required in their own scope.
+
+The b7 operator sight report remains closed. The corrective source has
 its own native layout/clock/lifecycle tests; it does not invent another
 production migration, failure injection or operator observation window. Stable selection and any ordinary package update
 follow the published catalogue and [upgrade guide](ACCEPTANCE_8.3.5.md).

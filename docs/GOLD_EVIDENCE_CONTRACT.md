@@ -12,14 +12,16 @@ The complete, reviewable rule inventory is
 [quality matrix](QUALITY_SCALE.md); an automated result cannot award a tier,
 prove a human review happened or certify every installation.
 
-**Current boundary, 18 November 2026:** the implemented index/checker and native
-suite passed for published b7, but the human common-modules judgment missed the
-ninth real coordinator outside `coordinator.py`. That result did not establish
-structural compliance. The [canonical correction](COORDINATOR_CANONICAL_COMPLETION.md)
-adds explicit class-placement/alias evidence and the missing calculated-HGT
-midnight-state regressions. It must pass its own source,
-native and trusted head/actual-merge gates before all-rule closure and stable
-packaging. Earlier measured results and bounded operator acceptance retain
+**Current boundary, 19 November 2026:** approved signed #131 at
+`115ddad474dcae15aa49fb5f368cbed600adf80d` completes the
+[canonical correction](COORDINATOR_CANONICAL_COMPLETION.md) and calculated-HGT
+midnight-state review. The older b7 human placement judgment missed the ninth
+actual coordinator; automation did not establish that judgment. The corrected
+source has explicit class-placement/alias evidence and native registered-state/
+lifecycle regressions. Both actual supported Core jobs passed the full suite
+and fresh 51-rule verification; the [dated record](RELEASE_EVIDENCE_8.3.5.md)
+retains exact source/results. Stable packaging and publication have their own
+gates. Earlier measured beta results and bounded operator acceptance retain
 their own scope; see the [current matrix](QUALITY_SCALE.md).
 
 ## Explicit kinds of evidence

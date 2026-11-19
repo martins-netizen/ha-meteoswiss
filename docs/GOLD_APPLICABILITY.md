@@ -121,8 +121,8 @@ Source #129 and published b7 completed their own head and actual-merge checks;
 b7 also completed publication and a bounded sight report. The later
 [canonical coordinator finding](COORDINATOR_CANONICAL_COMPLETION.md) concerns a
 separate common-modules judgment, not the discovery/lifecycle decisions above.
-Its corrective source gates precede full assessment closure and future stable
-packaging. [Dated evidence](RELEASE_EVIDENCE_8.3.5.md) separates those stages,
+Approved #131 supplies the corrective source and its separate native/structural
+evidence; stable packaging uses that actual source. [Dated evidence](RELEASE_EVIDENCE_8.3.5.md) separates those stages,
 without reopening the accepted operator scopes. Existing
 [provider evidence](PROVIDER_METADATA.md) and historical release evidence
 retain their own scope. No official
