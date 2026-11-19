@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import math
 from datetime import datetime, timedelta, timezone
-from typing import Any
+from typing import Any, TypedDict
 
 import aiohttp
 
@@ -49,6 +49,15 @@ AQ_PARAMETERS = [
 ]
 
 
+class _PollenReading(TypedDict):
+    current: float | None
+    unit: str
+    forecast: list[float | None]
+
+
+type _ModelledData = dict[str, _PollenReading | float | bool | str | None]
+
+
 def _number(value: Any) -> float | None:
     """Only finite non-negative concentrations/UV values are observations."""
     if value is None or isinstance(value, bool):
@@ -62,8 +71,8 @@ def _number(value: Any) -> float | None:
 
 def _has_current_values(data: dict[str, Any]) -> bool:
     return any(
-        isinstance(data.get(key), dict)
-        and _number(data[key].get("current")) is not None
+        isinstance(reading := data.get(key), dict)
+        and _number(reading.get("current")) is not None
         for key in POLLEN_TYPES
     ) or any(
         _number(data.get(key)) is not None
@@ -71,10 +80,16 @@ def _has_current_values(data: dict[str, Any]) -> bool:
     )
 
 
-def _is_current_hour(value: Any) -> bool:
+def _current_hour(value: float | str | None) -> datetime | None:
     timestamp = forecast_datetime(value)
     now = datetime.now(timezone.utc)
-    return timestamp is not None and timestamp <= now < timestamp + timedelta(hours=1)
+    if timestamp is not None and timestamp <= now < timestamp + timedelta(hours=1):
+        return timestamp
+    return None
+
+
+def _is_current_hour(value: float | str | None) -> bool:
+    return _current_hour(value) is not None
 
 
 class OpenMeteoPollenError(Exception):
@@ -102,7 +117,7 @@ class OpenMeteoPollenClient:
             raise OpenMeteoPollenError() from None
 
     @async_retry_with_backoff(max_attempts=4, base_delay=1.0, max_delay=10.0)
-    async def _async_fetch_data(self) -> dict[str, Any]:
+    async def _async_fetch_data(self) -> _ModelledData:
         """Fetch AQ/pollen; UV is optional and cannot rescue an invalid feed."""
         if self._session is None:
             raise RuntimeError("No aiohttp session provided to OpenMeteoPollenClient")
@@ -120,10 +135,14 @@ class OpenMeteoPollenClient:
         result = self.parse_response(payload)
         if not result:
             raise ValueError("No valid current pollen or air quality values")
-        result["uv_index"], result["uv_available"] = await self._async_fetch_uv()
+        result["uv_index"], result["uv_available"] = await self._async_fetch_uv(
+            self._session
+        )
         return result
 
-    async def _async_fetch_uv(self) -> tuple[float | None, bool]:
+    async def _async_fetch_uv(
+        self, session: aiohttp.ClientSession
+    ) -> tuple[float | None, bool]:
         """Separate a failed UV source from a valid response with no value."""
         params = {
             "latitude": self.latitude,
@@ -134,7 +153,7 @@ class OpenMeteoPollenClient:
         }
         try:
             payload = await async_get_json(
-                self._session, OPENMETEO_FORECAST_URL, params=params, host=FORECAST_HOST
+                session, OPENMETEO_FORECAST_URL, params=params, host=FORECAST_HOST
             )
         except (aiohttp.ClientError, TimeoutError, ValueError):
             # The source state is published atomically with the AQ result.
@@ -148,7 +167,7 @@ class OpenMeteoPollenClient:
             return None, False
         return _number(payload["current"].get("uv_index")), True
 
-    def parse_response(self, data: Any) -> dict[str, Any]:
+    def parse_response(self, data: object) -> _ModelledData:
         """Preserve missing fields, require at least one actual current value."""
         if not isinstance(data, dict) or not isinstance(data.get("hourly"), dict):
             return {}
@@ -156,12 +175,13 @@ class OpenMeteoPollenClient:
         times = hourly.get("time")
         if not isinstance(times, list):
             return {}
-        index = next(
-            (i for i, value in enumerate(times) if _is_current_hour(value)), None
-        )
-        if index is None:
+        for index, raw_time in enumerate(times):
+            timestamp = _current_hour(raw_time)
+            if timestamp is not None:
+                break
+        else:
             return {}
-        result = {key: None for key in POLLEN_TYPES}
+        result: _ModelledData = dict.fromkeys(POLLEN_TYPES)
         result.update(
             {
                 "pm25": None,
@@ -169,7 +189,7 @@ class OpenMeteoPollenClient:
                 "nitrogen_dioxide": None,
                 "ozone": None,
                 "uv_index": None,
-                "last_update": forecast_datetime(times[index]).isoformat(),
+                "last_update": timestamp.isoformat(),
             }
         )
         for pollen_type in POLLEN_TYPES:

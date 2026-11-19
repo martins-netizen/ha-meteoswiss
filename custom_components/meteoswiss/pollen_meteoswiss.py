@@ -51,6 +51,8 @@ POLLEN_TRACKED = list(POLLEN_CSV_COLUMNS)
 
 def _count(raw: str | None) -> int | None:
     """Zero is a measurement; blank, invalid and negative counts are missing."""
+    if raw is None:
+        return None
     try:
         value = int(raw)
     except (TypeError, ValueError):
