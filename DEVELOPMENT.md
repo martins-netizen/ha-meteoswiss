@@ -116,9 +116,9 @@ After the native checks above, CI runs mypy on the shared retry decorator,
 its call-site contract, the ICON forecast and MeteoSwiss warning clients, both
 pollen clients, the Open-Meteo current-weather client, shared weather
 normalisation, the measured HGT source, its Recorder import, the station ownership
-manager, legacy HGT forecast cleanup, shared HTTP transport and the Recorder
-archive paths for wind direction and historical HGT forecasts in the
-**current** HA environment. From the repository
+manager, legacy HGT forecast cleanup, shared HTTP transport, the Recorder
+archive paths for wind direction and historical HGT forecasts, and the forecast
+location catalogue in the **current** HA environment. From the repository
 root, use the same interpreter and install the checker together with the current
 fixture so pip validates their shared dependencies.
 This step accepts only hash-pinned wheels and stops if a compatible wheel is missing.
@@ -135,7 +135,7 @@ python -m mypy --strict --explicit-package-bases --follow-imports=silent \
   custom_components/meteoswiss/http.py custom_components/meteoswiss/hgt_ogd_recorder.py \
   custom_components/meteoswiss/hgt_ogd_manager.py custom_components/meteoswiss/hgt_cleanup.py \
   custom_components/meteoswiss/statistics_archive.py custom_components/meteoswiss/forecast_statistics.py \
-  custom_components/meteoswiss/wind_statistics.py \
+  custom_components/meteoswiss/wind_statistics.py custom_components/meteoswiss/forecast_locations.py \
   tests/typing/retry_contract.py
 ```
 

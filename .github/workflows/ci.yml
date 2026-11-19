@@ -150,7 +150,7 @@ jobs:
             custom_components/meteoswiss/http.py custom_components/meteoswiss/hgt_ogd_recorder.py \
             custom_components/meteoswiss/hgt_ogd_manager.py custom_components/meteoswiss/hgt_cleanup.py \
             custom_components/meteoswiss/statistics_archive.py custom_components/meteoswiss/forecast_statistics.py \
-            custom_components/meteoswiss/wind_statistics.py \
+            custom_components/meteoswiss/wind_statistics.py custom_components/meteoswiss/forecast_locations.py \
             tests/typing/retry_contract.py
 
   hassfest:

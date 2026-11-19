@@ -237,7 +237,7 @@ def _matches(point: ForecastPoint, query: str) -> bool:
     return all(any(token in field for field in fields) for token in query.split())
 
 
-def _rank(point: ForecastPoint, query: str) -> tuple:
+def _rank(point: ForecastPoint, query: str) -> tuple[int, str, ForecastPointType, str]:
     names = _name_forms(point)
     if query in names:
         rank = 0

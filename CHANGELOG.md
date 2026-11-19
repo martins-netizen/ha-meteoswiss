@@ -27,6 +27,7 @@
 - Protect retained wind and HGT forecast statistics when an archive name is
   claimed or a source entity ID has changed hands. Strict type checks now
   cover both migrations and their shared Recorder rename and readback.
+- Run strict type checks on forecast location catalogue parsing and search.
 
 ## [8.3.5] — 2026-11-19
 
