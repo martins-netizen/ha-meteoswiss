@@ -113,9 +113,10 @@ Writable HA test configuration uses a temporary directory in both fixtures.
 ### Strict type checking
 
 After the native checks above, CI runs mypy on the shared retry decorator,
-its call-site contract and the ICON forecast client in the **current** HA
-environment. From the repository root, use the same interpreter and install the
-checker together with the current fixture so pip validates their shared dependencies.
+its call-site contract, the ICON forecast client and the MeteoSwiss warning
+client in the **current** HA environment. From the repository root, use the same
+interpreter and install the checker together with the current fixture so pip
+validates their shared dependencies.
 This step accepts only hash-pinned wheels and stops if a compatible wheel is missing.
 
 ```sh
@@ -124,7 +125,7 @@ python -m pip install --disable-pip-version-check --only-binary :all: --require-
 python -m pip check
 python -m mypy --strict --explicit-package-bases --follow-imports=silent \
   custom_components/meteoswiss/retry.py custom_components/meteoswiss/forecast.py \
-  tests/typing/retry_contract.py
+  custom_components/meteoswiss/alerts.py tests/typing/retry_contract.py
 ```
 
 The contract checks return types, keyword and positional arguments, and
@@ -133,7 +134,9 @@ have error-specific ignores. If a future change accepts one of them, strict
 mypy reports an unused ignore and CI fails. In the forecast client, mypy also
 checks that daily aggregates consume numeric values and that the HTTP
 helper receives a session. Both HA fixtures exercise gaps, zero values, Swiss
-clock changes and session handling in their runtime tests.
+clock changes and session handling in their runtime tests. The warning client
+returns a list of parsed alerts on a successful request. Its tests distinguish
+an empty warning feed from a transport or parsing failure.
 
 ### Current fixture update
 

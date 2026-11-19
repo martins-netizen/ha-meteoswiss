@@ -189,8 +189,8 @@ remains dated **11 November 2026**, not a fresh alert clearance.
 [four-language names](docs/ENTITY_NAME_TRANSLATIONS.md), [icons](docs/ICON_TRANSLATIONS.md),
 [errors](docs/EXCEPTION_TRANSLATIONS.md), [shared diagnostic ownership](docs/SHARED_DIAGNOSTIC_LIFECYCLE.md)
 and [conservative native device removal](docs/DEVICE_REMOVAL.md) retain their
-contracts. CI runs strict type checks on the shared retry decorator and the
-ICON forecast client. The [developer guide](DEVELOPMENT.md#strict-type-checking)
+contracts. CI runs strict type checks on the shared retry decorator, the ICON
+forecast client and the MeteoSwiss warning client. The [developer guide](DEVELOPMENT.md#strict-type-checking)
 shows how to run them. The dependency audit covers both HA fixtures and the type checker.
 
 ## Start here

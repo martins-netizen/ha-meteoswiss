@@ -105,7 +105,7 @@ class WeatherAlert:
         """Check if alert is critical (level 3 or above)."""
         return self.warn_level >= WARN_LEVEL_3
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, str | int | bool | None]:
         """Convert to dictionary."""
         data = asdict(self)
         # Convert datetime to ISO strings
@@ -134,13 +134,19 @@ class WeatherAlert:
 class MeteoSwissAlertsAPI:
     """MeteoSwiss App API for weather warnings."""
 
-    def __init__(self, session: aiohttp.ClientSession | None = None) -> None:
-        """Initialize."""
+    def __init__(
+        self,
+        session: aiohttp.ClientSession | None = None,
+        *,
+        postal_code: str | None = None,
+    ) -> None:
+        """Keep the borrowed session and configured warning area."""
         self._session = session
+        self.postal_code = postal_code
 
     async def get_alerts(
         self,
-        postal_code: str,
+        postal_code: str | None,
     ) -> list[WeatherAlert]:
         """Get weather alerts for a postal code.
 
@@ -159,14 +165,16 @@ class MeteoSwissAlertsAPI:
             raise ValueError("A postal code is required for weather warnings")
         url = f"{METEOSWISS_APP_API_URL}?plz={postal_code}00"
         async with asyncio.timeout(DEFAULT_API_TIMEOUT.total):
-            return await self._fetch_and_parse_alerts(url, postal_code)
+            return await self._fetch_and_parse_alerts(self._session, url, postal_code)
 
     @async_retry_with_backoff(max_attempts=4, base_delay=1.0, max_delay=10.0)
-    async def _fetch_and_parse_alerts(self, url: str, postal_code: str) -> list:
+    async def _fetch_and_parse_alerts(
+        self, session: aiohttp.ClientSession, url: str, postal_code: str
+    ) -> list[WeatherAlert]:
         """Fetch and parse alerts from API with retry logic."""
         _LOGGER.debug("Fetching weather warnings")
 
-        data = await async_get_json(self._session, url, host=WARNING_HOST)
+        data = await async_get_json(session, url, host=WARNING_HOST)
         return self._parse_alerts(data, postal_code)
 
     def _parse_alerts(
