@@ -227,7 +227,7 @@ async def test_native_queue_callback_required_and_wait_is_cancellable(hass):
         )
         await asyncio.sleep(0)
         assert not task.done() and "start_time" not in callbacks[0]
-        callbacks[0]["on_done"]()
+        assert await asyncio.to_thread(callbacks[0]["on_done"]) is None
         await task
         task = asyncio.create_task(
             rec.async_clear_owned(hass, ["meteoswiss:klo_hgt_12_20_daily"], start=DAY1)

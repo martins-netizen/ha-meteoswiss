@@ -15,6 +15,8 @@
   with strict mypy, including observation timestamps and WMO condition codes.
 - Extend strict type checking to official station heating-degree-day data, its
   projection into Recorder statistics and the shared HTTP transport.
+- Extend strict checks to the Recorder import of measured heating degree days,
+  including ownership metadata, value readback and the completion callback.
 
 ## [8.3.5] — 2026-11-19
 

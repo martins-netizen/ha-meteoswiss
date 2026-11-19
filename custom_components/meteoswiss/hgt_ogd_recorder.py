@@ -7,10 +7,16 @@ import math
 from copy import deepcopy
 from datetime import UTC, datetime, timedelta
 from functools import partial
+from typing import Literal, TypedDict
 
 from homeassistant.components.recorder import get_instance
-from homeassistant.components.recorder.models import StatisticData, StatisticMeanType
+from homeassistant.components.recorder.models import (
+    StatisticData,
+    StatisticMeanType,
+    StatisticMetaData,
+)
 from homeassistant.components.recorder.statistics import (
+    StatisticsRow,
     async_add_external_statistics,
     get_last_statistics,
     get_metadata,
@@ -19,10 +25,24 @@ from homeassistant.components.recorder.tasks import SynchronizeTask
 from homeassistant.core import HomeAssistant
 
 from .const import DOMAIN
-from .hgt_ogd import MAX_POINTS, UNIT, HgtError, HgtProducts, project_hgt, statistic_ids
+from .hgt_ogd import MAX_POINTS, UNIT, HgtError, HgtProducts, HgtValues, project_hgt, statistic_ids
 
 
-def product_metadata(station: str, period: str) -> dict:
+type HgtMetadata = dict[str, tuple[int, StatisticMetaData]]
+
+
+class HgtImportResult(TypedDict):
+    """Verified import summary shared by the manager and station sensor."""
+
+    latest_value: float
+    source_day: str
+    statistic_ids: dict[str, str]
+    imported_points: dict[str, int]
+    missing_points: dict[str, int]
+    statistics_status: Literal["ready"]
+
+
+def product_metadata(station: str, period: str) -> StatisticMetaData:
     """Unknown compound unit has no temperature-offset converter."""
     return {
         "statistic_id": statistic_ids(station)[period],
@@ -35,7 +55,7 @@ def product_metadata(station: str, period: str) -> dict:
     }
 
 
-async def async_metadata(hass: HomeAssistant, stations: set[str]) -> dict:
+async def async_metadata(hass: HomeAssistant, stations: set[str]) -> HgtMetadata:
     instance = get_instance(hass)
     async with asyncio.timeout(30):
         if not await asyncio.shield(instance.async_db_ready):
@@ -70,14 +90,16 @@ async def async_clear_owned(
 ) -> None:
     """Wait for exact native deletion; only a full cleanup removes metadata."""
     done = asyncio.Event()
+
+    def on_done() -> None:
+        hass.loop.call_soon_threadsafe(done.set)
+
     kwargs = (
         {}
         if start is None
         else {"start_time": start, "end_time": start + timedelta(hours=1)}
     )
-    get_instance(hass).async_clear_statistics(
-        ids, **kwargs, on_done=lambda: hass.loop.call_soon_threadsafe(done.set)
-    )
+    get_instance(hass).async_clear_statistics(ids, **kwargs, on_done=on_done)
     async with asyncio.timeout(30):
         await done.wait()
 
@@ -90,8 +112,8 @@ async def async_wait_for_writes(hass: HomeAssistant) -> None:
         await asyncio.shield(committed)
 
 
-async def _rows(hass: HomeAssistant, ids: set[str]) -> dict[str, list[dict]]:
-    def read():
+async def _rows(hass: HomeAssistant, ids: set[str]) -> dict[str, list[StatisticsRow]]:
+    def read() -> dict[str, list[StatisticsRow]]:
         result = {}
         for statistic_id in sorted(ids):
             rows = get_last_statistics(
@@ -105,22 +127,25 @@ async def _rows(hass: HomeAssistant, ids: set[str]) -> dict[str, list[dict]]:
     return await get_instance(hass).async_add_executor_job(read)
 
 
-def _equal(actual: dict, expected: StatisticData) -> bool:
-    return all(
-        actual.get(k) is not None
-        and math.isclose(actual[k], expected[k], rel_tol=1e-12, abs_tol=1e-6)
-        for k in ("state", "sum")
+def _equal(actual: StatisticsRow, expected: StatisticData) -> bool:
+    state = actual.get("state")
+    total = actual.get("sum")
+    return (
+        state is not None
+        and math.isclose(state, expected["state"], rel_tol=1e-12, abs_tol=1e-6)
+        and total is not None
+        and math.isclose(total, expected["sum"], rel_tol=1e-12, abs_tol=1e-6)
     )
 
 
 def _plan_product(
     station: str,
     period: str,
-    values: dict,
+    values: HgtValues,
     projected: list[StatisticData],
-    rows: list[dict],
-    metadata: dict,
-) -> tuple:
+    rows: list[StatisticsRow],
+    metadata: HgtMetadata,
+) -> tuple[str, list[datetime], list[StatisticData], StatisticMetaData]:
     """Distinguish an explicit source withdrawal from an incomplete file."""
     statistic_id = statistic_ids(station)[period]
     actual = {datetime.fromtimestamp(r["start"], UTC): r for r in rows}
@@ -139,8 +164,8 @@ def _plan_product(
 
 
 async def async_import_products(
-    hass: HomeAssistant, station: str, products: HgtProducts, metadata: dict
-) -> dict:
+    hass: HomeAssistant, station: str, products: HgtProducts, metadata: HgtMetadata
+) -> HgtImportResult:
     """Upsert corrections and withdraw exact missing slots; verify every result."""
     ids = statistic_ids(station)
     existing = await _rows(hass, set(ids.values()))

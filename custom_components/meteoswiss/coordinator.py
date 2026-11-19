@@ -40,6 +40,7 @@ from .forecast import IconForecastClient, IconForecastError
 from .hgt_ogd import HgtError, station_code
 from .hgt_ogd import REFRESH_INTERVAL as HGT_REFRESH_INTERVAL
 from .hgt_ogd_manager import get_hgt_manager
+from .hgt_ogd_recorder import HgtImportResult
 from .http import MAX_CSV_BYTES, OGD_HOST, async_get_bytes, async_get_json
 from .openmeteo import OpenMeteoCurrentClient, OpenMeteoCurrentError
 from .pollen_meteoswiss import (
@@ -1082,7 +1083,7 @@ class MeteoSwissHourlyPrecipitationCoordinator(DataUpdateCoordinator[dict[str, A
             ) from None
 
 
-class MeteoSwissHgtCoordinator(DataUpdateCoordinator[dict]):
+class MeteoSwissHgtCoordinator(DataUpdateCoordinator[HgtImportResult]):
     """No new source coordinates, sessions or provider credentials."""
 
     def __init__(
@@ -1111,7 +1112,7 @@ class MeteoSwissHgtCoordinator(DataUpdateCoordinator[dict]):
             update_interval=HGT_REFRESH_INTERVAL,
         )
 
-    async def _async_update_data(self) -> dict:
+    async def _async_update_data(self) -> HgtImportResult:
         cancelled = False
         try:
             data = await self.manager.async_refresh(self.station, datetime.now(UTC))

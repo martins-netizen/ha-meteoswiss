@@ -147,7 +147,8 @@ jobs:
             custom_components/meteoswiss/alerts.py custom_components/meteoswiss/pollen_meteoswiss.py \
             custom_components/meteoswiss/pollen_openmeteo.py custom_components/meteoswiss/openmeteo.py \
             custom_components/meteoswiss/weather_data.py custom_components/meteoswiss/hgt_ogd.py \
-            custom_components/meteoswiss/http.py tests/typing/retry_contract.py
+            custom_components/meteoswiss/http.py custom_components/meteoswiss/hgt_ogd_recorder.py \
+            tests/typing/retry_contract.py
 
   hassfest:
     runs-on: ubuntu-latest

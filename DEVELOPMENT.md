@@ -115,7 +115,7 @@ Writable HA test configuration uses a temporary directory in both fixtures.
 After the native checks above, CI runs mypy on the shared retry decorator,
 its call-site contract, the ICON forecast and MeteoSwiss warning clients, both
 pollen clients, the Open-Meteo current-weather client, shared weather
-normalisation, the measured HGT source and the shared HTTP transport in the
+normalisation, the measured HGT source, its Recorder import and the shared HTTP transport in the
 **current** HA environment. From the repository
 root, use the same interpreter and install the checker together with the current
 fixture so pip validates their shared dependencies.
@@ -130,7 +130,8 @@ python -m mypy --strict --explicit-package-bases --follow-imports=silent \
   custom_components/meteoswiss/alerts.py custom_components/meteoswiss/pollen_meteoswiss.py \
   custom_components/meteoswiss/pollen_openmeteo.py custom_components/meteoswiss/openmeteo.py \
   custom_components/meteoswiss/weather_data.py custom_components/meteoswiss/hgt_ogd.py \
-  custom_components/meteoswiss/http.py tests/typing/retry_contract.py
+  custom_components/meteoswiss/http.py custom_components/meteoswiss/hgt_ogd_recorder.py \
+  tests/typing/retry_contract.py
 ```
 
 The contract checks return types, keyword and positional arguments, and
@@ -149,7 +150,10 @@ checks the measurements before attaching the provider timestamp and optional
 hourly preview. Only recognised integral WMO codes map to HA weather conditions.
 For official station heating degree days, the source keeps missing amounts and
 measured zeroes distinct and projects completed UTC periods to native Recorder
-statistics. The HTTP transport handles bounded reads and conditional requests.
+statistics. The HTTP transport handles bounded reads and conditional requests. The HGT
+import checks native Recorder metadata, input rows and readback rows against
+their respective Core types. Its completion callback wakes the waiting HA task
+from the Recorder thread.
 
 ### Current fixture update
 
