@@ -2,39 +2,24 @@
 
 ## [Unreleased]
 
-- Add strict type checking for the shared HTTP retry decorator. CI checks that
-  wrapped provider calls accept the original arguments and return the expected
-  result type. The type checker and its dependencies are hash-locked and audited.
-- Extend the strict check to the ICON forecast client, including daily values
-  across Swiss clock changes and the borrowed HTTP session.
-- Check the MeteoSwiss warning client with strict mypy. Configuration supplies
-  the warning postcode when constructing the client.
-- Extend strict type checking to the MeteoSwiss station pollen client and the
-  Open-Meteo client for modelled pollen, air quality and UV.
-- Check the Open-Meteo current-weather client and shared weather data helpers
-  with strict mypy, including observation timestamps and WMO condition codes.
-- Extend strict type checking to official station heating-degree-day data, its
-  projection into Recorder statistics and the shared HTTP transport.
-- Extend strict checks to the Recorder import of measured heating degree days,
-  including ownership metadata, value readback and the completion callback.
-- Check the measured HGT ownership manager with strict mypy. Concurrent imports
-  now respect the 500-station storage limit. Older repair notices with missing
-  metadata can discard obsolete location details safely.
-- Protect legacy HGT forecast statistics when an entity ID is reused. Confirmed
-  cleanup rechecks current ownership after the Recorder read and pauses when an
-  existing series also belonged to another retained registry identity. CI checks
-  this upgrade path with strict mypy.
-- Protect retained wind and HGT forecast statistics when an archive name is
-  claimed or a source entity ID has changed hands. Strict type checks now
-  cover both migrations and their shared Recorder rename and readback.
-- Run strict type checks on forecast location catalogue parsing and search,
-  saved forecast targets and shared entity metadata.
-- Run strict mypy across the entire integration, including API cache statistics,
-  configuration flows, coordinators, entities, station lookups and repairs.
-- Return whole percentages for precipitation probability in Home Assistant’s
-  hourly and daily forecasts. Source probabilities retain their original precision.
-- Process downloaded station and measured-pollen CSV files in worker threads.
-  Measured pollen retains only the last 24 parsed rows for its existing history.
+## [8.3.6b1] — test package
+
+- Recheck Recorder metadata and registry ownership when archiving old wind or
+  heating-degree-day (HGT) forecast statistics. A conflicting owner or archive
+  name blocks completion. Confirmed cleanup also checks for reused entity IDs
+  before removing obsolete forecast statistics.
+- Enforce the 500-station ownership limit when measured-HGT stations register
+  concurrently. Handle older repair notices that lack the fixability flag.
+- Return whole precipitation probabilities in hourly and daily HA forecasts.
+  Halfway values round to the nearest even integer. The source keeps its precision.
+- Decode and parse station and measured-pollen CSV downloads in worker threads.
+  The measured-pollen history keeps the most recent 24 parsed rows.
+- Run strict mypy on the full integration and the shared HTTP retry contract.
+  CI checks provider clients, configuration flows, coordinators, entities,
+  imports and repairs. Regression tests also cover whole-number weather codes
+  supplied as numeric strings. The type checker and its dependencies are hash-locked.
+
+[Release notes](docs/RELEASE_8.3.6b1.md) · [Existing-entry check](docs/ACCEPTANCE_8.3.6b1.md)
 
 ## [8.3.5] — 2026-11-19
 

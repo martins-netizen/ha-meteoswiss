@@ -2,6 +2,15 @@
 
 ## Current engineering work
 
+The [8.3.6b1 test package](docs/RELEASE_8.3.6b1.md) bundles work through
+[PR #147](https://github.com/martins-netizen/ha-meteoswiss/pull/147). It covers
+statistics ownership, the forecast probability returned by HA, provider CSV
+processing and package-wide strict typing. The
+[package evidence](docs/RELEASE_EVIDENCE_8.3.6b1.md) identifies the source and
+the [operator check](docs/ACCEPTANCE_8.3.6b1.md) covers an existing installation.
+
+## Published stable 8.3.5
+
 The pre-stable correction is merged as signed
 [PR #131](https://github.com/martins-netizen/ha-meteoswiss/pull/131), source
 `115ddad474dcae15aa49fb5f368cbed600adf80d`. It puts the single actual HGT
@@ -25,8 +34,6 @@ contains the exact package identities, native checks and publication results.
 **The 8.3.5 packaging and publication work is complete.** Its two component
 version fields changed relative to approved #131 source; the other 50 component
 files, locks, workflows, policies and exact quality index remained unchanged.
-Further development needs a separately chosen scope from the boundaries below.
-Do not rerun a publisher or prepare another package for this completed release.
 
 The [cumulative release notes](docs/RELEASE_8.3.5.md) and
 [stable guide](docs/ACCEPTANCE_8.3.5.md) cover normal existing-entry updates.
@@ -68,7 +75,7 @@ notes and dated metrics remain historical records rather than reopened tasks.
 
 | Scope | Boundary |
 |---|---|
-| Platinum typing/dependency architecture | Separate justified work; not a missing Gold rule or part of this promotion. |
+| Platinum typing/dependency architecture | Strict mypy now checks the full integration. The broader architecture and any tier assessment require their own evidence. |
 | Locality names in other languages | Obtain authoritative aliases; preserve provider identity and personal names. |
 | Provider retention and deployment assurance | Provider policies, host/network/backup controls and independent assessment need their own evidence. The owner-authenticated inventory remains dated 11 November 2026. |
 | External contributor CodeQL | Retain evidence from the first actual external-fork route; skipped analysis is not success. |

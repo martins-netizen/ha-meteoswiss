@@ -1,6 +1,13 @@
-# Release readiness: published 8.3.5 and dated history
+# Release readiness
 
-## Current 8.3.5 boundary
+## Test package 8.3.6b1
+
+The [8.3.6b1 evidence](RELEASE_EVIDENCE_8.3.6b1.md) identifies the approved
+source for packaging. Use the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+to check availability and the [short update guide](ACCEPTANCE_8.3.6b1.md) for
+an existing installation.
+
+## Published stable 8.3.5
 
 **Stable [8.3.5](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5)
 is published and independently verified**, release **450993306**, on

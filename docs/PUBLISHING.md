@@ -1,5 +1,21 @@
 # Publish the maintained fork
 
+## 8.3.6b1 prerelease
+
+The beta packages source [PR #147](https://github.com/martins-netizen/ha-meteoswiss/pull/147).
+Use the `release/8.3.6b1` package PR, titled `Prepare the 8.3.6b1 prerelease`.
+After its approved merge and successful checks, run the following from the
+package checkout, substituting the full package **merge** SHA.
+
+```sh
+bash scripts/release_meteoswiss_836_beta_v1.15.sh --check APPROVED_MERGE_COMMIT
+```
+
+With separate publication approval for that SHA, use `--publish` with the
+same command and SHA. The prerelease uses the [English notes](RELEASE_8.3.6b1.md)
+and preserves stable 8.3.5 as latest. The [package record](RELEASE_EVIDENCE_8.3.6b1.md)
+identifies the source and the expected component changes.
+
 ## Stable 8.3.5 publication: approved source, then package gates
 
 The [pre-stable source correction](COORDINATOR_CANONICAL_COMPLETION.md) is
