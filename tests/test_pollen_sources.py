@@ -8,6 +8,7 @@ import logging
 from contextlib import ExitStack
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from threading import Event, get_ident
 from unittest.mock import AsyncMock, patch
 
 import aiohttp
@@ -212,6 +213,92 @@ def test_missing_csv_columns_do_not_mask_a_valid_partial_measurement(hass):
     )
     assert data["birch"]["current"] == 0
     assert data["grass"]["current"] is None
+
+
+async def test_measured_csv_is_decoded_and_parsed_in_one_worker(hass, freezer):
+    evidence = _station_evidence()
+    freezer.move_to(evidence["retrieved_at_utc"])
+    text = evidence["sample_hourly_csv"]["PZH"]["csv"]
+    client = MeteoSwissPollenCoordinator(hass, "PZH").client
+    parse = client.parse_csv
+    expected = parse(text)
+    threads = {}
+
+    class ProviderBytes(bytes):
+        def decode(self, encoding):
+            threads["decode"] = get_ident()
+            assert encoding == "cp1252"
+            return super().decode(encoding)
+
+    def parse_in_worker(decoded):
+        threads["parse"] = get_ident()
+        return parse(decoded)
+
+    with (
+        patch.object(client, "_async_fetch_csv", return_value=ProviderBytes(text.encode("cp1252"))),
+        patch.object(client, "parse_csv", side_effect=parse_in_worker),
+    ):
+        assert await client.async_get_data() == expected
+    assert expected["oak"]["current"] == 0
+    assert threads["decode"] == threads["parse"] != get_ident()
+
+
+async def test_measured_invalid_encoding_is_unavailable_without_retry(hass, aioclient_mock):
+    session = async_get_clientsession(hass)
+    coordinator = MeteoSwissPollenCoordinator(hass, "PLZ", session=session)
+    aioclient_mock.get(CSV_URL, content=b"\x81")
+    with pytest.raises(UpdateFailed) as error:
+        await coordinator._async_update_data()
+    assert error.value.translation_key == "measured_pollen_unavailable"
+    assert len(aioclient_mock.mock_calls) == 1
+    assert not session.closed
+
+
+async def test_cancelled_measured_parser_cannot_replace_a_newer_refresh(hass, aioclient_mock):
+    session = async_get_clientsession(hass)
+    coordinator = MeteoSwissPollenCoordinator(hass, "PLZ", session=session)
+    aioclient_mock.get(CSV_URL, text=CSV_ZERO)
+    parse = coordinator.client.parse_csv
+    loop_thread = get_ident()
+    entered = hass.loop.create_future()
+    finished = asyncio.Event()
+    release = Event()
+
+    def hold_first_parse(text):
+        if text != CSV_ZERO:
+            return parse(text)
+        hass.loop.call_soon_threadsafe(entered.set_result, None)
+        try:
+            assert get_ident() != loop_thread
+            assert release.wait(timeout=15)
+            return parse(text)
+        finally:
+            hass.loop.call_soon_threadsafe(finished.set)
+
+    with patch.object(coordinator.client, "parse_csv", side_effect=hold_first_parse):
+        first = asyncio.create_task(coordinator.async_refresh())
+        try:
+            async with asyncio.timeout(15):
+                await asyncio.wait({first, entered}, return_when=asyncio.FIRST_COMPLETED)
+                assert entered.done() and not first.done()
+                first.cancel()
+                with pytest.raises(asyncio.CancelledError):
+                    await first
+                assert coordinator.data is None
+                aioclient_mock.clear_requests()
+                aioclient_mock.get(CSV_URL, text=CSV_HEADER + "PLZ;15.10.2026 10:00;7;;;;;")
+                await coordinator.async_refresh()
+                assert coordinator.data["birch"]["current"] == 7
+        finally:
+            release.set()
+            first.cancel()
+            async with asyncio.timeout(15):
+                await asyncio.gather(first, return_exceptions=True)
+                if entered.done():
+                    await finished.wait()
+    assert coordinator.data["birch"]["current"] == 7
+    assert coordinator.last_update_success
+    assert not session.closed
 
 
 @pytest.mark.parametrize(

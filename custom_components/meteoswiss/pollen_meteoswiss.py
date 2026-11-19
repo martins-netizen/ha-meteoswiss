@@ -12,8 +12,10 @@ Data source: https://data.geo.admin.ch/api/stac/v1/collections/ch.meteoschweiz.o
 
 from __future__ import annotations
 
+import asyncio
 import csv
 import io
+from collections import deque
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -85,26 +87,32 @@ class MeteoSwissPollenClient:
             content = await self._async_fetch_csv()
         except (aiohttp.ClientError, TimeoutError, ValueError):
             raise MeasuredPollenUnavailable from None
-        data = self.parse_csv(content)
+        data = await asyncio.to_thread(self._decode_and_parse_csv, content)
         if not data:
             raise InvalidMeasuredPollenData
         return data
 
     @async_retry_with_backoff(max_attempts=3)
-    async def _async_fetch_csv(self) -> str:
+    async def _async_fetch_csv(self) -> bytes:
         """Retry only transient transport failures, before parsing the payload."""
         if self._session is None:
             raise RuntimeError("No aiohttp session provided to MeteoSwissPollenClient")
         url = f"{POLLEN_DATA_BASE_URL}/{self.station_id}/ogd-pollen_{self.station_id}_h_now.csv"
-        return (
-            await async_get_bytes(
-                self._session, url, host=OGD_HOST, max_bytes=MAX_CSV_BYTES
-            )
-        ).decode("cp1252")
+        return await async_get_bytes(
+            self._session, url, host=OGD_HOST, max_bytes=MAX_CSV_BYTES
+        )
+
+    def _decode_and_parse_csv(self, content: bytes) -> dict[str, Any]:
+        """Decode provider bytes and calculate readings in the same worker."""
+        try:
+            text = content.decode("cp1252")
+        except UnicodeDecodeError:
+            raise MeasuredPollenUnavailable from None
+        return self.parse_csv(text)
 
     def parse_csv(self, csv_text: str) -> dict[str, Any]:
         """Validate station/time and retain the existing output/history format."""
-        rows = list(csv.DictReader(io.StringIO(csv_text), delimiter=";"))
+        rows = deque(csv.DictReader(io.StringIO(csv_text), delimiter=";"), maxlen=24)
         if not rows:
             return {}
         latest = rows[-1]
@@ -126,7 +134,7 @@ class MeteoSwissPollenClient:
                 "current": _count(latest.get(column)),
                 "unit": "No/m³",
                 "source": "MeteoSwiss measured",
-                "history_24h": [_count(row.get(column)) for row in rows[-24:]],
+                "history_24h": [_count(row.get(column)) for row in rows],
             }
         return (
             result

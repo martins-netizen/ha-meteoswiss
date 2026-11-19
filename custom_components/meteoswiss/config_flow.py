@@ -54,6 +54,7 @@ from .forecast_location_client import (
 from .forecast_location_config import encode_forecast_location, resolve_forecast_target
 from .forecast_locations import ForecastLocation, search_forecast_locations
 from .repair_issues import async_sync_forecast_location_issue
+from .runtime_data import MeteoSwissConfigEntry
 from .stations_map import WeatherStation, get_stations_map, parse_station_catalogue
 
 WARNING_POSTCODE = re.compile(r"[1-9][0-9]{3}")
@@ -707,7 +708,9 @@ class MeteoSwissConfigFlow(_SettingsFlowMixin, ConfigFlow, domain=DOMAIN):
 
     @staticmethod
     @callback
-    def async_get_options_flow(config_entry: ConfigEntry) -> MeteoSwissOptionsFlow:
+    def async_get_options_flow(
+        config_entry: MeteoSwissConfigEntry,
+    ) -> MeteoSwissOptionsFlow:
         """Return the HA-managed options flow."""
         return MeteoSwissOptionsFlow()
 
@@ -911,6 +914,7 @@ class MeteoSwissConfigFlow(_SettingsFlowMixin, ConfigFlow, domain=DOMAIN):
 class MeteoSwissOptionsFlow(_SettingsFlowMixin, OptionsFlow):
     """Keep Configure as an adapter to the shared settings transaction."""
 
+    config_entry: MeteoSwissConfigEntry
     _settings_step_id = "init"
     _settings_confirm_step_id = "forecast_confirm"
 

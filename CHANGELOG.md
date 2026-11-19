@@ -33,6 +33,8 @@
   configuration flows, coordinators, entities, station lookups and repairs.
 - Return whole percentages for precipitation probability in Home Assistant’s
   hourly and daily forecasts. Source probabilities retain their original precision.
+- Process downloaded station and measured-pollen CSV files in worker threads.
+  Measured pollen retains only the last 24 parsed rows for its existing history.
 
 ## [8.3.5] — 2026-11-19
 

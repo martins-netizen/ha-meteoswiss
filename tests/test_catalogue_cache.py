@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import math
+import threading
 from dataclasses import FrozenInstanceError
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, Mock, patch
@@ -13,7 +14,7 @@ import aiohttp
 import pytest
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
-from custom_components.meteoswiss.cache import MeteoSwissCache
+from custom_components.meteoswiss.cache import MeteoSwissCache, get_stations_cache
 from custom_components.meteoswiss.config_flow import MeteoSwissConfigFlow
 from custom_components.meteoswiss.const import STATIONS_METADATA_URL
 from custom_components.meteoswiss.sensor import (
@@ -156,12 +157,22 @@ async def test_catalogue_cache_has_original_deadline_and_copies_are_isolated(
         loader.get_station("ABO").name = "Cannot mutate shared metadata"
 
 
+@pytest.mark.parametrize(
+    ("response", "attempts", "error"),
+    [
+        ({"status": 503}, 3, "ClientResponseError"),
+        ({"content": b"invalid;header\nx;y"}, 1, "ValueError"),
+    ],
+)
 async def test_expired_catalogue_is_labelled_stale_and_user_retry_recovers(
     hass,
     aioclient_mock,
     metadata_clock,
     caplog,
     freezer,
+    response,
+    attempts,
+    error,
 ):
     caplog.set_level(logging.INFO, logger="custom_components.meteoswiss.stations_map")
     freezer.move_to("2026-10-16T13:00:00Z")
@@ -173,7 +184,7 @@ async def test_expired_catalogue_is_labelled_stale_and_user_retry_recovers(
     metadata_clock.return_value += 86400
     freezer.tick(86400)
     aioclient_mock.clear_requests()
-    aioclient_mock.get(STATIONS_METADATA_URL, status=503)
+    aioclient_mock.get(STATIONS_METADATA_URL, **response)
     with patch(
         "custom_components.meteoswiss.retry.asyncio.sleep", new_callable=AsyncMock
     ):
@@ -181,12 +192,13 @@ async def test_expired_catalogue_is_labelled_stale_and_user_retry_recovers(
         assert loader.last_successful_update == successful
         assert loader.data_status == "stale"
         assert not loader.last_update_success
-        assert len(aioclient_mock.mock_calls) == 3
+        assert loader.last_exception == error
+        assert len(aioclient_mock.mock_calls) == attempts
         await loader.load_stations(session)
-        assert len(aioclient_mock.mock_calls) == 3
+        assert len(aioclient_mock.mock_calls) == attempts
         metadata_clock.return_value += 300
         await loader.load_stations(session)
-        assert len(aioclient_mock.mock_calls) == 6
+        assert len(aioclient_mock.mock_calls) == 2 * attempts
     assert (
         len(
             [
@@ -295,8 +307,6 @@ async def test_owned_session_closes_and_cancellation_is_not_a_source_failure(has
     owned_session.__aexit__.assert_awaited_once()
     loader = MeteoSwissStationsMap()
     # Force a network attempt rather than the valid shared cache.
-    from custom_components.meteoswiss.cache import get_stations_cache
-
     get_stations_cache().clear()
     with (
         patch.object(loader, "_async_download", side_effect=asyncio.CancelledError),
@@ -305,6 +315,50 @@ async def test_owned_session_closes_and_cancellation_is_not_a_source_failure(has
         await loader.load_stations(async_get_clientsession(hass))
     assert loader.last_update_success is None
     assert not loader._lock.locked()
+
+
+async def test_cancelled_parser_leaves_shared_cache_empty_and_can_retry(hass):
+    loader = MeteoSwissStationsMap()
+    session = async_get_clientsession(hass)
+    original_status = loader.get_status()
+    loop_thread = threading.get_ident()
+    started = asyncio.Event()
+    finished = asyncio.Event()
+    release = threading.Event()
+
+    def parse(content):
+        hass.loop.call_soon_threadsafe(started.set)
+        try:
+            assert threading.get_ident() != loop_thread
+            assert release.wait(timeout=5)
+            return parse_station_catalogue(content)
+        finally:
+            hass.loop.call_soon_threadsafe(finished.set)
+
+    with (
+        patch.object(loader, "_async_download", return_value=catalogue("Cancelled")),
+        patch("custom_components.meteoswiss.stations_map.parse_station_catalogue", parse),
+    ):
+        fetch = asyncio.create_task(loader.load_stations(session))
+        try:
+            async with asyncio.timeout(5):
+                await started.wait()
+            fetch.cancel()
+            with pytest.raises(asyncio.CancelledError):
+                await fetch
+            assert not finished.is_set()
+        finally:
+            release.set()
+            await asyncio.gather(fetch, return_exceptions=True)
+        async with asyncio.timeout(5):
+            await finished.wait()
+
+    assert loader.get_status() == original_status
+    assert get_stations_cache().get_stats()["entries"] == 0
+    with patch.object(loader, "_async_download", return_value=catalogue("Recovered")):
+        refreshed = await loader.load_stations(session)
+    assert refreshed["abo"].name == "Recovered"
+    assert await MeteoSwissStationsMap().load_stations(session) == refreshed
 
 
 async def test_total_catalogue_wait_is_bounded(hass):
