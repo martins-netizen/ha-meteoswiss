@@ -27,6 +27,12 @@ complete removal of obsolete forecast statistics. See the
 [upgrade guide](UPGRADING_8.3.5.md) and [focused check](ACCEPTANCE_8.3.5b3.md).
 Published b2 preserves archives; it does not contain this deletion repair.
 
+On the development branch, if another entity is using the old statistic ID or
+its deleted registry entry shows that it also used the ID of an existing
+series, the repair leaves the data in place. The same check runs when you
+confirm. If ownership is ambiguous, keep the series until you can identify its
+origin. An unrelated deleted entity with no matching statistics requires no action.
+
 **Availability:** included in published, operator-accepted
 [8.3.1b1](RELEASE_8.3.1b1.md). The [stable 8.3.1 package](RELEASE_8.3.1.md)
 promotes the same behaviour and is published. Stable 8.3.0 does not

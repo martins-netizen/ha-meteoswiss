@@ -19,7 +19,7 @@ from homeassistant.helpers.translation import async_get_translations
 from homeassistant.setup import async_setup_component
 from ha_helpers import MockConfigEntry, async_recorder_block_till_done, async_wait_recording_done
 
-from custom_components.meteoswiss import hgt_cleanup as hc, repairs
+from custom_components.meteoswiss import hgt_cleanup as hc, hgt_ogd_recorder, repairs
 from custom_components.meteoswiss.const import DOMAIN
 from test_entity_warning_contracts import NOW, fixed_clock
 from test_entity_warning_contracts import installed_entities
@@ -47,7 +47,10 @@ async def fake_recorder(hass):
     hass.config.components.add('recorder')
     ready=hass.loop.create_future();ready.set_result(True)
     instance=SimpleNamespace(async_db_ready=ready,async_add_executor_job=AsyncMock(return_value={}),async_clear_statistics=lambda *a,**k:None)
-    with patch.object(hc,'get_instance',return_value=instance):
+    with (
+        patch.object(hc, 'get_instance', return_value=instance),
+        patch.object(hgt_ogd_recorder, 'get_instance', return_value=instance),
+    ):
         yield instance
 
 
@@ -113,6 +116,77 @@ async def test_deleted_entity_reused_by_another_owner_is_refused(hass,entry,fake
     old=registered(hass,entry);registry=er.async_get(hass);registry.async_remove(old.entity_id)
     registry.async_get_or_create('sensor','foreign','foreign',suggested_object_id=old.entity_id.split('.')[1])
     with pytest.raises(ValueError,match='entity_identity_conflict'):await hc.async_plan_cleanup(hass,entry.entry_id)
+
+
+@pytest.mark.parametrize(
+    ("target_kind", "conflict"),
+    [
+        ("entity", "entity_identity_conflict"),
+        ("archive", "archive_identity_conflict"),
+        ("measurement", "forecast_statistics_still_enabled"),
+        ("archive_state", "archive_identity_conflict"),
+    ],
+)
+async def test_confirm_refuses_foreign_reuse_during_metadata_read(
+    hass, entry, fake_recorder, target_kind, conflict
+):
+    """A newly occupied ID must not be deleted under an older confirmation."""
+    registry = er.async_get(hass)
+    daily = registered(hass, entry)
+    registry.async_remove(daily.entity_id)
+    target = (
+        daily.entity_id if target_kind in {"entity", "measurement"}
+        else f"sensor.meteoswiss_hgt_forecast_archive_{daily.id}"
+    )
+    records = {target: (1, metadata(target))}
+    fake_recorder.async_add_executor_job.return_value = records
+    expected = await hc.async_plan_cleanup(hass, entry.entry_id)
+    cleared = []
+
+    def clear(ids, **kwargs):
+        cleared.extend(ids)
+        kwargs["on_done"]()
+
+    async def read(_job):
+        if target_kind == "measurement":
+            hass.states.async_set(target, "0", {"state_class": "measurement"})
+        elif target_kind == "archive_state":
+            hass.states.async_set(target, "0")
+        else:
+            registry.async_get_or_create(
+                "sensor", "foreign", "later", suggested_object_id=target.split(".", 1)[1]
+            )
+        return records
+
+    fake_recorder.async_clear_statistics = clear
+    fake_recorder.async_add_executor_job.side_effect = read
+    with pytest.raises(ValueError, match=conflict):
+        await hc.async_confirm_cleanup(hass, entry.entry_id, expected)
+    assert cleared == []
+
+
+@pytest.mark.parametrize("target_kind", ["entity", "archive"])
+async def test_removed_foreign_owner_blocks_only_an_existing_conflicting_series(
+    hass, entry, fake_recorder, target_kind
+):
+    """A second tombstone proves the same ID also belonged to another entity."""
+    registry = er.async_get(hass)
+    daily = registered(hass, entry)
+    registry.async_remove(daily.entity_id)
+    archive = f"sensor.meteoswiss_hgt_forecast_archive_{daily.id}"
+    target = daily.entity_id if target_kind == "entity" else archive
+    other = archive if target_kind == "entity" else daily.entity_id
+    foreign = registry.async_get_or_create(
+        "sensor", "foreign", "previous", suggested_object_id=target.split(".", 1)[1]
+    )
+    registry.async_remove(foreign.entity_id)
+    fake_recorder.async_add_executor_job.return_value = {other: (2, metadata(other))}
+    plan = await hc.async_plan_cleanup(hass, entry.entry_id)
+    assert set(plan.metadata) == {other}
+
+    fake_recorder.async_add_executor_job.return_value = {target: (1, metadata(target))}
+    with pytest.raises(ValueError, match="identity_conflict"):
+        await hc.async_plan_cleanup(hass, entry.entry_id)
 
 
 async def test_inventory_does_not_accept_extra_metadata_or_changed_registry(hass,entry,fake_recorder):

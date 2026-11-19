@@ -20,6 +20,10 @@
 - Check the measured HGT ownership manager with strict mypy. Concurrent imports
   now respect the 500-station storage limit. Older repair notices with missing
   metadata can discard obsolete location details safely.
+- Protect legacy HGT forecast statistics when an entity ID is reused. Confirmed
+  cleanup rechecks current ownership after the Recorder read and pauses when an
+  existing series also belonged to another retained registry identity. CI checks
+  this upgrade path with strict mypy.
 
 ## [8.3.5] — 2026-11-19
 

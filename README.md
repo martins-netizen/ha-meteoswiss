@@ -192,7 +192,8 @@ and [conservative native device removal](docs/DEVICE_REMOVAL.md) retain their
 contracts. CI runs strict type checks on the shared retry decorator, the ICON
 forecast client, the warning client, both pollen clients, the Open-Meteo
 current-weather client, shared weather normalisation, the measured heating-degree-day
-source, its Recorder import and station ownership manager, and the shared HTTP transport.
+source, its Recorder import and station ownership manager, legacy forecast statistics
+cleanup, and the shared HTTP transport.
 The [developer guide](DEVELOPMENT.md#strict-type-checking) shows how to run them. The dependency audit covers both HA fixtures and the type checker.
 
 ## Start here
