@@ -31,10 +31,16 @@ def meta(**changes):
 @pytest.fixture
 async def fake_recorder():
     ready=asyncio.get_running_loop().create_future();ready.set_result(True)
+    owner = SimpleNamespace(id=RID)
+    registry = SimpleNamespace(async_get={EID: owner}.get, deleted_entities={})
     instance=SimpleNamespace(async_db_ready=ready,async_add_executor_job=AsyncMock(),
                             test_hass=SimpleNamespace(config=SimpleNamespace(components={'recorder'}),loop=asyncio.get_running_loop(),states=SimpleNamespace(get=lambda _:None),data={},async_create_background_task=lambda coro,name:asyncio.create_task(coro,name=name)),
-                            registry=SimpleNamespace(async_get=lambda _:None))
-    with patch.object(fs,'get_instance',return_value=instance),patch.object(fs.er,'async_get',return_value=instance.registry):yield instance
+                            registry=registry)
+    with (
+        patch.object(fs, "get_instance", return_value=instance),
+        patch.object(archive_helper.er, "async_get", return_value=registry),
+    ):
+        yield instance
 
 
 async def test_no_recorder_has_no_metadata_or_refresh_work():
@@ -89,8 +95,10 @@ async def test_unavailable_database_never_queues_a_rename(fake_recorder):
 
 @pytest.mark.parametrize('occupied',['live','registered'])
 async def test_another_entity_cannot_become_the_archive(fake_recorder,occupied):
-    if occupied=='live':fake_recorder.test_hass.states.get=lambda _:object()
-    else:fake_recorder.registry.async_get=lambda _:object()
+    if occupied == 'live':
+        fake_recorder.test_hass.states.get = lambda eid: object() if eid == ARCHIVE else None
+    else:
+        fake_recorder.registry.async_get = lambda _: SimpleNamespace(id=RID)
     assert not (await fs.async_prepare_hgt_statistics(fake_recorder.test_hass,EID,RID)).ready
     fake_recorder.async_add_executor_job.assert_not_called()
 

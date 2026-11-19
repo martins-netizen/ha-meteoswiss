@@ -193,7 +193,8 @@ contracts. CI runs strict type checks on the shared retry decorator, the ICON
 forecast client, the warning client, both pollen clients, the Open-Meteo
 current-weather client, shared weather normalisation, the measured heating-degree-day
 source, its Recorder import and station ownership manager, legacy forecast statistics
-cleanup, and the shared HTTP transport.
+cleanup, shared HTTP transport and the Recorder archive paths for wind direction
+and historical heating-degree-day forecasts.
 The [developer guide](DEVELOPMENT.md#strict-type-checking) shows how to run them. The dependency audit covers both HA fixtures and the type checker.
 
 ## Start here

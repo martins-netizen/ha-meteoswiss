@@ -34,6 +34,13 @@ Historical arithmetic means cannot be reconstructed as correct circular means.
   blocks the transition. Current readings and raw history continue without a
   state class; incompatible new statistics are not produced.
 
+**In development.** When the migration needs an archive, it checks the sensor's
+registry identity and the archive name after reading Recorder. A previous
+registry owner of an existing source series or a recorded claim on the
+destination blocks the move. If an entity claims the archive after Recorder
+has queued the rename, the rename can finish. The migration reports a conflict
+and a later retry verifies the stored archive before enabling circular statistics.
+
 Calm wind (speed zero) has no direction and is published as unknown. Invalid,
 non-finite or out-of-range directions also stay unknown; valid 0°/360° still
 mean north when wind is not calm. This follows HA's wind-direction contract.

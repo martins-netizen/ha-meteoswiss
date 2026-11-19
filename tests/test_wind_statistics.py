@@ -37,8 +37,14 @@ async def fake_recorder():
     ready=asyncio.get_running_loop().create_future()
     ready.set_result(True)
     instance=SimpleNamespace(async_db_ready=ready,async_add_executor_job=AsyncMock(),
-        test_hass=SimpleNamespace(config=SimpleNamespace(components={"recorder"}),loop=asyncio.get_running_loop()))
-    with patch.object(ws,"get_instance",return_value=instance):
+        test_hass=SimpleNamespace(config=SimpleNamespace(components={"recorder"}),loop=asyncio.get_running_loop(),
+                                  states=SimpleNamespace(get=lambda _:None)))
+    owner = SimpleNamespace(id=RID)
+    registry = SimpleNamespace(async_get={EID: owner}.get, deleted_entities={})
+    with (
+        patch.object(ws, "get_instance", return_value=instance),
+        patch.object(archive_helper.er, "async_get", return_value=registry),
+    ):
         yield instance
 
 
@@ -208,7 +214,8 @@ async def test_cancel_after_queued_rename_accepts_late_worker_completion(fake_re
         task.cancel()
         with pytest.raises(asyncio.CancelledError):
             await task
-        completed()
+        assert await asyncio.to_thread(completed) is None
+        assert await asyncio.to_thread(completed) is None
         await asyncio.sleep(0)
     assert fake_recorder.async_add_executor_job.await_count == 1
 

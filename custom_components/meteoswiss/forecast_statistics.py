@@ -7,15 +7,18 @@ from dataclasses import dataclass
 from functools import partial
 
 from homeassistant.components.recorder import get_instance
-from homeassistant.components.recorder.models import StatisticMeanType
+from homeassistant.components.recorder.models import StatisticMeanType, StatisticMetaData
 from homeassistant.components.recorder.statistics import (
     get_metadata,
     update_statistics_issues,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers import entity_registry as er
 
-from .statistics_archive import async_archive_statistics
+from .statistics_archive import (
+    ArchiveMetadata,
+    archive_identities_match,
+    async_archive_statistics,
+)
 
 _ISSUE_REFRESH_TASK = "meteoswiss_statistics_issue_refresh_task"
 
@@ -49,7 +52,7 @@ async def async_refresh_statistics_issues(hass: HomeAssistant) -> None:
         )
         hass.data[_ISSUE_REFRESH_TASK] = task
 
-        def completed(finished):
+        def completed(finished: asyncio.Future[bool]) -> None:
             if hass.data.get(_ISSUE_REFRESH_TASK) is finished:
                 hass.data.pop(_ISSUE_REFRESH_TASK)
 
@@ -71,16 +74,15 @@ async def async_prepare_hgt_statistics(
         return ForecastStatisticsResult(True)
     instance = get_instance(hass)
     archive_id = f"sensor.meteoswiss_hgt_forecast_archive_{registry_id}"
-    if hass.states.get(archive_id) is not None or er.async_get(hass).async_get(archive_id) is not None:
+    if not archive_identities_match(hass, entity_id, registry_id, archive_id, ()):
         return ForecastStatisticsResult(False)
 
-    async def read():
+    async def read() -> ArchiveMetadata:
         return await instance.async_add_executor_job(
             partial(get_metadata, hass, statistic_ids={entity_id, archive_id})
         )
 
-    def compatible(record):
-        meta = record[1]
+    def compatible(meta: StatisticMetaData) -> bool:
         return (
             meta["source"] == "recorder"
             and meta["unit_of_measurement"] == "°C·d"
@@ -93,13 +95,15 @@ async def async_prepare_hgt_statistics(
             return ForecastStatisticsResult(False)
         before = await read()
         current, archive = before.get(entity_id), before.get(archive_id)
-        if archive and not compatible(archive):
+        if not archive_identities_match(hass, entity_id, registry_id, archive_id, before):
+            return ForecastStatisticsResult(False)
+        if archive and not compatible(archive[1]):
             return ForecastStatisticsResult(False)
         if current is None:
             return ForecastStatisticsResult(True, archive_id if archive else None)
-        if not compatible(current) or archive:
+        if not compatible(current[1]) or archive:
             return ForecastStatisticsResult(False)
         verified = await async_archive_statistics(
-            hass, entity_id, archive_id, current, read
+            hass, entity_id, archive_id, registry_id, current, read
         )
         return ForecastStatisticsResult(verified, archive_id if verified else None)

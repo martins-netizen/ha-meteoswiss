@@ -536,6 +536,15 @@ class MeteoSwissSensor(
         return attributes
 
 
+def _statistics_owner_id(sensor: SensorEntity, entity_id: str) -> str | None:
+    """Return the registry ID while this sensor still owns the inspected name."""
+    registered = sensor.registry_entry
+    if registered is None or registered.entity_id != entity_id:
+        return None
+    current = er.async_get(sensor.hass).async_get(entity_id)
+    return registered.id if current is not None and current.id == registered.id else None
+
+
 class MeteoSwissWindDirectionSensor(MeteoSwissSensor):
     """Keep the existing sensor ID and separate incompatible old averages."""
 
@@ -544,7 +553,7 @@ class MeteoSwissWindDirectionSensor(MeteoSwissSensor):
         self._entry = entry
         self.entity_description = replace(description, state_class=None)
         self._wind_statistics_status = "pending"
-        self._wind_statistics_archive = None
+        self._wind_statistics_archive: str | None = None
 
     async def async_added_to_hass(self) -> None:
         await super().async_added_to_hass()
@@ -577,19 +586,24 @@ class MeteoSwissWindDirectionSensor(MeteoSwissSensor):
         from .repair_issues import async_sync_wind_statistics_issue
         from .wind_statistics import async_prepare_wind_statistics
 
-        registry_entry = er.async_get(self.hass).async_get(self.entity_id)
-        if registry_entry is None:
+        entity_id = self.entity_id
+        owner_id = _statistics_owner_id(self, entity_id)
+        if owner_id is None:
             return
         self.entity_description = replace(self.entity_description, state_class=None)
         self._wind_statistics_status = "pending"
         self.async_write_ha_state()
         try:
             result = await async_prepare_wind_statistics(
-                self.hass, self.entity_id, registry_entry.id
+                self.hass, entity_id, owner_id
             )
         except Exception as err:
             # Cancellation propagates; error details may contain private paths.
             _LOGGER.warning("Wind statistics preparation failed (%s)", type(err).__name__)
+            result = None
+        if _statistics_owner_id(self, entity_id) != owner_id:
+            return
+        if result is None:
             self._wind_statistics_status = "blocked"
         else:
             self._wind_statistics_archive = result.archive_id
@@ -867,7 +881,7 @@ class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntit
         super().__init__(forecast_coordinator)
         self._entry = entry
         self._hgt_statistics_status = "pending"
-        self._hgt_statistics_archive = None
+        self._hgt_statistics_archive: str | None = None
         self._hgt_clock_active = False
         self._hgt_clock_generation = 0
         self._hgt_clock_cancel: Callable[[], None] | None = None
@@ -972,15 +986,18 @@ class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntit
         )
         from .repair_issues import async_sync_hgt_statistics_issue
 
-        registered = er.async_get(self.hass).async_get(self.entity_id)
-        if registered is None:
+        entity_id = self.entity_id
+        owner_id = _statistics_owner_id(self, entity_id)
+        if owner_id is None:
             return
         self._hgt_statistics_status = "pending"
         self.async_write_ha_state()
         try:
             result = await async_prepare_hgt_statistics(
-                self.hass, self.entity_id, registered.id
+                self.hass, entity_id, owner_id
             )
+            if _statistics_owner_id(self, entity_id) != owner_id:
+                return
             self._hgt_statistics_archive = result.archive_id
             if result.ready:
                 await async_refresh_statistics_issues(self.hass)
@@ -988,6 +1005,8 @@ class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntit
         except Exception as err:
             _LOGGER.warning("HGT statistics archival failed (%s)", type(err).__name__)
             self._hgt_statistics_status = "blocked"
+        if _statistics_owner_id(self, entity_id) != owner_id:
+            return
         async_sync_hgt_statistics_issue(
             self.hass, self._entry, self._hgt_statistics_status == "blocked"
         )
