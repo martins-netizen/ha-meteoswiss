@@ -194,7 +194,8 @@ forecast client, the warning client, both pollen clients, the Open-Meteo
 current-weather client, shared weather normalisation, the measured heating-degree-day
 source, its Recorder import and station ownership manager, legacy forecast statistics
 cleanup, shared HTTP transport, the Recorder archive paths for wind direction
-and historical heating-degree-day forecasts, and the forecast location catalogue.
+and historical heating-degree-day forecasts, the forecast location catalogue,
+saved forecast targets and shared entity metadata.
 The [developer guide](DEVELOPMENT.md#strict-type-checking) shows how to run them. The dependency audit covers both HA fixtures and the type checker.
 
 ## Start here
