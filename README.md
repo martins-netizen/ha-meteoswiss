@@ -15,6 +15,10 @@ This is an independent community project, not an official MeteoSwiss product.
 This guide describes the **8.3 series**; [8.3.0 release notes](docs/RELEASE_8.3.0.md)
 explain the changes from 8.2.0. Use a published release, not a branch.
 
+**Published on 19 November 2026:** [Stable 8.3.5](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5)
+is available. Its [dated evidence](docs/RELEASE_EVIDENCE_8.3.5.md) records the
+verified tag, release text and publication; installation remains separate.
+
 **About 8.3.5:** this version brings together official measured heating degree
 days, more private diagnostics, reliable local state clocks and our engineering
 evidence through Gold. It uses the reviewed source in
@@ -24,8 +28,8 @@ evidence through Gold. It uses the reviewed source in
 Choose an actually published package from the
 [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
 or [latest-stable page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest).
-This source guide is not an availability or installation record. Published
-beta packages and earlier releases remain immutable.
+This publication does not establish an installed version. Published beta
+packages and earlier releases remain immutable.
 
 The [pre-stable source review](docs/COORDINATOR_CANONICAL_COMPLETION.md) corrected
 the ninth coordinator's canonical placement and
@@ -36,12 +40,12 @@ component version fields relative to that approved source; its other 50
 component files and all existing security/quality policies remain.
 
 Already accepted b7 behavior needs no repeated migration, failure exercise or
-operator observation window. When choosing stable 8.3.5 after publication,
+operator observation window. When choosing published stable 8.3.5,
 update the existing entry normally and complete its ordinary update restart
 once; follow the [stable guide](docs/ACCEPTANCE_8.3.5.md).
 Earlier users need no intermediate beta or entry recreation. Keep the station,
 options, names, dashboards and retained IDs. The [dated record](docs/RELEASE_EVIDENCE_8.3.5.md)
-separates completed source/beta evidence from stable package/publication gates.
+records completed source, package and publication checks separately from installation.
 
 **Official measured HGT:** a distinct last-observed-day sensor and station-specific
 daily/monthly/annual statistics import official SwissMetNet products, backfill

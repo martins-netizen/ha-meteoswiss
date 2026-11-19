@@ -2,18 +2,20 @@
 
 ## [Unreleased]
 
-No additional runtime scope is included in the prepared stable promotion.
+No additional runtime changes are recorded.
 
-## [8.3.5] — prepared stable package · 2026-11-19
+## [8.3.5] — 2026-11-19
 
-This section records preparation, not publication. Availability follows the
-[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases).
-The package is based on signed corrective source [PR #131](https://github.com/martins-netizen/ha-meteoswiss/pull/131)
-at `115ddad474dcae15aa49fb5f368cbed600adf80d`. Change the two component version
-fields to 8.3.5; preserve its other 50 component files and all existing gates.
-Add fixed stable Publisher V1.9 with exact source/package binding and refusal
-cases. Normal package approval, actual-merge checks and authorized publication
-remain separate. [Cumulative notes](docs/RELEASE_8.3.5.md) cover changes since 8.3.4.
+Published as stable [8.3.5](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5),
+release **450993306**, on **19 November 2026 at 07:12:57 UTC / 08:12:57 CET**.
+Approved package [PR #132](https://github.com/martins-netizen/ha-meteoswiss/pull/132)
+was signed and merged as `cc158cbdce07f015952275fba72e3c0160c63c80` after the
+corrective source [PR #131](https://github.com/martins-netizen/ha-meteoswiss/pull/131).
+Only the two component version fields changed from that source; the other 50
+component files and all existing gates remain. Exact release/tag/body/latest
+readback and preservation of the 23 older complete release records/tag refs
+were independently confirmed. [Cumulative notes](docs/RELEASE_8.3.5.md) and
+[dated evidence](docs/RELEASE_EVIDENCE_8.3.5.md) record scope and validation.
 
 - Correct the actual ninth coordinator placement before stable 8.3.5. The
   measured-HGT class becomes canonical in `coordinator.py`; its old module

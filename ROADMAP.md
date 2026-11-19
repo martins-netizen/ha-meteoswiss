@@ -12,20 +12,29 @@ and identities remain. [The completion record](docs/COORDINATOR_CANONICAL_COMPLE
 retains the original missed structural judgment and the native clock/lifecycle
 evidence rather than treating b7's old passing index as proof of that judgment.
 
-The next step is **stable 8.3.5 packaging** on this actual approved source.
-Only two component version fields change; the remaining 50 component files,
-locks, workflows, policies and exact quality index stay protected. New fixed
-publisher **V1.9** verifies the direct source-to-package boundary and preserves
-all older release records/tags. Package approval, actual-merge checks and
-authorized publication remain separate; no future package merge is invented.
+**Stable [8.3.5](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5)
+was published on 19 November 2026 at 07:12:57 UTC / 08:12:57 CET**, release
+**450993306**. Package [PR #132](https://github.com/martins-netizen/ha-meteoswiss/pull/132)
+was regularly approved, signed and merged as
+`cc158cbdce07f015952275fba72e3c0160c63c80`; all ten head and nine actual-merge
+checks passed. The tag, exact approved release text, stable/latest status and
+preservation of all 23 earlier complete release records and tag refs were
+independently verified. The [dated record](docs/RELEASE_EVIDENCE_8.3.5.md)
+contains the exact package identities, native checks and publication results.
 
-The [dated record](docs/RELEASE_EVIDENCE_8.3.5.md),
-[cumulative release notes](docs/RELEASE_8.3.5.md) and
-[stable guide](docs/ACCEPTANCE_8.3.5.md) describe these stages. B7 publication and
-its positive bounded sight report remain complete. Earlier b3/b5/b6/b7 reports
-stay closed; promotion does not require another migration, failure exercise or
-operator observation window. Choose the stable label only when published and
-complete the ordinary existing-entry update/restart once.
+**The 8.3.5 packaging and publication work is complete.** Its two component
+version fields changed relative to approved #131 source; the other 50 component
+files, locks, workflows, policies and exact quality index remained unchanged.
+Further development needs a separately chosen scope from the boundaries below.
+Do not rerun a publisher or prepare another package for this completed release.
+
+The [cumulative release notes](docs/RELEASE_8.3.5.md) and
+[stable guide](docs/ACCEPTANCE_8.3.5.md) cover normal existing-entry updates.
+B7 publication and its positive bounded sight report remain complete. Earlier
+b3/b5/b6/b7 reports stay closed; no repeated migration, failure exercise or
+operator observation window is required. Users who choose published 8.3.5 can
+update the existing entry and complete its ordinary update restart once.
+Installation of stable 8.3.5 has not been confirmed by the publication report.
 
 The [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
 remains authoritative. Minimum Core is **2026.11.0**, current compatibility

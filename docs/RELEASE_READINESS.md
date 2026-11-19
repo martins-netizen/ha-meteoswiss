@@ -1,27 +1,37 @@
-# Release readiness: current 8.3.5 work and dated history
+# Release readiness: published 8.3.5 and dated history
 
 ## Current 8.3.5 boundary
 
-The pre-stable source correction is complete in signed approved
-[PR #131](https://github.com/martins-netizen/ha-meteoswiss/pull/131), source
-`115ddad474dcae15aa49fb5f368cbed600adf80d`. All ten head and nine actual-merge
-checks passed; both actual Core fixtures passed 3,622 tests plus 83 subtests,
-strict coverage and fresh 51-rule verification. It fixes the previously missed
-ninth coordinator's canonical placement and calculated HGT's Swiss-midnight
-registered-state update without a new source call, migration or availability
-age rule. [The completion record](COORDINATOR_CANONICAL_COMPLETION.md) preserves
-both reproduced gaps and the concrete corrective evidence.
+**Stable [8.3.5](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5)
+is published and independently verified**, release **450993306**, on
+**19 November 2026 at 07:12:57 UTC / 08:12:57 CET**. Its tag resolves to signed
+package merge `cc158cbdce07f015952275fba72e3c0160c63c80` from approved
+[PR #132](https://github.com/martins-netizen/ha-meteoswiss/pull/132), exact tree
+`d31322c0c2fd9029ad7c066803f7acdc68c7c4fa`. All ten trusted exact-head checks
+and all nine actual-merge checks passed. Both actual Core fixtures passed
+**3,761 tests plus 83 subtests**, strict coverage and fresh 51-rule verification,
+with the five known upstream deprecations visible.
 
-Stable **8.3.5** is now prepared as a two-version-field promotion from that exact
-source, retaining its other 50 component files and existing policies/locks.
-Fixed Publisher V1.9 and refusal-path tests belong to this package preparation.
-Package approval, exact-head checks, actual signed package merge and its checks,
-and authorized publication remain required in their own scope.
-[Current evidence](RELEASE_EVIDENCE_8.3.5.md) keeps those stages separate from
-completed b7 publication and bounded acceptance. The
-[catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-remains authoritative for actual availability. Earlier operator reports stay
-closed; no repeated installation or observation window is invented.
+The package changes only two component version fields relative to approved
+corrective source `115ddad474dcae15aa49fb5f368cbed600adf80d` from
+[PR #131](https://github.com/martins-netizen/ha-meteoswiss/pull/131). Its other
+50 component files and existing policies/locks remain unchanged. The canonical
+ninth-coordinator placement and calculated-HGT Swiss-midnight registered-state
+update are included; [the completion record](COORDINATOR_CANONICAL_COMPLETION.md)
+retains their concrete corrective evidence.
+
+Release and latest-stable records matched exactly, with `draft=false` and
+`prerelease=false`. The English body matched the approved 10,715-byte export;
+all 23 older complete release records and raw tag refs remained unchanged.
+The [current evidence](RELEASE_EVIDENCE_8.3.5.md) records these completed stages.
+No further package, merge, publisher run or publication approval is needed for
+this release.
+
+A normal Marketplace update of the existing entry and its ordinary restart
+remain a separate user operation; installation of 8.3.5 is not yet confirmed.
+Earlier b3/b5/b6/b7 operator reports stay closed. No repeated migration, failure
+exercise or observation window is introduced. Future package availability
+follows the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases).
 
 ## Dated earlier release records
 

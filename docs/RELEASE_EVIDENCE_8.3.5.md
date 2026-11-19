@@ -1,6 +1,85 @@
 # 8.3.5 — Dated promotion and package evidence
 
-**Evidence version:** 1.1 · **Updated:** 19 November 2026
+**Evidence version:** 1.2 · **Updated:** 19 November 2026
+
+## Verified stable publication — 19 November 2026
+
+Stable [MeteoSwiss 8.3.5](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5)
+was published on **19 November 2026 at 07:12:57 UTC / 08:12:57 CET**, release
+**450993306**. Independent API readback confirmed the exact release record,
+latest-stable record, tag target and approved English body. The source,
+package approval/merge and publication steps are complete. This report does
+not establish installation of 8.3.5 in Home Assistant.
+
+| Identity | Independently verified value |
+|---|---|
+| Approved package head / PR | `386ef6d90bfd7e0ac13e1ed9a6854f0eb821e76e` / [#132](https://github.com/martins-netizen/ha-meteoswiss/pull/132) |
+| Actual package merge and release tag | `cc158cbdce07f015952275fba72e3c0160c63c80` |
+| Exact package tree | `d31322c0c2fd9029ad7c066803f7acdc68c7c4fa` |
+| Sole parent / reviewed corrective source | `115ddad474dcae15aa49fb5f368cbed600adf80d` |
+| Actual package merge time | 19 November 2026, 06:54:24 UTC / 07:54:24 CET |
+| Package source-evidence SHA-256 | `60d84e0197f84648d112c04eff61e158f5d6401308fbd8d12c111b3562b1a854` |
+| Published English body SHA-256, 10,715 bytes | `2b4e0ae68b54524e856e522c38e68774fd494036258c5d76f24284a1c7dd748d` |
+| Release identity and state | `450993306`; `draft=false`, `prerelease=false`; exact latest-stable record |
+
+The approved package was regularly squashed and signed after explicit
+approval. Its tree matches the reviewed candidate exactly, including all
+**35** changed paths and blob hashes. Public Git identities and the valid
+GitHub signature were confirmed; the feature branch was removed. All **ten**
+trusted exact-head checks and **nine** actual-merge checks passed. The actual
+push workflows completed on attempt one:
+[CI 44475591416](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/44475591416),
+[HACS 44475591316](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/44475591316)
+and [CodeQL 44475591342](https://github.com/martins-netizen/ha-meteoswiss/actions/runs/44475591342).
+SonarCloud passed too; no failed legacy status or unresolved review thread
+remained.
+
+Actual HA **2026.11.0** job **135395224050** passed **3,761 tests plus 83 subtests**
+in **123.29 seconds**; HA **2026.11.2** job **135395223756** passed the same count
+in **123.30 seconds**. Each retained the five known upstream deprecations.
+Strict coverage passed with **4,834/4,835 statements**, **1,386/1,386 branches**
+across **43 modules**. Both fresh evidence results bound the package fingerprint
+above and all **51 rules**: 26 automated verifications, 16 documented reviews
+and nine reasoned exemptions. Actual advisory job **135395224032** checked
+**140** package/version pairs with **0 active, 0 unknown and 0 withdrawn**
+findings. This does not refresh the separate dated owner-only alert/settings
+inventory or establish independent certification.
+
+The package changed only the two component version fields from the approved
+corrective source; the other **50** component files, 20 protected policies,
+locks, workflows and 31 earlier publication-profile paths stayed unchanged.
+The release kept the exact approved serious, clear introduction and converted
+its documentation links to the actual package commit.
+
+Stable Publisher **V1.9** reported `published_and_verified`; independent readback
+confirmed release **450993306**, the exact `cc158cbd…` tag target, full English
+body and latest-stable identity. Both inventories now contain **24** records.
+All **23** previous full release records and raw tag-reference objects,
+including accepted b7 **450428545** and previous stable **437853341**, remained
+unchanged. No old release body or tag was overwritten. No separate new release-
+event workflow was observed; the verified package push checks remain the
+applicable recorded runs.
+
+The actual tagged README, HACS metadata, manifest and preparation evidence
+were also fetched through `ref=8.3.5` and matched the approved Git blobs.
+Version **8.3.5**, minimum Core **2026.11.0**, hidden default branch and the
+evergreen Marketplace README were confirmed. Publication performed no HA
+installation, restart or device operation. The positive bounded b7 sight report
+and earlier cleanup reports stay closed. Users choosing published 8.3.5 follow
+the [normal existing-entry update](ACCEPTANCE_8.3.5.md) and its ordinary restart;
+no repeated migration, failure exercise or observation window is required.
+
+Publication and its verification are complete. Do not rerun the publisher,
+retag or republish this release as an update action. Current status updates to
+these guides are documentation-only; the published tag and original release
+notes remain immutable.
+
+## Earlier source and package-preparation record
+
+The following record preserves what was known before the stable publication.
+Its preparation/future-step wording is historical; the completed publication
+and actual package identities are recorded above. The original b7, corrective-
+source and package-preparation blocks below remain unchanged.
 
 This record separates published b7 and its bounded sight acceptance, the
 completed pre-stable corrective source, and the prepared stable package.
