@@ -9,9 +9,20 @@ import math
 import time
 from collections.abc import Callable
 from dataclasses import asdict, dataclass
-from typing import Any
+from typing import Any, TypedDict
 
 _LOGGER = logging.getLogger(__name__)
+
+
+class CacheStats(TypedDict):
+    """Counters and percentage returned for one cache."""
+
+    entries: int
+    hits: int
+    misses: int
+    evictions: int
+    hit_rate: float
+    total_requests: int
 
 
 def _validate_ttl(raw: float) -> float:
@@ -43,7 +54,7 @@ class CacheEntry:
         """Check if cache entry is expired."""
         return time.monotonic() - self.timestamp >= self.ttl
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary."""
         return asdict(self)
 
@@ -191,7 +202,7 @@ class MeteoSwissCache:
 
         return len(expired_keys)
 
-    def get_stats(self) -> dict:
+    def get_stats(self) -> CacheStats:
         """Get cache statistics.
 
         Returns:
@@ -268,7 +279,7 @@ def clear_all_caches() -> None:
     _LOGGER.debug("All caches cleared")
 
 
-def get_all_cache_stats() -> dict:
+def get_all_cache_stats() -> dict[str, CacheStats]:
     """Get statistics for all caches.
 
     Returns:

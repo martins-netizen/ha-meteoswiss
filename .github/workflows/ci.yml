@@ -152,7 +152,7 @@ jobs:
             custom_components/meteoswiss/statistics_archive.py custom_components/meteoswiss/forecast_statistics.py \
             custom_components/meteoswiss/wind_statistics.py custom_components/meteoswiss/forecast_locations.py \
             custom_components/meteoswiss/forecast_location_config.py custom_components/meteoswiss/entity.py \
-            tests/typing/retry_contract.py
+            custom_components/meteoswiss/cache.py tests/typing/retry_contract.py
 
   hassfest:
     runs-on: ubuntu-latest
