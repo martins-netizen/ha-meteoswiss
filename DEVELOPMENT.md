@@ -112,15 +112,10 @@ Writable HA test configuration uses a temporary directory in both fixtures.
 
 ### Strict type checking
 
-After the native checks above, CI runs mypy on the shared retry decorator,
-its call-site contract, the ICON forecast and MeteoSwiss warning clients, both
-pollen clients, the Open-Meteo current-weather client, shared weather
-normalisation, the measured HGT source, its Recorder import, the station ownership
-manager, legacy HGT forecast cleanup, shared HTTP transport, the Recorder
-archive paths for wind direction and historical HGT forecasts, the forecast
-location catalogue, saved forecast targets and shared entity metadata in the
-**current** HA environment. From the repository
-root, use the same interpreter and install the checker together with the current
+CI checks the entire integration and the retry call-site contract with strict
+mypy in the **current** HA environment. Passing the integration directory
+includes new Python modules automatically. From the repository root, use the
+same interpreter and install the checker together with the current
 fixture so pip validates their shared dependencies.
 This step accepts only hash-pinned wheels and stops if a compatible wheel is missing.
 
@@ -129,19 +124,15 @@ python -m pip install --disable-pip-version-check --only-binary :all: --require-
   --constraint requirements_ci_security.txt -r requirements_test.txt -r requirements_typing.txt
 python -m pip check
 python -m mypy --strict --explicit-package-bases --follow-imports=silent \
-  custom_components/meteoswiss/retry.py custom_components/meteoswiss/forecast.py \
-  custom_components/meteoswiss/alerts.py custom_components/meteoswiss/pollen_meteoswiss.py \
-  custom_components/meteoswiss/pollen_openmeteo.py custom_components/meteoswiss/openmeteo.py \
-  custom_components/meteoswiss/weather_data.py custom_components/meteoswiss/hgt_ogd.py \
-  custom_components/meteoswiss/http.py custom_components/meteoswiss/hgt_ogd_recorder.py \
-  custom_components/meteoswiss/hgt_ogd_manager.py custom_components/meteoswiss/hgt_cleanup.py \
-  custom_components/meteoswiss/statistics_archive.py custom_components/meteoswiss/forecast_statistics.py \
-  custom_components/meteoswiss/wind_statistics.py custom_components/meteoswiss/forecast_locations.py \
-  custom_components/meteoswiss/forecast_location_config.py custom_components/meteoswiss/entity.py \
-  tests/typing/retry_contract.py
+  custom_components/meteoswiss tests/typing/retry_contract.py
 ```
 
-The contract checks return types, keyword and positional arguments, and
+Five sensor and binary sensor descriptions keep the mutable dataclass behaviour
+supported by Home Assistant’s `FrozenOrThawed` metaclass. Mypy treats their base as frozen. Each class has a
+line-specific `misc` exception for that inheritance check. Strict mode detects
+unused exceptions, and entity metadata tests cover their runtime contract.
+
+The retry contract checks return types, keyword and positional arguments, and
 compatibility with `asyncio.create_task`. Three intentionally invalid calls
 have error-specific ignores. If a future change accepts one of them, strict
 mypy reports an unused ignore and CI fails. In the forecast client, mypy also

@@ -15,8 +15,8 @@ from homeassistant.components.binary_sensor import (
     BinarySensorEntityDescription,
 )
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.device_registry import DeviceEntryType
-from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.event import async_track_point_in_utc_time
 from homeassistant.util import dt as dt_util
 
@@ -35,8 +35,9 @@ PARALLEL_UPDATES = 0
 _LOGGER = logging.getLogger(__name__)
 
 
+# Home Assistant's FrozenOrThawed accepts mutable subclasses at runtime.
 @dataclass
-class MeteoSwissAlertsBinarySensorDescription(BinarySensorEntityDescription):
+class MeteoSwissAlertsBinarySensorDescription(BinarySensorEntityDescription):  # type: ignore[misc]
     """Describes MeteoSwiss alerts binary sensor."""
 
     warn_level: int | None = None
@@ -105,12 +106,14 @@ def _alert_state_attributes(alerts: list[WeatherAlert] | None) -> dict[str, Any]
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: MeteoSwissConfigEntry,
-    async_add_entities,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up binary sensor platform."""
     _LOGGER.debug("Setting up MeteoSwiss alerts binary sensor platform")
 
     coordinator = entry.runtime_data.alerts_coordinator
+    # Entry setup creates the warning coordinator before forwarding this platform.
+    assert coordinator is not None
     postal_code = entry.data.get(CONF_POSTAL_CODE)
 
     entities = [
@@ -121,15 +124,19 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class MeteoSwissAlertsBinarySensor(MeteoSwissCoordinatorEntity, BinarySensorEntity):
+class MeteoSwissAlertsBinarySensor(
+    MeteoSwissCoordinatorEntity[MeteoSwissAlertsCoordinator], BinarySensorEntity
+):
     """Representation of a MeteoSwiss weather alert binary sensor."""
+
+    entity_description: MeteoSwissAlertsBinarySensorDescription
 
     def __init__(
         self,
         coordinator: MeteoSwissAlertsCoordinator,
         entry: MeteoSwissConfigEntry,
         description: MeteoSwissAlertsBinarySensorDescription,
-        postal_code: str,
+        postal_code: str | None,
     ) -> None:
         """Initialize binary sensor."""
         super().__init__(coordinator)

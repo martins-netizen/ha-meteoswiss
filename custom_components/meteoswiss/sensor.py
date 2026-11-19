@@ -17,6 +17,7 @@ from homeassistant.components.sensor import (
 )
 from homeassistant.const import (
     PERCENTAGE,
+    EntityCategory,
     UnitOfIrradiance,
     UnitOfLength,
     UnitOfPrecipitationDepth,
@@ -28,13 +29,10 @@ from homeassistant.const import (
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-from homeassistant.helpers.device_registry import DeviceEntryType
-from homeassistant.helpers.entity import DeviceInfo, EntityCategory
+from homeassistant.helpers.device_registry import DeviceEntryType, DeviceInfo
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.event import async_track_point_in_utc_time
 from homeassistant.helpers.start import async_at_started
-from homeassistant.helpers.update_coordinator import (
-    DataUpdateCoordinator,
-)
 from homeassistant.util import dt as dt_util
 
 from .cache import get_all_cache_stats
@@ -73,7 +71,13 @@ from .const import (
     SENSOR_WIND_GUST,
     SENSOR_WIND_SPEED,
 )
-from .coordinator import MeteoSwissDataUpdateCoordinator, MeteoSwissForecastCoordinator
+from .coordinator import (
+    MeteoSwissDataUpdateCoordinator,
+    MeteoSwissForecastCoordinator,
+    MeteoSwissPollenCoordinator,
+    OpenMeteoDataUpdateCoordinator,
+    OpenMeteoPollenCoordinator,
+)
 from .entity import (
     forecast_device_info,
     MeteoSwissCoordinatorEntity,
@@ -106,8 +110,9 @@ PARALLEL_UPDATES = 1
 _LOGGER = logging.getLogger(__name__)
 
 
+# HA FrozenOrThawed supports mutable dataclasses at runtime.
 @dataclass
-class MeteoSwissSensorEntityDescription(SensorEntityDescription):
+class MeteoSwissSensorEntityDescription(SensorEntityDescription):  # type: ignore[misc]
     """Describes meteoswiss sensor entity."""
 
     value_key: str | None = None
@@ -219,7 +224,7 @@ SENSOR_DESCRIPTIONS: Final[tuple[MeteoSwissSensorEntityDescription, ...]] = (
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: MeteoSwissConfigEntry,
-    async_add_entities,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up sensor platform."""
     _LOGGER.debug("Setting up MeteoSwiss sensor platform")
@@ -228,7 +233,7 @@ async def async_setup_entry(
     coordinator = entry.runtime_data.coordinator
     station_name = entry.data.get(CONF_STATION_NAME, "Unknown")
 
-    entities = [
+    entities: list[SensorEntity] = [
         (MeteoSwissWindDirectionSensor if description.key == SENSOR_WIND_DIRECTION
          else MeteoSwissSensor)(coordinator, entry, description, station_name)
         for description in SENSOR_DESCRIPTIONS
@@ -283,12 +288,12 @@ async def async_setup_entry(
         pollen_station_label = POLLEN_STATIONS.get(
             pollen_station_code, pollen_station_code
         )
-        for description in MS_POLLEN_SENSOR_DESCRIPTIONS:
+        for measured_description in MS_POLLEN_SENSOR_DESCRIPTIONS:
             entities.append(
                 MeteoSwissMeasuredPollenSensor(
                     ms_pollen_coordinator,
                     entry,
-                    description,
+                    measured_description,
                     pollen_station_label,
                 )
             )
@@ -340,12 +345,36 @@ class MeteoSwissMeasuredHgtSensor(MeteoSwissCoordinatorEntity[MeteoSwissHgtCoord
 
 
 @dataclass
-class MeteoSwissForecastSensorDescription(SensorEntityDescription):
+class MeteoSwissForecastSensorDescription(SensorEntityDescription):  # type: ignore[misc]
     """A stable scalar prediction, not a measured historical total."""
 
     day_offset: int = 0
     metric: ForecastMetric = "maximum_temperature"
 
+
+_FORECAST_METRICS: Final[
+    tuple[tuple[ForecastMetric, SensorDeviceClass | None, str, int], ...]
+] = (
+    (
+        "maximum_temperature",
+        SensorDeviceClass.TEMPERATURE,
+        UnitOfTemperature.CELSIUS,
+        1,
+    ),
+    (
+        "minimum_temperature",
+        SensorDeviceClass.TEMPERATURE,
+        UnitOfTemperature.CELSIUS,
+        1,
+    ),
+    (
+        "precipitation",
+        SensorDeviceClass.PRECIPITATION,
+        UnitOfPrecipitationDepth.MILLIMETERS,
+        1,
+    ),
+    ("probability", None, PERCENTAGE, 0),
+)
 
 FORECAST_SENSOR_DESCRIPTIONS = tuple(
     MeteoSwissForecastSensorDescription(
@@ -358,27 +387,7 @@ FORECAST_SENSOR_DESCRIPTIONS = tuple(
         metric=metric,
     )
     for offset, day in ((0, "today"), (1, "tomorrow"))
-    for metric, device_class, unit, precision in (
-        (
-            "maximum_temperature",
-            SensorDeviceClass.TEMPERATURE,
-            UnitOfTemperature.CELSIUS,
-            1,
-        ),
-        (
-            "minimum_temperature",
-            SensorDeviceClass.TEMPERATURE,
-            UnitOfTemperature.CELSIUS,
-            1,
-        ),
-        (
-            "precipitation",
-            SensorDeviceClass.PRECIPITATION,
-            UnitOfPrecipitationDepth.MILLIMETERS,
-            1,
-        ),
-        ("probability", None, PERCENTAGE, 0),
-    )
+    for metric, device_class, unit, precision in _FORECAST_METRICS
 )
 
 
@@ -470,14 +479,17 @@ class MeteoSwissForecastSensor(
         super()._handle_coordinator_update()
 
 
-class MeteoSwissSensor(
-    MeteoSwissCoordinatorEntity[MeteoSwissDataUpdateCoordinator], SensorEntity
-):
+type _CurrentCoordinator = MeteoSwissDataUpdateCoordinator | OpenMeteoDataUpdateCoordinator
+
+
+class MeteoSwissSensor(MeteoSwissCoordinatorEntity[_CurrentCoordinator], SensorEntity):
     """Representation of a meteoswiss sensor."""
+
+    entity_description: MeteoSwissSensorEntityDescription
 
     def __init__(
         self,
-        coordinator: MeteoSwissDataUpdateCoordinator,
+        coordinator: _CurrentCoordinator,
         entry: MeteoSwissConfigEntry,
         description: MeteoSwissSensorEntityDescription,
         station_name: str,
@@ -499,7 +511,9 @@ class MeteoSwissSensor(
         )
         self._attr_attribution = current_weather_attribution(data_source)
         self._attr_native_value = (
-            coordinator.data.get(description.value_key) if coordinator.data else None
+            coordinator.data.get(description.value_key)
+            if coordinator.data and description.value_key is not None
+            else None
         )
 
     @callback
@@ -507,8 +521,9 @@ class MeteoSwissSensor(
         """Handle updated data from coordinator."""
         if self.coordinator.data:
             value_key = self.entity_description.value_key
-            value = self.coordinator.data.get(value_key)
-            self._attr_native_value = value
+            self._attr_native_value = (
+                self.coordinator.data.get(value_key) if value_key is not None else None
+            )
         else:
             _LOGGER.debug(
                 "Coordinator data is None or empty for %s", self.entity_description.key
@@ -518,7 +533,7 @@ class MeteoSwissSensor(
         super()._handle_coordinator_update()
 
     @property
-    def extra_state_attributes(self) -> dict:
+    def extra_state_attributes(self) -> dict[str, Any]:
         """Expose the selected observation time and source status for diagnosis."""
         data = self.coordinator.data or {}
         attributes = {
@@ -548,7 +563,13 @@ def _statistics_owner_id(sensor: SensorEntity, entity_id: str) -> str | None:
 class MeteoSwissWindDirectionSensor(MeteoSwissSensor):
     """Keep the existing sensor ID and separate incompatible old averages."""
 
-    def __init__(self, coordinator, entry, description, station_name) -> None:
+    def __init__(
+        self,
+        coordinator: _CurrentCoordinator,
+        entry: MeteoSwissConfigEntry,
+        description: MeteoSwissSensorEntityDescription,
+        station_name: str,
+    ) -> None:
         super().__init__(coordinator, entry, description, station_name)
         self._entry = entry
         self.entity_description = replace(description, state_class=None)
@@ -629,7 +650,7 @@ class MeteoSwissWindDirectionSensor(MeteoSwissSensor):
                 _LOGGER.warning("Statistics issue refresh failed (%s)", type(err).__name__)
 
     @property
-    def extra_state_attributes(self) -> dict:
+    def extra_state_attributes(self) -> dict[str, Any]:
         return {
             **super().extra_state_attributes,
             "wind_statistics_status": self._wind_statistics_status,
@@ -785,12 +806,16 @@ AIR_QUALITY_SENSOR_DESCRIPTIONS: Final[
 )
 
 
-class MeteoSwissAirQualitySensor(MeteoSwissCoordinatorEntity, SensorEntity):
+class MeteoSwissAirQualitySensor(
+    MeteoSwissCoordinatorEntity[OpenMeteoPollenCoordinator], SensorEntity
+):
     """Representation of a MeteoSwiss air quality sensor."""
+
+    entity_description: MeteoSwissSensorEntityDescription
 
     def __init__(
         self,
-        coordinator: DataUpdateCoordinator,
+        coordinator: OpenMeteoPollenCoordinator,
         entry: MeteoSwissConfigEntry,
         description: MeteoSwissSensorEntityDescription,
         station_name: str,
@@ -813,9 +838,10 @@ class MeteoSwissAirQualitySensor(MeteoSwissCoordinatorEntity, SensorEntity):
     @property
     def native_value(self) -> float | None:
         """Read the current value on initial add as well as later updates."""
-        if self.coordinator.data is None:
+        value_key = self.entity_description.value_key
+        if self.coordinator.data is None or value_key is None:
             return None
-        return self.coordinator.data.get(self.entity_description.value_key)
+        return self.coordinator.data.get(value_key)
 
 
 # --------------------------------------------------------------------------- #
@@ -826,7 +852,7 @@ HGT_ATTRIBUTION = "Calculated from MeteoSwiss ICON Seamless forecast via Open-Me
 
 
 def _daily_mean_for_date(
-    forecast_data: list[dict],
+    forecast_data: list[dict[str, Any]],
     day: str,
 ) -> float | None:
     # Return Open-Meteo's native full-calendar-day mean for a date.
@@ -870,12 +896,14 @@ def _remove_legacy_season_hgt_entity(
         _LOGGER.info("Removed legacy forecast-only season HGT entity")
 
 
-class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntity):
+class MeteoSwissHeatingDegreeDaysSensor(
+    MeteoSwissCoordinatorEntity[MeteoSwissForecastCoordinator], SensorEntity
+):
     """Calculated HGT 12/20 for today from the location-based forecast."""
 
     def __init__(
         self,
-        forecast_coordinator: DataUpdateCoordinator,
+        forecast_coordinator: MeteoSwissForecastCoordinator,
         entry: MeteoSwissConfigEntry,
     ) -> None:
         super().__init__(forecast_coordinator)
@@ -1023,7 +1051,7 @@ class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntit
         return round(hgt, 1) if hgt is not None else None
 
     @property
-    def extra_state_attributes(self) -> dict | None:
+    def extra_state_attributes(self) -> dict[str, Any] | None:
         diagnostics = {
             "hgt_statistics_status": self._hgt_statistics_status,
             "hgt_legacy_cleanup_required": self._hgt_statistics_archive is not None,
@@ -1054,7 +1082,7 @@ class MeteoSwissHeatingDegreeDaysSensor(MeteoSwissCoordinatorEntity, SensorEntit
 
 
 @dataclass
-class MS_PollenSensorDescription(SensorEntityDescription):
+class MS_PollenSensorDescription(SensorEntityDescription):  # type: ignore[misc]
     """Describes a MeteoSwiss measured pollen sensor."""
 
     pollen_type: str = ""
@@ -1114,12 +1142,14 @@ MS_POLLEN_SENSOR_DESCRIPTIONS: Final[tuple[MS_PollenSensorDescription, ...]] = (
 )
 
 
-class MeteoSwissMeasuredPollenSensor(MeteoSwissCoordinatorEntity, SensorEntity):
+class MeteoSwissMeasuredPollenSensor(
+    MeteoSwissCoordinatorEntity[MeteoSwissPollenCoordinator], SensorEntity
+):
     """Representation of a MeteoSwiss measured pollen sensor."""
 
     def __init__(
         self,
-        coordinator: DataUpdateCoordinator,
+        coordinator: MeteoSwissPollenCoordinator,
         entry: MeteoSwissConfigEntry,
         description: MS_PollenSensorDescription,
         pollen_station_label: str,
@@ -1148,7 +1178,7 @@ class MeteoSwissMeasuredPollenSensor(MeteoSwissCoordinatorEntity, SensorEntity):
         return pollen_data.get("current") if isinstance(pollen_data, dict) else None
 
     @property
-    def extra_state_attributes(self) -> dict:
+    def extra_state_attributes(self) -> dict[str, Any]:
         """Keep attributes aligned with the current source response."""
         data = self.coordinator.data or {}
         attributes = {

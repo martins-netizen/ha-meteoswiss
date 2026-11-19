@@ -10,6 +10,7 @@ import math
 import time
 from dataclasses import asdict, dataclass
 from datetime import UTC, datetime
+from typing import Any, TypedDict
 
 import aiohttp
 
@@ -40,10 +41,10 @@ class WeatherStation:
     def has_coordinates(self) -> bool:
         return self.latitude is not None and self.longitude is not None
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
-    def to_geojson_feature(self) -> dict:
+    def to_geojson_feature(self) -> dict[str, Any]:
         return {
             "type": "Feature",
             "properties": {
@@ -86,7 +87,7 @@ def _parse_station_catalogue(content: bytes) -> dict[str, WeatherStation]:
         or len(set(filter(None, headers))) != len(list(filter(None, headers)))
     ):
         raise ValueError("Invalid station catalogue columns")
-    stations = {}
+    stations: dict[str, WeatherStation] = {}
     for parts in rows:
         if not parts or len(parts) > len(headers):
             continue
@@ -94,7 +95,8 @@ def _parse_station_catalogue(content: bytes) -> dict[str, WeatherStation]:
             zip(headers, parts + [""] * (len(headers) - len(parts)), strict=True)
         )
         fields = {
-            key: values.get(column, "").strip() for key, column in columns.items()
+            key: values[column].strip() if column is not None else ""
+            for key, column in columns.items()
         }
         if not fields["id"] or not fields["name"]:
             continue
@@ -135,6 +137,20 @@ def parse_station_catalogue(content: bytes) -> dict[str, WeatherStation]:
         raise ValueError("Malformed station catalogue CSV") from None
 
 
+class _CatalogueSnapshot(TypedDict):
+    stations: dict[str, WeatherStation]
+    last_successful_update: str
+    expires_at: float
+
+
+class _CatalogueStatus(TypedDict):
+    data_status: str
+    station_count: int
+    last_update_success: bool | None
+    last_successful_update: str | None
+    last_exception: str | None
+
+
 class MeteoSwissStationsMap:
     """Entry-independent catalogue with explicit stale/unavailable status."""
 
@@ -157,7 +173,7 @@ class MeteoSwissStationsMap:
             else "stale"
         )
 
-    def get_status(self) -> dict:
+    def get_status(self) -> _CatalogueStatus:
         return {
             "data_status": self.data_status,
             "station_count": len(self._stations),
@@ -179,7 +195,7 @@ class MeteoSwissStationsMap:
             async with aiohttp.ClientSession() as owned_session:
                 return await self._async_download(owned_session)
 
-    def _accept(self, snapshot: dict) -> dict[str, WeatherStation]:
+    def _accept(self, snapshot: _CatalogueSnapshot) -> dict[str, WeatherStation]:
         if self.last_update_success is False:
             _LOGGER.info("Weather station catalogue recovered")
         self._stations = dict(snapshot["stations"])
@@ -217,7 +233,7 @@ class MeteoSwissStationsMap:
                 self.last_exception = type(err).__name__
                 self._retry_at = time.monotonic() + CATALOGUE_RETRY_DELAY
                 return dict(self._stations)
-            snapshot = {
+            snapshot: _CatalogueSnapshot = {
                 "stations": stations,
                 "last_successful_update": datetime.now(UTC).isoformat(),
                 "expires_at": time.monotonic() + CATALOGUE_TTL,
@@ -245,13 +261,13 @@ class MeteoSwissStationsMap:
         max_distance_km: float = 50.0,
         limit: int = 10,
     ) -> list[tuple[WeatherStation, float]]:
-        latitude = weather_number(latitude, -90, 90)
-        longitude = weather_number(longitude, -180, 180)
-        max_distance_km = weather_number(max_distance_km, 0)
+        center_latitude = weather_number(latitude, -90, 90)
+        center_longitude = weather_number(longitude, -180, 180)
+        distance_limit = weather_number(max_distance_km, 0)
         if (
-            latitude is None
-            or longitude is None
-            or max_distance_km is None
+            center_latitude is None
+            or center_longitude is None
+            or distance_limit is None
             or isinstance(limit, bool)
             or not isinstance(limit, int)
             or limit < 0
@@ -259,12 +275,12 @@ class MeteoSwissStationsMap:
             raise ValueError("Invalid nearby station search bounds")
         found = []
         for station in self.get_all_stations():
-            if not station.has_coordinates:
+            if station.latitude is None or station.longitude is None:
                 continue
             distance = self._calculate_distance(
-                latitude, longitude, station.latitude, station.longitude
+                center_latitude, center_longitude, station.latitude, station.longitude
             )
-            if distance <= max_distance_km:
+            if distance <= distance_limit:
                 found.append((station, distance))
         return sorted(found, key=lambda item: item[1])[:limit]
 
@@ -279,7 +295,7 @@ class MeteoSwissStationsMap:
         )
         return 6371 * 2 * math.asin(math.sqrt(max(0.0, min(1.0, a))))
 
-    def to_geojson(self) -> dict:
+    def to_geojson(self) -> dict[str, Any]:
         return {
             "type": "FeatureCollection",
             "features": [
@@ -289,13 +305,13 @@ class MeteoSwissStationsMap:
 
     def to_picture_elements_config(
         self, *, image: str | None = None, entity_id: str | None = None
-    ) -> dict | None:
+    ) -> dict[str, Any] | None:
         """Generate a north-up map only with an explicitly supplied image/entity."""
         if not image or not entity_id:
             return None
         elements = []
         for station in self.get_all_stations():
-            if not station.has_coordinates:
+            if station.latitude is None or station.longitude is None:
                 continue
             x = max(0, min(100, (station.longitude - 5.9) / (10.5 - 5.9) * 100))
             y = max(0, min(100, (47.8 - station.latitude) / (47.8 - 45.8) * 100))

@@ -1,12 +1,12 @@
 """Native confirmation for obsolete forecasts and retired measured products."""
 
+import probatio
 from homeassistant.components.repairs import RepairsFlow, RepairsFlowResult
 from homeassistant.core import HomeAssistant
-import voluptuous as vol
 
 from .const import DOMAIN
-from .hgt_cleanup import ISSUE, async_confirm_cleanup, async_plan_cleanup
-from .hgt_ogd_manager import CLEANUP_ISSUE, get_hgt_manager
+from .hgt_cleanup import ISSUE, HgtCleanupPlan, async_confirm_cleanup, async_plan_cleanup
+from .hgt_ogd_manager import CLEANUP_ISSUE, HgtRetiredPlan, get_hgt_manager
 
 
 class HgtCleanupRepairFlow(RepairsFlow):
@@ -14,13 +14,17 @@ class HgtCleanupRepairFlow(RepairsFlow):
 
     def __init__(self, entry_id: str) -> None:
         self.entry_id = entry_id
-        self._plan = None
+        self._plan: HgtCleanupPlan | None = None
 
-    async def async_step_init(self, user_input=None) -> RepairsFlowResult:
+    async def async_step_init(
+        self, user_input: dict[str, str] | None = None
+    ) -> RepairsFlowResult:
         # Core may supply issue_id as init data. Opening the repair is never consent.
         return await self.async_step_confirm()
 
-    async def async_step_confirm(self, user_input=None) -> RepairsFlowResult:
+    async def async_step_confirm(
+        self, user_input: dict[str, str] | None = None
+    ) -> RepairsFlowResult:
         errors = {}
         try:
             if self._plan is None:
@@ -33,7 +37,7 @@ class HgtCleanupRepairFlow(RepairsFlow):
             self._plan = None
             errors["base"] = "cleanup_not_verified"
         return self.async_show_form(
-            step_id="confirm", data_schema=vol.Schema({}), errors=errors,
+            step_id="confirm", data_schema=probatio.Schema({}), errors=errors,
             description_placeholders={
                 "statistic_ids": "\n".join(sorted(self._plan.metadata)) if self._plan is not None else "",
             },
@@ -44,12 +48,16 @@ class HgtOgdCleanupRepairFlow(RepairsFlow):
     """A station-owned plan remains repairable after its last entry is removed."""
 
     def __init__(self) -> None:
-        self._plan = None
+        self._plan: HgtRetiredPlan | None = None
 
-    async def async_step_init(self, user_input=None) -> RepairsFlowResult:
+    async def async_step_init(
+        self, user_input: dict[str, str] | None = None
+    ) -> RepairsFlowResult:
         return await self.async_step_confirm()
 
-    async def async_step_confirm(self, user_input=None) -> RepairsFlowResult:
+    async def async_step_confirm(
+        self, user_input: dict[str, str] | None = None
+    ) -> RepairsFlowResult:
         errors = {}
         manager = get_hgt_manager(self.hass)
         try:
@@ -61,19 +69,19 @@ class HgtOgdCleanupRepairFlow(RepairsFlow):
         except Exception:
             self._plan = None
             errors["base"] = "cleanup_not_verified"
-        return self.async_show_form(step_id="confirm", data_schema=vol.Schema({}), errors=errors,
+        return self.async_show_form(step_id="confirm", data_schema=probatio.Schema({}), errors=errors,
             description_placeholders={"statistic_ids": "\n".join(sorted(self._plan.metadata)) if self._plan is not None else ""})
 
 
 async def async_create_fix_flow(
-    hass: HomeAssistant, issue_id: str, data: dict | None
+    hass: HomeAssistant, issue_id: str, data: dict[str, str | int | float | None] | None
 ) -> HgtCleanupRepairFlow | HgtOgdCleanupRepairFlow:
     """Bind the flow to the actual entry and issue; no CLI or arbitrary ID input."""
     if issue_id == CLEANUP_ISSUE and data == {"kind": CLEANUP_ISSUE}:
         return HgtOgdCleanupRepairFlow()
-    if not data or issue_id != f"{ISSUE}_{data.get('entry_id')}":
+    entry_id = data.get("entry_id") if data else None
+    if not isinstance(entry_id, str) or issue_id != f"{ISSUE}_{entry_id}":
         raise ValueError("unknown_cleanup_issue")
-    entry_id = data["entry_id"]
     entry = hass.config_entries.async_get_entry(entry_id)
     if entry is None or entry.domain != DOMAIN:
         raise ValueError("entry_unavailable")

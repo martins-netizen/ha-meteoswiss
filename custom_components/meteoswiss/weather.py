@@ -19,6 +19,7 @@ from homeassistant.const import (
     UnitOfTemperature,
 )
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from homeassistant.helpers.event import async_track_point_in_utc_time
 from homeassistant.util import dt as dt_util
 
@@ -89,7 +90,12 @@ def _condition(raw: Any) -> str | None:
     return raw if isinstance(raw, str) and raw in _VALID_CONDITIONS else None
 
 
-def _known(entries: list[dict], key: str, minimum=None, maximum=None) -> list[float]:
+def _known(
+    entries: list[dict[str, Any]],
+    key: str,
+    minimum: float | None = None,
+    maximum: float | None = None,
+) -> list[float]:
     """Read only valid numbers, retaining zero and negative temperatures."""
     return [
         value
@@ -99,11 +105,11 @@ def _known(entries: list[dict], key: str, minimum=None, maximum=None) -> list[fl
 
 
 def _whole_day_values(
-    entries: list[tuple[datetime, dict]],
+    entries: list[tuple[datetime, dict[str, Any]]],
     day: date,
     key: str,
-    minimum=None,
-    maximum=None,
+    minimum: float | None = None,
+    maximum: float | None = None,
     *,
     interval_end: bool = False,
 ) -> list[float]:
@@ -125,14 +131,19 @@ def _whole_day_values(
     return list(values.values()) if values.keys() == expected else []
 
 
-def _forecast(timestamp: datetime, entry: dict) -> Forecast:
+def _whole_percent(value: float | None) -> int | None:
+    """Round a validated HA forecast percentage to nearest, with ties to even."""
+    return round(value) if value is not None else None
+
+
+def _forecast(timestamp: datetime, entry: dict[str, Any]) -> Forecast:
     """Project validated values into HA's native-unit forecast contract."""
     return Forecast(
         datetime=timestamp.isoformat(),
         native_temperature=weather_number(entry.get("temperature")),
         native_precipitation=weather_number(entry.get("precipitation"), 0),
-        precipitation_probability=weather_number(
-            entry.get("precipitation_probability"), 0, 100
+        precipitation_probability=_whole_percent(
+            weather_number(entry.get("precipitation_probability"), 0, 100)
         ),
         humidity=weather_number(entry.get("humidity"), 0, 100),
         native_wind_speed=weather_number(entry.get("wind_speed"), 0),
@@ -219,7 +230,7 @@ class MeteoSwissForecastWeatherBase(WeatherEntity):
         )
 
     @property
-    def forecast_coordinator_data(self) -> list:
+    def forecast_coordinator_data(self) -> list[dict[str, Any]]:
         """Retained failed/stale forecasts must not appear current."""
         source = self._forecast_coordinator
         if (
@@ -249,7 +260,7 @@ class MeteoSwissForecastWeatherBase(WeatherEntity):
                 return []
         return data
 
-    def _forecast_entries(self) -> Iterator[tuple[datetime, dict]]:
+    def _forecast_entries(self) -> Iterator[tuple[datetime, dict[str, Any]]]:
         """Skip invalid legacy entries without leaking raw payloads into logs."""
         for entry in self.forecast_coordinator_data[:120]:
             if not isinstance(entry, dict):
@@ -272,7 +283,7 @@ class MeteoSwissForecastWeatherBase(WeatherEntity):
     async def async_forecast_daily(self) -> list[Forecast]:
         """Prefer provider calendar aggregates; never call missing rain zero."""
         today = dt_util.utcnow().astimezone(FORECAST_TIME_ZONE).date()
-        days: dict[str, list[tuple[datetime, dict]]] = {}
+        days: dict[str, list[tuple[datetime, dict[str, Any]]]] = {}
         all_entries = list(self._forecast_entries())
         for timestamp, entry in all_entries:
             day = timestamp.astimezone(FORECAST_TIME_ZONE).date()
@@ -310,7 +321,7 @@ class MeteoSwissForecastWeatherBase(WeatherEntity):
                 else (sum(known_hourly_rain) if known_hourly_rain else None)
             )
             probabilities = _known(hourly, "daily_precipitation_probability", 0, 100)
-            projected["precipitation_probability"] = (
+            projected["precipitation_probability"] = _whole_percent(
                 probabilities[0]
                 if probabilities
                 else max(
@@ -332,7 +343,7 @@ class MeteoSwissForecastWeatherBase(WeatherEntity):
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: MeteoSwissConfigEntry,
-    async_add_entities,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up weather platform without changing existing entity identity."""
     entities: list[WeatherEntity] = [
@@ -395,7 +406,7 @@ class MeteoSwissWeather(
         self._attr_unique_id = f"{DOMAIN}_{entry.entry_id}_weather"
 
     @property
-    def supported_features(self) -> WeatherEntityFeature:
+    def supported_features(self) -> int | None:
         """Only legacy/base entries retain the combined forecast interface."""
         if self._forecast_target.status != "legacy":
             return WeatherEntityFeature(0)
@@ -423,7 +434,7 @@ class MeteoSwissWeather(
         self.async_write_ha_state()
 
     @property
-    def coordinator_data(self) -> dict:
+    def coordinator_data(self) -> dict[str, Any]:
         """Only a successful observation source supplies current attributes."""
         if not self.coordinator or not self.coordinator.last_update_success:
             return {}
@@ -452,7 +463,7 @@ class MeteoSwissWeather(
         return attributes or None
 
     @property
-    def attribution(self) -> str:
+    def attribution(self) -> str | None:
         """Credit both sources without claiming the model code is measured."""
         if self._station_condition_coordinator is not None:
             return "MeteoSwiss SwissMetNet / Open-Meteo (MeteoSwiss ICON)"
