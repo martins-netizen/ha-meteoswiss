@@ -115,10 +115,11 @@ Writable HA test configuration uses a temporary directory in both fixtures.
 After the native checks above, CI runs mypy on the shared retry decorator
 and its call-site contract in the **current** HA environment. From the repository
 root, use the same interpreter and install the checker together with the current
-fixture so pip validates their shared dependencies.
+fixture so pip validates their shared dependencies. This step accepts only hash-pinned wheels
+and stops if a compatible wheel is missing.
 
 ```sh
-python -m pip install --disable-pip-version-check --require-hashes \
+python -m pip install --disable-pip-version-check --only-binary :all: --require-hashes \
   --constraint requirements_ci_security.txt -r requirements_test.txt -r requirements_typing.txt
 python -m pip check
 python -m mypy --strict --explicit-package-bases --follow-imports=silent \
