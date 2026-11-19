@@ -100,7 +100,7 @@ def create_old_notice(hass):
     return ir.async_get(hass).async_get_issue(DOMAIN, manager_module.CLEANUP_ISSUE)
 
 
-async def reload_old_notice(hass, hass_storage):
+async def reload_old_notice(hass, **legacy_fields):
     """Simulate a stored pre-upgrade registry in this disposable HA instance."""
     old = create_old_notice(hass)
     ir.async_create_issue(
@@ -111,18 +111,15 @@ async def reload_old_notice(hass, hass_storage):
         data={"retained": "unrelated-data"},
         translation_placeholders={"retained": "unrelated-placeholder"},
     )
-    before = deepcopy(old.to_json())
+    before = {**deepcopy(old.to_json()), **legacy_fields}
     unrelated = deepcopy(ir.async_get(hass).async_get_issue(DOMAIN, "unrelated_notice").to_json())
-    hass_storage[ir.STORAGE_KEY] = {
-        "version": ir.STORAGE_VERSION_MAJOR,
-        "minor_version": ir.STORAGE_VERSION_MINOR,
-        "key": ir.STORAGE_KEY,
-        "data": {"issues": [before, unrelated]},
-    }
-    # This models cold reload in the test only. Production never reloads Core's
-    # registry or replaces unsaved issues from another integration.
-    await ir.async_load(hass)
-    assert ir.async_get(hass).async_get_issue(DOMAIN, manager_module.CLEANUP_ISSUE).translation_placeholders
+    # A cold-start Store returns decoded JSON without any pending writes from
+    # the live registry. Exercise the real registry loader with that payload.
+    stored = json.loads(json.dumps({"issues": [before, unrelated]}))
+    with patch.object(ir.async_get(hass)._store, "async_load", return_value=stored):
+        await ir.async_load(hass)
+    restored = ir.async_get(hass).async_get_issue(DOMAIN, manager_module.CLEANUP_ISSUE)
+    assert restored.to_json() == before
     return before, unrelated
 
 
@@ -136,10 +133,10 @@ async def download(hass, hass_client, entry):
 
 @pytest.mark.parametrize("state", ["loaded", "unloaded", "disabled"])
 async def test_startup_scrubs_old_persistent_notice_before_native_http_snapshot(
-    hass, hass_client, hass_storage, enable_custom_integrations, state
+    hass, hass_client, enable_custom_integrations, state
 ):
     entry = private_entry(hass, disabled=state == "disabled")
-    before, unrelated = await reload_old_notice(hass, hass_storage)
+    before, unrelated = await reload_old_notice(hass)
 
     async def setup_entry(_hass, item):
         item.runtime_data = MeteoSwissRuntimeData(
@@ -180,6 +177,31 @@ async def test_startup_scrubs_old_persistent_notice_before_native_http_snapshot(
     # different, retired station (KLO) in this same HTTP response.
     for secret in (*statistic_ids("klo").values(), "PRIVATE_", "47.451234", "8.561234"):
         assert secret not in rendered
+
+
+@pytest.mark.parametrize(
+    ("stored", "expected"),
+    [
+        (
+            {"is_fixable": None, "severity": None, "translation_key": None},
+            {"is_fixable": False, "severity": ir.IssueSeverity.WARNING,
+             "translation_key": manager_module.CLEANUP_ISSUE},
+        ),
+        (
+            {"is_fixable": False, "severity": "error", "translation_key": "existing_key"},
+            {"is_fixable": False, "severity": "error", "translation_key": "existing_key"},
+        ),
+    ],
+)
+async def test_persistent_repair_scrub_preserves_fields_and_defaults_missing_values(
+    hass, stored, expected
+):
+    before, unrelated = await reload_old_notice(hass, **stored)
+    manager_module.async_clear_retired_issue_placeholders(hass)
+    registry = ir.async_get(hass)
+    updated = registry.async_get_issue(DOMAIN, manager_module.CLEANUP_ISSUE)
+    assert updated.to_json() == {**before, **expected, "translation_placeholders": None}
+    assert registry.async_get_issue(DOMAIN, "unrelated_notice").to_json() == unrelated
 
 
 async def test_normal_manager_resync_clears_old_placeholders_and_keeps_exact_consent(

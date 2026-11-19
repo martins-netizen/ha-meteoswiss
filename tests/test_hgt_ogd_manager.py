@@ -46,6 +46,14 @@ def meta(station="klo"):
     return {data["statistic_id"]: (1, data)}
 
 
+async def test_invalid_cached_manager_cannot_replace_ownership_state(hass):
+    unexpected = object()
+    hass.data.setdefault(DOMAIN, {})[mgr.DATA_KEY] = unexpected
+    with pytest.raises(HgtError, match="^ownership_unavailable$"):
+        mgr.get_hgt_manager(hass)
+    assert hass.data[DOMAIN][mgr.DATA_KEY] is unexpected
+
+
 async def test_owner_store_only_station_codes_and_empty_store_removed(manager):
     assert mgr.get_hgt_manager(manager.hass) is manager
     manager.store.async_load.return_value = {"stations": ["KLO", "ber"]}
@@ -165,6 +173,52 @@ async def test_unclaimed_or_too_many_profiles_cannot_be_overwritten(manager, con
             await manager.async_refresh("klo", NOW + timedelta(seconds=29))
     write.assert_not_awaited()
     manager.store.async_save.assert_not_awaited()
+
+
+async def test_concurrent_claims_keep_persisted_ownership_reloadable(manager):
+    initial = {f"{i:03d}" for i in range(499)}
+    manager.store.async_load.return_value = {"stations": sorted(initial)}
+    for station in ("klo", "ber"):
+        manager.register(station, station, None)
+        manager.clients[station].async_fetch = AsyncMock(return_value=products())
+
+    both_reading = asyncio.Barrier(2)
+    first_saving = asyncio.Event()
+    second_checked = asyncio.Event()
+
+    async def metadata(hass, stations):
+        await both_reading.wait()
+        if stations == {"ber"}:
+            await first_saving.wait()
+            second_checked.set()
+        return {}
+
+    async def save(data):
+        first_saving.set()
+        await second_checked.wait()
+
+    manager.store.async_save.side_effect = save
+    with (
+        patch.object(mgr, "async_metadata", side_effect=metadata),
+        patch.object(mgr, "async_import_products", return_value={}) as write,
+    ):
+        async with asyncio.timeout(5):
+            first, second = await asyncio.gather(
+                manager.async_refresh("klo", NOW),
+                manager.async_refresh("ber", NOW),
+                return_exceptions=True,
+            )
+    assert first == {}
+    assert isinstance(second, HgtError) and str(second) == "statistics_conflict"
+    write.assert_awaited_once()
+    assert write.await_args.args[1] == "klo"
+    saved = {"stations": sorted(initial | {"klo"})}
+    manager.store.async_save.assert_awaited_once_with(saved)
+    restarted = mgr.HgtOgdManager(manager.hass)
+    restarted.store = manager.store
+    restarted.store.async_load.return_value = saved
+    await restarted.async_load()
+    assert restarted.known == manager.known == initial | {"klo"}
 
 
 async def test_cancel_after_claim_keeps_provenance_for_native_cleanup(manager):
