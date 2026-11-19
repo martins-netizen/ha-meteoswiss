@@ -24,6 +24,9 @@
   cleanup rechecks current ownership after the Recorder read and pauses when an
   existing series also belonged to another retained registry identity. CI checks
   this upgrade path with strict mypy.
+- Protect retained wind and HGT forecast statistics when an archive name is
+  claimed or a source entity ID has changed hands. Strict type checks now
+  cover both migrations and their shared Recorder rename and readback.
 
 ## [8.3.5] — 2026-11-19
 

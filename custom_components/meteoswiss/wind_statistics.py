@@ -13,7 +13,11 @@ from homeassistant.components.recorder.statistics import (
 )
 from homeassistant.core import HomeAssistant
 
-from .statistics_archive import async_archive_statistics
+from .statistics_archive import (
+    ArchiveMetadata,
+    archive_identities_match,
+    async_archive_statistics,
+)
 
 
 @dataclass(frozen=True, slots=True)
@@ -39,7 +43,7 @@ async def async_prepare_wind_statistics(
     archive_id = f"sensor.meteoswiss_wind_arithmetic_{registry_id}"
     ids = {entity_id, archive_id}
 
-    async def read():
+    async def read() -> ArchiveMetadata:
         return await instance.async_add_executor_job(
             partial(get_metadata, hass, statistic_ids=ids)
         )
@@ -49,6 +53,13 @@ async def async_prepare_wind_statistics(
             return WindStatisticsResult(False)
         before = await read()
         current, archive = before.get(entity_id), before.get(archive_id)
+        uses_archive = archive is not None or (
+            current is not None and current[1]["mean_type"] == StatisticMeanType.ARITHMETIC
+        )
+        if uses_archive and not archive_identities_match(
+            hass, entity_id, registry_id, archive_id, before
+        ):
+            return WindStatisticsResult(False)
         if archive and (
             archive[1]["source"] != "recorder"
             or archive[1]["unit_of_measurement"] != "°"
@@ -71,6 +82,6 @@ async def async_prepare_wind_statistics(
             return WindStatisticsResult(False)
 
         verified = await async_archive_statistics(
-            hass, entity_id, archive_id, current, read
+            hass, entity_id, archive_id, registry_id, current, read
         )
         return WindStatisticsResult(verified, archive_id if verified else None)

@@ -129,3 +129,11 @@ The existing b2 archival conflict notice can coexist with this cleanup repair
 when both compatible old source and destination metadata exist. A verified
 explicit cleanup resolves that historical conflict without overwriting either
 series. Wind migration conflicts remain a separate issue and deletion scope.
+
+**In development.** Before archiving daily HGT forecasts, the integration checks
+the current registry owner and retained records for both names. A known prior
+owner of the source statistics or a claim on the destination pauses archival.
+This also applies when another entity claimed and then released the archive
+name before it had statistics. If a claim appears after a rename was queued,
+the archive can already exist. Reload the entry after resolving the conflict
+to check the stored series again.
