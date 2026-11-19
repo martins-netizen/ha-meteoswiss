@@ -223,8 +223,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
             _LOGGER.warning("Official HGT needs a valid observation-station identity")
 
     # Create alerts API and coordinator
-    alerts_api = MeteoSwissAlertsAPI(session=shared_session)
-    alerts_api.postal_code = post_code
+    alerts_api = MeteoSwissAlertsAPI(session=shared_session, postal_code=post_code)
 
     alerts_coordinator = MeteoSwissAlertsCoordinator(
         hass,

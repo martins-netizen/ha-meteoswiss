@@ -211,8 +211,10 @@ async def test_warning_session_lifetime_missing_input_and_total_timeout(hass, fr
         await MeteoSwissAlertsAPI().get_alerts("9997")
     session = async_get_clientsession(hass)
     api = MeteoSwissAlertsAPI(session)
-    with pytest.raises(ValueError, match="postal code"):
-        await api.get_alerts("")
+    assert api.postal_code is None
+    for missing_postcode in (api.postal_code, ""):
+        with pytest.raises(ValueError, match="postal code"):
+            await api.get_alerts(missing_postcode)
     await api.close()
     assert not session.closed
     with (

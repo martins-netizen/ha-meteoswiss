@@ -55,8 +55,7 @@ async def test_v3_adds_drought_without_losing_existing_forest_fire(
 async def test_v3_failure_never_falls_back_to_incomplete_v1(
     hass, aioclient_mock, kloten_v3
 ):
-    api = MeteoSwissAlertsAPI(async_get_clientsession(hass))
-    api.postal_code = "8302"
+    api = MeteoSwissAlertsAPI(async_get_clientsession(hass), postal_code="8302")
     coordinator = MeteoSwissAlertsCoordinator(hass, api)
     aioclient_mock.get(V3_URL, json=kloten_v3)
     await coordinator.async_refresh()
