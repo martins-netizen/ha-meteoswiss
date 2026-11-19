@@ -26,7 +26,7 @@ def pin(name="sample", version="1.0", marker="", hashes=(HASH_A,)):
 def test_real_universal_locks_and_compiler_requirements():
     """The committed baseline contains packages for all three host platforms."""
     root = SCRIPT.parents[1]
-    for name in locks.LOCKS:
+    for name in locks.HA_LOCKS:
         content = (root / name).read_text(encoding="utf-8")
         parsed = locks.parse_lock(content)
         assert locks.compare_locks(content, content) > 100

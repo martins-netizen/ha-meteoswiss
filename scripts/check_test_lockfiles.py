@@ -11,7 +11,9 @@ import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
-LOCKS = ("requirements_test.txt", "requirements_test_min.txt")
+HA_LOCKS = ("requirements_test.txt", "requirements_test_min.txt")
+TYPING_LOCK = "requirements_typing.txt"
+LOCKS = (*HA_LOCKS, TYPING_LOCK)
 HASH = re.compile(r"--hash=sha256:([0-9a-f]{64})(?=\s|$)")
 
 
@@ -148,13 +150,13 @@ def verify(root: Path) -> dict[str, int]:
 
 
 def main() -> int:
-    """Provide hash-pinned bootstrap requirements or verify both fixture locks."""
+    """Provide hash-pinned bootstrap requirements or verify all CI locks."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("command", choices=("compiler", "verify"))
     args = parser.parse_args()
     try:
         if args.command == "compiler":
-            print(compiler_requirements((ROOT / LOCKS[0]).read_text(encoding="utf-8")), end="")
+            print(compiler_requirements((ROOT / HA_LOCKS[0]).read_text(encoding="utf-8")), end="")
         else:
             for name, count in verify(ROOT).items():
                 print(f"{name}: {count} universal package selections verified")

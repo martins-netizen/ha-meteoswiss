@@ -2,14 +2,11 @@
 
 **Status:** implemented CI/security control introduced after PR #106 and
 verified on the actual #107 merge. The dated evidence below retains that scope.
-The current fixture now pairs HA/pytest-homeassistant **2026.11.2** with the
-unchanged minimum **2026.11.0**. Both universal locks still contain 138
-selections and together cover 140 distinct package/version pairs; two current
-fixture pairs replace their 11.1 equivalents. Re-run the complete audit on the
-actual candidate; the original observation is not a fresh inventory or an
-owner-alert/settings review. [Fixture and integrity contract](../DEVELOPMENT.md#current-fixture-update).
+CI checks the two HA/pytest-homeassistant fixtures (**2026.11.0** and
+**2026.11.2**) and the mypy toolchain. Re-run the complete audit for each
+candidate. [Fixture and integrity contract](../DEVELOPMENT.md#current-fixture-update).
 
-The `Test dependency advisories` CI job checks both universal test lockfiles.
+The `Test dependency advisories` CI job checks all three universal lockfiles.
 The existing required `tests` aggregate also requires this job to succeed.
 A separate `Dependency audit` workflow schedules the same read-only steps daily
 at 05:17 UTC and supports manual dispatch. GitHub controls actual scheduling and
@@ -19,9 +16,10 @@ workflow notifications; this does not create an automatic update or merge.
 
 The checker reuses the strict hash-lock parser. It includes every selection,
 including Windows/macOS markers, and deduplicates only identical package/version
-pairs. The reviewed locks each contain 138 selections and together contain 140
-distinct pairs. This is a full-lock check, rather than a scan of only packages
-installed on the Linux runner. Inputs are bounded and symlink locks are rejected.
+pairs. The two HA locks each contain 138 selections, totalling 140 distinct
+pairs. The typing lock adds six selections, one already present in the HA locks,
+for a total of 145 distinct pairs at the current pins. Inputs are bounded and
+symlink locks are rejected.
 
 For each pair, it requests PyPI's [release-specific JSON metadata](https://docs.pypi.org/api/json/#get-a-release)
 and verifies the returned package and version. PyPI supplies known advisories in
@@ -69,9 +67,10 @@ The command returns nonzero for an active advisory, unknown result, invalid lock
 outdated bootstrap or audit error. Shell redirection owns the chosen output
 file; use a path intended for this report. Inspect its safe package/version/ID
 diagnostic and the JSON report. For a service outage, confirm recovery and rerun;
-do not change failure into success. For a real vulnerability, coordinate the
-matching HA/test-package inputs and regenerate both universal locks with their
-platform markers and hashes, then run the complete compatibility suites. Do not
+do not change failure into success. For a vulnerability in an HA fixture, coordinate the matching HA and test-package
+inputs. For a checker dependency, review its typing input and resolution.
+Regenerate affected locks with their platform markers and hashes, then run
+the full compatibility suites and strict typing check. Do not
 override HA's dependency pins, lower a security floor, suppress an advisory or
 dismiss an alert to make CI pass. [Dependency maintenance](../DEVELOPMENT.md#test-dependency-lockfiles)
 and [confidential reporting](../SECURITY.md) retain their existing procedures.

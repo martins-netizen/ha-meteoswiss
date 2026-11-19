@@ -39,7 +39,7 @@ jobs:
         run: |
           python scripts/check_test_lockfiles.py compiler > "$RUNNER_TEMP/meteoswiss-audit-parser.txt"
           python -m pip install --disable-pip-version-check --require-hashes --no-deps -r "$RUNNER_TEMP/meteoswiss-audit-parser.txt"
-      - name: Check every package version in both universal locks
+      - name: Check every package version in the HA and typing locks
         run: python -m scripts.check_dependency_advisories --json > "$RUNNER_TEMP/meteoswiss-dependency-audit.json"
 
   lockfiles:
@@ -64,7 +64,7 @@ jobs:
           python -m pip install --disable-pip-version-check --require-hashes --no-deps -r "$RUNNER_TEMP/meteoswiss-lock-compiler.txt"
       # Network resolution happens only in this separate maintenance job.
       # Both HA compatibility jobs keep UV_OFFLINE=true throughout.
-      - name: Verify both universal locks without changing the checkout
+      - name: Verify all universal locks without changing the checkout
         run: python scripts/check_test_lockfiles.py verify
 
   compatibility:
@@ -98,6 +98,7 @@ jobs:
           cache-dependency-path: |
             ${{ matrix.requirements }}
             requirements_ci_security.txt
+            requirements_typing.txt
 
       - name: Check Python and pip before installing dependencies
         run: python scripts/check_ci_security.py bootstrap
@@ -134,6 +135,15 @@ jobs:
 
       - name: Verify the 51-rule evidence index against this native run
         run: python scripts/check_quality_rules.py verify
+
+      - name: Check the typed retry contract on the current HA fixture
+        if: matrix.requirements == 'requirements_test.txt'
+        run: |
+          python -m pip install --disable-pip-version-check --require-hashes \
+            --constraint requirements_ci_security.txt -r requirements_test.txt -r requirements_typing.txt
+          python -m pip check
+          python -m mypy --strict --explicit-package-bases --follow-imports=silent \
+            custom_components/meteoswiss/retry.py tests/typing/retry_contract.py
 
   hassfest:
     runs-on: ubuntu-latest
