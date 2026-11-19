@@ -108,6 +108,7 @@ async def test_hgt_compatibility_alias_preserves_logger_interval_and_entry_owner
 
     from custom_components.meteoswiss import coordinator, hgt_ogd_coordinator
     from custom_components.meteoswiss.const import DOMAIN
+    from custom_components.meteoswiss.hgt_ogd_recorder import HgtImportResult
     from custom_components.meteoswiss.runtime_data import MeteoSwissConfigEntry
 
     canonical = getattr(coordinator, "MeteoSwissHgtCoordinator", None)
@@ -118,11 +119,19 @@ async def test_hgt_compatibility_alias_preserves_logger_interval_and_entry_owner
         "hass": HomeAssistant, "entry": MeteoSwissConfigEntry, "station": str,
         "session": aiohttp.ClientSession, "return": type(None),
     }
-    assert get_type_hints(canonical._async_update_data) == {"return": dict}
+    assert get_type_hints(canonical._async_update_data) == {"return": HgtImportResult}
     entry = MockConfigEntry(domain=DOMAIN)
     session = object()
+    snapshot: HgtImportResult = {
+        "latest_value": 0.0,
+        "source_day": "2026-11-14",
+        "statistic_ids": {"daily": "meteoswiss:klo_hgt_12_20_daily"},
+        "imported_points": {"daily": 1},
+        "missing_points": {"daily": 0},
+        "statistics_status": "ready",
+    }
     manager = SimpleNamespace(register=Mock(), release=Mock(),
-                              async_refresh=AsyncMock(return_value={"statistics_status": "ready"}),
+                              async_refresh=AsyncMock(return_value=snapshot),
                               async_sync_issue=AsyncMock())
     with patch.object(coordinator, "get_hgt_manager", return_value=manager):
         instance = canonical(hass, entry, "KLO", session)
@@ -132,7 +141,9 @@ async def test_hgt_compatibility_alias_preserves_logger_interval_and_entry_owner
     )
     assert instance.update_interval == timedelta(hours=6)
     assert instance.config_entry is entry and instance._unsub_refresh is None
-    assert await instance._async_update_data() == {"statistics_status": "ready"}
+    result = await instance._async_update_data()
+    assert type(result) is dict
+    assert result is snapshot
     manager.async_refresh.assert_awaited_once()
     manager.async_sync_issue.assert_awaited_once()
     await entry._async_process_on_unload(hass)

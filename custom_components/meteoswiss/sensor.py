@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from collections.abc import Callable
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, replace
 from datetime import UTC, date, datetime, timedelta
 from functools import partial
@@ -331,7 +331,7 @@ class MeteoSwissMeasuredHgtSensor(MeteoSwissCoordinatorEntity[MeteoSwissHgtCoord
 
     @property
     def extra_state_attributes(self) -> dict[str, Any]:
-        data = self.coordinator.data or {}
+        data: Mapping[str, object] = self.coordinator.data or {}
         status = ("unavailable" if not self.coordinator.last_update_success else
                   "delayed" if data and not self.available else data.get("statistics_status", "initializing"))
         return {"source": "MeteoSwiss SwissMetNet OGD", "parameter": "xno000d0", "method": "HGT 12/20",

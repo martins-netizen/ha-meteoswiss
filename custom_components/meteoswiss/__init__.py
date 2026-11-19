@@ -96,9 +96,9 @@ async def _async_refresh_optional_coordinators(*coordinators) -> None:
     )
 
 
-def _keep_coordinator_polling(
+def _keep_coordinator_polling[T](
     entry: MeteoSwissConfigEntry,
-    coordinator: DataUpdateCoordinator,
+    coordinator: DataUpdateCoordinator[T],
 ) -> None:
     """Keep a coordinator without entity listeners polling until unload."""
     entry.async_on_unload(coordinator.async_add_listener(lambda: None))

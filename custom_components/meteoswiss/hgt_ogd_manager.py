@@ -20,6 +20,8 @@ from .hgt_ogd import (
     station_code,
 )
 from .hgt_ogd_recorder import (
+    HgtImportResult,
+    HgtMetadata,
     async_clear_owned,
     async_import_products,
     async_metadata,
@@ -34,7 +36,7 @@ BLOCKED_ISSUE = "hgt_ogd_cleanup_blocked"
 @dataclass(frozen=True, slots=True)
 class HgtRetiredPlan:
     stations: tuple[str, ...]
-    metadata: dict
+    metadata: HgtMetadata
 
 
 class HgtOgdManager:
@@ -49,7 +51,7 @@ class HgtOgdManager:
         self.locks: dict[str, asyncio.Lock] = {}
         self.clients: dict[str, MeteoSwissHgtClient] = {}
         self.users: dict[str, set[str]] = {}
-        self.snapshots: dict[str, tuple[datetime, dict]] = {}
+        self.snapshots: dict[str, tuple[datetime, HgtImportResult]] = {}
         self.failures: dict[str, datetime] = {}
 
     async def async_load(self) -> None:
@@ -113,7 +115,7 @@ class HgtOgdManager:
                 continue
         return result
 
-    async def async_refresh(self, station: str, now: datetime) -> dict:
+    async def async_refresh(self, station: str, now: datetime) -> HgtImportResult:
         await self.async_load()
         async with self.locks.setdefault(station, asyncio.Lock()):
             if (
