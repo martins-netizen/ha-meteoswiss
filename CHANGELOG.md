@@ -5,6 +5,8 @@
 - Add strict type checking for the shared HTTP retry decorator. CI checks that
   wrapped provider calls accept the original arguments and return the expected
   result type. The type checker and its dependencies are hash-locked and audited.
+- Extend the strict check to the ICON forecast client, including daily values
+  across Swiss clock changes and the borrowed HTTP session.
 
 ## [8.3.5] — 2026-11-19
 

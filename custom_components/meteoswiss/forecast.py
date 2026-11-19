@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from datetime import UTC, datetime, time, timedelta, timezone
+from datetime import UTC, datetime, time, timedelta, timezone, tzinfo
 from itertools import pairwise
 from typing import Any
 
@@ -61,16 +61,22 @@ def _calendar_hourly_values(
     instants = {first + timedelta(hours=i) for i in range(hours)}
     interval_ends = {stamp + timedelta(hours=1) for stamp in instants}
 
-    def complete(key: str, expected: set[datetime], minimum=None, maximum=None):
+    def complete(
+        key: str,
+        expected: set[datetime],
+        minimum: float | None = None,
+        maximum: float | None = None,
+    ) -> list[float]:
         series = _series(hourly, key)
         values = {
             stamp: _value(series, i, minimum, maximum)
             for i, stamp in enumerate(timestamps)
             if stamp in expected
         }
-        if values.keys() != expected or any(v is None for v in values.values()):
+        if values.keys() != expected:
             return []
-        return list(values.values())
+        numbers = [value for value in values.values() if value is not None]
+        return numbers if len(numbers) == len(expected) else []
 
     temperatures = complete("temperature_2m", instants)
     rain = complete("precipitation", interval_ends, 0)
@@ -142,12 +148,14 @@ class IconForecastClient:
 
         if self.elevation is not None:
             url += f"&elevation={self.elevation}"
-        return self.parse_response(await self._async_fetch_payload(url))
+        return self.parse_response(await self._async_fetch_payload(self._session, url))
 
     @async_retry_with_backoff(max_attempts=3)
-    async def _async_fetch_payload(self, url: str) -> Any:
+    async def _async_fetch_payload(
+        self, session: aiohttp.ClientSession, url: str
+    ) -> Any:
         """Retry transient HTTP failures without logging the location URL."""
-        return await async_get_json(self._session, url, host=FORECAST_HOST)
+        return await async_get_json(session, url, host=FORECAST_HOST)
 
     def parse_response(self, data: Any) -> list[dict[str, Any]]:
         """Normalize a usable rolling forecast without manufacturing values."""
@@ -198,7 +206,7 @@ class IconForecastClient:
         # Open-Meteo daily buckets use the response's fixed offset, even
         # across DST. Preserve their date labels; hourly timestamps use IANA.
         provider_offset = data.get("utc_offset_seconds")
-        daily_zone = FORECAST_TIME_ZONE
+        daily_zone: tzinfo = FORECAST_TIME_ZONE
         if provider_offset is not None:
             offset = _value([provider_offset], 0)
             if offset is None or abs(offset) >= 86400:
