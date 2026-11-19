@@ -1,6 +1,7 @@
 """Compatibility contracts for existing device groups and entity identities."""
 
 import logging
+from dataclasses import replace
 
 import pytest
 from homeassistant.helpers.device_registry import DeviceEntryType
@@ -10,6 +11,7 @@ from ha_helpers import MockConfigEntry
 from custom_components.meteoswiss.binary_sensor import (
     ALERT_SENSOR_DESCRIPTIONS,
     MeteoSwissAlertsBinarySensor,
+    MeteoSwissAlertsBinarySensorDescription,
 )
 from custom_components.meteoswiss.const import (
     ATTRIBUTION,
@@ -19,21 +21,44 @@ from custom_components.meteoswiss.const import (
 from custom_components.meteoswiss.pollen_sensor import (
     POLLEN_SENSOR_DESCRIPTIONS,
     MeteoSwissPollenSensor,
+    MeteoSwissPollenSensorEntityDescription,
 )
 from custom_components.meteoswiss.sensor import (
     AIR_QUALITY_SENSOR_DESCRIPTIONS,
     MS_POLLEN_SENSOR_DESCRIPTIONS,
     SENSOR_DESCRIPTIONS,
     HGT_ATTRIBUTION,
+    MS_PollenSensorDescription,
     MeteoSwissAirQualitySensor,
     MeteoSwissCacheStatsSensor,
+    MeteoSwissForecastSensorDescription,
     MeteoSwissHeatingDegreeDaysSensor,
     MeteoSwissMeasuredPollenSensor,
     MeteoSwissSensor,
+    MeteoSwissSensorEntityDescription,
     MeteoSwissStationsMapSensor,
 )
 from custom_components.meteoswiss.stations_map import MeteoSwissStationsMap
 from custom_components.meteoswiss.weather import MeteoSwissWeather
+
+
+@pytest.mark.parametrize(
+    "description_class",
+    [
+        MeteoSwissAlertsBinarySensorDescription,
+        MeteoSwissSensorEntityDescription,
+        MeteoSwissForecastSensorDescription,
+        MeteoSwissPollenSensorEntityDescription,
+        MS_PollenSensorDescription,
+    ],
+)
+def test_sensor_descriptions_keep_mutable_dataclass_contract(description_class):
+    description = description_class("example")
+    assert description.key == "example"
+    description.translation_key = "original"
+    updated = replace(description, translation_key="updated")
+    assert type(updated) is description_class
+    assert (description.translation_key, updated.translation_key) == ("original", "updated")
 
 
 @pytest.mark.parametrize(

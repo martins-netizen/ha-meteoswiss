@@ -143,6 +143,40 @@ async def test_registered_weather_exposes_native_measurements(hass, installed_we
     assert attrs["humidity"] == 0
 
 
+async def test_forecast_service_rounds_precipitation_probability(
+    hass, installed_weather
+):
+    entry, entity = installed_weather
+    forecast = entry.runtime_data.forecast_coordinator
+    for raw, expected in (
+        (None, None),
+        (-0.1, None),
+        (0, 0),
+        (12.49, 12),
+        (12.5, 12),
+        (13.5, 14),
+        (99.9, 100),
+        (100, 100),
+        (100.1, None),
+    ):
+        source = row(precipitation_probability=raw, daily_precipitation_probability=raw)
+        forecast.async_set_updated_data([source])
+        for kind in ("hourly", "daily"):
+            result = await hass.services.async_call(
+                "weather",
+                "get_forecasts",
+                {"entity_id": entity.entity_id, "type": kind},
+                blocking=True,
+                return_response=True,
+            )
+            item = result[entity.entity_id]["forecast"][0]
+            probability = item.get("precipitation_probability")
+            assert probability == expected
+            assert probability is None or type(probability) is int
+        assert source["precipitation_probability"] == raw
+        assert source["daily_precipitation_probability"] == raw
+
+
 async def test_forecast_subscribers_receive_refresh_failure_and_recovery(
     hass, installed_weather
 ):

@@ -189,13 +189,8 @@ remains dated **11 November 2026**, not a fresh alert clearance.
 [four-language names](docs/ENTITY_NAME_TRANSLATIONS.md), [icons](docs/ICON_TRANSLATIONS.md),
 [errors](docs/EXCEPTION_TRANSLATIONS.md), [shared diagnostic ownership](docs/SHARED_DIAGNOSTIC_LIFECYCLE.md)
 and [conservative native device removal](docs/DEVICE_REMOVAL.md) retain their
-contracts. CI runs strict type checks on the shared retry decorator, the ICON
-forecast client, the warning client, both pollen clients, the Open-Meteo
-current-weather client, shared weather normalisation, the measured heating-degree-day
-source, its Recorder import and station ownership manager, legacy forecast statistics
-cleanup, shared HTTP transport, the Recorder archive paths for wind direction
-and historical heating-degree-day forecasts, the forecast location catalogue,
-saved forecast targets, shared entity metadata and the API cache.
+contracts. CI runs strict type checks on every Python module in the integration and on
+the retry decorator’s call-site contract.
 The [developer guide](DEVELOPMENT.md#strict-type-checking) shows how to run them. The dependency audit covers both HA fixtures and the type checker.
 
 ## Start here

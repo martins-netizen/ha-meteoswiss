@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from typing import Any
 
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
@@ -88,7 +89,9 @@ def _get_base_coordinates(
     return latitude, longitude
 
 
-async def _async_refresh_optional_coordinators(*coordinators) -> None:
+async def _async_refresh_optional_coordinators(
+    *coordinators: DataUpdateCoordinator[Any],
+) -> None:
     """Refresh optional coordinators without delaying config entry setup."""
     await asyncio.gather(
         *(coordinator.async_refresh() for coordinator in coordinators),
@@ -125,7 +128,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
         entry.data.get(CONF_UPDATE_INTERVAL, DEFAULT_UPDATE_INTERVAL_SEC),
     )
     data_source = entry.data.get(CONF_DATA_SOURCE, DATA_SOURCE_METEOSWISS)
-    station_id = entry.data.get(CONF_STATION_ID)
     post_code = entry.data.get(CONF_POSTAL_CODE)
     lat, lon = _get_base_coordinates(hass, entry, data_source)
     forecast_target = resolve_forecast_target(entry.data, lat, lon)
@@ -136,6 +138,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
             "Saved forecast location is invalid; forecast disabled until reconfigured"
         )
 
+    coordinator: MeteoSwissDataUpdateCoordinator | OpenMeteoDataUpdateCoordinator
+    station_id: str | None = None
     if data_source == DATA_SOURCE_OPENMETEO:
         # Alternative modelled current conditions; ICON forecasts stay separate.
         coordinator = OpenMeteoDataUpdateCoordinator(
@@ -161,6 +165,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
 
     else:
         # Use MeteoSwiss API for current weather
+        station_id = entry.data[CONF_STATION_ID]
         coordinator = MeteoSwissDataUpdateCoordinator(
             hass,
             station_id=station_id,
@@ -216,7 +221,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
     await coordinator.async_config_entry_first_refresh()
 
     hgt_ogd_coordinator = None
-    if data_source != DATA_SOURCE_OPENMETEO and "recorder" in hass.config.components:
+    if station_id is not None and "recorder" in hass.config.components:
         try:
             hgt_ogd_coordinator = MeteoSwissHgtCoordinator(hass, entry, station_id, shared_session)
         except HgtError:
@@ -272,7 +277,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
     async_setup_cleanup(hass, entry)
 
     # Refresh optional data in parallel after entities are registered
-    optional_coordinators = [
+    optional_coordinators: list[DataUpdateCoordinator[Any]] = [
         forecast_coordinator,
         alerts_coordinator,
         pollen_coordinator,

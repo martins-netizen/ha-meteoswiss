@@ -29,7 +29,10 @@
   cover both migrations and their shared Recorder rename and readback.
 - Run strict type checks on forecast location catalogue parsing and search,
   saved forecast targets and shared entity metadata.
-- Check API cache entries, counters and hit rates with strict mypy.
+- Run strict mypy across the entire integration, including API cache statistics,
+  configuration flows, coordinators, entities, station lookups and repairs.
+- Return whole percentages for precipitation probability in Home Assistant’s
+  hourly and daily forecasts. Source probabilities retain their original precision.
 
 ## [8.3.5] — 2026-11-19
 

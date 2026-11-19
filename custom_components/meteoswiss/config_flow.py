@@ -5,19 +5,23 @@ from __future__ import annotations
 import asyncio
 import math
 import re
-from typing import Any
+from abc import abstractmethod
+from typing import Any, NotRequired, TypedDict
 
-import voluptuous as vol
+import probatio as vol
 from homeassistant.config_entries import (
     SOURCE_RECONFIGURE,
     ConfigEntry,
+    ConfigEntryBaseFlow,
     ConfigFlow,
+    ConfigFlowContext,
+    ConfigFlowResult,
     OptionsFlow,
 )
 from homeassistant.core import callback
-from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.selector import (
+    SelectOptionDict,
     SelectSelector,
     SelectSelectorConfig,
     SelectSelectorMode,
@@ -74,7 +78,7 @@ STATION_MAP_URLS = {
 
 
 def _has_matching_meteoswiss_entry(
-    entries: list[Any], station_id: str, postal_code: str
+    entries: list[ConfigEntry], station_id: str, postal_code: str
 ) -> bool:
     """Include legacy entries without unique IDs or an explicit source."""
     for entry in entries:
@@ -91,7 +95,10 @@ def _has_matching_meteoswiss_entry(
 
 
 def _has_matching_openmeteo_entry(
-    entries: list[Any], latitude: float, longitude: float, postal_code: str
+    entries: list[ConfigEntry],
+    latitude: float | None,
+    longitude: float | None,
+    postal_code: str,
 ) -> bool:
     """Match existing location/postcode entries, including entries without IDs."""
     for entry in entries:
@@ -129,8 +136,29 @@ def _parse_stations(content: bytes) -> list[dict[str, Any]]:
         return []
 
 
-class _LocationFlowMixin:
+class _FlowContext(ConfigFlowContext, total=False):
+    """Language may be supplied by the caller of a setup or options flow."""
+
+    language: str
+
+
+class _EntryUpdates(TypedDict):
+    """Changes passed to either Home Assistant entry update API."""
+
+    data: dict[str, Any]
+    options: dict[str, Any]
+    title: NotRequired[str]
+    unique_id: NotRequired[str]
+
+
+class _LocationFlowMixin(ConfigEntryBaseFlow):
     """Share validated location search between setup and existing-entry options."""
+
+    context: _FlowContext
+
+    @abstractmethod
+    def _finish_forecast_selection(self, *, change: bool) -> ConfigFlowResult:
+        """Commit the selected point through the current flow."""
 
     def _station_map_placeholders(self) -> dict[str, str]:
         """Keep static external URLs outside HA's translated strings."""
@@ -166,6 +194,7 @@ class _LocationFlowMixin:
     ) -> bool:
         """Use the same observation contract as setup, with a bounded total wait."""
         session = async_get_clientsession(self.hass)
+        coordinator: MeteoSwissDataUpdateCoordinator | OpenMeteoDataUpdateCoordinator
         if station_id is not None:
             coordinator = MeteoSwissDataUpdateCoordinator(
                 self.hass, station_id, DEFAULT_UPDATE_INTERVAL_SEC, session=session
@@ -211,7 +240,7 @@ class _LocationFlowMixin:
 
     async def async_step_forecast_location(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Explain forecast purpose before accepting any search term."""
         errors = {}
         target = resolve_forecast_target(self._pending_data, None, None)
@@ -248,7 +277,7 @@ class _LocationFlowMixin:
 
     async def async_step_forecast_search(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Reuse one bounded client; search the snapshot outside the event loop."""
         errors = {}
         self._candidates = {}
@@ -305,7 +334,7 @@ class _LocationFlowMixin:
 
     async def async_step_forecast_select(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Never select the first result automatically, even for a single match."""
         if not self._candidates:
             return await self.async_step_forecast_search()
@@ -324,7 +353,7 @@ class _LocationFlowMixin:
                     vol.Required("point"): SelectSelector(
                         SelectSelectorConfig(
                             options=[
-                                {"value": key, "label": label}
+                                SelectOptionDict(value=key, label=label)
                                 for key, label in self._candidate_labels.items()
                             ],
                             mode=SelectSelectorMode.DROPDOWN,
@@ -336,6 +365,7 @@ class _LocationFlowMixin:
 
     async def _validate_forecast(self) -> bool:
         """Check a chosen point with the actual client, without scheduling polling."""
+        assert self._selected_location is not None
         point = self._selected_location.point
         client = IconForecastClient(
             point.latitude,
@@ -352,7 +382,7 @@ class _LocationFlowMixin:
 
     async def async_step_forecast_confirm(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Only explicit submission may commit a changed location."""
         errors = {}
         if user_input is not None:
@@ -385,6 +415,15 @@ class _LocationFlowMixin:
 
 class _SettingsFlowMixin(_LocationFlowMixin):
     """Share atomic settings validation and commit preparation across HA routes."""
+
+    _settings_step_id: str
+    _settings_confirm_step_id: str
+
+    @abstractmethod
+    def _apply_settings(
+        self, entry: ConfigEntry, updates: _EntryUpdates
+    ) -> ConfigFlowResult:
+        """Commit the staged update through the active settings route."""
 
     def _init_settings_flow(self) -> None:
         self._init_location_flow()
@@ -456,6 +495,7 @@ class _SettingsFlowMixin(_LocationFlowMixin):
     async def _stage_settings(
         self, user_input: dict[str, Any], station_based: bool
     ) -> tuple[dict[str, Any], dict[str, str]]:
+        assert self._original_data is not None
         data = dict(self._original_data)
         errors = {}
         pollen = user_input.get(CONF_POLLEN_STATION)
@@ -483,7 +523,7 @@ class _SettingsFlowMixin(_LocationFlowMixin):
 
     async def _settings_forecast_action(
         self, action: str, station_based: bool
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         if action == "search":
             return await self.async_step_forecast_search()
         if action == "base":
@@ -501,7 +541,7 @@ class _SettingsFlowMixin(_LocationFlowMixin):
 
     async def _async_step_settings(
         self, entry: ConfigEntry, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Use one transaction for Configure and the native Reconfigure route."""
         self._settings_entry = entry
         self._confirmation_step_id = self._settings_confirm_step_id
@@ -532,7 +572,7 @@ class _SettingsFlowMixin(_LocationFlowMixin):
 
     async def _settings_form(
         self, station_based: bool, errors: dict[str, str]
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         entry = self._settings_entry
         values = {
             **entry.data,
@@ -541,7 +581,7 @@ class _SettingsFlowMixin(_LocationFlowMixin):
             ),
             **self._settings_input,
         }
-        schema = {}
+        schema: dict[vol.Required, object] = {}
         if station_based:
             choices = {station["id"]: station["label"] for station in self._stations}
             current = str(entry.data.get(CONF_STATION_ID, "")).strip().lower()
@@ -611,7 +651,7 @@ class _SettingsFlowMixin(_LocationFlowMixin):
             ],
         }
 
-    def _finish_settings_selection(self, *, change: bool) -> FlowResult:
+    def _finish_settings_selection(self, *, change: bool) -> ConfigFlowResult:
         entry = self._settings_entry
         if (
             dict(entry.data) != self._original_data
@@ -640,7 +680,7 @@ class _SettingsFlowMixin(_LocationFlowMixin):
         # A unique ID for the *config entry* tracks its observation identity.
         # The entry_id and existing entity IDs remain unchanged. External
         # precipitation archives retain their separate station-specific IDs.
-        updates = {"data": data, "options": dict(self._pending_options)}
+        updates: _EntryUpdates = {"data": data, "options": dict(self._pending_options)}
         if entry.title == old_title:
             updates["title"] = new_title
         identity_fields = (
@@ -649,6 +689,7 @@ class _SettingsFlowMixin(_LocationFlowMixin):
             CONF_LATITUDE,
             CONF_LONGITUDE,
         )
+        assert self._original_data is not None
         if entry.unique_id is not None and any(
             data.get(key) != self._original_data.get(key) for key in identity_fields
         ):
@@ -666,7 +707,7 @@ class MeteoSwissConfigFlow(_SettingsFlowMixin, ConfigFlow, domain=DOMAIN):
 
     @staticmethod
     @callback
-    def async_get_options_flow(config_entry):
+    def async_get_options_flow(config_entry: ConfigEntry) -> MeteoSwissOptionsFlow:
         """Return the HA-managed options flow."""
         return MeteoSwissOptionsFlow()
 
@@ -676,7 +717,7 @@ class MeteoSwissConfigFlow(_SettingsFlowMixin, ConfigFlow, domain=DOMAIN):
 
     async def async_step_user(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Choose weather source and the independent measured-pollen station."""
         errors = {}
         if user_input is not None:
@@ -712,7 +753,7 @@ class MeteoSwissConfigFlow(_SettingsFlowMixin, ConfigFlow, domain=DOMAIN):
 
     async def async_step_meteoswiss(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Validate the selected station before creating a config entry."""
         errors = {}
         if user_input is not None:
@@ -774,7 +815,7 @@ class MeteoSwissConfigFlow(_SettingsFlowMixin, ConfigFlow, domain=DOMAIN):
 
     async def async_step_openmeteo(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Validate coordinates and availability, and reject duplicate entries."""
         errors = {}
         if user_input is not None:
@@ -825,13 +866,13 @@ class MeteoSwissConfigFlow(_SettingsFlowMixin, ConfigFlow, domain=DOMAIN):
 
     async def async_step_reconfigure(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Offer the same complete location transaction as Configure."""
         return await self._async_step_settings(self._get_reconfigure_entry(), user_input)
 
     async def async_step_settings_confirm(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Confirm all staged settings without changing the setup confirmation."""
         return await self.async_step_forecast_confirm(user_input)
 
@@ -840,13 +881,14 @@ class MeteoSwissConfigFlow(_SettingsFlowMixin, ConfigFlow, domain=DOMAIN):
             return self._settings_confirmation_details()
         return super()._forecast_confirmation_details()
 
-    def _finish_forecast_selection(self, *, change: bool) -> FlowResult:
+    def _finish_forecast_selection(self, *, change: bool) -> ConfigFlowResult:
         if self.source == SOURCE_RECONFIGURE:
             return self._finish_settings_selection(change=change)
         data = dict(self._pending_data)
         if change:
             # Setup reaches confirmation only after an explicit point selection.
             # Existing-entry resets are handled by the settings transaction.
+            assert self._selected_location is not None
             data[CONF_FORECAST_LOCATION] = encode_forecast_location(
                 self._selected_location
             )
@@ -857,7 +899,9 @@ class MeteoSwissConfigFlow(_SettingsFlowMixin, ConfigFlow, domain=DOMAIN):
             options={CONF_POLLEN_STATION: self._pollen_station},
         )
 
-    def _apply_settings(self, entry: ConfigEntry, updates: dict[str, Any]) -> FlowResult:
+    def _apply_settings(
+        self, entry: ConfigEntry, updates: _EntryUpdates
+    ) -> ConfigFlowResult:
         # The registered entry update listener owns the single reload.
         result = self.async_update_and_abort(entry, **updates)
         async_sync_forecast_location_issue(self.hass, entry)
@@ -875,16 +919,18 @@ class MeteoSwissOptionsFlow(_SettingsFlowMixin, OptionsFlow):
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         return await self._async_step_settings(self.config_entry, user_input)
 
     def _forecast_confirmation_details(self) -> dict[str, str]:
         return self._settings_confirmation_details()
 
-    def _finish_forecast_selection(self, *, change: bool) -> FlowResult:
+    def _finish_forecast_selection(self, *, change: bool) -> ConfigFlowResult:
         return self._finish_settings_selection(change=change)
 
-    def _apply_settings(self, entry: ConfigEntry, updates: dict[str, Any]) -> FlowResult:
+    def _apply_settings(
+        self, entry: ConfigEntry, updates: _EntryUpdates
+    ) -> ConfigFlowResult:
         self.hass.config_entries.async_update_entry(entry, **updates)
         async_sync_forecast_location_issue(self.hass, entry)
         return self.async_create_entry(title="", data=dict(self._pending_options))

@@ -11,9 +11,8 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
 )
 from homeassistant.core import HomeAssistant
-from homeassistant.helpers.update_coordinator import (
-    DataUpdateCoordinator,
-)
+from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
 from .const import (
     CONF_STATION_NAME,
@@ -64,8 +63,9 @@ POLLEN_THRESHOLDS = {
 }
 
 
+# HA FrozenOrThawed supports mutable dataclasses at runtime.
 @dataclass
-class MeteoSwissPollenSensorEntityDescription(SensorEntityDescription):
+class MeteoSwissPollenSensorEntityDescription(SensorEntityDescription):  # type: ignore[misc]
     """Describes MeteoSwiss pollen sensor."""
 
     pollen_type: str = ""
@@ -116,7 +116,7 @@ POLLEN_SENSOR_DESCRIPTIONS: Final[
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: MeteoSwissConfigEntry,
-    async_add_entities,
+    async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     """Set up pollen sensor platform."""
     _LOGGER.debug("Setting up MeteoSwiss pollen sensor platform")
@@ -137,7 +137,9 @@ async def async_setup_entry(
     async_add_entities(entities)
 
 
-class MeteoSwissPollenSensor(MeteoSwissCoordinatorEntity, SensorEntity):
+class MeteoSwissPollenSensor(
+    MeteoSwissCoordinatorEntity[DataUpdateCoordinator[dict[str, Any]]], SensorEntity
+):
     """Representation of a MeteoSwiss pollen sensor."""
 
     def __init__(

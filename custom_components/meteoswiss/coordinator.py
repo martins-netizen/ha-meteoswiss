@@ -42,6 +42,7 @@ from .hgt_ogd import REFRESH_INTERVAL as HGT_REFRESH_INTERVAL
 from .hgt_ogd_manager import get_hgt_manager
 from .hgt_ogd_recorder import HgtImportResult
 from .http import MAX_CSV_BYTES, OGD_HOST, async_get_bytes, async_get_json
+from .localization import WarningLabels
 from .openmeteo import OpenMeteoCurrentClient, OpenMeteoCurrentError
 from .pollen_meteoswiss import (
     InvalidMeasuredPollenData,
@@ -145,33 +146,16 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             ):
                 raise TypeError("Invalid station metadata")
             assets = data.get("assets", {})
-            asset_key = f"ogd-smn_{self.station_id}_t_now.csv"
-
-            if asset_key in assets:
+            for period in ("now", "recent"):
+                asset_key = f"ogd-smn_{self.station_id}_t_{period}.csv"
+                if asset_key not in assets:
+                    continue
                 asset = assets[asset_key]
-                if (
-                    not isinstance(asset, dict)
-                    or not isinstance(asset.get("href"), str)
-                    or not asset["href"].strip()
-                ):
+                href = asset.get("href") if isinstance(asset, dict) else None
+                if not isinstance(href, str) or not href.strip():
                     raise ValueError("Invalid station asset")
-                csv_url = asset["href"]
                 _LOGGER.debug("Selected station measurement asset")
-                return csv_url
-
-            # Fallback to t_recent.csv if t_now.csv not available
-            asset_key = f"ogd-smn_{self.station_id}_t_recent.csv"
-            if asset_key in assets:
-                asset = assets[asset_key]
-                if (
-                    not isinstance(asset, dict)
-                    or not isinstance(asset.get("href"), str)
-                    or not asset["href"].strip()
-                ):
-                    raise ValueError("Invalid station asset")
-                csv_url = asset["href"]
-                _LOGGER.debug("Selected station measurement asset")
-                return csv_url
+                return href
 
             _LOGGER.debug("Station metadata has no current or recent asset")
             return None
@@ -205,12 +189,12 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
 
     def _parse_station_csv(self, content: bytes) -> dict[str, Any] | None:
         """Decode and select bounded station rows outside HA's event loop."""
-        content = content.decode("cp1252")
-        _LOGGER.debug("CSV content length: %d chars", len(content))
+        text = content.decode("cp1252")
+        _LOGGER.debug("CSV content length: %d chars", len(text))
 
         # Select the latest complete observation from all published rows;
         # sparse optional values can still use the bounded recent history.
-        all_rows = list(csv.DictReader(io.StringIO(content), delimiter=";"))
+        all_rows = list(csv.DictReader(io.StringIO(text), delimiter=";"))
 
         if not all_rows:
             _LOGGER.debug("CSV has no data rows")
@@ -357,7 +341,7 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         ):
             _LOGGER.debug("Invalid station CSV row shape")
             return {}
-        result = {
+        result: dict[str, float | None] = {
             SENSOR_TEMPERATURE: None,
             SENSOR_HUMIDITY: None,
             SENSOR_WIND_SPEED: None,
@@ -371,7 +355,6 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             SENSOR_GLOBAL_RADIATION: None,
             SENSOR_SNOW_DEPTH: None,
             SENSOR_FOEHN_INDEX: None,
-            "last_update": None,
         }
 
         # Parse temperature (in °C)
@@ -507,12 +490,11 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         # Preserve measurement time. A malformed timestamp must never
         # be replaced with "now", which would hide stale source data.
         reference = _parse_reference_timestamp(row.get("reference_timestamp"))
-        result["last_update"] = reference.isoformat() if reference else None
 
         # Log final result
         _LOGGER.debug("Station measurements decoded")
 
-        return result
+        return {**result, "last_update": reference.isoformat() if reference else None}
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Fetch data from API with caching."""
@@ -531,7 +513,8 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
             cache_key = f"station:{self.station_id}"
 
             # Try cache first
-            cached_data = cache.get(cache_key)
+            # Only this coordinator writes decoded observations under station: keys.
+            cached_data: dict[str, Any] | None = cache.get(cache_key)
             if cached_data is not None:
                 _LOGGER.debug("Using cached data for station observations")
                 validate_observation_time(cached_data)
@@ -613,7 +596,7 @@ class MeteoSwissAlertsCoordinator(DataUpdateCoordinator[list[WeatherAlert]]):
         hass: HomeAssistant,
         alerts_api: MeteoSwissAlertsAPI,
         update_interval: int = 600,
-        warning_labels: dict | None = None,
+        warning_labels: WarningLabels | None = None,
     ) -> None:
         """Initialize."""
         self._alerts_api = alerts_api
@@ -789,7 +772,7 @@ class MeteoSwissStationConditionCoordinator(DataUpdateCoordinator[dict[str, Any]
         try:
             stations = await get_stations_map(session=self._session)
             station = stations.get_station(self._station_id)
-            if station is None or not station.has_coordinates:
+            if station is None or station.latitude is None or station.longitude is None:
                 raise ValueError("Station coordinates unavailable")
             client = StationConditionClient(
                 station.latitude,
@@ -804,12 +787,19 @@ class MeteoSwissStationConditionCoordinator(DataUpdateCoordinator[dict[str, Any]
                 station.longitude,
                 station.altitude,
             )
-            data = cache.get(key)
-            if current_station_condition(data) is None:
+            # Only validated station-condition snapshots are written under this key.
+            cached: dict[str, Any] | None = cache.get(key)
+            if cached is not None and current_station_condition(cached) is not None:
+                data = cached
+                fetched = False
+            else:
                 data = await client.async_get_data()
                 if current_station_condition(data) is None:
                     raise ValueError("Invalid station condition snapshot")
-                until = forecast_datetime(data["valid_until"])
+                fetched = True
+            until = forecast_datetime(data["valid_until"])
+            assert until is not None  # current_station_condition validated this timestamp.
+            if fetched:
                 cache.set(
                     key,
                     data,
@@ -818,7 +808,6 @@ class MeteoSwissStationConditionCoordinator(DataUpdateCoordinator[dict[str, Any]
                         (until - datetime.now(UTC)).total_seconds(),
                     ),
                 )
-            until = forecast_datetime(data["valid_until"])
             # Refresh at the end of the valid interval, even when setup was at
             # xx:55 and the regular ten-minute schedule would otherwise lag.
             self.update_interval = timedelta(
@@ -908,7 +897,8 @@ class MeteoSwissForecastCoordinator(DataUpdateCoordinator[list[dict[str, Any]]])
             )
 
         # Try cache first
-        cached_data = cache.get(cache_key)
+        # The ICON client supplies every cached value in the forecast:v3/v4 namespace.
+        cached_data: list[dict[str, Any]] | None = cache.get(cache_key)
         if cached_data:
             _LOGGER.debug("Using cached forecast data")
             self._consecutive_failures = 0
@@ -1002,7 +992,8 @@ class OpenMeteoPollenCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         """Share a validated current-hour cache and log only HA transitions."""
         cache = get_current_weather_cache()
         cache_key = f"pollen:{self.latitude},{self.longitude}"
-        data = cache.get(cache_key)
+        # Pollen keys hold the modelled pollen/AQ dictionaries written below.
+        data: dict[str, Any] | None = cache.get(cache_key)
         if data is not None:
             if _pollen_is_current_hour(
                 data.get("last_update")

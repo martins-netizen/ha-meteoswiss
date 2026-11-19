@@ -9,8 +9,10 @@ from homeassistant.core import HomeAssistant
 
 SUPPORTED_LANGUAGES = ("de", "en", "fr", "it")
 
+type WarningLabels = dict[str, dict[str, dict[str, str]]]
 
-def _load_warning_labels() -> dict[str, dict[str, dict[str, str]]]:
+
+def _load_warning_labels() -> WarningLabels:
     """Read bundled translations once, outside the event loop."""
     directory = Path(__file__).parent / "translations"
     labels = {}
@@ -27,6 +29,6 @@ def _load_warning_labels() -> dict[str, dict[str, dict[str, str]]]:
     return labels
 
 
-async def async_load_warning_labels(hass: HomeAssistant) -> dict:
+async def async_load_warning_labels(hass: HomeAssistant) -> WarningLabels:
     """Load the same catalogue used by HA translations for custom displays."""
     return await hass.async_add_executor_job(_load_warning_labels)

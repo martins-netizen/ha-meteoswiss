@@ -136,23 +136,14 @@ jobs:
       - name: Verify the 51-rule evidence index against this native run
         run: python scripts/check_quality_rules.py verify
 
-      - name: Check provider clients and shared helpers with strict mypy
+      - name: Check the integration and retry contract with strict mypy
         if: matrix.requirements == 'requirements_test.txt'
         run: |
           python -m pip install --disable-pip-version-check --only-binary :all: --require-hashes \
             --constraint requirements_ci_security.txt -r requirements_test.txt -r requirements_typing.txt
           python -m pip check
           python -m mypy --strict --explicit-package-bases --follow-imports=silent \
-            custom_components/meteoswiss/retry.py custom_components/meteoswiss/forecast.py \
-            custom_components/meteoswiss/alerts.py custom_components/meteoswiss/pollen_meteoswiss.py \
-            custom_components/meteoswiss/pollen_openmeteo.py custom_components/meteoswiss/openmeteo.py \
-            custom_components/meteoswiss/weather_data.py custom_components/meteoswiss/hgt_ogd.py \
-            custom_components/meteoswiss/http.py custom_components/meteoswiss/hgt_ogd_recorder.py \
-            custom_components/meteoswiss/hgt_ogd_manager.py custom_components/meteoswiss/hgt_cleanup.py \
-            custom_components/meteoswiss/statistics_archive.py custom_components/meteoswiss/forecast_statistics.py \
-            custom_components/meteoswiss/wind_statistics.py custom_components/meteoswiss/forecast_locations.py \
-            custom_components/meteoswiss/forecast_location_config.py custom_components/meteoswiss/entity.py \
-            custom_components/meteoswiss/cache.py tests/typing/retry_contract.py
+            custom_components/meteoswiss tests/typing/retry_contract.py
 
   hassfest:
     runs-on: ubuntu-latest
