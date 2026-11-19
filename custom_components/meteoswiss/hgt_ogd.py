@@ -40,7 +40,7 @@ class HgtError(Exception):
     """A fixed public category; never include provider payloads or private paths."""
 
 
-def station_code(value: str) -> str:
+def station_code(value: object) -> str:
     """Accept only the station identity used by SMN source filenames."""
     if not isinstance(value, str) or re.fullmatch(r"[a-zA-Z0-9]{3}", value) is None:
         raise HgtError("invalid_station")

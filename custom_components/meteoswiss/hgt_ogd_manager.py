@@ -31,6 +31,7 @@ from .hgt_ogd_recorder import (
 DATA_KEY = "hgt_ogd_manager"
 CLEANUP_ISSUE = "hgt_ogd_retired_cleanup"
 BLOCKED_ISSUE = "hgt_ogd_cleanup_blocked"
+MAX_OWNED_STATIONS = 500
 
 
 @dataclass(frozen=True, slots=True)
@@ -44,7 +45,7 @@ class HgtOgdManager:
 
     def __init__(self, hass: HomeAssistant) -> None:
         self.hass = hass
-        self.store = Store(hass, 1, "meteoswiss_hgt_ogd")
+        self.store: Store[dict[str, list[str]]] = Store(hass, 1, "meteoswiss_hgt_ogd")
         self.known: set[str] = set()
         self.loaded = False
         self.state_lock = asyncio.Lock()
@@ -65,7 +66,7 @@ class HgtOgdManager:
                         not isinstance(data, dict)
                         or set(data) != {"stations"}
                         or not isinstance(data["stations"], list)
-                        or len(data["stations"]) > 500
+                        or len(data["stations"]) > MAX_OWNED_STATIONS
                     ):
                         raise HgtError("ownership_unavailable")
                     self.known = {station_code(s) for s in data["stations"]}
@@ -132,11 +133,11 @@ class HgtOgdManager:
                     products = await self.clients[station].async_fetch(self.hass, now)
                     metadata = await async_metadata(self.hass, {station})
                     if station not in self.known:
-                        if metadata or len(self.known) >= 500:
-                            raise HgtError("statistics_conflict")
                         # Persist provenance before queuing data, including when
                         # the caller subsequently cancels or Recorder times out.
                         async with self.state_lock:
+                            if metadata or len(self.known) >= MAX_OWNED_STATIONS:
+                                raise HgtError("statistics_conflict")
                             await self._save(self.known | {station})
                     data = await async_import_products(
                         self.hass, station, products, metadata
@@ -214,7 +215,7 @@ class HgtOgdManager:
     async def async_confirm_cleanup(self, expected: HgtRetiredPlan) -> None:
         """Lock target stations, recheck ownership/consent and verify full deletion."""
 
-        async def finish():
+        async def finish() -> None:
             async with AsyncExitStack() as stack:
                 for station in expected.stations:
                     await stack.enter_async_context(
@@ -285,12 +286,14 @@ def async_clear_retired_issue_placeholders(hass: HomeAssistant) -> None:
         breaks_in_ha_version=issue.breaks_in_ha_version,
         config_entry_id=issue.config_entry_id,
         data=issue.data,
-        is_fixable=issue.is_fixable,
+        is_fixable=issue.is_fixable is True,
         is_persistent=issue.is_persistent,
         issue_domain=issue.issue_domain,
         learn_more_url=issue.learn_more_url,
-        severity=issue.severity,
-        translation_key=issue.translation_key,
+        severity=issue.severity if issue.severity is not None else ir.IssueSeverity.WARNING,
+        translation_key=(
+            issue.translation_key if issue.translation_key is not None else CLEANUP_ISSUE
+        ),
     )
 
 
@@ -299,4 +302,7 @@ def get_hgt_manager(hass: HomeAssistant) -> HgtOgdManager:
     data = hass.data.setdefault(DOMAIN, {})
     if DATA_KEY not in data:
         data[DATA_KEY] = HgtOgdManager(hass)
-    return data[DATA_KEY]
+    manager = data[DATA_KEY]
+    if not isinstance(manager, HgtOgdManager):
+        raise HgtError("ownership_unavailable")
+    return manager

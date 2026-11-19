@@ -17,6 +17,9 @@
   projection into Recorder statistics and the shared HTTP transport.
 - Extend strict checks to the Recorder import of measured heating degree days,
   including ownership metadata, value readback and the completion callback.
+- Check the measured HGT ownership manager with strict mypy. Concurrent imports
+  now respect the 500-station storage limit. Older repair notices with missing
+  metadata can discard obsolete location details safely.
 
 ## [8.3.5] — 2026-11-19
 
