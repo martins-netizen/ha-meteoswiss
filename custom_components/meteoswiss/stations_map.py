@@ -219,7 +219,8 @@ class MeteoSwissStationsMap:
             if not retry and time.monotonic() < self._retry_at:
                 return dict(self._stations)
             try:
-                stations = parse_station_catalogue(await self._async_content(session))
+                content = await self._async_content(session)
+                stations = await asyncio.to_thread(parse_station_catalogue, content)
             except (
                 aiohttp.ClientError,
                 TimeoutError,

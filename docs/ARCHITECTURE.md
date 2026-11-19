@@ -468,6 +468,10 @@ without coordinates remain selectable metadata but have null GeoJSON geometry;
 finite coordinates including zero are valid. Existing station/config/entity IDs
 are retained.
 
+The shared loader decodes and parses downloaded station metadata in a worker
+thread. It publishes the completed snapshot on the event loop. Cancelling the
+load discards that result even if the worker finishes later.
+
 The shared catalogue cache is valid for 24 hours on the monotonic clock; cache
 hits preserve the original successful-download time and deadline. One loader
 lock shares in-flight downloads between setup/diagnostic consumers. Only valid
@@ -648,6 +652,8 @@ pollen_meteoswiss.py now contains MeteoSwissPollenClient, its pure CSV parser an
 two payload-free source exceptions, with no HA coordinator/runtime dependency.
 The client borrows its caller's session and keeps the same fixed OGD host,
 bounded CSV read, cp1252 decoding, transient retry budget and station path.
+The async client decodes and parses the downloaded bytes in a worker thread.
+Parsing retains the final 24 rows for the existing pollen history.
 It returns the existing current/history/source/time payload or signals a
 transport/invalid-data failure. It creates no session, background task, new cache
 or polling schedule. Cancellation and a missing-session setup error propagate.
