@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 from dataclasses import dataclass
 from functools import partial
+from itertools import chain
 import logging
 
 from homeassistant.components.recorder import get_instance
@@ -17,6 +18,7 @@ from homeassistant.helpers.start import async_at_started
 
 from .const import DOMAIN
 from .forecast_statistics import async_refresh_statistics_issues
+from .hgt_ogd_recorder import HgtMetadata, async_clear_owned
 from .runtime_data import MeteoSwissConfigEntry
 
 ISSUE = "hgt_legacy_cleanup"
@@ -24,20 +26,26 @@ SIGNAL = "meteoswiss_hgt_statistics_cleaned"
 _LOGGER = logging.getLogger(__name__)
 
 
+type _Bindings = tuple[tuple[str, str, str], ...]
+
+
 @dataclass(frozen=True, slots=True)
 class HgtCleanupPlan:
     """An exact ownership and metadata snapshot, never a wildcard deletion."""
 
-    bindings: tuple[tuple[str, str, str], ...]
-    metadata: dict
+    bindings: _Bindings
+    metadata: HgtMetadata
 
 
-def _bindings(hass: HomeAssistant, entry_id: str) -> tuple[tuple[str, str, str], ...]:
+def _bindings(hass: HomeAssistant, entry_id: str) -> _Bindings:
     registry = er.async_get(hass)
     owned = []
     # Tombstones retain the identity of retired season entities and renamed or
     # deleted daily forecast entities; never reconstruct IDs from display names.
-    for item in (*registry.entities.values(), *registry.deleted_entities.values()):
+    entries = chain[er.RegistryEntry | er.DeletedRegistryEntry](
+        registry.entities.values(), registry.deleted_entities.values()
+    )
+    for item in entries:
         if item.config_entry_id != entry_id or item.platform != DOMAIN:
             continue
         if item.unique_id == f"{DOMAIN}_{entry_id}_heating_degree_days":
@@ -45,6 +53,38 @@ def _bindings(hass: HomeAssistant, entry_id: str) -> tuple[tuple[str, str, str],
         elif item.unique_id == f"{DOMAIN}_{entry_id}_season_hgt":
             owned.append((item.entity_id, item.id, "season"))
     return tuple(sorted(set(owned)))
+
+
+def _archive_id(registry_id: str) -> str:
+    return f"sensor.meteoswiss_hgt_forecast_archive_{registry_id}"
+
+
+def _validate_ownership(hass: HomeAssistant, bindings: _Bindings, records: HgtMetadata) -> None:
+    """Check live state and retained registry identities after the Recorder read."""
+    registry = er.async_get(hass)
+    deleted_owners: dict[str, set[str]] = {}
+    for deleted in registry.deleted_entities.values():
+        if deleted.entity_id in records:
+            deleted_owners.setdefault(deleted.entity_id, set()).add(deleted.id)
+
+    for entity_id, registry_id, kind in bindings:
+        active = registry.async_get(entity_id)
+        if (
+            active is not None and active.id != registry_id
+            or deleted_owners.get(entity_id, set()) - {registry_id}
+        ):
+            raise ValueError("entity_identity_conflict")
+        state = hass.states.get(entity_id)
+        if state is not None and state.attributes.get("state_class") is not None:
+            raise ValueError("forecast_statistics_still_enabled")
+        if kind == "daily":
+            archive = _archive_id(registry_id)
+            if (
+                registry.async_get(archive) is not None
+                or hass.states.get(archive) is not None
+                or archive in deleted_owners
+            ):
+                raise ValueError("archive_identity_conflict")
 
 
 async def async_plan_cleanup(hass: HomeAssistant, entry_id: str) -> HgtCleanupPlan:
@@ -60,20 +100,10 @@ async def async_plan_cleanup(hass: HomeAssistant, entry_id: str) -> HgtCleanupPl
             raise ValueError("recorder_not_ready")
         bindings = _bindings(hass, entry_id)
         ids = {}
-        registry = er.async_get(hass)
         for entity_id, registry_id, kind in bindings:
-            active = registry.async_get(entity_id)
-            if active is not None and active.id != registry_id:
-                raise ValueError("entity_identity_conflict")
-            state = hass.states.get(entity_id)
-            if state is not None and state.attributes.get("state_class") is not None:
-                raise ValueError("forecast_statistics_still_enabled")
             ids[entity_id] = kind
             if kind == "daily":
-                archive = f"sensor.meteoswiss_hgt_forecast_archive_{registry_id}"
-                if registry.async_get(archive) is not None or hass.states.get(archive) is not None:
-                    raise ValueError("archive_identity_conflict")
-                ids[archive] = kind
+                ids[_archive_id(registry_id)] = kind
         records = await instance.async_add_executor_job(
             partial(get_metadata, hass, statistic_ids=set(ids))
         ) if ids else {}
@@ -92,6 +122,7 @@ async def async_plan_cleanup(hass: HomeAssistant, entry_id: str) -> HgtCleanupPl
                 raise ValueError("statistics_metadata_conflict")
         if _bindings(hass, entry_id) != bindings:
             raise ValueError("ownership_changed")
+        _validate_ownership(hass, bindings, records)
         return HgtCleanupPlan(bindings, records)
 
 
@@ -150,13 +181,7 @@ async def async_confirm_cleanup(
         if before != expected:
             raise ValueError("cleanup_target_changed")
         if before.metadata:
-            done = asyncio.Event()
-            get_instance(hass).async_clear_statistics(
-                sorted(before.metadata),
-                on_done=lambda: hass.loop.call_soon_threadsafe(done.set),
-            )
-            async with asyncio.timeout(30):
-                await done.wait()
+            await async_clear_owned(hass, sorted(before.metadata))
             after = await async_plan_cleanup(hass, entry_id)
             if after.bindings != before.bindings or after.metadata:
                 raise ValueError("cleanup_not_verified")

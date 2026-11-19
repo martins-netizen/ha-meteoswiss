@@ -116,7 +116,7 @@ After the native checks above, CI runs mypy on the shared retry decorator,
 its call-site contract, the ICON forecast and MeteoSwiss warning clients, both
 pollen clients, the Open-Meteo current-weather client, shared weather
 normalisation, the measured HGT source, its Recorder import, the station ownership
-manager and the shared HTTP transport in the
+manager, legacy HGT forecast cleanup and shared HTTP transport in the
 **current** HA environment. From the repository
 root, use the same interpreter and install the checker together with the current
 fixture so pip validates their shared dependencies.
@@ -132,7 +132,8 @@ python -m mypy --strict --explicit-package-bases --follow-imports=silent \
   custom_components/meteoswiss/pollen_openmeteo.py custom_components/meteoswiss/openmeteo.py \
   custom_components/meteoswiss/weather_data.py custom_components/meteoswiss/hgt_ogd.py \
   custom_components/meteoswiss/http.py custom_components/meteoswiss/hgt_ogd_recorder.py \
-  custom_components/meteoswiss/hgt_ogd_manager.py tests/typing/retry_contract.py
+  custom_components/meteoswiss/hgt_ogd_manager.py custom_components/meteoswiss/hgt_cleanup.py \
+  tests/typing/retry_contract.py
 ```
 
 The contract checks return types, keyword and positional arguments, and
@@ -159,6 +160,9 @@ ownership-store lock so concurrent imports cannot exceed the limit accepted at r
 An existing over-limit store still blocks ownership-dependent work and retains every entry.
 When cleaning obsolete location placeholders from a stored repair, a missing
 fixability flag keeps that notice non-fixable until the usual ownership check runs.
+Legacy forecast cleanup rechecks entity ownership and state after reading Recorder
+metadata. An existing statistic whose ID also belonged to another retained registry
+identity is excluded from deletion by blocking confirmation of the plan.
 
 ### Current fixture update
 
