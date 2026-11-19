@@ -9,6 +9,8 @@
   across Swiss clock changes and the borrowed HTTP session.
 - Check the MeteoSwiss warning client with strict mypy. Configuration supplies
   the warning postcode when constructing the client.
+- Extend strict type checking to the MeteoSwiss station pollen client and the
+  Open-Meteo client for modelled pollen, air quality and UV.
 
 ## [8.3.5] — 2026-11-19
 
