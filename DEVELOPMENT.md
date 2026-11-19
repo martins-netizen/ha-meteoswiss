@@ -110,6 +110,28 @@ test package version must match HA. The plugin registers itself.
 HA can install its httpx alias first, and sets function-scoped asyncio fixtures.
 Writable HA test configuration uses a temporary directory in both fixtures.
 
+### Strict type checking
+
+After the native checks above, CI runs mypy on the shared retry decorator
+and its call-site contract in the **current** HA environment. From the repository
+root, use the same interpreter and install the checker together with the current
+fixture so pip validates their shared dependencies. This step accepts only hash-pinned wheels
+and stops if a compatible wheel is missing.
+
+```sh
+python -m pip install --disable-pip-version-check --only-binary :all: --require-hashes \
+  --constraint requirements_ci_security.txt -r requirements_test.txt -r requirements_typing.txt
+python -m pip check
+python -m mypy --strict --explicit-package-bases --follow-imports=silent \
+  custom_components/meteoswiss/retry.py tests/typing/retry_contract.py
+```
+
+The contract checks return types, keyword and positional arguments, and
+compatibility with `asyncio.create_task`. Three intentionally invalid calls
+have error-specific ignores. If a future change accepts one of them, strict
+mypy reports an unused ignore and CI fails. Strict checking starts with these
+two files. Each HA fixture also runs the runtime retry tests.
+
 ### Current fixture update
 
 **17 November 2026.**
@@ -142,7 +164,9 @@ runtimes and certificate stores need their own security review.
 `requirements_test.in` and `requirements_test_min.in` declare the current and
 minimum fixture inputs. Their corresponding `.txt` files are generated universal
 lockfiles: direct and transitive test dependencies have exact versions and
-SHA-256 hashes, with platform markers where required. CI and the local recipe
+SHA-256 hashes, with platform markers where required. A third input,
+`requirements_typing.in`, pins mypy. Its universal lock applies only to
+static checking in the current fixture. CI and the local recipe
 install these lockfiles using pip's `--require-hashes` and verify the installed
 graph with `pip check`. The separate certifi security constraint still applies.
 The bootstrap pip version remains controlled by the pre-installation security
@@ -156,13 +180,14 @@ minimum fixture. These commands need network access; CI tests retain
 ```sh
 UV_OFFLINE=false uv pip compile --universal --python-version 3.14.10 --generate-hashes --output-file requirements_test.txt requirements_test.in
 UV_OFFLINE=false uv pip compile --universal --python-version 3.14.10 --generate-hashes --output-file requirements_test_min.txt requirements_test_min.in
+UV_OFFLINE=false uv pip compile --universal --python-version 3.14.10 --generate-hashes --output-file requirements_typing.txt requirements_typing.in
 ```
 
 An existing lockfile retains its resolved versions by default. For an intended
 dependency update, add `--upgrade-package NAME` and review every resulting
-change. Commit changed inputs and regenerated lockfiles together, then install
-both into fresh environments and run the complete compatibility/coverage
-recipe. Keep generated hashes and upstream pins. When changing the minimum,
+change. Commit changed inputs and regenerated locks together. Run the complete
+compatibility and coverage checks in each fixture and the typing check in the
+current fixture. Keep generated hashes and upstream pins. When changing the minimum,
 update the advertised requirement, CI matrix and matching HA/test-package pins
 together. Keep private index URLs, credentials and machine-specific paths out
 of the generated files.
@@ -170,7 +195,7 @@ of the generated files.
 ## Complete test-lock vulnerability gate
 
 The separate `Test dependency advisories` job queries known vulnerability
-metadata for every package/version selected by both universal locks, including
+metadata for every package/version in the two fixture locks and the typing lock, including
 foreign-platform markers. The existing required `tests` aggregate requires its
 success alongside both HA fixtures, Hassfest and universal-lock verification.
 Every active advisory and every unknown result fails the job; no package or
@@ -204,7 +229,7 @@ python -m scripts.check_dependency_advisories --json > dependency-advisories.jso
 
 The checker writes JSON to stdout and diagnostics to stderr, with no file-output
 argument. The shell owns the chosen report path; CI uses its fixed runner-temp
-path. The JSON records selected versions, both lock inventories, active/withdrawn IDs,
+path. The JSON records selected versions, all three lock inventories, active/withdrawn IDs,
 unknown error codes and query start time. Only public package/version names are
 sent to PyPI. The [full contract](docs/DEPENDENCY_ADVISORIES.md) records transport
 bounds, proxy handling, response validation and limitations. A service outage
@@ -229,7 +254,7 @@ baseline PR rather than an override of HA's pins. There are no ignored packages
 or excluded fixture files in the Dependabot configuration.
 
 Dependabot's pip-compile updater does not use this repository's universal uv
-command. A separate read-only CI job therefore recompiles copies of both locks
+command. A separate read-only CI job therefore recompiles copies of all three locks
 with their hash-pinned uv compiler and compares package selections, versions,
 extras, platform markers and hashes. It rejects a Linux-only lock even when
 the Linux compatibility tests pass. The existing `tests` merge gate requires
@@ -237,7 +262,7 @@ this job as well as both HA fixtures and Hassfest. Network resolution is confine
 to this maintenance job; the HA test jobs keep `UV_OFFLINE=true` throughout.
 
 If an automated proposal fails the universal-lock check, inspect its intended
-update and regenerate both locks with the commands above before requesting
+update and regenerate the affected locks with the commands above before requesting
 review. Keep the resolved input versions, hashes and markers together. Do not
 merge a proposal by disabling this check, changing the advertised minimum to
 match an accidental update, or suppressing its security alert.

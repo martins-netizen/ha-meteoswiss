@@ -4,13 +4,21 @@ from __future__ import annotations
 
 import asyncio
 import math
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable, Coroutine
 from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
 from functools import wraps
-from typing import Any
+from typing import Any, Protocol
 
 import aiohttp
+
+
+class _RetryDecorator(Protocol):
+    """Preserve the signature and awaited result of each decorated call."""
+
+    def __call__[**P, T](
+        self, func: Callable[P, Awaitable[T]]
+    ) -> Callable[P, Coroutine[Any, Any, T]]: ...
 
 
 def _retry_after_seconds(value: str | None) -> float | None:
@@ -32,11 +40,22 @@ def _retry_after_seconds(value: str | None) -> float | None:
     return max(0.0, (deadline - datetime.now(UTC)).total_seconds())
 
 
+def _validate_delay(value: object) -> None:
+    """Validate a retry delay supplied by a caller at runtime."""
+    if (
+        isinstance(value, bool)
+        or not isinstance(value, (int, float))
+        or not math.isfinite(value)
+        or value < 0
+    ):
+        raise ValueError("retry delays must be finite non-negative numbers")
+
+
 def async_retry_with_backoff(
     max_attempts: int = 4,
     base_delay: float = 1.0,
     max_delay: float = 10.0,
-) -> Callable:
+) -> _RetryDecorator:
     """Retry timeouts, connection errors, HTTP 408/429 and server errors.
 
     Invalid payloads/URLs, TLS failures and permanent HTTP errors propagate
@@ -46,18 +65,14 @@ def async_retry_with_backoff(
     """
     if type(max_attempts) is not int or max_attempts < 1:
         raise ValueError("max_attempts must be a positive integer")
-    for delay in (base_delay, max_delay):
-        if (
-            isinstance(delay, bool)
-            or not isinstance(delay, (int, float))
-            or not math.isfinite(delay)
-            or delay < 0
-        ):
-            raise ValueError("retry delays must be finite non-negative numbers")
+    _validate_delay(base_delay)
+    _validate_delay(max_delay)
 
-    def decorator(func: Callable) -> Callable:
+    def decorator[**P, T](
+        func: Callable[P, Awaitable[T]]
+    ) -> Callable[P, Coroutine[Any, Any, T]]:
         @wraps(func)
-        async def wrapper(*args: Any, **kwargs: Any) -> Any:
+        async def wrapper(*args: P.args, **kwargs: P.kwargs) -> T:
             attempt = 1
             backoff = min(base_delay, max_delay)
             while True:

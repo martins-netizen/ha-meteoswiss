@@ -2,7 +2,9 @@
 
 ## [Unreleased]
 
-No additional runtime changes are recorded.
+- Add strict type checking for the shared HTTP retry decorator. CI checks that
+  wrapped provider calls accept the original arguments and return the expected
+  result type. The type checker and its dependencies are hash-locked and audited.
 
 ## [8.3.5] — 2026-11-19
 

@@ -35,14 +35,17 @@ def raw(payload):
 
 
 def locks(root, first="sample==1.0", second="sample==1.0"):
-    for path, pin in zip(audit.LOCKS, (first, second), strict=True):
+    for path, pin in zip(audit.LOCKS, (first, second, first), strict=True):
         (root / path).write_text(pin + " --hash=sha256:" + HASH + "\n")
 
 
 def test_real_lock_inventory_includes_all_host_platforms():
     counts, packages = audit.locked_packages(audit.ROOT)
-    assert counts == {name: 138 for name in audit.LOCKS}
-    assert len(packages) == 140
+    assert counts == {
+        "requirements_test.txt": 138, "requirements_test_min.txt": 138, "requirements_typing.txt": 6,
+    }
+    assert len(packages) == 145
+    assert packages[("mypy", "2.4.0")] == ["requirements_typing.txt"]
     assert ("homeassistant", "2026.11.0") in packages
     assert ("homeassistant", "2026.11.2") in packages
     assert any(name.startswith("pyobjc-") for name, _ in packages)

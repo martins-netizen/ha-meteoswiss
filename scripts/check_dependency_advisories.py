@@ -1,4 +1,4 @@
-"""Fail closed on known vulnerabilities or unknown results for both universal locks."""
+"""Fail closed on known vulnerabilities or unknown results for all universal CI locks."""
 
 import argparse
 from concurrent.futures import ThreadPoolExecutor

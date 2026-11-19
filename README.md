@@ -189,8 +189,9 @@ remains dated **11 November 2026**, not a fresh alert clearance.
 [four-language names](docs/ENTITY_NAME_TRANSLATIONS.md), [icons](docs/ICON_TRANSLATIONS.md),
 [errors](docs/EXCEPTION_TRANSLATIONS.md), [shared diagnostic ownership](docs/SHARED_DIAGNOSTIC_LIFECYCLE.md)
 and [conservative native device removal](docs/DEVICE_REMOVAL.md) retain their
-contracts. Complete advisory auditing rejects active or unknown findings for
-both supported universal locks.
+contracts. CI checks that retries preserve each provider's call signature and
+result type. The [developer guide](DEVELOPMENT.md#strict-type-checking) shows how
+to run this check. The dependency audit covers both HA fixtures and the type checker.
 
 ## Start here
 

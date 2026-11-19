@@ -1,0 +1,2 @@
+# CI-only checker for the typed retry contract, installed beside the current HA fixture.
+mypy==2.4.0
