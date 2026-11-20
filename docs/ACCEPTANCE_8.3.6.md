@@ -1,7 +1,7 @@
 # Updating an existing installation to stable 8.3.6
 
-When **8.3.6** appears on the [latest-stable page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest),
-you can update directly from 8.3.5 or 8.3.6b1. The minimum Home Assistant
+You can update directly to [stable 8.3.6](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.6)
+from 8.3.5 or 8.3.6b1. The minimum Home Assistant
 Core version is 2026.11.0.
 
 1. In **Settings → Marketplace**, open **MeteoSwiss** from
