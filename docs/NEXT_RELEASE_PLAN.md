@@ -1,14 +1,13 @@
 # Release planning
 
-## Current next step
+## Stable 8.3.6 publication complete
 
-Prepare stable **8.3.6** from the signed merge of
-[PR #149](https://github.com/martins-netizen/ha-meteoswiss/pull/149),
-`ea278684dfccb6770e32cad1cdf51e7e08fb7614`. It carries forward the accepted
-8.3.6b1 runtime and the subsequent test-only correction. Verify the package
-on HA 2026.11.0 and 2026.11.2, then verify its approved merge before separately
-authorizing stable publication. See the [candidate notes](RELEASE_8.3.6.md)
-and [existing-entry update guide](ACCEPTANCE_8.3.6.md).
+[PR #150](https://github.com/martins-netizen/ha-meteoswiss/pull/150) packaged
+the accepted 8.3.6b1 runtime and the test fixes from PR #149. After checks on
+HA Core 2026.11.0 and 2026.11.2, [stable 8.3.6](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.6)
+was published on 20 November 2026. The [release evidence](RELEASE_EVIDENCE_8.3.6.md)
+records publication and the subsequent upgrade. The
+[roadmap](../ROADMAP.md#separate-future-scopes) lists work beyond this release.
 
 ## Published stable 8.3.5
 

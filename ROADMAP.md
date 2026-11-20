@@ -1,13 +1,14 @@
 # Maintained-fork roadmap
 
-## Current engineering work
+## Published stable 8.3.6
 
-Prepare stable **8.3.6** with the runtime of the
-[published 8.3.6b1 beta](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.6b1).
-The operator confirmed the station weather and forecast views on HA Core
-2026.11.2. The subsequent [PR #149](https://github.com/martins-netizen/ha-meteoswiss/pull/149)
-changed tests that read optional data during startup and reload. The
-[release plan](docs/NEXT_RELEASE_PLAN.md) covers package checks and publication.
+[Stable 8.3.6](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.6)
+was published on 20 November 2026. It carries forward the 8.3.6b1 runtime and
+includes the startup and reload test corrections from
+[PR #149](https://github.com/martins-netizen/ha-meteoswiss/pull/149).
+See the [publication record](docs/RELEASE_EVIDENCE_8.3.6.md) for the package
+checks and confirmed upgrade. Open engineering topics are listed under
+[Separate future scopes](#separate-future-scopes).
 
 ## Published stable 8.3.5
 

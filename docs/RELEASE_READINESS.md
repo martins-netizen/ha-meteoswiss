@@ -1,18 +1,13 @@
 # Release readiness
 
-## Stable candidate 8.3.6
+## Published stable 8.3.6
 
-The [8.3.6b1 prerelease](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.6b1)
-was published on 20 November 2026 at 07:07:12 UTC, release **452371818**, from
-package merge `ceec7a8b23a5669f20677ef67a87b31b2b523d5f`. The operator
-installed the beta on HA Core 2026.11.2 and confirmed the station weather,
-daily minimum and maximum forecast temperatures, and the 24-hour forecast view.
-
-Subsequent [PR #149](https://github.com/martins-netizen/ha-meteoswiss/pull/149)
-changes only entity tests. Its signed merge is the packaging base for stable
-8.3.6. The two component version fields change for this promotion. The package
-has its own checks and publication approval. See the [candidate notes](RELEASE_8.3.6.md)
-and the [latest stable release](https://github.com/martins-netizen/ha-meteoswiss/releases/latest).
+[Stable 8.3.6](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.6)
+was published on 20 November 2026 from the signed merge of
+[PR #150](https://github.com/martins-netizen/ha-meteoswiss/pull/150).
+All ten PR checks and all nine merge checks passed. The
+[package evidence](RELEASE_EVIDENCE_8.3.6.md) identifies the tested commits,
+the verified release text and the confirmed upgrade from 8.3.6b1.
 
 ## Published stable 8.3.5
 

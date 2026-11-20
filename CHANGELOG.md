@@ -2,9 +2,9 @@
 
 ## [Unreleased]
 
-## [8.3.6] — stable candidate
+## [8.3.6] — 2026-11-20
 
-- Promote the accepted 8.3.6b1 runtime. Since stable 8.3.5, the integration
+- Promoted the accepted 8.3.6b1 runtime. Since stable 8.3.5, the integration
   verifies ownership before changing older wind and heating-degree-day
   statistics, reports whole rain probabilities, parses station and pollen
   CSVs in worker threads, and runs strict type checks across the integration.
@@ -12,7 +12,7 @@
   data after setup or reload. The integration code matches the beta apart
   from its two version fields. [PR #149](https://github.com/martins-netizen/ha-meteoswiss/pull/149)
 
-[Stable candidate notes](docs/RELEASE_8.3.6.md) · [Update guide](docs/ACCEPTANCE_8.3.6.md)
+[GitHub release](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.6) · [Release notes](docs/RELEASE_8.3.6.md) · [Update guide](docs/ACCEPTANCE_8.3.6.md)
 
 ## [8.3.6b1] — 2026-11-20
 

@@ -15,16 +15,11 @@ This is an independent community project, not an official MeteoSwiss product.
 This guide describes the **8.3 series**; [8.3.0 release notes](docs/RELEASE_8.3.0.md)
 explain the changes from 8.2.0. Use a published release, not a branch.
 
-**Published on 19 November 2026:** [Stable 8.3.5](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5)
-is available. Its [dated evidence](docs/RELEASE_EVIDENCE_8.3.5.md) records the
-verified tag, release text and publication; installation remains separate.
-
-**MeteoSwiss 8.3.6** carries forward the released
-8.3.6b1 integration, including stronger checks before changing older wind
-and heating-degree-day statistics, whole percentages in rain forecasts and
-background parsing for station and pollen data. See the
-[8.3.6 release notes](docs/RELEASE_8.3.6.md) and the
-[published beta](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.6b1).
+**[Stable 8.3.6](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.6) was published on 20 November 2026.**
+It checks ownership before changing older wind and heating-degree-day statistics,
+reports rain probabilities as whole percentages and parses station and pollen
+data in the background. See the [8.3.6 release notes](docs/RELEASE_8.3.6.md)
+and the [update guide for existing installations](docs/ACCEPTANCE_8.3.6.md).
 
 **About 8.3.5:** this version brings together official measured heating degree
 days, more private diagnostics, reliable local state clocks and our engineering
@@ -211,12 +206,9 @@ The [developer guide](DEVELOPMENT.md#strict-type-checking) shows how to run them
 
 ## Release status
 
-The [latest-stable page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
-shows which stable package can be installed. The operator confirmed normal
-station weather, daily forecast minimum and maximum temperatures, and the
-24-hour forecast display on the published 8.3.6b1 with HA Core 2026.11.2.
-The [8.3.6 update guide](docs/ACCEPTANCE_8.3.6.md) covers the normal update
-once the stable version appears in Marketplace.
+Stable 8.3.6 supports a direct update from 8.3.5 or 8.3.6b1. The
+[release evidence](docs/RELEASE_EVIDENCE_8.3.6.md) records the station and
+forecast checks on 8.3.6b1 and the subsequent upgrade to stable 8.3.6.
 
 The [cumulative release notes](docs/RELEASE_8.3.5.md) cover measured HGT, consented
 obsolete-forecast cleanup, circular wind history, translated names/shared

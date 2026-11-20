@@ -2,22 +2,16 @@
 
 ## Stable 8.3.6
 
-The package uses the [accepted beta and subsequent test fixes](RELEASE_EVIDENCE_8.3.6.md).
-Review the package PR from `release/8.3.6`, titled
-`Prepare the 8.3.6 stable release`. After its squash merge and successful
-checks, run the publisher from that checkout with the full **package merge
-SHA**. The first command reads GitHub's state. Use the second command after
-approval to publish that same SHA.
+[Stable 8.3.6](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.6)
+was published from the signed squash merge of
+[PR #150](https://github.com/martins-netizen/ha-meteoswiss/pull/150).
+The [publication record](RELEASE_EVIDENCE_8.3.6.md) identifies the tag, release
+and approved English notes. To inspect the publication using the publisher
+from the tagged checkout, run its read-only check against the package merge.
 
 ```sh
-python3 scripts/publish_meteoswiss_836_stable.py --check APPROVED_PACKAGE_MERGE_SHA
-python3 scripts/publish_meteoswiss_836_stable.py --publish APPROVED_PACKAGE_MERGE_SHA
+python3 scripts/publish_meteoswiss_836_stable.py --check 85d74d7dbb892f71294a5ff8546633410b1c8fdb
 ```
-
-The publisher uses the [approved English notes](RELEASE_8.3.6.md), sets
-8.3.6 as the latest stable release, and verifies the tag, release and
-previous inventory, including 8.3.6b1. If the outcome is uncertain, run
-`--check` with the same SHA to see whether GitHub already published it.
 
 ## 8.3.6b1 prerelease
 
