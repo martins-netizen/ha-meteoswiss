@@ -49,7 +49,7 @@ async def uv_entry(hass, aioclient_mock, enable_custom_integrations, freezer):
                 return_value=data,
             ))
         assert await hass.config_entries.async_setup(entry.entry_id)
-        await hass.async_block_till_done()
+        await hass.async_block_till_done(wait_background_tasks=True)
         registry = er.async_get(hass)
         ids = {key: registry.async_get_entity_id(
             "sensor", DOMAIN, f"{DOMAIN}_{entry.entry_id}_{suffix}"

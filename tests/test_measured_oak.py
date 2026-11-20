@@ -67,7 +67,7 @@ async def test_registered_oak_missing_outage_recovery_and_reload_keep_identity(
                 return_value=data,
             ))
         assert await hass.config_entries.async_setup(entry.entry_id)
-        await hass.async_block_till_done()
+        await hass.async_block_till_done(wait_background_tasks=True)
         registry = er.async_get(hass)
         ids = {kind: registry.async_get_entity_id(
             "sensor", DOMAIN, f"{DOMAIN}_{entry.entry_id}_ms_pollen_{kind}"
@@ -100,7 +100,7 @@ async def test_registered_oak_missing_outage_recovery_and_reload_keep_identity(
         await entry.runtime_data.meteoswiss_pollen_coordinator.async_refresh()
         assert hass.states.get(ids["oak"]).state == "21"
         assert await hass.config_entries.async_reload(entry.entry_id)
-        await hass.async_block_till_done()
+        await hass.async_block_till_done(wait_background_tasks=True)
         for kind, entity_id in ids.items():
             assert registry.async_get_entity_id("sensor", DOMAIN, before[kind]) == entity_id
         assert hass.states.get(ids["oak"]).state == "21"

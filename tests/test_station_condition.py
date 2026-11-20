@@ -450,7 +450,7 @@ async def live_entry(
                 )
             )
         assert await hass.config_entries.async_setup(entry.entry_id)
-        await hass.async_block_till_done()
+        await hass.async_block_till_done(wait_background_tasks=True)
         yield entry, kept.entity_id
         if getattr(entry, "runtime_data", None) is not None:
             assert await hass.config_entries.async_unload(entry.entry_id)
@@ -501,7 +501,7 @@ async def test_loaded_failure_recovery_and_station_reload_preserve_ids_and_place
         entry,
         data={**entry.data, "station_id": "KLO", "station_name": "Zürich / Kloten"},
     )
-    await hass.async_block_till_done()
+    await hass.async_block_till_done(wait_background_tasks=True)
     assert hass.states.get(weather_id).state == "rainy"
     assert hass.states.get(weather_id).attributes["temperature"] == 9.5
     assert er.async_get(hass).async_get(weather_id).name == "My station"

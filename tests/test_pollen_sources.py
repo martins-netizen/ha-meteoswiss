@@ -620,7 +620,7 @@ async def test_real_entities_start_failure_recovery_and_unload(
                 )
             )
         assert await hass.config_entries.async_setup(entry.entry_id)
-        await hass.async_block_till_done()
+        await hass.async_block_till_done(wait_background_tasks=True)
         runtime = entry.runtime_data
         registry = er.async_get(hass)
         identifiers = {

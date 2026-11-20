@@ -357,7 +357,7 @@ async def test_registered_weather_survives_forecast_failure_and_recovers(
                 )
             )
         assert await hass.config_entries.async_setup(entry.entry_id)
-        await hass.async_block_till_done()
+        await hass.async_block_till_done(wait_background_tasks=True)
         entity_id = next(
             row.entity_id
             for row in er.async_entries_for_config_entry(
