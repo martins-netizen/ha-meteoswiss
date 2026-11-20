@@ -2,12 +2,13 @@
 
 ## Current next step
 
-Prepare **8.3.6b1** from the signed merge of
-[PR #147](https://github.com/martins-netizen/ha-meteoswiss/pull/147). The
-[beta notes](RELEASE_8.3.6b1.md) describe the changes since stable 8.3.5.
-Validate the package on HA 2026.11.0 and 2026.11.2 and verify its approved
-merge before a separate prerelease publication. The
-[existing-entry check](ACCEPTANCE_8.3.6b1.md) applies after installation.
+Prepare stable **8.3.6** from the signed merge of
+[PR #149](https://github.com/martins-netizen/ha-meteoswiss/pull/149),
+`ea278684dfccb6770e32cad1cdf51e7e08fb7614`. It carries forward the accepted
+8.3.6b1 runtime and the subsequent test-only correction. Verify the package
+on HA 2026.11.0 and 2026.11.2, then verify its approved merge before separately
+authorizing stable publication. See the [candidate notes](RELEASE_8.3.6.md)
+and [existing-entry update guide](ACCEPTANCE_8.3.6.md).
 
 ## Published stable 8.3.5
 
