@@ -19,10 +19,12 @@ explain the changes from 8.2.0. Use a published release, not a branch.
 is available. Its [dated evidence](docs/RELEASE_EVIDENCE_8.3.5.md) records the
 verified tag, release text and publication; installation remains separate.
 
-The next test package, **8.3.6b1**, protects older wind and HGT statistics,
-returns whole forecast rain probabilities and moves station and pollen CSV
-parsing off Home Assistant's event loop. See the [beta notes](docs/RELEASE_8.3.6b1.md)
-and check the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases) for availability.
+**MeteoSwiss 8.3.6** carries forward the released
+8.3.6b1 integration, including stronger checks before changing older wind
+and heating-degree-day statistics, whole percentages in rain forecasts and
+background parsing for station and pollen data. See the
+[8.3.6 release notes](docs/RELEASE_8.3.6.md) and the
+[published beta](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.6b1).
 
 **About 8.3.5:** this version brings together official measured heating degree
 days, more private diagnostics, reliable local state clocks and our engineering
@@ -69,7 +71,7 @@ before deletion. Accepted b3 cleanup and b5/b6/b7 reports stay complete.
 
 | Package | Required HA Core |
 |---|---|
-| 8.3.6b1, 8.3.5 and 8.3.5b1–b7 | 2026.11.0 or newer |
+| 8.3.6, 8.3.6b1, 8.3.5 and 8.3.5b1–b7 | 2026.11.0 or newer |
 | Earlier stable 8.3.4 | 2026.8.3 or newer |
 
 The 2026.11 baseline addresses known vulnerabilities in libraries pinned by
@@ -209,21 +211,12 @@ The [developer guide](DEVELOPMENT.md#strict-type-checking) shows how to run them
 
 ## Release status
 
-The [catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases) and
-[latest-stable page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
-identify actually available packages. Published
-[8.3.5b7](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5b7),
-release **450428545**, was independently verified on **18 November 2026 at
-19:02:40 UTC** and subsequently received a positive bounded operator sight
-report. Earlier [stable 8.3.4](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.4)
-and all previous tags/notes remain unchanged.
-
-**8.3.5** includes the signed corrective source
-`115ddad474dcae15aa49fb5f368cbed600adf80d`. The fixed stable publisher verifies
-that source boundary, the package's trusted checks and all retained historical
-releases. [Dated evidence](docs/RELEASE_EVIDENCE_8.3.5.md) distinguishes package
-approval and publication from source validation. Choose a published package
-from the catalogue; a branch is not an available release.
+The [latest-stable page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
+shows which stable package can be installed. The operator confirmed normal
+station weather, daily forecast minimum and maximum temperatures, and the
+24-hour forecast display on the published 8.3.6b1 with HA Core 2026.11.2.
+The [8.3.6 update guide](docs/ACCEPTANCE_8.3.6.md) covers the normal update
+once the stable version appears in Marketplace.
 
 The [cumulative release notes](docs/RELEASE_8.3.5.md) cover measured HGT, consented
 obsolete-forecast cleanup, circular wind history, translated names/shared

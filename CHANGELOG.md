@@ -2,7 +2,22 @@
 
 ## [Unreleased]
 
-## [8.3.6b1] — test package
+## [8.3.6] — stable candidate
+
+- Promote the accepted 8.3.6b1 runtime. Since stable 8.3.5, the integration
+  verifies ownership before changing older wind and heating-degree-day
+  statistics, reports whole rain probabilities, parses station and pollen
+  CSVs in worker threads, and runs strict type checks across the integration.
+- Tests now wait for the initial background refresh before reading optional
+  data after setup or reload. The integration code matches the beta apart
+  from its two version fields. [PR #149](https://github.com/martins-netizen/ha-meteoswiss/pull/149)
+
+[Stable candidate notes](docs/RELEASE_8.3.6.md) · [Update guide](docs/ACCEPTANCE_8.3.6.md)
+
+## [8.3.6b1] — 2026-11-20
+
+Published as a [prerelease](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.6b1)
+from [PR #148](https://github.com/martins-netizen/ha-meteoswiss/pull/148).
 
 - Recheck Recorder metadata and registry ownership when archiving old wind or
   heating-degree-day (HGT) forecast statistics. A conflicting owner or archive
