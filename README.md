@@ -19,6 +19,11 @@ explain the changes from 8.2.0. Use a published release, not a branch.
 is available. Its [dated evidence](docs/RELEASE_EVIDENCE_8.3.5.md) records the
 verified tag, release text and publication; installation remains separate.
 
+The next test package, **8.3.6b1**, protects older wind and HGT statistics,
+returns whole forecast rain probabilities and moves station and pollen CSV
+parsing off Home Assistant's event loop. See the [beta notes](docs/RELEASE_8.3.6b1.md)
+and check the [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases) for availability.
+
 **About 8.3.5:** this version brings together official measured heating degree
 days, more private diagnostics, reliable local state clocks and our engineering
 evidence through Gold. It uses the reviewed source in
@@ -64,7 +69,7 @@ before deletion. Accepted b3 cleanup and b5/b6/b7 reports stay complete.
 
 | Package | Required HA Core |
 |---|---|
-| 8.3.5 and 8.3.5b1–b7 | 2026.11.0 or newer |
+| 8.3.6b1, 8.3.5 and 8.3.5b1–b7 | 2026.11.0 or newer |
 | Earlier stable 8.3.4 | 2026.8.3 or newer |
 
 The 2026.11 baseline addresses known vulnerabilities in libraries pinned by

@@ -1,6 +1,15 @@
-# Release planning: published 8.3.5 and dated earlier plans
+# Release planning
 
 ## Current next step
+
+Prepare **8.3.6b1** from the signed merge of
+[PR #147](https://github.com/martins-netizen/ha-meteoswiss/pull/147). The
+[beta notes](RELEASE_8.3.6b1.md) describe the changes since stable 8.3.5.
+Validate the package on HA 2026.11.0 and 2026.11.2 and verify its approved
+merge before a separate prerelease publication. The
+[existing-entry check](ACCEPTANCE_8.3.6b1.md) applies after installation.
+
+## Published stable 8.3.5
 
 **Stable [8.3.5](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.5)
 is published**, release **450993306**, on **19 November 2026 at 07:12:57 UTC /
@@ -10,11 +19,6 @@ is published**, release **450993306**, on **19 November 2026 at 07:12:57 UTC /
 checks and independent publication readback are complete. The
 [dated evidence](RELEASE_EVIDENCE_8.3.5.md) records the exact source/package
 boundary, English body hash and preservation of the 23 older releases/tags.
-
-There is no remaining 8.3.5 packaging or publication step. Further development
-must select a separately justified scope from the [current roadmap](../ROADMAP.md).
-The completed #131 canonical-coordinator and HGT clock corrections are included
-in this release; a new package or publisher run is unnecessary.
 
 Users choosing stable 8.3.5 can follow the [normal existing-entry update](ACCEPTANCE_8.3.5.md)
 and complete its ordinary update restart once. Publication does not confirm
