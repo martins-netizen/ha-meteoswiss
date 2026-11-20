@@ -16,8 +16,10 @@ import tempfile
 REPOSITORY = "martins-netizen/ha-meteoswiss"
 OWNER = "martins-netizen"
 OWNER_ID = 299523863
+OWNER_EMAIL = "299523863+martins-netizen@users.noreply.github.com"
 REPO_ID = 1333898084
 REVIEWED_SOURCE = "f9abaa12018fb89fd6c31633eadf6a975019d596"
+FIRST_PACKAGE_COMMIT = "fbd46b71dd2009e98d295b263ca19e101855332d"
 SOURCE_TREE = "e958573cbae9bd8b5685a627645f9ff1477c73f8"
 TAG = "8.3.6b1"
 TITLE = "MeteoSwiss 8.3.6b1"
@@ -26,10 +28,20 @@ PACKAGE_TITLE = "Prepare the 8.3.6b1 prerelease"
 URL = "https://github.com/" + REPOSITORY
 NOTES = "docs/RELEASE_8.3.6b1.md"
 COMPONENT = "custom_components/meteoswiss/"
+# Exact version markers and SHA-256 digests of the reviewed source and beta bytes.
 VERSIONS = {
-    COMPONENT + "manifest.json": '"version": "8.3.5"',
-    COMPONENT + "version.py": '__version__ = "8.3.5"',
+    COMPONENT + "manifest.json": (
+        '"version": "8.3.5"',
+        "70603a26809baa95386f66e46df91706e437421ef1ebca438f8f4c29fc4e2013",
+        "91b1b58dd016f0682a2329278c25029ce28df13471ca571d2ed9836e3280521d",
+    ),
+    COMPONENT + "version.py": (
+        '__version__ = "8.3.5"',
+        "5612f7f67816bf75fd8502e337de6cd8b31668d2e4e4fb4fa1cadb58039d952c",
+        "9a4c6e69fe8a197df48c16bb81b9d3e7b3892cceb5dbf009ec8c014de3edfd3e",
+    ),
 }
+NOTES_SHA256 = "734db476b7455f9ad39509d9ed73d06a199368728a02718cd7cb6dff2f2832fe"
 PACKAGE_PATHS = set(VERSIONS) | {
     "CHANGELOG.md", "README.md", "ROADMAP.md", NOTES, "docs/ACCEPTANCE_8.3.6b1.md",
     "docs/RELEASE_EVIDENCE_8.3.6b1.md", "docs/NEXT_RELEASE_PLAN.md", "docs/RELEASE_READINESS.md",
@@ -125,11 +137,11 @@ def package_tree(commit):
     rows = api("/pulls?state=all&base=development&head=martins-netizen%3Arelease%2F8.3.6b1&per_page=100")
     require(isinstance(rows, list) and len(rows) == 1, "Expected exactly one package pull request.")
     number = rows[0].get("number")
-    require(type(number) is int and number > 0, "Invalid package pull request number.")
+    require(number == 148, "Expected package pull request #148.")
     pr = api("/pulls/" + str(number))
     require(pr.get("number") == number and pr.get("html_url") == URL + "/pull/" + str(number)
             and pr.get("state") == "closed" and pr.get("merged") is True and pr.get("merged_at")
-            and pr.get("title") == PACKAGE_TITLE and pr.get("merge_commit_sha") == commit
+            and pr.get("title") == PACKAGE_TITLE and pr.get("merge_commit_sha") == commit and pr.get("commits") == 2
             and pr.get("user", {}).get("login") == OWNER and pr["user"].get("id") == OWNER_ID
             and all(pr.get(side, {}).get("repo", {}).get("full_name") == REPOSITORY
                     and pr[side]["repo"].get("id") == REPO_ID for side in ("base", "head"))
@@ -138,17 +150,24 @@ def package_tree(commit):
     head = pr["head"].get("sha")
     require(is_sha(head) and head != commit, "Invalid package PR head.")
     merged = api("/git/commits/" + commit)
-    original = api("/git/commits/" + head)
+    corrected = api("/git/commits/" + head)
+    first = api("/git/commits/" + FIRST_PACKAGE_COMMIT)
+    # Squashing the two package commits retains their final tree and restores the source parent.
+    for obj, sha, parent in ((first, FIRST_PACKAGE_COMMIT, REVIEWED_SOURCE),
+                             (corrected, head, FIRST_PACKAGE_COMMIT), (merged, commit, REVIEWED_SOURCE)):
+        require(obj.get("sha") == sha and [p.get("sha") for p in obj.get("parents", [])] == [parent],
+                "The two package commits or their squash have unexpected ancestry.")
+    for role in ("author", "committer"):
+        person = corrected.get(role, {})
+        require(person.get("name") == OWNER and person.get("email") == OWNER_EMAIL,
+                "Unexpected author or committer on the corrected package head.")
     tree = merged.get("tree", {}).get("sha")
-    require(is_sha(tree) and tree != SOURCE_TREE and all(
-        obj.get("sha") == sha and obj.get("tree", {}).get("sha") == tree
-        and [p.get("sha") for p in obj.get("parents", [])] == [REVIEWED_SOURCE]
-        for obj, sha in ((merged, commit), (original, head))
-    ), "The PR head and package squash must have the same tree and source parent.")
+    require(is_sha(tree) and tree not in (SOURCE_TREE, first.get("tree", {}).get("sha"))
+            and corrected.get("tree", {}).get("sha") == tree, "The squash differs from the corrected PR head.")
     require(merged.get("verification", {}).get("verified") is True
             and merged["verification"].get("reason") == "valid"
             and merged.get("author", {}).get("name") == OWNER
-            and merged["author"].get("email") == "299523863+martins-netizen@users.noreply.github.com"
+            and merged["author"].get("email") == OWNER_EMAIL
             and merged.get("committer", {}).get("name") == "GitHub"
             and merged["committer"].get("email") == "noreply@github.com",
             "Package squash is not signed by GitHub with the expected public identities.")
@@ -173,14 +192,14 @@ def tree_files(tree):
     return blobs
 
 
-def blob_text(sha):
+def blob_text(sha, expected_sha256):
     obj = api("/git/blobs/" + sha)
     require(obj.get("sha") == sha and obj.get("encoding") == "base64"
             and type(obj.get("size")) is int and 0 <= obj["size"] <= 1024 * 1024,
             "Unexpected release blob format or size.")
     data = base64.b64decode("".join(obj["content"].split()), validate=True)
-    git_hash = hashlib.sha1(b"blob " + str(len(data)).encode() + b"\0" + data).hexdigest()
-    require(len(data) == obj["size"] and git_hash == sha, "Release blob content or length differs.")
+    require(len(data) == obj["size"] and hashlib.sha256(data).hexdigest() == expected_sha256,
+            "Release blob content or length differs from the reviewed bytes.")
     return data.decode("utf-8")
 
 
@@ -192,12 +211,12 @@ def package_notes(commit, tree):
     components = {path for path in source if path.startswith(COMPONENT)}
     require(len(components) == 52 and all(source[path][0] == "100644" for path in components),
             "The reviewed component inventory differs.")
-    for path, old in VERSIONS.items():
-        before = blob_text(source[path][1])
-        after = blob_text(package[path][1])
+    for path, (old, source_digest, package_digest) in VERSIONS.items():
+        before = blob_text(source[path][1], source_digest)
+        after = blob_text(package[path][1], package_digest)
         require(before.count(old) == 1 and after == before.replace(old, old.replace("8.3.5", TAG)),
                 "A component file differs beyond the exact version bump.")
-    notes = blob_text(package[NOTES][1])
+    notes = blob_text(package[NOTES][1], NOTES_SHA256)
     marker = "This community fork builds on "
     require(notes.startswith("# MeteoSwiss 8.3.6b1\n") and notes.count("\n" + marker) == 1,
             "The package release notes do not match the reviewed format.")

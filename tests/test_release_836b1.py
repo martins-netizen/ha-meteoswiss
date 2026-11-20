@@ -15,6 +15,8 @@ from test_release_835_stable_publisher import load_publisher as load_previous_pu
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCE = "f9abaa12018fb89fd6c31633eadf6a975019d596"
+FIRST = "fbd46b71dd2009e98d295b263ca19e101855332d"
+FIRST_TREE = "5574bb14feae7c56411c4f57c54ae9c49ae06c31"
 HEAD, MERGE, PACKAGE_TREE = ("1" * 40, "2" * 40, "3" * 40)
 SOURCE_TREE = "e958573cbae9bd8b5685a627645f9ff1477c73f8"
 STABLE_COMMIT = "cc158cbdce07f015952275fba72e3c0160c63c80"
@@ -24,7 +26,38 @@ REPO = "martins-netizen/ha-meteoswiss"
 WEB = "https://github.com/" + REPO
 PREFIX = "custom_components/meteoswiss/"
 NOTES = "docs/RELEASE_" + TAG + ".md"
-PUBLIC_BODY = "This community fork builds on upstream.\nSee [the guide](PUBLISHING.md).\n"
+# Keep historical component bytes independent of future changes to the integration.
+STABLE_MANIFEST = b'''{
+  "domain": "meteoswiss",
+  "name": "MeteoSwiss",
+  "after_dependencies": [
+    "recorder"
+  ],
+  "codeowners": [
+    "@martins-netizen"
+  ],
+  "config_flow": true,
+  "documentation": "https://github.com/martins-netizen/ha-meteoswiss",
+  "integration_type": "service",
+  "iot_class": "cloud_polling",
+  "issue_tracker": "https://github.com/martins-netizen/ha-meteoswiss/issues",
+  "requirements": [],
+  "version": "8.3.5"
+}
+'''
+STABLE_VERSION = (
+    b'"""Version information for MeteoSwiss integration."""\n'
+    b'from __future__ import annotations\n'
+    b'\n'
+    b'__version__ = "8.3.5"\n'
+)
+NOTES_LINKS = {
+    "WIND_STATISTICS_MIGRATION.md": "docs/WIND_STATISTICS_MIGRATION.md",
+    "UPGRADING_8.3.5.md": "docs/UPGRADING_8.3.5.md",
+    "../DEVELOPMENT.md": "DEVELOPMENT.md",
+    "ACCEPTANCE_8.3.6b1.md": "docs/ACCEPTANCE_8.3.6b1.md",
+    "RELEASE_EVIDENCE_8.3.6b1.md": "docs/RELEASE_EVIDENCE_8.3.6b1.md",
+}
 LABEL = "MeteoSwiss 8.3.6b1"
 PR_QUERY = "/pulls?state=all&base=development&head=martins-netizen%3Arelease%2F8.3.6b1&per_page=100"
 HISTORY = "/releases?per_page=100"
@@ -56,7 +89,7 @@ class GitHub:
         pull = {"number": 148, "html_url": WEB + "/pull/148", "user": account,
                 "title": "Prepare the 8.3.6b1 prerelease", "state": "closed",
                 "draft": False, "merged": True, "merged_at": "2026-11-20T12:00:00Z",
-                "merge_commit_sha": MERGE, "commits": 1,
+                "merge_commit_sha": MERGE, "commits": 2,
                 "base": {"ref": "development", "repo": repo, "sha": SOURCE},
                 "head": {"ref": BRANCH, "repo": repo, "sha": HEAD}}
         commit = {"tree": {"sha": PACKAGE_TREE}, "parents": [{"sha": SOURCE}],
@@ -68,7 +101,9 @@ class GitHub:
             "user": account, "": repo, PR_QUERY: [deepcopy(pull)], "/pulls/148": pull,
             "/branches/development": {"name": "development", "protected": True, "commit": {"sha": MERGE}},
             MERGE_INFO: {**deepcopy(commit), "sha": MERGE},
-            "/git/commits/" + HEAD: {**deepcopy(commit), "sha": HEAD},
+            "/git/commits/" + FIRST: {"sha": FIRST, "tree": {"sha": FIRST_TREE}, "parents": [{"sha": SOURCE}]},
+            "/git/commits/" + HEAD: {**deepcopy(commit), "sha": HEAD, "parents": [{"sha": FIRST}],
+                                     "committer": dict(commit["author"])},
             "/commits/" + MERGE + "/status?per_page=100": {
                 "sha": MERGE, "state": "pending", "total_count": 0, "statuses": []},
         })
@@ -99,18 +134,16 @@ class GitHub:
         shared = [self.file(PREFIX + name, b"unchanged") for name in
                   ["stations_map.py", *(f"module_{i}.py" for i in range(49))]]
         shared.append(self.file("requirements_test.txt", b"locked"))
+        shared.extend(self.file(path, b"unchanged") for path in NOTES_LINKS.values() if path not in PACKAGE_PATHS)
         source = shared.copy()
         package = shared.copy()
-        for name, original in [
-            ("manifest.json", b'{\n  "domain": "meteoswiss",\n  "version": "8.3.5"\n}\n'),
-            ("version.py", b'__version__ = "8.3.5"\n'),
-        ]:
+        for name, original in [("manifest.json", STABLE_MANIFEST), ("version.py", STABLE_VERSION)]:
             source.append(self.file(PREFIX + name, original))
             package.append(self.file(PREFIX + name, original.replace(b"8.3.5", TAG.encode())))
         for path in sorted(PACKAGE_PATHS):
             payload = b"packaged"
             if path == NOTES:
-                payload = ("# " + LABEL + "\n\n" + PUBLIC_BODY).encode()
+                payload = (ROOT / NOTES).read_bytes()
             if path in {"CHANGELOG.md", "README.md", "ROADMAP.md", "docs/PUBLISHING.md",
                         "docs/NEXT_RELEASE_PLAN.md", "docs/RELEASE_READINESS.md"}:
                 source.append(self.file(path, b"previous release guidance"))
@@ -122,8 +155,7 @@ class GitHub:
             }
 
     def file(self, path, payload):
-        header = b"blob " + str(len(payload)).encode() + b"\0"
-        sha = hashlib.sha1(header + payload).hexdigest()
+        sha = hashlib.sha256(payload).hexdigest()[:40]  # Opaque IDs for the fake GitHub tree.
         self.data["/git/blobs/" + sha] = {
             "sha": sha, "size": len(payload), "encoding": "base64",
             "content": base64.b64encode(payload).decode(),
@@ -166,9 +198,12 @@ def test_check_publish_and_rerun_use_only_one_explicit_prerelease_post(github):
     assert not github.posts
     assert publisher.publish(MERGE, allow_write=True)["status"] == "published_and_verified"
     assert publisher.publish(MERGE, allow_write=True)["status"] == "already_published_and_verified"
+    body = (ROOT / NOTES).read_text(encoding="utf-8").split("\n\n", 1)[1]
+    for relative, path in NOTES_LINKS.items():
+        body = body.replace(f"]({relative})", f"]({WEB}/blob/{MERGE}/{path})")
     assert github.posts == [{
         "tag_name": TAG, "target_commitish": MERGE, "name": LABEL, "draft": False,
-        "body": PUBLIC_BODY.replace("](PUBLISHING.md)", "](" + WEB + "/blob/" + MERGE + "/docs/PUBLISHING.md)"),
+        "body": body,
         "prerelease": True, "make_latest": "false", "generate_release_notes": False,
     }]
     assert len(before) == len(refs) == 24
@@ -178,7 +213,9 @@ def test_check_publish_and_rerun_use_only_one_explicit_prerelease_post(github):
 
 @pytest.mark.parametrize(("endpoint", "path", "value"), [
     (PR_QUERY, [], []),
+    (PR_QUERY, [0, "number"], 149),
     ("/pulls/148", ["state"], "open"),
+    ("/pulls/148", ["commits"], 1),
     ("/pulls/148", ["merge_commit_sha"], HEAD),
     ("/pulls/148", ["title"], "An unrelated package"),
     ("/pulls/148", ["head", "ref"], "release/unreviewed"),
@@ -186,7 +223,12 @@ def test_check_publish_and_rerun_use_only_one_explicit_prerelease_post(github):
     ("/pulls/148", ["user", "id"], 123),
     ("/pulls/148", ["base", "sha"], HEAD),
     (MERGE_INFO, ["parents"], [{"sha": SOURCE}, {"sha": HEAD}]),
+    (MERGE_INFO, ["parents"], [{"sha": FIRST}]),
     (MERGE_INFO, ["verification", "verified"], False),
+    ("/git/commits/" + FIRST, ["parents"], [{"sha": HEAD}]),
+    ("/git/commits/" + HEAD, ["parents"], [{"sha": SOURCE}]),
+    ("/git/commits/" + HEAD, ["author", "email"], "other@users.noreply.github.com"),
+    ("/git/commits/" + HEAD, ["committer", "name"], "GitHub"),
     ("/git/commits/" + HEAD, ["tree", "sha"], SOURCE_TREE),
     ("/branches/development", ["protected"], False),
     ("/git/trees/" + PACKAGE_TREE + "?recursive=1", ["truncated"], True),
@@ -219,6 +261,22 @@ def test_unreviewed_blob_is_never_published(github, path, payload):
     index = next(i for i, entry in enumerate(github.package) if entry["path"] == path)
     github.package[index] = github.file(path, payload)
     with pytest.raises(publisher.PublicationError):
+        publisher.publish(MERGE, allow_write=True)
+    assert not github.posts
+
+
+@pytest.mark.parametrize(("tree_sha", "path"), [
+    (SOURCE_TREE, PREFIX + "manifest.json"), (PACKAGE_TREE, PREFIX + "manifest.json"),
+    (SOURCE_TREE, PREFIX + "version.py"), (PACKAGE_TREE, PREFIX + "version.py"),
+    (PACKAGE_TREE, NOTES),
+])
+def test_same_length_tampering_with_unchanged_blob_id_cannot_publish(github, tree_sha, path):
+    tree = github.data["/git/trees/" + tree_sha + "?recursive=1"]["tree"]
+    sha = next(row["sha"] for row in tree if row["path"] == path)
+    blob = github.data["/git/blobs/" + sha]
+    data = base64.b64decode(blob["content"])
+    blob["content"] = base64.b64encode(data.replace(b"MeteoSwiss", b"MeteoSwizz", 1)).decode()
+    with pytest.raises(publisher.PublicationError, match="reviewed bytes"):
         publisher.publish(MERGE, allow_write=True)
     assert not github.posts
 
