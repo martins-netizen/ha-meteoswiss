@@ -186,7 +186,7 @@ async def test_real_entry_routes_forecast_only_and_reload_preserves_ids(
                 )
             )
         assert await hass.config_entries.async_setup(entry.entry_id)
-        await hass.async_block_till_done()
+        await hass.async_block_till_done(wait_background_tasks=True)
         runtime = entry.runtime_data
         forecast = runtime.forecast_coordinator
         issue_id = f"invalid_forecast_location_{entry.entry_id}"
@@ -301,7 +301,7 @@ async def test_real_entry_routes_forecast_only_and_reload_preserves_ids(
                     CONF_FORECAST_LOCATION: encode_forecast_location(selected_location),
                 },
             )
-            await hass.async_block_till_done()
+            await hass.async_block_till_done(wait_background_tasks=True)
             repaired = entry.runtime_data.forecast_coordinator
             assert (
                 repaired.last_update_success and repaired.data[0]["temperature"] == -10

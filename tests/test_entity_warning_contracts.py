@@ -350,7 +350,7 @@ async def installed_entities(hass, enable_custom_integrations, aioclient_mock, c
                 )
             )
         assert await hass.config_entries.async_setup(entry.entry_id)
-        await hass.async_block_till_done()
+        await hass.async_block_till_done(wait_background_tasks=True)
         yield entry
         assert await hass.config_entries.async_unload(entry.entry_id)
         await hass.async_block_till_done()
