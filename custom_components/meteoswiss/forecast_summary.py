@@ -8,7 +8,8 @@ from typing import Any, Literal
 from .weather_data import FORECAST_TIME_ZONE, forecast_datetime, weather_number
 
 ForecastMetric = Literal[
-    "maximum_temperature", "minimum_temperature", "precipitation", "probability"
+    "maximum_temperature", "minimum_temperature", "precipitation", "probability",
+    "shortwave_radiation", "diffuse_radiation", "wind_gust_speed",
 ]
 FORECAST_MAX_AGE = timedelta(hours=3)
 FORECAST_FUTURE_SKEW = timedelta(minutes=10)
@@ -64,8 +65,8 @@ def _daily_value(
     return None, {}
 
 
-def _probability_values(
-    rows: list[Any], expected: set[datetime]
+def _hourly_values(
+    rows: list[Any], expected: set[datetime], field: str, maximum: float | None = None
 ) -> dict[datetime, float]:
     """Select valid values by physical interval end, including midnight."""
     values: dict[datetime, float] = {}
@@ -73,9 +74,10 @@ def _probability_values(
         if not isinstance(row, dict):
             continue
         end = forecast_datetime(row.get("datetime"))
-        probability = weather_number(row.get("precipitation_probability"), 0, 100)
-        if end is not None and end in expected and probability is not None:
-            values[end] = probability
+        if end is not None and end in expected:
+            value = weather_number(row.get(field), 0, maximum)
+            if value is not None:
+                values[end] = value
     return values
 
 
@@ -99,20 +101,54 @@ def _peak_periods(values: dict[datetime, float], peak: float) -> list[dict[str, 
     ]
 
 
+def _hourly_outlook(
+    rows: list[Any], now: datetime, field: str, attributes: dict[str, Any]
+) -> tuple[float | None, dict[str, Any]]:
+    """Summarize the current clock hour and 23 following physical hour buckets."""
+    hour = timedelta(hours=1)
+    start = now.astimezone(UTC).replace(minute=0, second=0, microsecond=0)
+    ends = [start + i * hour for i in range(1, 25)]
+    values = _hourly_values(rows, set(ends), field)
+    # UTC arithmetic keeps both Swiss 02:00 hours separate on the autumn change.
+    boundaries = [stamp.astimezone(FORECAST_TIME_ZONE).isoformat() for stamp in [start, *ends]]
+    attributes.update(
+        window_start=boundaries[0],
+        window_end=boundaries[-1],
+        expected_hours=len(ends),
+        valid_hours=len(values),
+        coverage_complete=len(values) == len(ends),
+    )
+    if field == "wind_gust_speed":
+        attributes.update(peak_start=None, peak_end=None)
+        if len(values) != len(ends):
+            return None, attributes
+        # Ties, including a completely calm day, use the earliest interval.
+        index = max(range(len(ends)), key=lambda i: values[ends[i]])
+        attributes.update(peak_start=boundaries[index], peak_end=boundaries[index + 1])
+        return values[ends[index]], attributes
+
+    attributes["hourly_forecast"] = [
+        {"start": boundaries[i], "end": boundaries[i + 1], "value": values.get(end)}
+        for i, end in enumerate(ends)
+    ]
+    return values.get(ends[0]), attributes
+
+
 def summarize_forecast(
     rows: list[Any], now: datetime, day_offset: int, metric: ForecastMetric
 ) -> tuple[float | None, dict[str, Any]]:
     """Summarize native daily fields or complete, correctly aligned hour buckets."""
-    today = now.astimezone(FORECAST_TIME_ZONE).date()
-    target = today + timedelta(days=day_offset)
     fetched = forecast_snapshot_time(rows)
     attributes: dict[str, Any] = {
         "value_type": "forecast",
-        "forecast_date": target.isoformat(),
-        "forecast_period": "full_day",
         "source": FORECAST_ATTRIBUTION,
         "fetched_at": fetched.isoformat() if fetched else None,
     }
+    if metric in ("shortwave_radiation", "diffuse_radiation", "wind_gust_speed"):
+        return _hourly_outlook(rows, now, metric, attributes)
+    today = now.astimezone(FORECAST_TIME_ZONE).date()
+    target = today + timedelta(days=day_offset)
+    attributes.update(forecast_date=target.isoformat(), forecast_period="full_day")
     if metric != "probability":
         value, details = _daily_value(rows, target, metric)
         return value, {**attributes, **details}
@@ -128,7 +164,7 @@ def summarize_forecast(
         first + timedelta(hours=i + 1)
         for i in range(int((last - first).total_seconds() // 3600))
     }
-    values = _probability_values(rows, expected)
+    values = _hourly_values(rows, expected, "precipitation_probability", 100)
     complete = len(values) == len(expected)
     attributes.update(
         expected_hours=len(expected),

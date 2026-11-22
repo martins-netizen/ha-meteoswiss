@@ -136,9 +136,11 @@ def _whole_percent(value: float | None) -> int | None:
     return round(value) if value is not None else None
 
 
-def _forecast(timestamp: datetime, entry: dict[str, Any]) -> Forecast:
+def _forecast(
+    timestamp: datetime, entry: dict[str, Any], *, hourly: bool = False
+) -> Forecast:
     """Project validated values into HA's native-unit forecast contract."""
-    return Forecast(
+    forecast = Forecast(
         datetime=timestamp.isoformat(),
         native_temperature=weather_number(entry.get("temperature")),
         native_precipitation=weather_number(entry.get("precipitation"), 0),
@@ -151,6 +153,9 @@ def _forecast(timestamp: datetime, entry: dict[str, Any]) -> Forecast:
         condition=_condition(entry.get("condition"))
         or weather_condition(entry.get("weather_code"), entry.get("is_day")),
     )
+    if hourly and (gust := weather_number(entry.get("wind_gust_speed"), 0)) is not None:
+        forecast["native_wind_gust_speed"] = gust
+    return forecast
 
 
 class MeteoSwissForecastWeatherBase(WeatherEntity):
@@ -273,7 +278,7 @@ class MeteoSwissForecastWeatherBase(WeatherEntity):
         now = dt_util.utcnow()
         end = now.replace(minute=0, second=0, microsecond=0) + timedelta(hours=24)
         return [
-            _forecast(timestamp, entry)
+            _forecast(timestamp, entry, hourly=True)
             for timestamp, entry in self._forecast_entries()
             if timestamp + timedelta(hours=1) > now
             and timestamp < end

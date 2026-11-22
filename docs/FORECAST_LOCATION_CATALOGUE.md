@@ -1,6 +1,6 @@
 # Official forecast-location catalogue foundation
 
-**Guide version:** 1.4 · **Updated:** 24 October 2026
+**Guide version:** 1.5 · **Updated:** 22 November 2026
 **Status:** included in the 8.3 runtime accepted as b4. Source clients,
 saved identities/height routing and the four-language setup/Configure flow
 are integrated. See [selection](FORECAST_LOCATION_SETUP.md) and
@@ -84,6 +84,55 @@ async def catalogue_example(session):
 This example does not update HA. Future flows should reuse the client across
 searches and offload catalogue-wide search from the event loop. They must also
 handle a removed identity explicitly rather than substitute another point.
+
+### Multilingual postal search names
+
+Searching for `Morat` finds **3280 Murten**. `Merlach` finds **3280 Meyriez**,
+which has a different forecast ID despite sharing the same four-digit postcode.
+The displayed and saved name comes from the live MeteoSwiss catalogue. Local
+aliases apply only to postal points whose ID and full catalogue name both match
+the checked table. Stations and mountain POIs retain their catalogue names.
+
+The 22 November 2026 table covers 184 postal forecast points in 94 settlements
+with 120 distinct additional spellings. These include German, French, Italian
+and Romansh endonyms and exonyms as recorded by swisstopo. For example,
+`Genf`, `Ginevra` and `Genevra` all match Genève. Coverage follows the source
+name groups and the verification below. Some settlements have a source name in
+only one language. An exonym can have customary or informal status.
+
+The offline generator accepts a postal point only when all three sources agree:
+
+1. The point has MeteoSwiss type 2. Its ID equals the register's four-digit
+   postcode followed by its two-digit additional number. Exactly one active
+   ZIP area has that key and contains the MeteoSwiss LV95 coordinates.
+2. The ZIP area's locality foreign key identifies an active official locality
+   with the exact catalogue name. Its polygon contains exactly one swissNAMES3D
+   settlement centre (`TLM_SIEDLUNGSNAME_ZENTRUM`, `Ort`) with that primary name.
+3. Additional names must share that centre's `NAMENGRUPPE_UUID` and be marked as
+   endonyms or exonyms in one of the four national languages. Unmatched and
+   ambiguous records are skipped. This procedure never selects a nearby centre.
+
+| OGD input used on 22 November 2026 | SHA-256 of the downloaded file |
+|---|---|
+| [MeteoSwiss forecast points](https://data.geo.admin.ch/ch.meteoschweiz.ogd-local-forecasting/ogd-local-forecasting_meta_point.csv) | `3dd6b9fbdc0b24df507153ef75fc09eef9f230d6d0c20de9a91418c27fe7e069` |
+| [swissNAMES3D, 29 April 2026, LV95 CSV](https://data.geo.admin.ch/ch.swisstopo.swissnames3d/swissnames3d_2026/swissnames3d_2026_2056.csv.zip) | `e488e19f10a392e75aec35f7dc0a915dde1fe859b16e86eb36756854424f96dd` |
+| [Official index of localities, 1 November 2026, LV95 FileGDB](https://data.geo.admin.ch/ch.swisstopo-vd.ortschaftenverzeichnis_plz/ortschaftenverzeichnis_plz/ortschaftenverzeichnis_plz_2056.gdb.zip) | `a593bcc2b21a439f70d74e5eae136ae502fb1a47a73daf2a4f4d125f6e0bb77e` |
+
+To update, download the three files, record their dates and hashes, and review
+the resulting diff. The contributor script uses GDAL's Python bindings with
+OpenFileGDB and GEOS. Home Assistant uses the checked-in table offline.
+
+```sh
+python3 scripts/generate_forecast_location_aliases.py \
+  ogd-local-forecasting_meta_point.csv swissnames3d_2026_2056.csv.zip \
+  ortschaftenverzeichnis_plz_2056.gdb.zip > postal_aliases.py
+diff -u custom_components/meteoswiss/forecast_location_aliases.py postal_aliases.py
+```
+
+**Data attribution.** Source: MeteoSwiss. Settlement names and boundaries:
+Federal Office of Topography swisstopo. The derived data retain the providers'
+attribution requirements. See the [MeteoSwiss OGD terms](https://opendatadocs.meteoswiss.ch/#terms-of-use)
+and [swisstopo OGD terms](https://www.swisstopo.admin.ch/en/terms-of-use-free-geodata-and-geoservices).
 
 ## Fetch, cache and failure boundary
 

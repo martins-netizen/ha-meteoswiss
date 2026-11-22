@@ -102,6 +102,11 @@ def expected_metadata(source, *, observed_hgt=False, wind_ready=False):
             key = f"forecast_{quantity}_{day}"
             expected["sensor", key] = ExpectedMetadata(key, device_class, unit)
 
+    for key in ("forecast_global_radiation_next_hour", "forecast_diffuse_radiation_next_hour"):
+        expected["sensor", key] = ExpectedMetadata(key, "irradiance", "W/m²")
+    key = "forecast_peak_wind_gust_24h"
+    expected["sensor", key] = ExpectedMetadata(key, "wind_speed", "km/h")
+
     # Degree days combine temperature difference and time. Neither temperature,
     # temperature_delta nor duration fits °C·d. Forecast HGT is not a measured
     # series; observed HGT uses separate station-specific external statistics.
@@ -201,7 +206,7 @@ async def check_registered_inventory(hass, entry, *, observed_hgt, wind_ready=Fa
     expected = expected_metadata(
         entry.data["data_source"], observed_hgt=observed_hgt, wind_ready=wind_ready
     )
-    assert len(expected) == (46 if observed_hgt else 45)
+    assert len(expected) == (49 if observed_hgt else 48)
     # No lifecycle shortcut may enable circular statistics before HA startup.
     assert hass.is_running is wind_ready
     initial = assert_native_metadata(hass, entry, expected)

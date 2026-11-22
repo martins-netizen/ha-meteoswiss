@@ -308,6 +308,15 @@
       "precipitation_modelled": {
         "name": "Niederschlag (Modellintervall)"
       },
+      "forecast_global_radiation_next_hour": {
+        "name": "Globalstrahlung diese Stunde (Prognose)"
+      },
+      "forecast_diffuse_radiation_next_hour": {
+        "name": "Diffuse Strahlung diese Stunde (Prognose)"
+      },
+      "forecast_peak_wind_gust_24h": {
+        "name": "Stärkste Windböe in 24 Stunden (Prognose)"
+      },
       "forecast_maximum_temperature_today": {
         "name": "Höchsttemperatur heute (Prognose)"
       },

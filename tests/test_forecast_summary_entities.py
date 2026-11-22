@@ -79,13 +79,13 @@ def test_scalar_identity_units_precision_and_shared_device(hass, freezer):
     entry = MockConfigEntry(domain=DOMAIN, entry_id="forecast-identity")
     coordinator = MeteoSwissForecastCoordinator(hass, latitude=47.45, longitude=8.56)
     coordinator.data = forecast_rows()
-    assert len(FORECAST_SENSOR_DESCRIPTIONS) == 8
+    assert len(FORECAST_SENSOR_DESCRIPTIONS) == 11
     for description in FORECAST_SENSOR_DESCRIPTIONS:
         sensor = MeteoSwissForecastSensor(coordinator, entry, description, "Kloten")
         assert sensor.unique_id == f"meteoswiss_forecast-identity_{description.key}"
         assert sensor.device_info["identifiers"] == {(DOMAIN, f"calculated_{entry.entry_id}")}
         assert sensor.state_class is None
-        assert sensor.native_unit_of_measurement in ("°C", "mm", "%")
+        assert sensor.native_unit_of_measurement in ("°C", "mm", "%", "W/m²", "km/h")
         assert sensor.suggested_display_precision in (0, 1)
         assert sensor.available
         assert isinstance(sensor.native_value, (float, int))
@@ -99,7 +99,7 @@ async def test_registered_numeric_values_unknown_fields_and_failure_recovery(
     hass, installed_summary
 ):
     entry, ids, mock = installed_summary
-    assert all(ids.values()) and len(set(ids.values())) == 8
+    assert all(ids.values()) and len(set(ids.values())) == 11
     assert hass.states.get(ids["forecast_maximum_temperature_today"]).state == "12.0"
     assert hass.states.get(ids["forecast_minimum_temperature_today"]).state == "-2.0"
     assert hass.states.get(ids["forecast_maximum_temperature_tomorrow"]).state == "13.0"
@@ -140,10 +140,23 @@ async def test_hour_window_and_snapshot_expiry_update_without_fetching(
     rows = forecast_rows()
     for row in rows:
         if row["datetime"] == "2026-10-23T11:00:00+00:00":
-            row["precipitation_probability"] = 80
+            row.update(precipitation_probability=80, shortwave_radiation=0,
+                       diffuse_radiation=None, wind_gust_speed=70)
     source.async_set_updated_data(rows)
     await hass.async_block_till_done()
     assert float(hass.states.get(ids["forecast_probability_today"]).state) == 80
+    global_id = ids["forecast_global_radiation_next_hour"]
+    diffuse_id = ids["forecast_diffuse_radiation_next_hour"]
+    gust_id = ids["forecast_peak_wind_gust_24h"]
+    global_state = hass.states.get(global_id)
+    assert float(global_state.state) == 0
+    assert global_state.attributes["hourly_forecast"][0] == {
+        "start": "2026-10-23T12:00:00+02:00", "end": "2026-10-23T13:00:00+02:00", "value": 0,
+    }
+    assert "hourly_forecast" in global_state.state_info["unrecorded_attributes"]
+    assert hass.states.get(diffuse_id).state == "unknown"
+    assert float(hass.states.get(gust_id).state) == 70
+    assert hass.states.get(gust_id).attributes["peak_end"] == "2026-10-23T13:00:00+02:00"
     # Remove the ordinary coordinator poller so only scalar clock timers run.
     source._unsub_refresh()
     source._unsub_refresh = None
@@ -153,6 +166,10 @@ async def test_hour_window_and_snapshot_expiry_update_without_fetching(
     async_fire_time_changed(hass, instant)
     await hass.async_block_till_done()
     assert float(hass.states.get(ids["forecast_probability_today"]).state) == 10
+    assert float(hass.states.get(global_id).state) == 251
+    assert float(hass.states.get(diffuse_id).state) == 47
+    assert float(hass.states.get(gust_id).state) == 18.5
+    assert hass.states.get(gust_id).attributes["peak_end"] == "2026-10-23T14:00:00+02:00"
     assert mock.await_count == count
     expired = NOW + timedelta(hours=3, seconds=1)
     freezer.move_to(expired)

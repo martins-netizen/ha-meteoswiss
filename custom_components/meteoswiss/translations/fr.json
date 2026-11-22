@@ -308,6 +308,15 @@
       "precipitation_modelled": {
         "name": "Précipitations (intervalle modélisé)"
       },
+      "forecast_global_radiation_next_hour": {
+        "name": "Rayonnement solaire global de l’heure en cours (prévision)"
+      },
+      "forecast_diffuse_radiation_next_hour": {
+        "name": "Rayonnement solaire diffus de l’heure en cours (prévision)"
+      },
+      "forecast_peak_wind_gust_24h": {
+        "name": "Rafale maximale sur 24 heures (prévision)"
+      },
       "forecast_maximum_temperature_today": {
         "name": "Température maximale aujourd’hui (prévision)"
       },

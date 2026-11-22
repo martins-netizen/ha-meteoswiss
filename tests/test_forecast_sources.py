@@ -333,7 +333,15 @@ async def test_registered_weather_survives_forecast_failure_and_recovers(
         },
     )
     entry.add_to_hass(hass)
-    aioclient_mock.get(OPEN_METEO_BASE_URL, json=payload())
+    aioclient_mock.get(
+        OPEN_METEO_BASE_URL,
+        json=payload(
+            windspeed_10m=[5, 6],
+            wind_gusts_10m=[0, 18],
+            shortwave_radiation=[0, 100],
+            diffuse_radiation=[0, 30],
+        ),
+    )
     with ExitStack() as stack:
         stack.enter_context(
             patch(
@@ -376,8 +384,17 @@ async def test_registered_weather_survives_forecast_failure_and_recovers(
             )
             return result[entity_id]["forecast"]
 
-        assert (await forecasts("hourly"))[0]["temperature"] == 0
-        assert await forecasts("daily")
+        hourly = await forecasts("hourly")
+        assert hourly[0]["temperature"] == 0
+        assert [row["wind_gust_speed"] for row in hourly] == [0, 18]
+        assert [row["wind_speed"] for row in hourly] == [5, 6]
+        assert hourly[0]["datetime"] == datetime.fromtimestamp(HOUR, UTC).isoformat()
+        assert all(
+            "shortwave_radiation" not in row and "diffuse_radiation" not in row
+            for row in hourly
+        )
+        daily = await forecasts("daily")
+        assert daily and all("wind_gust_speed" not in row for row in daily)
         source = entry.runtime_data.forecast_coordinator
         saved = source.data
         clear_all_caches()
@@ -399,7 +416,9 @@ async def test_registered_weather_survives_forecast_failure_and_recovers(
         aioclient_mock.clear_requests()
         aioclient_mock.get(OPEN_METEO_BASE_URL, json=payload(temperature_2m=[4, 3]))
         await source.async_refresh()
-        assert (await forecasts("hourly"))[0]["temperature"] == 4
+        recovered = await forecasts("hourly")
+        assert recovered[0]["temperature"] == 4
+        assert "wind_gust_speed" not in recovered[0]
         assert await forecasts("daily")
         assert (
             len(

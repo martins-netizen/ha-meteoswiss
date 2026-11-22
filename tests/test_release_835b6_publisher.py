@@ -16,6 +16,8 @@ from unittest.mock import patch
 
 import pytest
 
+from release_835_fixture import component_tree
+
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts/publish_meteoswiss_835_beta_v1.13.sh"
 COMMIT = "a" * 40
@@ -67,10 +69,7 @@ class GitHub:
         self.protected = True
         self.move = False
         self.branch_reads = 0
-        self.source = {
-            str(path.relative_to(ROOT)): ("100644", blob(path.read_bytes()))
-            for path in (ROOT / PREFIX).rglob("*") if path.is_file() and "__pycache__" not in path.parts
-        }
+        self.source = component_tree(blob)
         assert len(self.source) == 52
         for path in [
             *ROOT.glob("requirements*"),

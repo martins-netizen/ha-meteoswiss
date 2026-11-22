@@ -1,6 +1,15 @@
 {
   "entity": {
     "sensor": {
+      "forecast_global_radiation_next_hour": {
+        "default": "mdi:white-balance-sunny"
+      },
+      "forecast_diffuse_radiation_next_hour": {
+        "default": "mdi:weather-partly-cloudy"
+      },
+      "forecast_peak_wind_gust_24h": {
+        "default": "mdi:weather-windy"
+      },
       "forecast_maximum_temperature_today": {
         "default": "mdi:thermometer-high"
       },

@@ -63,8 +63,8 @@ Record important entity IDs and existing statistic charts.
 **Precipitation (10 minutes)** is the latest published measured ten-minute
 amount. Its measurement time is the interval end, not an accumulation since the
 current hour began. A 12:20 observation covers the ten minutes ending at 12:20.
-Used station files are published every twenty minutes; polling faster does not
-create newer measurements.
+MeteoSwiss updates these files every ten minutes. Check the measurement
+timestamp to see which interval has arrived.
 
 For Open-Meteo, **Precipitation (modelled interval)** retains the provider interval
 in `measurement_interval_seconds`.
