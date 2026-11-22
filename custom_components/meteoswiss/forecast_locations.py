@@ -221,20 +221,20 @@ def _fold(value: str) -> str:
     return " ".join(re.findall(r"[^\W_]+", plain))
 
 
-def _name_forms(name: str) -> tuple[str, ...]:
+def _name_forms(name: str) -> list[str]:
     name = name.casefold()
     expanded = name.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue")
-    if expanded == name:
-        return (_fold(name),)
-    return _fold(name), _fold(expanded)
+    forms = [_fold(name)]
+    if expanded != name:
+        forms.append(_fold(expanded))
+    return forms
 
 
-def _search_names(point: ForecastPoint) -> tuple[str, ...]:
+def _search_names(point: ForecastPoint) -> list[str]:
     names = _name_forms(point.name)
     if point.point_type == ForecastPointType.POSTAL_CODE:
-        aliases = POSTAL_ALIASES.get((point.point_id, point.name), ())
-        if aliases:
-            return names + tuple(form for alias in aliases for form in _name_forms(alias))
+        for alias in POSTAL_ALIASES.get((point.point_id, point.name), ()):
+            names.extend(_name_forms(alias))
     return names
 
 
