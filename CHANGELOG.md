@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+- Search for selected postal forecast locations by their names in other Swiss
+  languages. Results keep the MeteoSwiss catalogue name and postcode.
+- See hourly global and diffuse solar radiation and the highest forecast wind
+  gust over 24 hours on the forecast device. Hourly weather forecasts include
+  gust speed. All values use the existing ICON Seamless request.
+
 ## [8.3.6] — 2026-11-20
 
 - Promoted the accepted 8.3.6b1 runtime. Since stable 8.3.5, the integration

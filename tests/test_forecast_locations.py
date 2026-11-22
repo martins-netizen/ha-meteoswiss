@@ -276,3 +276,37 @@ def test_rank_limit_total_and_order_are_stable_without_automatic_selection(rows)
     limited = search_forecast_locations(left, "Säntis", limit=1)
     assert limited.points == a.points[:1] and limited.total_matches == 4
     assert limited.truncated
+
+
+def test_postal_alias_rank_limit_and_tokens_preserve_the_canonical_point(rows):
+    postal = dict(rows[4], point_id="328000", postal_code="3280", point_name="Murten")
+    prefix = dict(rows[-1], point_name="Morat Nord")
+    greng = dict(postal, point_id="328004", point_name="Greng")
+    for ordered in ([prefix, postal, postal, greng], [greng, postal, postal, prefix]):
+        catalogue = parse_forecast_catalogue(wire(ordered), FETCHED)
+        selected = catalogue.select(ForecastPointType.POSTAL_CODE, "328000")
+        limited = search_forecast_locations(catalogue, "Môrat", limit=1)
+        assert limited.total_matches == 2 and limited.truncated
+        assert limited.points == (selected.point,)
+        assert selected.point.name == "Murten"
+        for query in ("MORAT 3280", "3280 mor", "Murten"):
+            assert search_forecast_locations(catalogue, query).points == limited.points
+        assert {p.name for p in search_forecast_locations(catalogue, "3280").points} == {
+            "Murten", "Greng"
+        }
+
+
+def test_city_alias_requires_the_postal_type_id_and_unchanged_provider_name(rows):
+    geneva = dict(rows[4], point_id="120100", postal_code="1201", point_name="Genève")
+    for name in ("Genève", "Nouveau nom"):
+        candidates = [
+            dict(geneva, point_name=name),
+            dict(geneva, point_id="999999"),
+            dict(rows[0], point_id="120100", point_name="Genève"),
+            dict(rows[-1], point_id="120100", point_name="Genève"),
+        ]
+        catalogue = parse_forecast_catalogue(wire(candidates), FETCHED)
+        point = catalogue.select(ForecastPointType.POSTAL_CODE, "120100").point
+        expected = (point,) if name == "Genève" else ()
+        for query in ("Genf", "Ginevra", "1201 Ginevra"):
+            assert search_forecast_locations(catalogue, query).points == expected

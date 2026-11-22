@@ -66,11 +66,16 @@ current/upcoming hours; daily temperature/rain values describe the whole day.
 See the [forecast sensor guide](FORECAST_SENSORS.md) for examples, missing-data
 behaviour, attributes and the distinction from measured rainfall.
 
+In development, the forecast device also exposes hourly global and diffuse solar
+radiation and the peak gust for a 24-hour window. See
+[solar radiation and peak gusts](FORECAST_SENSORS.md#solar-radiation-and-peak-gusts-development)
+for units, interval boundaries and chart data.
+
 ## Observation sensors
 
 The integration polls at the configured interval (default/minimum ten minutes).
-MeteoSwiss publishes the per-station ten-minute files every **20 minutes**;
-polling more often does not make new measurements appear sooner. Values depend
+MeteoSwiss also updates the station files every ten minutes. Individual
+measurements can arrive later. Values depend
 on what the selected station actually measures.
 
 | Key | Meaning | Native unit | Station parameter |

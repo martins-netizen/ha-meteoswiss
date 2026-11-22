@@ -13,6 +13,7 @@ from dataclasses import dataclass
 from datetime import UTC, datetime
 from enum import StrEnum
 
+from .forecast_location_aliases import POSTAL_ALIASES
 from .http import MAX_CATALOGUE_BYTES
 
 FORECAST_CATALOGUE_URL = (
@@ -220,17 +221,28 @@ def _fold(value: str) -> str:
     return " ".join(re.findall(r"[^\W_]+", plain))
 
 
-def _name_forms(point: ForecastPoint) -> tuple[str, str]:
-    name = point.name.casefold()
+def _name_forms(name: str) -> list[str]:
+    name = name.casefold()
     expanded = name.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue")
-    return _fold(name), _fold(expanded)
+    forms = [_fold(name)]
+    if expanded != name:
+        forms.append(_fold(expanded))
+    return forms
+
+
+def _search_names(point: ForecastPoint) -> list[str]:
+    names = _name_forms(point.name)
+    if point.point_type == ForecastPointType.POSTAL_CODE:
+        for alias in POSTAL_ALIASES.get((point.point_id, point.name), ()):
+            names.extend(_name_forms(alias))
+    return names
 
 
 def _matches(point: ForecastPoint, query: str) -> bool:
     if query.isdecimal():
         return point.postal_code == query
     fields = (
-        *_name_forms(point),
+        *_search_names(point),
         _fold(point.station_abbr or ""),
         point.postal_code or "",
     )
@@ -238,7 +250,7 @@ def _matches(point: ForecastPoint, query: str) -> bool:
 
 
 def _rank(point: ForecastPoint, query: str) -> tuple[int, str, ForecastPointType, str]:
-    names = _name_forms(point)
+    names = _search_names(point)
     if query in names:
         rank = 0
     elif any(name.startswith(query) for name in names):

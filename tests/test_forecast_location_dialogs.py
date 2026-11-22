@@ -500,23 +500,34 @@ async def test_confirmed_change_reloads_a_real_loaded_entry_once_and_keeps_ids(
     clear_all_caches()
 
 
-def test_documented_murten_morat_limit_uses_an_actual_catalogue_row():
-    from custom_components.meteoswiss.forecast_locations import (
-        search_forecast_locations,
-    )
-
+async def test_morat_alias_saves_the_original_murten_catalogue_row(
+    hass, enable_custom_integrations, aioclient_mock
+):
     raw = (
         (Path(__file__).parent / "fixtures/forecast_point_murten_2026-10-23.csv")
         .read_text()
         .encode("latin-1")
     )
-    snapshot = parse_forecast_catalogue(raw, NOW)
-    by_name = search_forecast_locations(snapshot, "Murten")
-    by_postcode = search_forecast_locations(snapshot, "3280")
-    assert by_name.points == by_postcode.points
-    assert by_name.points[0].identity == (ForecastPointType.POSTAL_CODE, "328000")
-    assert not search_forecast_locations(snapshot, "Morat").points
-    assert not search_forecast_locations(snapshot, "Môrat").points
+    aioclient_mock.get(FORECAST_CATALOGUE_URL, content=raw)
+    with (
+        patch.object(MeteoSwissConfigFlow, "_validate_source", return_value=True),
+        patch.object(MeteoSwissConfigFlow, "_validate_forecast", return_value=True),
+    ):
+        result = await new_flow(hass)
+        result = await configure(hass, result, {"action": "search"})
+        result = await configure(hass, result, {"query": "Môrat 3280"})
+        assert result["step_id"] == "forecast_select"
+        options = next(iter(result["data_schema"].schema.values())).config["options"]
+        assert len(options) == 1 and "3280 Murten" in options[0]["label"]
+        result = await configure(hass, result, {"point": "2:328000"})
+        assert result["step_id"] == "forecast_confirm"
+        result = await configure(hass, result, {})
+    assert result["type"] == "create_entry"
+    saved = decode_forecast_location(result["result"].data[CONF_FORECAST_LOCATION])
+    original = parse_forecast_catalogue(raw, NOW)
+    assert saved.point == original.points[0]
+    assert saved.catalogue_sha256 == original.sha256
+    assert aioclient_mock.call_count == 1
 
 
 async def test_second_inflight_setup_cannot_create_a_duplicate_after_location_dialog(

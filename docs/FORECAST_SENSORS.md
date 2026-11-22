@@ -1,14 +1,14 @@
-# Forecast sensors: today and tomorrow
+# Forecast sensors
 
-**Guide version:** 1.9 · **Updated:** 19 November 2026
-**Availability:** included in the **8.3.0** runtime accepted as b4.
-Use the [announced release](RELEASE_8.3.0.md); earlier beta notes describe their
-historical scopes, not instructions to reinstall an older beta.
+**Guide version:** 1.10 · **Updated:** 22 November 2026
+
+The daily summaries have been available since [8.3.0](RELEASE_8.3.0.md).
+Hourly solar radiation and peak gusts are available on the development branch.
 
 ## What you get
 
-Eight numeric sensors make the existing location forecast available to ordinary
-HA cards and automations. They belong to
+Eight daily summary sensors make the location forecast available to ordinary
+HA cards and automations. The hourly solar and wind outlooks are described below. They belong to
 the named forecast device alongside HGT and a separate forecast weather entity,
 retaining IDs and personal names. Names ship in
 English, German, French and Italian. No extra integration, API key or second
@@ -45,6 +45,35 @@ its name, category and height. The translated setup/Configure dialog selects it;
 and [saved-location contract](SAVED_FORECAST_LOCATION.md). Warning postcode,
 forecast location and observation station
 have distinct purposes; see [getting started](GETTING_STARTED.md).
+
+## Solar radiation and peak gusts (development)
+
+The forecast device also provides these sensors:
+
+| Sensor | State | Additional data |
+|---|---|---|
+| Global solar radiation this hour | Mean total shortwave radiation on a horizontal surface, W/m² | Hourly forecast for 24 hours |
+| Diffuse solar radiation this hour | Mean diffuse part of that radiation, W/m² | Hourly forecast for 24 hours |
+| Peak wind gust over 24 hours | Highest hourly gust in the 24-hour window, km/h in native units | Start and end of the earliest hour reaching that maximum |
+
+At 14:25 the radiation state describes the 14:00–15:00 interval. The window
+starts at 14:00 and spans 24 elapsed hours. When the clocks change, the window
+can end at a different local clock hour the next day.
+A missing value for that interval gives an unknown state. Night-time zero is a
+valid forecast. Radiation is an input to a PV yield estimate. Converting it to
+electricity requires the panel area, orientation and system losses.
+
+For a chart or automation, read either solar sensor's `hourly_forecast`
+attribute. It contains one row per hour with `start`, `end` and `value` in W/m².
+Missing samples have a null value and the series is excluded from Recorder.
+The gust sensor reports its peak when all 24 hours have valid gust data.
+Its `peak_start` and `peak_end` locate the peak hour. Individual hourly gusts
+are also available through Home Assistant's `weather.get_forecasts` action.
+Station gust and radiation sensors continue to report observations.
+
+These forecasts share the existing hourly ICON Seamless request and the
+forecast location selected in the integration. The solar fields and gusts use
+the [Open-Meteo MeteoSwiss ICON data](https://open-meteo.com/en/docs/meteoswiss-api).
 
 ## What does an 80% probability mean?
 

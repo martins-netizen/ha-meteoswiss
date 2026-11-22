@@ -23,6 +23,9 @@ FORECASTS = {
     f"forecast_{metric}_{day}"
     for metric in ("maximum_temperature", "minimum_temperature", "precipitation", "probability")
     for day in ("today", "tomorrow")
+} | {
+    "forecast_global_radiation_next_hour", "forecast_diffuse_radiation_next_hour",
+    "forecast_peak_wind_gust_24h",
 }
 OTHER_SENSORS = {
     "pm25", "pm10", "nitrogen_dioxide", "ozone", "uv_index", "heating_degree_days",
@@ -91,7 +94,7 @@ async def assert_native_names(hass, entry, language):
     assert weather_ids == {
         f"{DOMAIN}_{entry.entry_id}_weather", f"{DOMAIN}_{entry.entry_id}_forecast_weather",
     }
-    assert len(registered(hass, entry)) == 45
+    assert len(registered(hass, entry)) == 48
 
 
 @pytest.mark.parametrize("language", LANGUAGES)
@@ -113,7 +116,7 @@ def test_name_inventory_distinguishes_active_provider_keys_and_retained_legacy_k
     # The Recorder-dependent observed HGT entity has its own native setup,
     # language and cleanup coverage in test_hgt_ogd_lifecycle.py.
     active = expected_keys("meteoswiss")["sensor"] | expected_keys("openmeteo")["sensor"] | {"hgt_measured"}
-    assert len(active) == 42
+    assert len(active) == 45
     assert set(strings["entity"]["sensor"]) == active | INACTIVE_KEYS
     assert set(strings["entity"]["binary_sensor"]) == ALERTS
     assert set(strings["entity"]) == {"sensor", "binary_sensor"}

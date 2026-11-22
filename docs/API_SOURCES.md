@@ -59,11 +59,9 @@ The client requests collection `ch.meteoschweiz.ogd-smn`, selects the station's
 `ogd-smn_<station>_t_now.csv` asset (or its supported recent fallback) and
 validates the selected station, real measurement time and usable values.
 It skips trailing partial publication rows without making an old value current.
-These per-station ten-minute files are published every **20 minutes**, according
-to the [specific SwissMetNet documentation](https://opendatadocs.meteoswiss.ch/a-data-groundbased/a1-automatic-weather-stations).
-The separate all-stations file is published around every ten minutes; this
-integration does not currently use that alternative. Polling/cache intervals
-must not be confused with either publication frequency or measurement duration.
+MeteoSwiss updates the per-station ten-minute files every **10 minutes**.
+Individual measurements can arrive later, so a successful poll can return the
+previous timestamp. See the [6 November 2026 publication change](https://opendatadocs.meteoswiss.ch/changelog/1.2.4).
 The retained rain sensor is the latest available `rre150z0` ten-minute amount,
 labelled explicitly, with a 600-second interval and the measurement end time.
 CSV uses semicolons, a dot decimal divider and Windows-1252; the catalogue also

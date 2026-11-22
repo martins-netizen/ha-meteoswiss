@@ -240,8 +240,8 @@ Observation sensors expose these machine-readable attributes:
 Station rain is named **Precipitation (10 minutes)** and exposes
 `measurement_interval_seconds=600`. It is the amount measured in the interval
 ending at `measurement_time`, not a live estimate up to the present instant.
-The used per-station files are published every 20 minutes, so a successful
-refresh may legitimately find no new observation. See [the provider contract](API_SOURCES.md#swissmetnet-and-hourly-rain).
+MeteoSwiss updates these station files every ten minutes. A measurement can
+arrive later, so a successful refresh may still see the previous timestamp. See [the provider contract](API_SOURCES.md#swissmetnet-and-hourly-rain).
 For hour totals use the separate official completed-hour statistics. The local
 running-hour sensor is retired; no missing interval is converted to a dry hour.
 The one-hour observation age limit remains in force. All-empty, invalid-time,

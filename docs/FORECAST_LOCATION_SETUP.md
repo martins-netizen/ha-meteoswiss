@@ -1,14 +1,14 @@
 # Choose or change a weather forecast location
 
-**Guide version:** 1.7 · **Updated:** 27 October 2026
-**Availability:** included in the **8.3.0** runtime accepted as b4.
-Use the [announced release](RELEASE_8.3.0.md); earlier beta notes describe their
-historical scopes, not instructions to reinstall an older beta.
+**Guide version:** 1.8 · **Updated:** 22 November 2026
+
+Location selection has been available since [8.3.0](RELEASE_8.3.0.md).
+Multilingual postal search names are available on the development branch.
 
 ## What you are choosing
 
-The forecast location is the place for **ICON weather forecasts**, the eight
-today/tomorrow forecast sensors and calculated heating degree days. You might
+The forecast location is the place for **ICON weather forecasts**, the
+forecast sensors and calculated heating degree days. You might
 want observations at Zürich/Kloten while checking a forecast for Säntis.
 
 The observation station, current-weather base coordinates, modelled air
@@ -34,7 +34,7 @@ with unchanged measured numeric values. The initial b1 ambiguity is corrected.
    separate four-digit warning postcode. The source is checked first.
 3. At **Weather forecast location**, either keep the original base location or
    choose **Search by postcode, town or POI**.
-4. Enter a four-digit postcode or a catalogue place name, for example **8302**,
+4. Enter a four-digit postcode or a place name, for example **8302**, **Morat**,
    **Säntis**, **Gotthardpass** or **Albert-Heim-Hütte**.
 5. Select the intended result. Check its category, catalogue height above sea
    level and coordinates. A postal-code point is an assigned forecast point,
@@ -92,14 +92,12 @@ its four language columns describe **categories**, not translated place names.
 The integration keeps those provider names. It does not translate or invent
 summit/pass/hut subtypes from a generic POI category.
 
-For example, the audited catalogue contains **Murten, postcode 3280** as point
-**2/328000**, but no separate Morat spelling. Murten and Morat refer to the same
-place; [Swiss Post uses both names](https://site.post.ch/de/ueber-uns/post-eroeffnet-modernisierte-filiale-in-murten).
-Enter **3280** or **Murten** for now. Accent normalization alone cannot turn
-Morat (or Môrat) into Murten. A future sourced multilingual alias index must map
-names to the same confirmed catalogue identity, preserve ambiguity and avoid
-assuming that every locality sharing a postcode is the same forecast point.
-Complete multilingual locality/POI names are **not** claimed by these dialogs.
+Searching for **Morat** or **3280 Morat** finds **Murten** (point **2/328000**).
+Searching for **3280** also shows **Greng** and **Meyriez**, which have their own
+forecast points. The selected point keeps its MeteoSwiss name in Home Assistant.
+Verified postal aliases from swisstopo are available in all interface languages.
+Stations and POIs keep their catalogue names. See the
+[alias coverage and sources](FORECAST_LOCATION_CATALOGUE.md#multilingual-postal-search-names).
 
 ## Verification after a location change
 
@@ -108,7 +106,7 @@ and hut examples above, including Säntis station versus POI. Confirm the chosen
 name/height in local forecast attributes and actual forecast values. On an
 existing entry, cancel once, keep once, then confirm a change and reset it;
 check that other source settings, IDs and values remain. Review one non-English
-UI and the documented Murten/Morat limitation. These are targeted feature checks,
+UI and confirm both Murten and Morat find the same forecast point. These are targeted feature checks,
 not a repeat of completed 8.2.0 clean-install/restore acceptance or a new blanket
 24-hour waiting period. See [the saved-location contract](SAVED_FORECAST_LOCATION.md)
 for storage, privacy, height/cache rules and downgrade behaviour.

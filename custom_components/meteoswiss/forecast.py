@@ -33,6 +33,12 @@ def _series(block: dict[str, Any], key: str) -> list[Any]:
     return values
 
 
+def _optional_series(block: dict[str, Any], key: str) -> list[Any]:
+    """An unavailable extra field must leave the rest of the forecast usable."""
+    values = block.get(key)
+    return values if isinstance(values, list) else []
+
+
 def _value(
     values: list[Any],
     index: int,
@@ -139,7 +145,11 @@ class IconForecastClient:
             f"{OPEN_METEO_BASE_URL}"
             f"?latitude={self._latitude}"
             f"&longitude={self._longitude}"
-            f"&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,precipitation,windspeed_10m,winddirection_10m,weather_code,is_day,snowfall,freezing_level_height"
+            "&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,"
+            "precipitation,windspeed_10m,winddirection_10m,weather_code,is_day,"
+            "snowfall,freezing_level_height,shortwave_radiation,diffuse_radiation,"
+            "wind_gusts_10m"
+            "&wind_speed_unit=kmh"
             f"&forecast_hours={FORECAST_HOURS}&past_hours={CALENDAR_PAST_HOURS}"
             f"&daily=temperature_2m_max,temperature_2m_min,temperature_2m_mean,precipitation_sum,precipitation_probability_max"
             f"&models=meteoswiss_icon_seamless"
@@ -186,6 +196,9 @@ class IconForecastClient:
         precip = _series(hourly, "precipitation")
         wind_speed = _series(hourly, "windspeed_10m")
         wind_dir = _series(hourly, "winddirection_10m")
+        wind_gusts = _optional_series(hourly, "wind_gusts_10m")
+        shortwave_radiation = _optional_series(hourly, "shortwave_radiation")
+        diffuse_radiation = _optional_series(hourly, "diffuse_radiation")
         weather_codes = _series(hourly, "weather_code")
         daylight = _series(hourly, "is_day")
         snowfall = _series(hourly, "snowfall")
@@ -280,6 +293,10 @@ class IconForecastClient:
                 "precipitation": _value(precip, i, 0),
                 "wind_speed": _value(wind_speed, i, 0),
                 "wind_direction": _value(wind_dir, i, 0, 360),
+                # The provider timestamps the end of these hourly intervals.
+                "wind_gust_speed": _value(wind_gusts, i, 0),
+                "shortwave_radiation": _value(shortwave_radiation, i, 0),
+                "diffuse_radiation": _value(diffuse_radiation, i, 0),
                 "condition": weather_condition(code, is_day),
                 "snowfall": _value(snowfall, i, 0),
                 "freezing_level_height": _value(freezing_level, i),

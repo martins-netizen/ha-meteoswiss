@@ -35,6 +35,9 @@ def forecast_rows(now=NOW, days=3, probability=10):
                 "daily_temperature_min": -2 + offset,
                 "daily_precipitation": float(offset),
                 "precipitation_probability": probability,
+                "shortwave_radiation": 251,
+                "diffuse_radiation": 47,
+                "wind_gust_speed": 18.5,
             }
         )
         end += timedelta(hours=1)
@@ -183,3 +186,62 @@ def test_absent_or_invalid_snapshot_time_is_not_current(data):
 def test_freshness_uses_retrieval_time_with_exact_age_and_future_limits(age, fresh):
     rows = [{"fetched_at": (NOW - age).isoformat()}]
     assert forecast_is_fresh(rows, NOW) is fresh
+
+
+def test_outlook_only_counts_matching_hour_ends_and_keeps_zero_and_missing_separate():
+    first = NOW.replace(minute=0)
+    hour = timedelta(hours=1)
+    rows = [{
+        "datetime": (first + i * hour).isoformat(),
+        "shortwave_radiation": i * 10,
+        "diffuse_radiation": 0,
+        "wind_gust_speed": 41.0 if i in (0, 4, 9, 25) else 0,
+    } for i in range(26)]
+    # The elapsed interval, an off-grid timestamp, and a duplicate cannot fill a gap.
+    rows[7]["wind_gust_speed"] = -1
+    rows[1]["shortwave_radiation"] = None
+    rows[7]["diffuse_radiation"] = float("nan")
+    rows += [None, {"datetime": "bad"}, dict(rows[6]),
+             {**rows[7], "datetime": (first + 7 * hour + timedelta(seconds=1)).isoformat()}]
+    native, sun = summarize_forecast(rows, NOW, 0, "shortwave_radiation")
+    assert native is None
+    assert sun["valid_hours"] == 23 and not sun["coverage_complete"]
+    series = sun["hourly_forecast"]
+    assert len(series) == 24 and [entry["value"] for entry in series[:3]] == [None, 20, 30]
+    assert series[0]["start"] == sun["window_start"] == "2026-10-23T12:00:00+02:00"
+    assert series[0]["end"] == "2026-10-23T13:00:00+02:00"
+    assert series[-1]["end"] == sun["window_end"] == "2026-10-24T12:00:00+02:00"
+    diffuse, attrs = summarize_forecast(rows, NOW, 0, "diffuse_radiation")
+    assert diffuse == 0 and attrs["hourly_forecast"][6]["value"] is None
+    peak, wind = summarize_forecast(rows, NOW, 0, "wind_gust_speed")
+    assert peak is wind["peak_start"] is wind["peak_end"] is None
+    assert wind["valid_hours"] == 23
+    rows[7]["wind_gust_speed"] = 0
+    peak, wind = summarize_forecast(rows, NOW, 0, "wind_gust_speed")
+    assert peak == 41.0 and wind["coverage_complete"] and wind["expected_hours"] == 24
+    assert wind["peak_start"] == "2026-10-23T15:00:00+02:00"
+    assert wind["peak_end"] == "2026-10-23T16:00:00+02:00"
+    assert "hourly_forecast" not in wind
+
+
+@pytest.mark.parametrize(
+    "utc_start,expected_starts",
+    [
+        (datetime(2026, 10, 24, 23, 50, tzinfo=UTC),
+         ["2026-10-25T01:00:00+02:00", "2026-10-25T02:00:00+02:00", "2026-10-25T02:00:00+01:00"]),
+        (datetime(2026, 3, 28, 23, 50, tzinfo=UTC),
+         ["2026-03-29T00:00:00+01:00", "2026-03-29T01:00:00+01:00", "2026-03-29T03:00:00+02:00"]),
+    ],
+)
+def test_rolling_outlook_uses_physical_hours_across_swiss_clock_changes(utc_start, expected_starts):
+    first = utc_start.replace(minute=0)
+    rows = [{
+        "datetime": (first + timedelta(hours=i)).isoformat(),
+        "shortwave_radiation": 0, "wind_gust_speed": 0,
+    } for i in range(1, 25)]
+    solar, attrs = summarize_forecast(rows, utc_start, 0, "shortwave_radiation")
+    assert solar == 0 and attrs["valid_hours"] == 24 and attrs["coverage_complete"]
+    assert [row["start"] for row in attrs["hourly_forecast"][:3]] == expected_starts
+    value, gust = summarize_forecast(rows, utc_start, 0, "wind_gust_speed")
+    assert value == 0 and gust["peak_start"] == expected_starts[0]
+    assert gust["peak_end"] == expected_starts[1]

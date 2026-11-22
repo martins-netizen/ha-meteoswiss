@@ -376,7 +376,7 @@ _FORECAST_METRICS: Final[
     ("probability", None, PERCENTAGE, 0),
 )
 
-FORECAST_SENSOR_DESCRIPTIONS = tuple(
+_DAILY_FORECAST_DESCRIPTIONS = tuple(
     MeteoSwissForecastSensorDescription(
         key=f"forecast_{metric}_{day}",
         translation_key=f"forecast_{metric}_{day}",
@@ -391,12 +391,40 @@ FORECAST_SENSOR_DESCRIPTIONS = tuple(
 )
 
 
+_FORECAST_OUTLOOKS: Final[tuple[tuple[str, ForecastMetric, SensorDeviceClass, str, int], ...]] = (
+    (
+        "forecast_global_radiation_next_hour", "shortwave_radiation",
+        SensorDeviceClass.IRRADIANCE, UnitOfIrradiance.WATTS_PER_SQUARE_METER, 0,
+    ),
+    (
+        "forecast_diffuse_radiation_next_hour", "diffuse_radiation",
+        SensorDeviceClass.IRRADIANCE, UnitOfIrradiance.WATTS_PER_SQUARE_METER, 0,
+    ),
+    (
+        "forecast_peak_wind_gust_24h", "wind_gust_speed",
+        SensorDeviceClass.WIND_SPEED, UnitOfSpeed.KILOMETERS_PER_HOUR, 1,
+    ),
+)
+FORECAST_SENSOR_DESCRIPTIONS = _DAILY_FORECAST_DESCRIPTIONS + tuple(
+    MeteoSwissForecastSensorDescription(
+        key=key,
+        translation_key=key,
+        device_class=device_class,
+        native_unit_of_measurement=unit,
+        suggested_display_precision=precision,
+        metric=metric,
+    )
+    for key, metric, device_class, unit, precision in _FORECAST_OUTLOOKS
+)
+
+
 class MeteoSwissForecastSensor(
     MeteoSwissCoordinatorEntity[MeteoSwissForecastCoordinator], SensorEntity
 ):
     """Expose a forecast scalar and keep calendar/freshness boundaries current."""
 
     _attr_attribution = FORECAST_ATTRIBUTION
+    _unrecorded_attributes = frozenset({"hourly_forecast"})
     entity_description: MeteoSwissForecastSensorDescription
 
     def __init__(

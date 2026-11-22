@@ -217,8 +217,8 @@ selected automatically. Older entries without a pollen choice retain Luzern
 
 The latest published measured amount over one ten-minute interval. Its timestamp
 marks the interval's end; it is not a continuously updated current-hour sum.
-The source files publish every twenty minutes. The official archive covers
-completed hours. The alternative Open-Meteo source is explicitly modelled and
+MeteoSwiss updates the station files every ten minutes. A measurement may
+arrive after the next refresh. The official archive covers completed hours. The alternative Open-Meteo source is explicitly modelled and
 exposes its interval length. See [sensors](SENSORS.md).
 
 ## 6. Use the data and get help
