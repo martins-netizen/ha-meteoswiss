@@ -1,9 +1,9 @@
 # Forecast sensors
 
-**Guide version:** 1.10 · **Updated:** 22 November 2026
+**Guide version:** 1.11 · **Updated:** 22 November 2026
 
 The daily summaries have been available since [8.3.0](RELEASE_8.3.0.md).
-Hourly solar radiation and peak gusts are available on the development branch.
+Hourly solar radiation and peak gusts are included in [8.4.0b1](RELEASE_8.4.0b1.md).
 
 ## What you get
 
@@ -46,7 +46,7 @@ and [saved-location contract](SAVED_FORECAST_LOCATION.md). Warning postcode,
 forecast location and observation station
 have distinct purposes; see [getting started](GETTING_STARTED.md).
 
-## Solar radiation and peak gusts (development)
+## Solar radiation and peak gusts
 
 The forecast device also provides these sensors:
 

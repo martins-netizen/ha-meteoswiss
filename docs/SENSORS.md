@@ -66,9 +66,9 @@ current/upcoming hours; daily temperature/rain values describe the whole day.
 See the [forecast sensor guide](FORECAST_SENSORS.md) for examples, missing-data
 behaviour, attributes and the distinction from measured rainfall.
 
-In development, the forecast device also exposes hourly global and diffuse solar
+In [8.4.0b1](RELEASE_8.4.0b1.md), the forecast device also exposes hourly global and diffuse solar
 radiation and the peak gust for a 24-hour window. See
-[solar radiation and peak gusts](FORECAST_SENSORS.md#solar-radiation-and-peak-gusts-development)
+[solar radiation and peak gusts](FORECAST_SENSORS.md#solar-radiation-and-peak-gusts)
 for units, interval boundaries and chart data.
 
 ## Observation sensors
