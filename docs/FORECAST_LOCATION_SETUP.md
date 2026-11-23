@@ -1,9 +1,9 @@
 # Choose or change a weather forecast location
 
-**Guide version:** 1.8 · **Updated:** 22 November 2026
+**Guide version:** 1.9 · **Updated:** 22 November 2026
 
 Location selection has been available since [8.3.0](RELEASE_8.3.0.md).
-Multilingual postal search names are available on the development branch.
+[8.4.0b1](RELEASE_8.4.0b1.md) adds search names in other Swiss languages for selected postal forecast points.
 
 ## What you are choosing
 
