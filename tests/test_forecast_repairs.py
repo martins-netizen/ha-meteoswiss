@@ -115,8 +115,9 @@ async def configure(hass, result, data):
 
 
 async def select_point(hass, result):
-    result = await configure(hass, result, {"forecast_action": "search"})
-    result = await configure(hass, result, {"query": "Säntis"})
+    result = await configure(
+        hass, result, {"forecast_action": "search", "query": "Säntis"}
+    )
     return await configure(hass, result, {"point": "3:711"})
 
 

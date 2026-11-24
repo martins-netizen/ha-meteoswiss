@@ -141,7 +141,7 @@ def changed_observation(entry):
 
 
 async def choose_forecast(route, form):
-    form = await route.submit(form, {"query": "8302"})
+    assert form["step_id"] == "forecast_select"
     return await route.submit(form, {"point": "2:830200"})
 
 
@@ -157,7 +157,7 @@ async def test_all_locations_apply_together_without_replacing_entities(hass, rou
     assert ("station_id" in fields) == (entry.data["data_source"] == "meteoswiss")
     form = await route.submit(
         form, {**changed_observation(entry), "pollen_station": "PBE",
-               "postal_code": "8000", "forecast_action": "search"},
+               "postal_code": "8000", "forecast_action": "search", "query": "8302"},
     )
     assert snapshot(entry) == before
     form = await choose_forecast(route, form)
@@ -181,14 +181,15 @@ async def test_cancellation_at_every_stage_discards_all_pending_changes(route, e
     before = snapshot(entry)
     form = await route.start(entry)
     if stage != "settings":
+        query = "" if stage == "search" else "8302"
         form = await route.submit(
             form, {**changed_observation(entry), "pollen_station": "PBE",
-                   "postal_code": "8000", "forecast_action": "search"},
+                   "postal_code": "8000", "forecast_action": "search", "query": query},
         )
-        if stage in {"select", "confirm"}:
-            form = await route.submit(form, {"query": "8302"})
+        if stage == "search":
+            assert form["errors"] == {"base": "invalid_forecast_query"}
         if stage == "confirm":
-            form = await route.submit(form, {"point": "2:830200"})
+            form = await choose_forecast(route, form)
     route.manager.async_abort(form["flow_id"])
     assert snapshot(entry) == before
 
@@ -202,12 +203,12 @@ async def test_source_and_forecast_failures_retry_without_partial_writes(
     form = await route.start(entry)
     form = await route.submit(
         form, {**changed_observation(entry), "pollen_station": "PBE",
-               "postal_code": "8000", "forecast_action": "search"},
+               "postal_code": "8000", "forecast_action": "search", "query": "8302"},
     )
     assert form["errors"] == {"base": "cannot_connect"}
     assert snapshot(entry) == before
     source.return_value = True
-    form = await route.submit(form, {})
+    form = await route.submit(form, {"query": "8302"})
     form = await choose_forecast(route, form)
     forecast.return_value = False
     form = await route.submit(form, {})
@@ -226,20 +227,67 @@ async def test_source_retry_retains_the_selected_forecast_action(
     before = snapshot(entry)
     source.return_value = False
     form = await route.start(entry)
-    form = await route.submit(
-        form, {**changed_observation(entry), "forecast_action": action}
+    # The native manager must discard even an invalid query while it is hidden.
+    query = {"query": "8302"} if action == "search" else {"query": []}
+    form = await route.manager.async_configure(
+        form["flow_id"],
+        {**changed_observation(entry), "forecast_action": action, **query},
     )
     assert form["errors"] == {"base": "cannot_connect"}
     assert form["data_schema"]({})["forecast_action"] == action
+    if action == "search":
+        marker = next(key for key in form["data_schema"].schema if key.schema == "query")
+        assert marker.description["suggested_value"] == "8302"
     source.return_value = True
-    form = await route.submit(form, {})
+    form = await route.manager.async_configure(form["flow_id"], query)
     expected = (
-        "forecast_search" if action == "search"
+        "forecast_select" if action == "search"
         else "forecast_confirm" if route.kind == "configure" else "settings_confirm"
     )
     assert form["step_id"] == expected
     assert snapshot(entry) == before
     route.manager.async_abort(form["flow_id"])
+
+
+async def test_validation_and_no_match_keep_inline_search_on_settings_form(
+    route, entry, catalogue
+):
+    before = snapshot(entry)
+    form = await route.start(entry)
+    settings_step = form["step_id"]
+    with patch(
+        "custom_components.meteoswiss.config_flow."
+        "MeteoSwissForecastCatalogueClient.async_get_catalogue",
+        return_value=catalogue,
+    ) as load:
+        form = await route.submit(
+            form,
+            {
+                "postal_code": "123",
+                "pollen_station": "PBE",
+                "forecast_action": "search",
+                "query": "nonexistent village",
+            },
+        )
+        assert form["step_id"] == settings_step
+        assert form["errors"] == {"postal_code": "invalid_postal_code"}
+        load.assert_not_awaited()
+
+        form = await route.submit(
+            form, {"postal_code": "8000", "query": "nonexistent village"}
+        )
+        assert form["step_id"] == settings_step
+        assert form["errors"] == {"base": "forecast_no_matches"}
+        marker = next(key for key in form["data_schema"].schema if key.schema == "query")
+        assert marker.description["suggested_value"] == "nonexistent village"
+        assert snapshot(entry) == before
+
+        form = await route.submit(form, {"query": "8302"})
+        form = await choose_forecast(route, form)
+        assert form["description_placeholders"]["postal_code"] == "8000"
+        assert form["description_placeholders"]["pollen_station"] == "Bern (PBE)"
+        assert snapshot(entry) == before
+        route.manager.async_abort(form["flow_id"])
 
 
 @pytest.mark.parametrize("kind", ("data", "options"))

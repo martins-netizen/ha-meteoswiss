@@ -47,7 +47,7 @@ def test_real_lock_inventory_includes_all_host_platforms():
     assert len(packages) == 145
     assert packages[("mypy", "2.4.0")] == ["requirements_typing.txt"]
     assert ("homeassistant", "2026.11.0") in packages
-    assert ("homeassistant", "2026.11.2") in packages
+    assert ("homeassistant", "2026.11.3") in packages
     assert any(name.startswith("pyobjc-") for name, _ in packages)
     assert any(name.startswith("winrt-") for name, _ in packages)
 

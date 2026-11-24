@@ -182,7 +182,7 @@ async def settings(hass, entry, route, values):
             await manager.async_init(DOMAIN, context={"source": SOURCE_RECONFIGURE, "entry_id": entry.entry_id}))
     form = await manager.async_configure(form["flow_id"], form["data_schema"](values))
     if values["forecast_action"] == "search":
-        form = await manager.async_configure(form["flow_id"], {"query": "Saentis"})
+        assert form["step_id"] == "forecast_select"
         form = await manager.async_configure(form["flow_id"], {"point": "3:711"})
     assert form["step_id"] in {"forecast_confirm", "settings_confirm"}
     result = await manager.async_configure(form["flow_id"], {})
@@ -211,7 +211,8 @@ async def test_complete_settings_roundtrip_reuses_seven_groups_and_user_choices(
     original_devices = device_choices(role_devices(hass, entry))
     changes = [
         {"station_id": "sma", "latitude": 46.95, "longitude": 7.44,
-         "postal_code": "8001", "pollen_station": "PBE", "forecast_action": "search"},
+         "postal_code": "8001", "pollen_station": "PBE", "forecast_action": "search",
+         "query": "Saentis"},
         {"station_id": "klo", "latitude": 47.48, "longitude": 8.53,
          "postal_code": "8302", "pollen_station": "PZH", "forecast_action": "base"},
     ]

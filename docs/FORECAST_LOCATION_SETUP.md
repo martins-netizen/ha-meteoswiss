@@ -1,6 +1,6 @@
 # Choose or change a weather forecast location
 
-**Guide version:** 1.9 · **Updated:** 22 November 2026
+**Guide version:** 1.10 · **Updated:** 24 November 2026
 
 Location selection has been available since [8.3.0](RELEASE_8.3.0.md).
 [8.4.0b1](RELEASE_8.4.0b1.md) adds search names in other Swiss languages for selected postal forecast points.
@@ -33,14 +33,14 @@ with unchanged measured numeric values. The initial b1 ambiguity is corrected.
 2. Choose the observation station or current-weather base coordinates and the
    separate four-digit warning postcode. The source is checked first.
 3. At **Weather forecast location**, either keep the original base location or
-   choose **Search by postcode, town or POI**.
-4. Enter a four-digit postcode or a place name, for example **8302**, **Morat**,
-   **Säntis**, **Gotthardpass** or **Albert-Heim-Hütte**.
-5. Select the intended result. Check its category, catalogue height above sea
+   choose **Search by postcode, town or POI**. Enter a four-digit postcode or a
+   place name in the field that appears and submit the form to see the results.
+   Try **8302**, **Morat**, **Säntis**, **Gotthardpass** or **Albert-Heim-Hütte**.
+4. Select the intended result. Check its category, catalogue height above sea
    level and coordinates. A postal-code point is an assigned forecast point,
    not a post office or the exact position of your home. A station and a
    same-named POI are different points. No result is preselected.
-6. Read **Confirm the forecast location**, including the unchanged warning
+5. Read **Confirm the forecast location**, including the unchanged warning
    postcode, then submit. The selected point's ICON response is checked before
    saving. **Search for another location** returns without saving.
 
@@ -51,9 +51,10 @@ duplicate current-source/warning entries still apply.
 
 Open **Settings → Devices & services → MeteoSwiss → Configure (gear)**.
 Change the weather station, measured-pollen station and forecast point in the
-same form, alongside the independent warning postcode. Search/select/confirm
-continues inside this flow. Nothing is saved until final confirmation;
-cancelling an unfinished step discards all pending changes. See
+same form, alongside the independent warning postcode. For a new forecast point,
+choose **Search by postcode, town or POI**, enter the search term in the same
+form, then select and confirm the intended result. Cancelling an unfinished
+step discards all pending changes. See
 [unified settings](CALENDAR_AND_LOCATION_SETTINGS.md).
 
 The entry and retained entity/statistic IDs, personal names and legacy intervals
@@ -78,8 +79,8 @@ it cannot conceal an invalid selection. Do not delete/recreate the entry.
 
 Search runs locally over the bounded official catalogue. Search text is not
 sent to a geocoder. Refine queries producing more than twenty matches. Accents,
-case, punctuation and German ae/oe/ue spellings are supported. A failed catalogue
-load leaves a retryable search and preserves the existing saved location.
+case, punctuation and German ae/oe/ue spellings are supported. If the catalogue
+fails to load or the search gives no match, retry in the same form.
 A failed ICON check leaves the confirmation open for retry or another search.
 Cancelling any unfinished change preserves the entry. Normal HA startup needs
 no catalogue download; a previously confirmed valid selection remains usable.

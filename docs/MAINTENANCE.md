@@ -34,7 +34,7 @@ follows solely from this promotion; documentation changes no HA installation.
    a skipped analysis is not a successful security scan.
 3. Follow the [local compatibility checks](../DEVELOPMENT.md#local-compatibility-checks)
    in separate environments for `requirements_test_min.txt` (HA 2026.11.0)
-   and `requirements_test.txt` (HA 2026.11.2). Use the matching official test
+   and `requirements_test.txt` (HA 2026.11.3). Use the matching official test
    package in both environments.
    Apply the Python/pip bootstrap,
    hash-checked generated lockfiles, `pip check`, certifi constraint,

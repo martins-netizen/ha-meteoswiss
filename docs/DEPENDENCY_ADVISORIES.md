@@ -3,7 +3,7 @@
 **Status:** implemented CI/security control introduced after PR #106 and
 verified on the actual #107 merge. The dated evidence below retains that scope.
 CI checks the two HA/pytest-homeassistant fixtures (**2026.11.0** and
-**2026.11.2**) and the mypy toolchain. Re-run the complete audit for each
+**2026.11.3**) and the mypy toolchain. Re-run the complete audit for each
 candidate. [Fixture and integrity contract](../DEVELOPMENT.md#current-fixture-update).
 
 The `Test dependency advisories` CI job checks all three universal lockfiles.
