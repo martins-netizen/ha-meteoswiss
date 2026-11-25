@@ -71,7 +71,7 @@ before deletion. Accepted b3 cleanup and b5/b6/b7 reports stay complete.
 
 The 2026.11 baseline addresses known vulnerabilities in libraries pinned by
 older Core versions. Keep Core maintained; the minimum is not permanent
-security clearance. CI checks **2026.11.0** and **2026.11.2** with matching
+security clearance. CI checks **2026.11.0** and **2026.11.3** with matching
 fixtures. [Support rationale](DEVELOPMENT.md#supported-home-assistant-versions).
 
 On supported HA, open **Settings → Marketplace**, search **MeteoSwiss** and
@@ -213,7 +213,7 @@ forecast checks on 8.3.6b1 and the subsequent upgrade to stable 8.3.6.
 The [cumulative release notes](docs/RELEASE_8.3.5.md) cover measured HGT, consented
 obsolete-forecast cleanup, circular wind history, translated names/shared
 lifecycle, bounded precipitation, diagnostics privacy and local state clocks.
-The minimum remains **2026.11.0**, current compatibility **2026.11.2**. An older
+The minimum remains **2026.11.0**, current compatibility **2026.11.3**. An older
 HA can consult 8.3.4's [tagged setup guide](https://github.com/martins-netizen/ha-meteoswiss/blob/8.3.4/docs/GETTING_STARTED.md).
 Completed b3 cleanup and b5/b6/b7 operator reports stay closed; no intermediate
 package, repeated migration or new observation window is required.

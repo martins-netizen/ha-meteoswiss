@@ -39,10 +39,10 @@ After installing the announced correction, open **Settings → Devices & service
 For example, retain **Zürich/PZH pollen**, change observations from **Kloten to
 Zürich/Fluntern**, and keep the **Säntis forecast**. You can also change all three
 together. With **Keep**, submitting that form applies the displayed settings.
-With **Search**, continue through search, explicit result selection and the
-confirmation in the same flow. The last page lists the pending weather, pollen,
-forecast and warning choices. **Cancelling any unfinished step saves none of
-the pending changes.** A failed source check remains retryable.
+With **Search**, enter the postcode or place name in the field that appears and
+submit. Select the intended result and confirm. The last page lists the pending
+weather, pollen, forecast and warning choices. **Cancelling any unfinished step
+discards the pending changes.** You can retry a failed source check.
 
 The **HA home location is a general Home Assistant setting**, independent of
 MeteoSwiss/SwissMetNet and pollen measuring stations. This integration uses it

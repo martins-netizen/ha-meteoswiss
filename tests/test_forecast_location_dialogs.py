@@ -11,6 +11,7 @@ import voluptuous as vol
 from homeassistant.config_entries import SOURCE_RECONFIGURE, SOURCE_USER
 from homeassistant.data_entry_flow import UnknownFlow
 from homeassistant.helpers.translation import async_get_translations
+from homeassistant.setup import async_setup_component
 from ha_helpers import MockConfigEntry
 
 from custom_components.meteoswiss import async_setup_entry as actual_setup_entry
@@ -145,8 +146,9 @@ async def test_setup_requires_selection_then_confirmation_in_each_language(
         result = await new_flow(hass, source)
         assert result["step_id"] == "forecast_location"
         assert not hass.config_entries.async_entries(DOMAIN)
-        result = await configure(hass, result, {"action": "search"})
-        result = await configure(hass, result, {"query": query})
+        result = await configure(
+            hass, result, {"action": "search", "query": query}
+        )
         assert result["step_id"] == "forecast_select"
         with pytest.raises(vol.Invalid):
             result["data_schema"]({})
@@ -168,6 +170,57 @@ async def test_setup_requires_selection_then_confirmation_in_each_language(
         entry.data["postal_code"] == "8302" and entry.options["pollen_station"] == "PZH"
     )
     assert entry.data["latitude"] == 47.45 and entry.data["longitude"] == 8.56
+    await hass.async_block_till_done()
+
+
+async def test_setup_http_shows_conditional_search_and_keeps_failed_query(
+    hass, hass_client, enable_custom_integrations, catalogue
+):
+    assert await async_setup_component(hass, "config", {})
+    with (
+        patch.object(MeteoSwissConfigFlow, "_validate_source", return_value=True),
+        patch(
+            "custom_components.meteoswiss.config_flow.MeteoSwissForecastCatalogueClient.async_get_catalogue",
+            return_value=catalogue,
+        ) as load,
+    ):
+        form = await new_flow(hass)
+        client = await hass_client()
+        url = f"/api/config/config_entries/flow/{form['flow_id']}"
+        response = await client.get(url)
+        assert response.status == 200
+        serialized = await response.json()
+        fields = {field["name"]: field for field in serialized["data_schema"]}
+        assert fields["query"]["visible"] == {"field": "action", "value": "search"}
+
+        response = await client.post(url, json={"action": "search"})
+        assert response.status == 200
+        serialized = await response.json()
+        assert serialized["step_id"] == "forecast_location"
+        assert serialized["errors"] == {"base": "invalid_forecast_query"}
+        load.assert_not_awaited()
+
+        response = await client.post(
+            url, json={"action": "search", "query": "nonexistent village"}
+        )
+        assert response.status == 200
+        serialized = await response.json()
+        assert serialized["step_id"] == "forecast_location"
+        assert serialized["errors"] == {"base": "forecast_no_matches"}
+        fields = {field["name"]: field for field in serialized["data_schema"]}
+        assert fields["action"]["description"]["suggested_value"] == "search"
+        assert (
+            fields["query"]["description"]["suggested_value"] == "nonexistent village"
+        )
+        assert not hass.config_entries.async_entries(DOMAIN)
+
+        # A stale text value is hidden for Keep and cannot affect the saved location.
+        response = await client.post(url, json={"action": "keep", "query": []})
+        assert response.status == 200
+        assert (await response.json())["type"] == "create_entry"
+        entry, = hass.config_entries.async_entries(DOMAIN)
+        assert CONF_FORECAST_LOCATION not in entry.data
+        load.assert_awaited_once()
     await hass.async_block_till_done()
 
 
@@ -230,8 +283,9 @@ async def test_failed_confirmation_retries_and_never_overwrites_concurrent_setti
             MeteoSwissConfigFlow, "_validate_forecast", side_effect=[False, True]
         ),
     ):
-        result = await configure(hass, result, {"forecast_action": "search"})
-        result = await configure(hass, result, {"query": "Säntis"})
+        result = await configure(
+            hass, result, {"forecast_action": "search", "query": "Säntis"}
+        )
         result = await configure(hass, result, {"point": "3:711"})
         result = await configure(hass, result, {})
         assert result["errors"] == {"base": "cannot_connect"} and entry.data == BASE
@@ -371,13 +425,18 @@ async def test_ha_serves_all_new_dialog_help_and_preserves_place_names(
 ):
     config = await async_get_translations(hass, language, "config", {DOMAIN})
     fields = {
-        "forecast_location": "action",
         "forecast_search": "query",
         "forecast_select": "point",
         "forecast_confirm": "search_again",
     }
     for step, field in fields.items():
         assert config[f"component.{DOMAIN}.config.step.{step}.data_description.{field}"]
+    for step in ("forecast_location", "reconfigure"):
+        assert config[f"component.{DOMAIN}.config.step.{step}.data.query"]
+        assert config[f"component.{DOMAIN}.config.step.{step}.data_description.query"]
+    options = await async_get_translations(hass, language, "options", {DOMAIN})
+    assert options[f"component.{DOMAIN}.options.step.init.data.query"]
+    assert options[f"component.{DOMAIN}.options.step.init.data_description.query"]
     flow = MeteoSwissConfigFlow()
     flow.hass = hass
     flow.context = {"language": language}
@@ -464,8 +523,9 @@ async def test_confirmed_change_reloads_a_real_loaded_entry_once_and_keeps_ids(
         result = await hass.config_entries.flow.async_init(
             DOMAIN, context={"source": SOURCE_RECONFIGURE, "entry_id": entry.entry_id}
         )
-        result = await configure(hass, result, {"forecast_action": "search"})
-        result = await configure(hass, result, {"query": "Saentis"})
+        result = await configure(
+            hass, result, {"forecast_action": "search", "query": "Saentis"}
+        )
         result = await configure(hass, result, {"point": "3:711"})
         assert entry.runtime_data is runtime_before and entry.data == BASE
         with patch.object(
@@ -514,8 +574,9 @@ async def test_morat_alias_saves_the_original_murten_catalogue_row(
         patch.object(MeteoSwissConfigFlow, "_validate_forecast", return_value=True),
     ):
         result = await new_flow(hass)
-        result = await configure(hass, result, {"action": "search"})
-        result = await configure(hass, result, {"query": "Môrat 3280"})
+        result = await configure(
+            hass, result, {"action": "search", "query": "Môrat 3280"}
+        )
         assert result["step_id"] == "forecast_select"
         options = next(iter(result["data_schema"].schema.values())).config["options"]
         assert len(options) == 1 and "3280 Murten" in options[0]["label"]

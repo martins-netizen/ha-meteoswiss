@@ -43,10 +43,12 @@
         "title": "Weather forecast location",
         "description": "Current forecast location: {current_location}. Choose a postcode, town or POI for ICON weather forecasts and forecast sensors. Observations, modelled air quality/pollen/UV, measured pollen and warning postcode keep their separate locations.",
         "data": {
-          "action": "Forecast location"
+          "action": "Forecast location",
+          "query": "Postcode or town/POI"
         },
         "data_description": {
-          "action": "Keep the original base location or search the official catalogue. An explicitly selected point is saved only after confirmation."
+          "action": "Keep the original base location or search the official catalogue. An explicitly selected point is saved only after confirmation.",
+          "query": "Enter 2–128 characters, for example 8302, Säntis or Gotthardpass. Narrow a broad search until at most 20 results remain."
         }
       },
       "forecast_search": {
@@ -81,12 +83,13 @@
       },
       "reconfigure": {
         "title": "MeteoSwiss locations and stations",
-        "description": "Choose the weather measuring station, measured-pollen station and forecast location together. Current forecast location: {current_location}. The warning postcode is independent. Search opens further steps; nothing is saved until you submit the final choice. Updates are automatic.",
+        "description": "Choose the weather measuring station, measured-pollen station and forecast location together. Current forecast location: {current_location}. The warning postcode is independent. When you search, enter the place in this form and submit to see the results. Your changes are saved after you confirm the chosen point. Updates are automatic.",
         "data": {
           "station_id": "Weather measuring station",
           "pollen_station": "Station for measured pollen",
           "postal_code": "Warning postcode",
           "forecast_action": "Forecast location",
+          "query": "Postcode or town/POI",
           "latitude": "Current-data latitude",
           "longitude": "Current-data longitude"
         },
@@ -95,6 +98,7 @@
           "pollen_station": "Only measured pollen changes. Modelled pollen and air quality keep their base location.",
           "postal_code": "Four-digit Swiss postcode for warnings. This does not select the weather station or forecast point.",
           "forecast_action": "Keep the displayed forecast point, search by postcode/town/POI, or return to the original base coordinates. A forecast search postcode does not change the warning postcode.",
+          "query": "Enter 2–128 characters, for example 8302, Säntis or Gotthardpass. Narrow a broad search until at most 20 results remain.",
           "latitude": "Base coordinates for Open-Meteo current data, modelled air quality/pollen/UV and a forecast without an explicit point. An explicitly chosen forecast point remains independent.",
           "longitude": "Base coordinates for Open-Meteo current data, modelled air quality/pollen/UV and a forecast without an explicit point. An explicitly chosen forecast point remains independent."
         }
@@ -133,12 +137,13 @@
     "step": {
       "init": {
         "title": "MeteoSwiss locations and stations",
-        "description": "Choose the weather measuring station, measured-pollen station and forecast location together. Current forecast location: {current_location}. The warning postcode is independent. Search opens further steps; nothing is saved until you submit the final choice. Updates are automatic.",
+        "description": "Choose the weather measuring station, measured-pollen station and forecast location together. Current forecast location: {current_location}. The warning postcode is independent. When you search, enter the place in this form and submit to see the results. Your changes are saved after you confirm the chosen point. Updates are automatic.",
         "data": {
           "station_id": "Weather measuring station",
           "pollen_station": "Station for measured pollen",
           "postal_code": "Warning postcode",
           "forecast_action": "Forecast location",
+          "query": "Postcode or town/POI",
           "latitude": "Current-data latitude",
           "longitude": "Current-data longitude"
         },
@@ -147,6 +152,7 @@
           "pollen_station": "Only measured pollen changes. Modelled pollen and air quality keep their base location.",
           "postal_code": "Four-digit Swiss postcode for warnings. This does not select the weather station or forecast point.",
           "forecast_action": "Keep the displayed forecast point, search by postcode/town/POI, or return to the original base coordinates. A forecast search postcode does not change the warning postcode.",
+          "query": "Enter 2–128 characters, for example 8302, Säntis or Gotthardpass. Narrow a broad search until at most 20 results remain.",
           "latitude": "Base coordinates for Open-Meteo current data, modelled air quality/pollen/UV and a forecast without an explicit point. An explicitly chosen forecast point remains independent.",
           "longitude": "Base coordinates for Open-Meteo current data, modelled air quality/pollen/UV and a forecast without an explicit point. An explicitly chosen forecast point remains independent."
         }

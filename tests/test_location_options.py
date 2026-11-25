@@ -117,12 +117,17 @@ async def submit(hass, form, values):
     return await hass.config_entries.options.async_configure(form["flow_id"], values)
 
 
-async def search_selected(hass, form, catalogue):
+async def search_selected(hass, form, catalogue, updates=None):
     with patch(
         "custom_components.meteoswiss.config_flow.MeteoSwissForecastCatalogueClient.async_get_catalogue",
         return_value=catalogue,
     ):
-        form = await submit(hass, form, {"query": "8302"})
+        form = await submit(
+            hass,
+            form,
+            {**(updates or {}), "forecast_action": "search", "query": "8302"},
+        )
+    assert form["step_id"] == "forecast_select"
     return await submit(hass, form, {"point": "2:830200"})
 
 
@@ -147,19 +152,12 @@ async def test_all_three_locations_are_on_the_same_form_and_apply_together(
         "postal_code",
         "forecast_action",
     }
-    form = await submit(
+    form = await search_selected(
         hass,
         form,
-        {
-            "station_id": "sma",
-            "pollen_station": "PBE",
-            "postal_code": "8000",
-            "forecast_action": "search",
-        },
+        catalogue,
+        {"station_id": "sma", "pollen_station": "PBE", "postal_code": "8000"},
     )
-    assert form["step_id"] == "forecast_search"
-    assert (entry.data, entry.options, entry.entry_id) == original
-    form = await search_selected(hass, form, catalogue)
     assert form["description_placeholders"]["station"] == "Zürich / Fluntern"
     assert form["description_placeholders"]["pollen_station"] == "Bern (PBE)"
     assert form["description_placeholders"]["postal_code"] == "8000"
@@ -194,19 +192,29 @@ async def test_cancelling_never_saves_any_of_the_three_pending_locations(
         entry.title,
     )
     form = await hass.config_entries.options.async_init(entry.entry_id)
-    form = await submit(
-        hass,
-        form,
-        {"station_id": "sma", "pollen_station": "PBE", "forecast_action": "search"},
-    )
-    if stage != "search":
-        with patch(
-            "custom_components.meteoswiss.config_flow.MeteoSwissForecastCatalogueClient.async_get_catalogue",
-            return_value=catalogue,
-        ):
-            form = await submit(hass, form, {"query": "8302"})
-        if stage == "confirm":
-            form = await submit(hass, form, {"point": "2:830200"})
+    query = "" if stage == "search" else "8302"
+    with patch(
+        "custom_components.meteoswiss.config_flow.MeteoSwissForecastCatalogueClient.async_get_catalogue",
+        return_value=catalogue,
+    ) as load:
+        form = await submit(
+            hass,
+            form,
+            {
+                "station_id": "sma",
+                "pollen_station": "PBE",
+                "forecast_action": "search",
+                "query": query,
+            },
+        )
+        if stage == "search":
+            assert form["step_id"] == "init"
+            assert form["errors"] == {"base": "invalid_forecast_query"}
+            load.assert_not_awaited()
+        else:
+            assert form["step_id"] == "forecast_select"
+            if stage == "confirm":
+                form = await submit(hass, form, {"point": "2:830200"})
     hass.config_entries.options.async_abort(form["flow_id"])
     assert (entry.data, entry.options, entry.unique_id, entry.title) == before
 
@@ -301,7 +309,6 @@ async def test_duplicate_locations_never_replace_or_partially_modify_an_entry(
     before = (dict(entry.data), dict(entry.options))
     form = await hass.config_entries.options.async_init(entry.entry_id)
     if late:
-        form = await submit(hass, form, {"forecast_action": "search"})
         form = await search_selected(hass, form, catalogue)
     duplicate = MockConfigEntry(domain=DOMAIN, data=dict(entry.data))
     duplicate.add_to_hass(hass)
@@ -319,10 +326,7 @@ async def test_concurrent_changes_are_preserved_instead_of_overwritten(
 ):
     entry = entry_for(hass, catalogue)
     form = await hass.config_entries.options.async_init(entry.entry_id)
-    form = await submit(
-        hass, form, {"forecast_action": "search", "pollen_station": "PBE"}
-    )
-    form = await search_selected(hass, form, catalogue)
+    form = await search_selected(hass, form, catalogue, {"pollen_station": "PBE"})
     changed = {**getattr(entry, kind), "external_change": True}
     hass.config_entries.async_update_entry(entry, **{kind: changed})
     result = await submit(hass, form, {})

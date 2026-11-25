@@ -169,9 +169,9 @@ entry's base location for modelled air quality, pollen and optional UV.
 ## 4. Choose the forecast location
 
 Keep the original base location or choose **Search by postcode, town or POI**.
-Enter a postcode or official catalogue name, select a result and check its name,
-category and height before confirming. A postcode point is a forecast point,
-not a post office or the exact position of your home. See
+Enter a postcode or place name in the field that appears. Submit the form, then
+select the result and check its name, category and height before confirming.
+A postcode result uses the coordinates assigned to that point in the catalogue. See
 [selection and place-name limits](FORECAST_LOCATION_SETUP.md).
 
 | Location | Purpose |
@@ -191,9 +191,10 @@ explains these four places and the independent warning postcode.
 
 Open the existing entry's **Configure (gear)** to review or change the weather
 station/base coordinates, measured-pollen station, forecast choice and warning
-postcode in one dialog. A search continues inside it; cancelling saves none of
-the pending choices. Confirmed changes reload the entry once, without an HA
-Core restart. HA home coordinates remain in HA's general settings.
+postcode in one dialog. Enter the search term in that dialog, then select and
+confirm the result. Cancelling discards the pending choices. Confirmed changes
+reload the entry once without an HA Core restart. HA home coordinates remain in
+HA's general settings.
 
 Open the integration's devices. Measurements and an explicitly selected
 forecast place have separate names. Numeric forecast sensors cover today and

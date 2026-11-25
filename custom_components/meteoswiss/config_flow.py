@@ -9,6 +9,7 @@ from abc import abstractmethod
 from typing import Any, NotRequired, TypedDict
 
 import probatio as vol
+from homeassistant import data_entry_flow
 from homeassistant.config_entries import (
     SOURCE_RECONFIGURE,
     ConfigEntry,
@@ -25,6 +26,7 @@ from homeassistant.helpers.selector import (
     SelectSelector,
     SelectSelectorConfig,
     SelectSelectorMode,
+    TextSelector,
 )
 from homeassistant.helpers.translation import async_get_translations
 
@@ -58,6 +60,8 @@ from .runtime_data import MeteoSwissConfigEntry
 from .stations_map import WeatherStation, get_stations_map, parse_station_catalogue
 
 WARNING_POSTCODE = re.compile(r"[1-9][0-9]{3}")
+FORECAST_QUERY_MIN_LENGTH = 2
+FORECAST_QUERY_MAX_LENGTH = 128
 STATION_MAP_URLS = {
     "de": (
         "https://www.meteoschweiz.admin.ch/"
@@ -135,6 +139,21 @@ def _parse_stations(content: bytes) -> list[dict[str, Any]]:
         return _station_choices(list(parse_station_catalogue(content).values()))
     except (ValueError, UnicodeError):
         return []
+
+
+def _forecast_query_field(
+    action_field: str, query: object
+) -> data_entry_flow.Optional:
+    """Show the search field only while the search action is selected."""
+    return data_entry_flow.Optional(
+        "query",
+        visible={"field": action_field, "value": "search"},
+        description=(
+            {"suggested_value": query}
+            if isinstance(query, str) and len(query) <= FORECAST_QUERY_MAX_LENGTH
+            else None
+        ),
+    )
 
 
 class _FlowContext(ConfigFlowContext, total=False):
@@ -242,16 +261,21 @@ class _LocationFlowMixin(ConfigEntryBaseFlow):
     async def async_step_forecast_location(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Explain forecast purpose before accepting any search term."""
+        """Keep the base location or search directly from the forecast form."""
         errors = {}
+        values = user_input or {}
         target = resolve_forecast_target(self._pending_data, None, None)
         if user_input is not None:
             action = user_input.get("action")
             if action == "search":
-                return await self.async_step_forecast_search()
-            if action == "keep" and target.status != "invalid":
+                error = await self._async_search_forecast(user_input.get("query"))
+                if error is None:
+                    return await self.async_step_forecast_select()
+                errors["base"] = error
+            elif action == "keep" and target.status != "invalid":
                 return self._finish_forecast_selection(change=False)
-            errors["base"] = "invalid_forecast_selection"
+            else:
+                errors["base"] = "invalid_forecast_selection"
         labels = await self._forecast_labels()
         current = (
             self._point_label(target.location, labels)
@@ -263,13 +287,21 @@ class _LocationFlowMixin(ConfigEntryBaseFlow):
             step_id="forecast_location",
             data_schema=vol.Schema(
                 {
-                    vol.Required("action"): SelectSelector(
+                    vol.Required(
+                        "action",
+                        description=(
+                            {"suggested_value": "search"}
+                            if values.get("action") == "search"
+                            else None
+                        ),
+                    ): SelectSelector(
                         SelectSelectorConfig(
                             options=actions,
                             translation_key="forecast_location_action",
                             mode=SelectSelectorMode.DROPDOWN,
                         )
-                    )
+                    ),
+                    _forecast_query_field("action", values.get("query")): TextSelector(),
                 }
             ),
             description_placeholders={"current_location": current},
@@ -279,21 +311,15 @@ class _LocationFlowMixin(ConfigEntryBaseFlow):
     async def async_step_forecast_search(
         self, user_input: dict[str, Any] | None = None
     ) -> ConfigFlowResult:
-        """Reuse one bounded client; search the snapshot outside the event loop."""
+        """Let the user search again without applying the pending location."""
         errors = {}
-        self._candidates = {}
-        self._candidate_labels = {}
-        self._selected_location = None
+        error = await self._async_search_forecast(
+            user_input.get("query") if user_input is not None else None
+        )
         if user_input is not None:
-            query = user_input.get("query")
-            if not isinstance(query, str) or not 2 <= len(query.strip()) <= 128:
-                errors["base"] = "invalid_forecast_query"
-            else:
-                self._query = query.strip()
-                error = await self._async_find_candidates()
-                if error is None:
-                    return await self.async_step_forecast_select()
-                errors["base"] = error
+            if error is None:
+                return await self.async_step_forecast_select()
+            errors["base"] = error
         return self.async_show_form(
             step_id="forecast_search",
             errors=errors,
@@ -301,10 +327,28 @@ class _LocationFlowMixin(ConfigEntryBaseFlow):
                 {
                     vol.Required(
                         "query", description={"suggested_value": self._query}
-                    ): vol.All(str, vol.Length(min=2, max=128))
+                    ): vol.All(
+                        str,
+                        vol.Length(
+                            min=FORECAST_QUERY_MIN_LENGTH, max=FORECAST_QUERY_MAX_LENGTH
+                        ),
+                    )
                 }
             ),
         )
+
+    async def _async_search_forecast(self, query: object) -> str | None:
+        """Clear any previous selection before validating and searching locally."""
+        self._candidates.clear()
+        self._candidate_labels.clear()
+        self._selected_location = None
+        if not isinstance(query, str):
+            return "invalid_forecast_query"
+        query = query.strip()
+        if not FORECAST_QUERY_MIN_LENGTH <= len(query) <= FORECAST_QUERY_MAX_LENGTH:
+            return "invalid_forecast_query"
+        self._query = query
+        return await self._async_find_candidates()
 
     async def _async_find_candidates(self) -> str | None:
         if self._catalogue_client is None:
@@ -523,10 +567,13 @@ class _SettingsFlowMixin(_LocationFlowMixin):
         return data, errors
 
     async def _settings_forecast_action(
-        self, action: str, station_based: bool
+        self, action: str, station_based: bool, query: object
     ) -> ConfigFlowResult:
         if action == "search":
-            return await self.async_step_forecast_search()
+            error = await self._async_search_forecast(query)
+            if error is None:
+                return await self.async_step_forecast_select()
+            return await self._settings_form(station_based, {"base": error})
         if action == "base":
             self._selected_location = None
             return await self.async_step_forecast_confirm()
@@ -568,7 +615,7 @@ class _SettingsFlowMixin(_LocationFlowMixin):
         self._pending_data = data
         self._pending_options[CONF_POLLEN_STATION] = user_input[CONF_POLLEN_STATION]
         return await self._settings_forecast_action(
-            user_input["forecast_action"], station_based
+            user_input["forecast_action"], station_based, user_input.get("query")
         )
 
     async def _settings_form(
@@ -582,7 +629,7 @@ class _SettingsFlowMixin(_LocationFlowMixin):
             ),
             **self._settings_input,
         }
-        schema: dict[vol.Required, object] = {}
+        schema: dict[vol.Marker, object] = {}
         if station_based:
             choices = {station["id"]: station["label"] for station in self._stations}
             current = str(entry.data.get(CONF_STATION_ID, "")).strip().lower()
@@ -618,6 +665,9 @@ class _SettingsFlowMixin(_LocationFlowMixin):
                 translation_key="forecast_location_action",
                 mode=SelectSelectorMode.DROPDOWN,
             )
+        )
+        schema[_forecast_query_field("forecast_action", values.get("query"))] = (
+            TextSelector()
         )
         schema[
             vol.Required(CONF_POSTAL_CODE, default=values.get(CONF_POSTAL_CODE, ""))

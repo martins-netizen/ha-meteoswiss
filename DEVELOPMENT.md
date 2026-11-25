@@ -36,9 +36,9 @@ dependency set with fixes for these known issues.
 [Core 2026.8.3 pins](https://github.com/home-assistant/core/blob/2026.8.3/homeassistant/package_constraints.txt)
 · [Core 2026.10.4 pins](https://github.com/home-assistant/core/blob/2026.10.4/homeassistant/package_constraints.txt)
 · [Core 2026.11.0 pins](https://github.com/home-assistant/core/blob/2026.11.0/homeassistant/package_constraints.txt)
-· [Core 2026.11.2 pins](https://github.com/home-assistant/core/blob/2026.11.2/homeassistant/package_constraints.txt)
+· [Core 2026.11.3 pins](https://github.com/home-assistant/core/blob/2026.11.3/homeassistant/package_constraints.txt)
 
-| Dependency | Core 2026.8.3 | Core 2026.11.0 and 2026.11.2 | Example security advisory |
+| Dependency | Core 2026.8.3 | Core 2026.11.0 and 2026.11.3 | Example security advisory |
 |---|---:|---:|---|
 | Pillow | 12.3.0 | 13.0.0 | [GHSA-5x8w-8jj5-q52h](https://github.com/advisories/GHSA-5x8w-8jj5-q52h) |
 | PyJWT | 2.13.0 | 2.15.1 | [GHSA-ffc3-869f-jxw9](https://github.com/advisories/GHSA-ffc3-869f-jxw9) |
@@ -67,7 +67,7 @@ the uv policy before tests run. Prerelease package versions fail this check.
 These floors follow the [Python security announcement](https://discuss.python.org/t/information-for-python-users-regarding-emudhra-emsign-ca-certificate-security-incident/109576).
 
 The minimum fixture uses **HA 2026.11.0** and the current fixture uses
-**HA 2026.11.2**. Both use the corresponding official **pytest-homeassistant**
+**HA 2026.11.3**. Both use the corresponding official **pytest-homeassistant**
 release and **uv 0.13.6**. The installed check requires **uv 0.13.4 or newer**
 in both jobs. The compatibility job sets
 [`UV_OFFLINE=true`](https://docs.astral.sh/uv/reference/environment/#uv_offline)
@@ -94,7 +94,7 @@ export UV_OFFLINE=true
 python scripts/check_ci_security.py bootstrap
 python -m pip install --disable-pip-version-check --require-hashes --constraint requirements_ci_security.txt -r requirements_test.txt
 python -m pip check
-python scripts/check_ci_security.py installed --ha-version 2026.11.2
+python scripts/check_ci_security.py installed --ha-version 2026.11.3
 python -m compileall -q custom_components/meteoswiss tests
 python scripts/check_translations.py
 python -m pytest -q --cov=custom_components.meteoswiss --cov-branch --cov-report=term-missing --cov-report=json:coverage.json
@@ -162,19 +162,19 @@ identity is excluded from deletion by blocking confirmation of the plan.
 
 ### Current fixture update
 
-**17 November 2026.**
+**24 November 2026.**
 
 The current CI fixture advances HA and its matching official test package from
-2026.11.1 to 2026.11.2. Its universal hash lock retains all 138 requirement keys,
+2026.11.2 to 2026.11.3. Its universal hash lock retains all 138 requirement keys,
 extras and platform markers; only those two selected versions and release
 hashes change. The other 136 package records/hashes and the complete minimum
-2026.11.0 fixture remain unchanged. The [official 11.2 release](https://github.com/home-assistant/core/releases/tag/2026.11.2)
-and [test-package source](https://github.com/home-assistant/core/tree/2026.11.2/packages/pytest-homeassistant)
+2026.11.0 fixture remain unchanged. The [official 11.3 release](https://github.com/home-assistant/core/releases/tag/2026.11.3)
+and [test-package source](https://github.com/home-assistant/core/tree/2026.11.3/packages/pytest-homeassistant)
 define the paired version.
 
 The existing two-environment security, graph, translation, regression, coverage,
 universal-lock and advisory checks remain required. The current compatibility
-check is named `HA 2026.11.2`; the aggregate `tests` check still requires both
+check is named `HA 2026.11.3`; the aggregate `tests` check still requires both
 fixtures. New operator helpers must check that exact name on the reviewed head.
 Frozen publishers and release-specific evidence retain their original commit,
 workflow names and checks; do not rewrite them to publish a different source.
