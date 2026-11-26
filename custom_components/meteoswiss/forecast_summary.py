@@ -118,8 +118,12 @@ def _hourly_outlook(
         valid_hours=len(values),
         coverage_complete=len(values) == len(ends),
     )
+    attributes["hourly_forecast"] = [
+        {"start": boundaries[i], "end": boundaries[i + 1], "value": values.get(end)}
+        for i, end in enumerate(ends)
+    ]
     if field == "wind_gust_speed":
-        attributes.update(peak_start=None, peak_end=None)
+        attributes.update(hourly_forecast_unit="km/h", peak_start=None, peak_end=None)
         if len(values) != len(ends):
             return None, attributes
         # Ties, including a completely calm day, use the earliest interval.
@@ -127,10 +131,6 @@ def _hourly_outlook(
         attributes.update(peak_start=boundaries[index], peak_end=boundaries[index + 1])
         return values[ends[index]], attributes
 
-    attributes["hourly_forecast"] = [
-        {"start": boundaries[i], "end": boundaries[i + 1], "value": values.get(end)}
-        for i, end in enumerate(ends)
-    ]
     return values.get(ends[0]), attributes
 
 

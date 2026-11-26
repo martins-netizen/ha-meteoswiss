@@ -155,8 +155,15 @@ async def test_hour_window_and_snapshot_expiry_update_without_fetching(
     }
     assert "hourly_forecast" in global_state.state_info["unrecorded_attributes"]
     assert hass.states.get(diffuse_id).state == "unknown"
-    assert float(hass.states.get(gust_id).state) == 70
-    assert hass.states.get(gust_id).attributes["peak_end"] == "2026-10-23T13:00:00+02:00"
+    gust = hass.states.get(gust_id)
+    assert float(gust.state) == 70
+    assert gust.attributes["peak_end"] == "2026-10-23T13:00:00+02:00"
+    assert gust.attributes["hourly_forecast_unit"] == "km/h"
+    assert gust.attributes["hourly_forecast"][0] == {
+        **global_state.attributes["hourly_forecast"][0],
+        "value": 70,
+    }
+    assert "hourly_forecast" in gust.state_info["unrecorded_attributes"]
     # Remove the ordinary coordinator poller so only scalar clock timers run.
     source._unsub_refresh()
     source._unsub_refresh = None

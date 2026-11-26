@@ -54,7 +54,7 @@ The forecast device also provides these sensors:
 |---|---|---|
 | Global solar radiation this hour | Mean total shortwave radiation on a horizontal surface, W/m² | Hourly forecast for 24 hours |
 | Diffuse solar radiation this hour | Mean diffuse part of that radiation, W/m² | Hourly forecast for 24 hours |
-| Peak wind gust over 24 hours | Highest hourly gust in the 24-hour window, km/h in native units | Start and end of the earliest hour reaching that maximum |
+| Peak wind gust over 24 hours | Highest hourly gust in the 24-hour window, km/h in native units | Hourly forecast and the earliest hour reaching the maximum |
 
 At 14:25 the radiation state describes the 14:00–15:00 interval. The window
 starts at 14:00 and spans 24 elapsed hours. When the clocks change, the window
@@ -63,12 +63,14 @@ A missing value for that interval gives an unknown state. Night-time zero is a
 valid forecast. Radiation is an input to a PV yield estimate. Converting it to
 electricity requires the panel area, orientation and system losses.
 
-For a chart or automation, read either solar sensor's `hourly_forecast`
-attribute. It contains one row per hour with `start`, `end` and `value` in W/m².
-Missing samples have a null value and the series is excluded from Recorder.
-The gust sensor reports its peak when all 24 hours have valid gust data.
-Its `peak_start` and `peak_end` locate the peak hour. Individual hourly gusts
-are also available through Home Assistant's `weather.get_forecasts` action.
+For a chart or automation, read the sensor's `hourly_forecast` attribute.
+It contains one row per hour with `start`, `end` and `value`. Radiation values
+are in W/m² and gust values use the fixed `hourly_forecast_unit` of `km/h`,
+regardless of the unit selected for the peak sensor state. Missing samples have
+a null value and the series is excluded from Recorder. The gust sensor state
+reports its peak when all 24 hours have valid gust data. Its `peak_start` and
+`peak_end` locate the peak hour.
+Hourly gusts are also available through Home Assistant's `weather.get_forecasts` action.
 Station gust and radiation sensors continue to report observations.
 
 These forecasts share the existing hourly ICON Seamless request and the
