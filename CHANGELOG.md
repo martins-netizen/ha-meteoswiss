@@ -1,6 +1,17 @@
 # Changelog
 
-## [8.4.0b2] — prerelease candidate
+## [8.4.0b3] — prerelease candidate
+
+- Read 24 timestamped hourly gust forecasts on the 24-hour peak gust sensor.
+  Dashboards and automations can use the series with their own thresholds.
+  Entries use km/h, and missing hourly values appear as `null`.
+  [PR #157](https://github.com/martins-netizen/ha-meteoswiss/pull/157)
+- Includes the simpler forecast-location search prepared in 8.4.0b2.
+  [PR #155](https://github.com/martins-netizen/ha-meteoswiss/pull/155)
+
+[Beta notes](docs/RELEASE_8.4.0b3.md) · [Trying the beta](docs/ACCEPTANCE_8.4.0b3.md)
+
+## [8.4.0b2] — unpublished candidate
 
 - Enter the forecast postcode or place name directly after choosing Search
   during setup, Configure or Reconfigure. The result list and confirmation
