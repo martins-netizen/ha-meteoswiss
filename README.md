@@ -12,8 +12,10 @@ project provides the foundation; its MIT licence and attribution are retained.
 This is an independent community project, not an official MeteoSwiss product.
 
 **Start with the [latest published stable release](https://github.com/martins-netizen/ha-meteoswiss/releases/latest).**
-This guide describes the **8.3 series**; [8.3.0 release notes](docs/RELEASE_8.3.0.md)
-explain the changes from 8.2.0. Use a published release, not a branch.
+**MeteoSwiss 8.4.0** brings a simpler forecast location search, Swiss-language
+place names and hourly forecasts for solar radiation and wind gusts.
+See the [8.4.0 release notes](docs/RELEASE_8.4.0.md) and
+[Marketplace update guide](docs/ACCEPTANCE_8.4.0.md).
 
 **[Stable 8.3.6](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.3.6) was published on 20 November 2026.**
 It checks ownership before changing older wind and heating-degree-day statistics,
@@ -66,7 +68,7 @@ before deletion. Accepted b3 cleanup and b5/b6/b7 reports stay complete.
 
 | Package | Required HA Core |
 |---|---|
-| 8.3.6, 8.3.6b1, 8.3.5 and 8.3.5b1–b7 | 2026.11.0 or newer |
+| 8.4.0 series, 8.3.6, 8.3.6b1, 8.3.5 and 8.3.5b1–b7 | 2026.11.0 or newer |
 | Earlier stable 8.3.4 | 2026.8.3 or newer |
 
 The 2026.11 baseline addresses known vulnerabilities in libraries pinned by
@@ -205,6 +207,10 @@ The [developer guide](DEVELOPMENT.md#strict-type-checking) shows how to run them
 | Settings, missing data or troubleshooting | [English usage reference](docs/USAGE.md) |
 
 ## Release status
+
+The [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+lists available packages. The [8.4.0 update guide](docs/ACCEPTANCE_8.4.0.md)
+covers upgrades from stable 8.3.6 and the published 8.4.0b3.
 
 Stable 8.3.6 supports a direct update from 8.3.5 or 8.3.6b1. The
 [release evidence](docs/RELEASE_EVIDENCE_8.3.6.md) records the station and

@@ -1,6 +1,20 @@
 # Changelog
 
-## [8.4.0b3] — prerelease candidate
+## [8.4.0] — stable candidate
+
+- Promote the integration packaged in 8.4.0b3. Since stable 8.3.6, forecast
+  location search adds Swiss-language aliases and a shorter setup flow.
+- Forecast devices add hourly global and diffuse solar radiation, the
+  strongest gust over 24 hours and the corresponding hourly gust series.
+- The minimum Home Assistant Core version is 2026.11.0. The compatibility
+  tests cover 2026.11.0 and 2026.11.3.
+
+[Release notes](docs/RELEASE_8.4.0.md) · [Update guide](docs/ACCEPTANCE_8.4.0.md)
+
+## [8.4.0b3] — 2026-11-26
+
+Published as a [prerelease](https://github.com/martins-netizen/ha-meteoswiss/releases/tag/8.4.0b3)
+from [PR #158](https://github.com/martins-netizen/ha-meteoswiss/pull/158).
 
 - Read 24 timestamped hourly gust forecasts on the 24-hour peak gust sensor.
   Dashboards and automations can use the series with their own thresholds.
