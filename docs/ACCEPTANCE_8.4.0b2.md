@@ -5,9 +5,8 @@ open the installed MeteoSwiss repository in **Settings → Marketplace**.
 Open the three-dot menu, choose **Install another version**, select
 **8.4.0b2** and restart Home Assistant after installation.
 
-If the beta is missing from the list, open the repository's Marketplace
-device under **Settings → Devices & services → Marketplace**, enable its
-**Pre-release** entity and turn on the switch. See the
+To receive future beta updates through the normal update workflow, choose
+**Include pre-releases** from the same menu and confirm. See the
 [Marketplace documentation](https://www.home-assistant.io/integrations/marketplace/#keeping-installations-up-to-date).
 
 1. **Search in the same form.** In MeteoSwiss **Configure**, choose Search.
