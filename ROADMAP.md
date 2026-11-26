@@ -46,7 +46,7 @@ Installation of stable 8.3.5 has not been confirmed by the publication report.
 
 The [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
 remains authoritative. Minimum Core is **2026.11.0**, current compatibility
-**2026.11.2**. The [matrix](docs/QUALITY_SCALE.md) and
+**2026.11.3**. The [matrix](docs/QUALITY_SCALE.md) and
 [fresh-evidence contract](docs/GOLD_EVIDENCE_CONTRACT.md) describe project
 engineering evidence, without an official HA tier or independent certification.
 
@@ -77,7 +77,7 @@ notes and dated metrics remain historical records rather than reopened tasks.
 | Scope | Boundary |
 |---|---|
 | Platinum typing/dependency architecture | Strict mypy now checks the full integration. The broader architecture and any tier assessment require their own evidence. |
-| Locality names in other languages | Obtain authoritative aliases; preserve provider identity and personal names. |
+| Extend multilingual locality search | Use authoritative sources for additional aliases. [8.4.0b1](docs/RELEASE_8.4.0b1.md) already supports aliases for 184 postal forecast points. |
 | Provider retention and deployment assurance | Provider policies, host/network/backup controls and independent assessment need their own evidence. The owner-authenticated inventory remains dated 11 November 2026. |
 | External contributor CodeQL | Retain evidence from the first actual external-fork route; skipped analysis is not success. |
 | New sources/entities or processed forecast data | Scope and validate separately; no new device actions/source role in a release-only change. |

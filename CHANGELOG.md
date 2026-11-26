@@ -1,6 +1,16 @@
 # Changelog
 
-## [8.4.0b1] — prerelease candidate
+## [8.4.0b2] — prerelease candidate
+
+- Enter the forecast postcode or place name directly after choosing Search
+  during setup, Configure or Reconfigure. The result list and confirmation
+  follow as before. The form keeps the query when a search returns no matches.
+- The current compatibility job tests Home Assistant Core 2026.11.3. The
+  minimum supported version is 2026.11.0.
+
+[Beta notes](docs/RELEASE_8.4.0b2.md) · [Trying the beta](docs/ACCEPTANCE_8.4.0b2.md)
+
+## [8.4.0b1] — 2026-11-23
 
 - Search for selected postal forecast locations by their names in other Swiss
   languages. Results keep the MeteoSwiss catalogue name and postcode.
