@@ -216,12 +216,19 @@ def test_outlook_only_counts_matching_hour_ends_and_keeps_zero_and_missing_separ
     peak, wind = summarize_forecast(rows, NOW, 0, "wind_gust_speed")
     assert peak is wind["peak_start"] is wind["peak_end"] is None
     assert wind["valid_hours"] == 23
+    assert wind["hourly_forecast_unit"] == "km/h"
+    gusts = wind["hourly_forecast"]
+    assert len(gusts) == 24
+    assert gusts[0] == {"start": wind["window_start"], "end": series[0]["end"], "value": 0}
+    assert gusts[3]["value"] == 41.0
+    assert gusts[6]["value"] is None
+    assert gusts[-1]["end"] == wind["window_end"]
     rows[7]["wind_gust_speed"] = 0
     peak, wind = summarize_forecast(rows, NOW, 0, "wind_gust_speed")
     assert peak == 41.0 and wind["coverage_complete"] and wind["expected_hours"] == 24
     assert wind["peak_start"] == "2026-10-23T15:00:00+02:00"
     assert wind["peak_end"] == "2026-10-23T16:00:00+02:00"
-    assert "hourly_forecast" not in wind
+    assert wind["hourly_forecast"][6]["value"] == 0
 
 
 @pytest.mark.parametrize(
@@ -245,3 +252,4 @@ def test_rolling_outlook_uses_physical_hours_across_swiss_clock_changes(utc_star
     value, gust = summarize_forecast(rows, utc_start, 0, "wind_gust_speed")
     assert value == 0 and gust["peak_start"] == expected_starts[0]
     assert gust["peak_end"] == expected_starts[1]
+    assert [row["start"] for row in gust["hourly_forecast"][:3]] == expected_starts
