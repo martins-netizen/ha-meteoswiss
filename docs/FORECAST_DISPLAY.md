@@ -1,9 +1,8 @@
 # Keep current conditions and a selected forecast location distinct
 
-**Guide version:** 1.2 · **Updated:** 24 October 2026.
-**Availability:** included in the **8.3.0** runtime accepted as b4.
-Use the [announced release](RELEASE_8.3.0.md); earlier beta notes describe their
-historical scopes, not instructions to reinstall an older beta.
+**Guide version:** 1.3 · **Updated:** 26 November 2026.
+Separate forecast and observation devices were introduced in [8.3.0](RELEASE_8.3.0.md).
+For 8.4.0, see the [Marketplace update guide](ACCEPTANCE_8.4.0.md).
 
 ## What changes on screen
 
@@ -17,7 +16,7 @@ The follow-up gives predictions their own named device and weather entity:
 | Group | Values shown | Location |
 |---|---|---|
 | MeteoSwiss Zürich/Kloten | Existing current-condition weather entity and station sensors | The selected observation station. For the alternative current source these remain modelled current conditions at its configured base coordinates. |
-| MeteoSwiss Säntis (Forecast) | New forecast weather entity, eight today/tomorrow sensors and calculated HGT | The explicitly selected forecast point and its catalogue height. |
+| MeteoSwiss Säntis (Forecast) | Forecast weather entity, eight today/tomorrow sensors, calculated HGT and the [solar radiation and gust outlooks](FORECAST_SENSORS.md#solar-radiation-and-peak-gusts) | The explicitly selected forecast point and its catalogue height. |
 | Existing warning, measured-pollen and AQ/pollen groups | Their existing values | Their independently configured postcode, pollen station or base location. |
 
 The forecast group's name is translated in EN/DE/FR/IT; in German it is
@@ -30,7 +29,7 @@ absent. Neither missing model hours nor a failed forecast borrow Kloten values.
 
 ## Update an existing card or forecast action once
 
-After installing the announced follow-up and restarting HA:
+After updating and restarting HA:
 
 1. Open **Settings → Devices & services → MeteoSwiss**. Find the device named
    after your forecast point. With an unchanged base location it is named
@@ -53,7 +52,7 @@ warning postcode, air quality and pollen settings do not move with the forecast.
 
 ## Existing names, IDs and history
 
-**Development after b3:** the observation weather row can also have a
+The observation weather row can also have a
 [station-local modelled condition](STATION_WEATHER_CONDITION.md). Its numeric
 values remain measured; its condition is not borrowed from this forecast group.
 HA may show the forecast condition only as an icon in the compact device-page
@@ -84,10 +83,8 @@ unload. Invalid saved selections remain explicitly unavailable.
 ## Focused follow-up check
 
 **Historical October acceptance example:** these display corrections shipped
-in the 8.3.0 runtime. The original targeted checks below retain their past
-scope; they are not open requirements for stable 8.3.5 or the accepted b7
-runtime. Use the [current stable guide](ACCEPTANCE_8.3.5.md). The original
-example kept the temporary HA entry and backup and checked these paths:
+in the 8.3.0 runtime. The original example kept the temporary HA entry and
+backup and checked these paths:
 
 - Select **Säntis** deliberately. Station and POI remain distinct choices. The
   forecast group identifies Säntis; its current model hour and daily/hourly

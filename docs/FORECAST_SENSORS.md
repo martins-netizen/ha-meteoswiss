@@ -1,9 +1,10 @@
 # Forecast sensors
 
-**Guide version:** 1.11 · **Updated:** 22 November 2026
+**Guide version:** 1.12 · **Updated:** 26 November 2026
 
 The daily summaries have been available since [8.3.0](RELEASE_8.3.0.md).
-Hourly solar radiation and peak gusts are included in [8.4.0b1](RELEASE_8.4.0b1.md).
+[8.4.0](RELEASE_8.4.0.md) includes the two solar radiation sensors, the
+24-hour peak gust sensor and the corresponding hourly series.
 
 ## What you get
 

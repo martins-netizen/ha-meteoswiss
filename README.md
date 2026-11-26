@@ -202,7 +202,7 @@ The [developer guide](DEVELOPMENT.md#strict-type-checking) shows how to run them
 | Your situation | Guide |
 |---|---|
 | First installation | [Step-by-step setup](docs/GETTING_STARTED.md) |
-| Existing MeteoSwiss installation | [Switch or update safely](docs/MIGRATION.md) |
+| Existing MeteoSwiss installation | [Update to 8.4.0](docs/ACCEPTANCE_8.4.0.md) or [switch repositories](docs/MIGRATION.md) |
 | Experienced HA user | [Data and settings](docs/USAGE.md), [warning codes](docs/WARNING_CODES.md), [architecture](docs/ARCHITECTURE.md) |
 | Settings, missing data or troubleshooting | [English usage reference](docs/USAGE.md) |
 
@@ -230,6 +230,8 @@ package, repeated migration or new observation window is required.
 - MeteoSwiss ICON Seamless forecasts via Open-Meteo.
 - [Eight forecast sensors](docs/FORECAST_SENSORS.md)
   for today/tomorrow, including matching maximum-probability rain windows.
+- [Hourly solar radiation and gust forecasts](docs/FORECAST_SENSORS.md#solar-radiation-and-peak-gusts)
+  in a 24-hour outlook.
 - Active/upcoming weather and natural-hazard warnings through the MeteoSwiss
   postcode feed, with explicit feed availability. This includes flood (BAFU)
   and avalanche (SLF) warnings when supplied for the selected postcode; it is
