@@ -1,9 +1,10 @@
 # Choose or change a weather forecast location
 
-**Guide version:** 1.10 · **Updated:** 24 November 2026
+**Guide version:** 1.11 · **Updated:** 26 November 2026
 
 Location selection has been available since [8.3.0](RELEASE_8.3.0.md).
-[8.4.0b1](RELEASE_8.4.0b1.md) adds search names in other Swiss languages for selected postal forecast points.
+[8.4.0](RELEASE_8.4.0.md) includes a shorter search flow and search names in
+other Swiss languages for selected postal forecast points.
 
 ## What you are choosing
 
@@ -22,7 +23,7 @@ measurements remain available.
 ## Separate measurement and forecast display
 
 The [display guide](FORECAST_DISPLAY.md) describes the named forecast device,
-eight scalars, HGT and forecast weather entity. Station entities/IDs and personal
+its sensors and forecast weather entity. Station entities/IDs and personal
 names remain; existing cards/actions for a selected point use the new forecast
 weather entity. The measuring station has its own [modelled condition](STATION_WEATHER_CONDITION.md),
 with unchanged measured numeric values. The initial b1 ambiguity is corrected.
@@ -62,14 +63,13 @@ remain. A loaded entry reloads once after a confirmed change without a Core
 restart. Keeping the current forecast leaves that role unchanged; other settings
 are still applied if deliberately changed and confirmed.
 
-**In stable 8.3.2 (introduced in 8.3.2b1):** **three-dot menu → Reconfigure** opens the same
+**Three-dot menu → Reconfigure** opens the same
 complete settings dialog. You can change weather observations, measured pollen,
 forecast point and warning postcode together through either route. A failed
 source check retains the chosen search/reset for the retry. If another dialog
 saves settings first, the older dialog aborts without overwriting them; reopen
-it to review the current values. Stable 8.3.1 and older versions keep the
-forecast-only shortcut; download stable 8.3.2 and restart HA for the shared route. The
-[focused protocol](ACCEPTANCE_8.3.2b1.md) records its completed reported acceptance.
+it to review the current values. This shared route first shipped in
+[8.3.2](RELEASE_8.3.2.md).
 
 To undo a forecast move choose **Return to the original base coordinates** and
 confirm. An invalid saved point needs a replacement or explicit reset; keeping
@@ -93,7 +93,8 @@ its four language columns describe **categories**, not translated place names.
 The integration keeps those provider names. It does not translate or invent
 summit/pass/hut subtypes from a generic POI category.
 
-Searching for **Morat** or **3280 Morat** finds **Murten** (point **2/328000**).
+Searching for **Morat**, **Môrat** or **3280 Morat** finds **Murten** (point **2/328000**).
+Searching for **Genève**, **Geneve** or **Genf** finds **1201 Genève**.
 Searching for **3280** also shows **Greng** and **Meyriez**, which have their own
 forecast points. The selected point keeps its MeteoSwiss name in Home Assistant.
 Verified postal aliases from swisstopo are available in all interface languages.

@@ -2,25 +2,11 @@
 
 ## Choose a published version
 
-This guide describes the maintained integration, including **8.3.5** measured
-HGT, explicit obsolete-forecast cleanup, stronger diagnostic privacy and local
-warning/forecast clocks. Calculated HGT also follows Swiss midnight from cached
-daily data, without another source download. Read the
-[cumulative release notes](RELEASE_8.3.5.md) for changes since stable 8.3.4.
-
-Choose an actually published package from the
-[release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-or [latest-stable page](https://github.com/martins-netizen/ha-meteoswiss/releases/latest).
-Repository preparation alone does not establish availability. Existing users
-update their existing entry directly; intermediate betas and entry recreation
-are unnecessary. Complete the ordinary update restart once. The
-[upgrade guide](UPGRADING_8.3.5.md) and [normal update guide](ACCEPTANCE_8.3.5.md)
-explain the retained entry, measured history and any explicit cleanup consent.
-
-Completed b3 cleanup and b5/b6/b7 operator reports stay closed. The reviewed
-pre-stable source fixes have their own native regressions and require no repeat
-migration, failure exercise or new operator observation window. Official
-measured HGT and obsolete forecast statistics remain distinct.
+Choose the [latest published stable release](https://github.com/martins-netizen/ha-meteoswiss/releases/latest).
+The [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
+lists all available versions. The [8.4.0 release notes](RELEASE_8.4.0.md) explain
+the shorter forecast location search, Swiss-language place names and the hourly
+solar radiation and wind gust forecasts.
 
 ## Location privacy before setup
 
@@ -31,10 +17,9 @@ may include coordinates and are deleted after 90 days. A weather-forecast point
 does not move modelled pollen/AQ/UV's HA home/configured base coordinates.
 Review the [source table](API_SOURCES.md) and [assessment](PRIVACY_SECURITY_REVIEW.md).
 
-This guide describes the **8.3 series** for readers without programming experience.
-You do not need an API key, MeteoSwiss account or terminal commands. Install
-only a published release. **Already using MeteoSwiss?** Follow
-[migration](MIGRATION.md) and keep your existing HA entry.
+You do not need an API key, MeteoSwiss account or terminal commands.
+**Already using MeteoSwiss?** Keep your existing HA entry and follow the
+[update steps below](#updating-an-existing-installation).
 
 ## What this fork provides
 
@@ -47,6 +32,7 @@ with reviewed corrections and German, English, French and Italian UI text.
 |---|---|
 | Current weather | Measured temperature, rain, wind and other values from a selected Swiss station. Its weather symbol is modelled for that station, not measured. |
 | Forecasts for another place | A town/postcode or POI such as a mountain, with named forecast entities and today/tomorrow values. |
+| Solar radiation and wind gusts | Hourly global and diffuse radiation and the gust outlook for 24 hours. See [forecast sensors](FORECAST_SENSORS.md#solar-radiation-and-peak-gusts). |
 | Natural hazards | Active/upcoming postcode warnings, including flood and avalanche warnings when supplied by the shared feed. |
 | Pollen and air quality | Measured pollen from an independently selected station, alongside modelled pollen and air quality. |
 | Less manual maintenance | Bundled translations, retained settings/IDs and ordinary HA cards; no additional weather card is required. |
@@ -57,13 +43,12 @@ most accurate model in every situation. A failed warning feed is not an all-clea
 
 ## Updating an existing installation
 
-Start with [the current upgrade instructions](UPGRADING_8.3.5.md). Keep the
-existing entry and select the published target directly; intermediate betas
-are unnecessary. For users who still have attributable obsolete HGT forecasts,
-b3 and later recommend confirmed removal through the exact native repair
-targets. Completed cleanup stays complete. Do not purge unrelated series.
-The separate [official measured-HGT feature](HGT_OGD_PLAN.md), included from b4,
-imports observations rather than preserving old forecast statistics.
+Keep your existing entry, station and options. Once 8.4.0 is in the release
+catalogue, follow the [8.4.0 Marketplace update guide](ACCEPTANCE_8.4.0.md)
+to update directly from 8.3.6 or 8.4.0b3 and complete the normal restart.
+For older installations, see [migration](MIGRATION.md). If an existing repair
+offers to remove obsolete HGT forecasts, review the
+[cleanup instructions](UPGRADING_8.3.5.md) before confirming.
 
 ## 1. Check prerequisites
 
@@ -72,8 +57,8 @@ imports observations rather than preserving old forecast statistics.
 - **HA 2026.11 and newer** uses the built-in **Settings → Marketplace**.
 - Published **8.3.4** declared a minimum of **HA 2026.8.3**. Its HACS steps
   below apply when using it on HA 2026.8.3 through 2026.10.x.
-- Check the [latest stable release](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
-  and [8.3.0 notes](RELEASE_8.3.0.md). A development branch is not a release.
+- Check the [latest published stable release](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
+  and its release notes.
 - Create a full HA backup, download a copy and retain its recovery key securely.
 
 <a id="2-download-through-hacs"></a>
@@ -155,11 +140,8 @@ not choose the station. A failed source check leaves the form open to retry.
 
 To locate a nearby station before choosing it, open the official
 [MeteoSwiss measurement-network map](https://www.meteoswiss.admin.ch/services-and-publications/applications/measuring-networks.html)
-and view SwissMetNet. Then return to HA and select the station by name. The map
-does not change your HA settings. **From 8.3.1b1:** setup and Configure also
-link to this map in the selected UI language. The operator accepted that test
-release; stable 8.3.1 promotes the same help when announced. Stable 8.3.0 does
-not show the link.
+and view SwissMetNet. Then return to HA and select the station by name. Setup
+and Configure also link to this map in the selected UI language.
 
 **Alternative:** Open-Meteo supplies modelled current weather at entered
 coordinates instead of Swiss station observations. It is an explicit source
@@ -179,7 +161,7 @@ A postcode result uses the coordinates assigned to that point in the catalogue. 
 | HA home/base coordinates | Modelled air quality, modelled pollen and optional UV; also the default weather forecast if no separate point is selected. |
 | Measured-pollen station | Pollen observations; independent of weather measurements and forecasts. |
 | Weather measurement station | SwissMetNet observations and a separately labelled modelled weather condition at that station. |
-| Forecast town/POI | ICON hourly/daily forecasts, eight today/tomorrow sensors and forecast HGT. |
+| Forecast town/POI | ICON hourly/daily forecasts, eight today/tomorrow sensors, forecast HGT and hourly solar radiation and gust forecasts. |
 | Separate warning postcode | Area for active/upcoming warnings; selecting a mountain forecast does not move it. |
 
 For example, HA may be in Kloten, pollen measured in Zürich, weather measured
