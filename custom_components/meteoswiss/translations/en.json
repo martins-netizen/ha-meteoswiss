@@ -557,6 +557,9 @@
     "observations_unavailable": {
       "message": "The weather measurements could not be updated."
     },
+    "station_observations_stale": {
+      "message": "The latest station measurement is {age_minutes} minutes old."
+    },
     "warnings_unavailable": {
       "message": "The weather and natural-hazard warnings could not be updated."
     },

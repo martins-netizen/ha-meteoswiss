@@ -140,6 +140,9 @@ async def test_old_observation_behind_fresh_placeholder_still_fails_freshness_ch
         await current.async_refresh()
     assert not current.last_update_success
     assert current.data is None
+    assert isinstance(current.last_exception, UpdateFailed)
+    assert current.last_exception.translation_key == "station_observations_stale"
+    assert current.last_exception.translation_placeholders == {"age_minutes": "70"}
 
 
 async def test_live_refresh_recovers_when_partial_row_is_completed(

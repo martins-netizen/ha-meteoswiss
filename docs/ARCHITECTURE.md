@@ -105,10 +105,13 @@ classes, entry-owned instances, polling and practical consumer/failure examples.
 - API clients download and validate payloads. A transport or decoding failure
   must escape to the coordinator; it must not become an empty successful result.
 - Coordinators own refresh intervals, success/failure status and data caching.
-  Optional forecasts, alerts, pollen and precipitation imports cannot delay the
-  required observation setup. The diagnostic stations map is loaded lazily.
-  Optional initial refresh tasks belong to the entry. Recorder is an optional
-  ordered dependency: history imports are created only when it is loaded.
+  Forecasts, alerts and air quality start even if the first current-weather
+  refresh fails. For stale station measurements, the setup log includes the age
+  of the latest measurement. Current-weather entities stay unavailable until a
+  successful regular refresh updates their data. The diagnostic stations map is
+  loaded lazily. Optional initial refresh tasks belong to the entry. Recorder is
+  an optional ordered dependency: history imports are created only when it is
+  loaded.
 - Entities expose values and availability; display translations never determine
   automation logic. The native HA update lifecycle handles unload and reload.
 - Home Assistant owns the shared TLS-verified HTTP session. Each request has a
