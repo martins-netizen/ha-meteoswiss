@@ -557,6 +557,9 @@
     "observations_unavailable": {
       "message": "Non è stato possibile aggiornare le misurazioni meteorologiche."
     },
+    "station_observations_stale": {
+      "message": "L’ultima misurazione della stazione risale a {age_minutes} minuti fa."
+    },
     "warnings_unavailable": {
       "message": "Non è stato possibile aggiornare le allerte meteorologiche e sui pericoli naturali."
     },

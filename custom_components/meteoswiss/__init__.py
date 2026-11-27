@@ -8,10 +8,11 @@ from typing import Any
 
 from homeassistant.const import Platform
 from homeassistant.core import HomeAssistant
+from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.device_registry import AnyDeviceEntry
 from homeassistant.helpers.typing import ConfigType
-from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
+from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .alerts import MeteoSwissAlertsAPI
 from .const import (
@@ -97,6 +98,21 @@ async def _async_refresh_optional_coordinators(
         *(coordinator.async_refresh() for coordinator in coordinators),
         return_exceptions=True,
     )
+
+
+async def _async_refresh_current_weather(coordinator: DataUpdateCoordinator[Any]) -> None:
+    """Allow independent sources to start during a current-weather data failure."""
+    try:
+        await coordinator.async_config_entry_first_refresh()
+    except ConfigEntryNotReady as err:
+        failure = err.__cause__
+        if not isinstance(failure, UpdateFailed) or failure.translation_domain != DOMAIN:
+            raise
+        _LOGGER.warning(
+            "Current weather is temporarily unavailable during setup. "
+            "Starting the other data sources. %s",
+            failure,
+        )
 
 
 def _keep_coordinator_polling[T](
@@ -217,8 +233,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: MeteoSwissConfigEntry) -
                     "optional imports are unavailable"
                 )
 
-    # Fetch initial data for current weather
-    await coordinator.async_config_entry_first_refresh()
+    await _async_refresh_current_weather(coordinator)
 
     hgt_ogd_coordinator = None
     if station_id is not None and "recorder" in hass.config.components:

@@ -12,6 +12,7 @@ from unittest.mock import AsyncMock, patch
 import aiohttp
 import pytest
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers.update_coordinator import UpdateFailed
 from ha_helpers import MockConfigEntry
 
 from custom_components.meteoswiss import (
@@ -164,10 +165,13 @@ async def test_cancellation_and_programming_errors_are_not_retried():
         assert method.await_count == 1
 
 
-async def test_initial_failure_does_not_close_ha_session_or_leave_entry_data(hass):
+@pytest.mark.parametrize("cause", [None, UpdateFailed("unrelated failure")])
+async def test_initial_failure_does_not_close_ha_session_or_leave_entry_data(hass, cause):
     session = SimpleNamespace(close=AsyncMock())
+    failure = ConfigEntryNotReady()
+    failure.__cause__ = cause
     coordinator = SimpleNamespace(
-        async_config_entry_first_refresh=AsyncMock(side_effect=ConfigEntryNotReady)
+        async_config_entry_first_refresh=AsyncMock(side_effect=failure)
     )
     entry = MockConfigEntry(
         domain=DOMAIN, data={"station_id": "KLO", "postal_code": "8302"}

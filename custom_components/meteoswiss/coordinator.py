@@ -69,7 +69,7 @@ from .station_condition import (
     current_station_condition,
 )
 from .stations_map import get_stations_map
-from .weather_data import forecast_datetime, validate_observation_time
+from .weather_data import StaleObservationError, forecast_datetime, validate_observation_time
 from .weather_data import parse_reference_timestamp as _parse_reference_timestamp
 
 _LOGGER = logging.getLogger(__name__)
@@ -578,6 +578,12 @@ class MeteoSwissDataUpdateCoordinator(DataUpdateCoordinator[dict[str, Any]]):
                 )
             if isinstance(err, UpdateFailed):
                 raise err from None
+            if isinstance(err, StaleObservationError):
+                raise UpdateFailed(
+                    translation_domain=DOMAIN,
+                    translation_key="station_observations_stale",
+                    translation_placeholders={"age_minutes": str(err.age_minutes)},
+                ) from None
             raise UpdateFailed(
                 translation_domain=DOMAIN,
                 translation_key="observations_unavailable",

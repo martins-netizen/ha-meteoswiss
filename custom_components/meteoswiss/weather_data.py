@@ -52,18 +52,25 @@ def weather_condition(code: object, is_day: bool | None = None) -> str | None:
     return condition
 
 
+class StaleObservationError(ValueError):
+    """A current-weather sample exceeds its allowed age."""
+
+    def __init__(self, age: timedelta) -> None:
+        self.age_minutes = age // timedelta(minutes=1)
+        super().__init__("Observation timestamp is too old")
+
+
 def validate_observation_time(
     data: Mapping[str, object], max_age: timedelta = timedelta(hours=1)
 ) -> None:
     """A successful download must not make stale measurements current."""
     timestamp = forecast_datetime(data.get("last_update"))
     now = datetime.now(UTC)
-    if (
-        timestamp is None
-        or now - timestamp > max_age
-        or timestamp - now > timedelta(minutes=10)
-    ):
-        raise ValueError("Observation timestamp is missing, stale or in the future")
+    if timestamp is None or timestamp - now > timedelta(minutes=10):
+        raise ValueError("Observation timestamp is missing or in the future")
+    age = now - timestamp
+    if age > max_age:
+        raise StaleObservationError(age)
 
 
 def weather_number(
