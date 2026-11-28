@@ -43,9 +43,11 @@ most accurate model in every situation. A failed warning feed is not an all-clea
 
 ## Updating an existing installation
 
-Keep your existing entry, station and options. Once 8.4.0 is in the release
-catalogue, follow the [8.4.0 Marketplace update guide](ACCEPTANCE_8.4.0.md)
-to update directly from 8.3.6 or 8.4.0b3 and complete the normal restart.
+Keep your existing entry, station and options. Update to the
+[latest published stable release](https://github.com/martins-netizen/ha-meteoswiss/releases/latest)
+and complete the normal restart. See the
+[8.4.1 maintenance notes and update guide](RELEASE_8.4.1.md) or the
+[8.4.0 update guide](ACCEPTANCE_8.4.0.md) for the release you choose.
 For older installations, see [migration](MIGRATION.md). If an existing repair
 offers to remove obsolete HGT forecasts, review the
 [cleanup instructions](UPGRADING_8.3.5.md) before confirming.
