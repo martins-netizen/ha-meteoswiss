@@ -14,8 +14,9 @@ from homeassistant.components.recorder.statistics import (
 from homeassistant.core import HomeAssistant
 
 from .statistics_archive import (
+    ArchiveIdentity,
     ArchiveMetadata,
-    archive_identities_match,
+    archive_identity_status,
     async_archive_statistics,
 )
 
@@ -56,8 +57,15 @@ async def async_prepare_wind_statistics(
         uses_archive = archive is not None or (
             current is not None and current[1]["mean_type"] == StatisticMeanType.ARITHMETIC
         )
-        if uses_archive and not archive_identities_match(
-            hass, entity_id, registry_id, archive_id, before
+        identity = (
+            archive_identity_status(hass, entity_id, registry_id, archive_id, before)
+            if uses_archive
+            else ArchiveIdentity.MATCH
+        )
+        if identity is ArchiveIdentity.CONFLICT:
+            return WindStatisticsResult(False)
+        if identity is ArchiveIdentity.DELETED_ARCHIVE_CLAIM and (
+            current is None or current[1]["mean_type"] != StatisticMeanType.CIRCULAR
         ):
             return WindStatisticsResult(False)
         if archive and (
@@ -67,8 +75,9 @@ async def async_prepare_wind_statistics(
             or archive[1]["has_sum"]
         ):
             return WindStatisticsResult(False)
+        verified_archive_id = archive_id if archive and identity is ArchiveIdentity.MATCH else None
         if current is None:
-            return WindStatisticsResult(True, archive_id if archive else None)
+            return WindStatisticsResult(True, verified_archive_id)
         meta = current[1]
         if (
             meta["source"] != "recorder"
@@ -77,7 +86,7 @@ async def async_prepare_wind_statistics(
         ):
             return WindStatisticsResult(False)
         if meta["mean_type"] == StatisticMeanType.CIRCULAR:
-            return WindStatisticsResult(True, archive_id if archive else None)
+            return WindStatisticsResult(True, verified_archive_id)
         if meta["mean_type"] != StatisticMeanType.ARITHMETIC or archive:
             return WindStatisticsResult(False)
 

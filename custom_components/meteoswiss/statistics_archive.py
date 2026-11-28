@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Awaitable, Callable, Collection
+from enum import Enum, auto
 
 from homeassistant.components.recorder.models import StatisticMetaData
 from homeassistant.components.recorder.statistics import async_update_statistics_metadata
@@ -13,14 +14,22 @@ from homeassistant.helpers import entity_registry as er
 type ArchiveMetadata = dict[str, tuple[int, StatisticMetaData]]
 
 
-def archive_identities_match(
+class ArchiveIdentity(Enum):
+    """Registry ownership of the source and proposed archive IDs."""
+
+    MATCH = auto()
+    DELETED_ARCHIVE_CLAIM = auto()
+    CONFLICT = auto()
+
+
+def archive_identity_status(
     hass: HomeAssistant,
     entity_id: str,
     registry_id: str,
     archive_id: str,
     series_ids: Collection[str],
-) -> bool:
-    """Check ownership on the HA loop after reading the relevant Recorder rows."""
+) -> ArchiveIdentity:
+    """Distinguish an old claim on the archive alone from other conflicts."""
     registry = er.async_get(hass)
     owner = registry.async_get(entity_id)
     if (
@@ -29,15 +38,30 @@ def archive_identities_match(
         or registry.async_get(archive_id) is not None
         or hass.states.get(archive_id) is not None
     ):
-        return False
+        return ArchiveIdentity.CONFLICT
     if not series_ids:
-        return True
-    # Recorder stores no registry UUID. An old claim on the destination would
-    # also make a newly moved row ambiguous on the next startup.
-    return not any(
-        old.entity_id == archive_id
-        or (entity_id in series_ids and old.entity_id == entity_id and old.id != registry_id)
-        for old in registry.deleted_entities.values()
+        return ArchiveIdentity.MATCH
+    # Recorder metadata does not store the registry UUID of a series owner.
+    identity = ArchiveIdentity.MATCH
+    for old in registry.deleted_entities.values():
+        if old.entity_id == entity_id and old.id != registry_id and entity_id in series_ids:
+            return ArchiveIdentity.CONFLICT
+        if old.entity_id == archive_id:
+            identity = ArchiveIdentity.DELETED_ARCHIVE_CLAIM
+    return identity
+
+
+def archive_identities_match(
+    hass: HomeAssistant,
+    entity_id: str,
+    registry_id: str,
+    archive_id: str,
+    series_ids: Collection[str],
+) -> bool:
+    """Require an unambiguous source and archive for a rename or readback."""
+    return (
+        archive_identity_status(hass, entity_id, registry_id, archive_id, series_ids)
+        is ArchiveIdentity.MATCH
     )
 
 

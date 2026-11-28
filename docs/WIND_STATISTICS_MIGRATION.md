@@ -41,6 +41,13 @@ destination blocks the move. If an entity claims the archive after Recorder
 has queued the rename, the rename can finish. The migration reports a conflict
 and a later retry verifies the stored archive before enabling circular statistics.
 
+An existing compatible circular series can continue when a deleted entity
+claims only the arithmetic archive ID and the current sensor still owns
+its series. Recorder keeps both series. MeteoSwiss leaves
+`arithmetic_statistics_archive` empty while the archived series has an
+ambiguous owner. The ownership checks still apply to new migrations and
+conflicts at the current sensor ID.
+
 Calm wind (speed zero) has no direction and is published as unknown. Invalid,
 non-finite or out-of-range directions also stay unknown; valid 0°/360° still
 mean north when wind is not calm. This follows HA's wind-direction contract.
@@ -60,7 +67,7 @@ renaming. With Recorder disabled there is no local series to migrate.
 ## Charts, diagnosis and recovery
 
 `wind_statistics_status` is `pending`, `ready` or `blocked`.
-`arithmetic_statistics_archive` identifies the retained archive when present.
+`arithmetic_statistics_archive` identifies the retained archive when its ownership is verified.
 Existing current-value automations keep their sensor ID. Statistics charts for
 that ID start a new circular series; select the archive ID for older arithmetic
 averages. Those old values remain arithmetic, not corrected directions.
