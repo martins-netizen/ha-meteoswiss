@@ -1,6 +1,16 @@
 # Changelog
 
-## [8.4.0] — stable candidate
+## [8.4.1] — stable candidate
+
+- Start forecasts, natural-hazard warnings, pollen and air quality when the
+  first current-weather refresh fails. Observation entities recover through
+  normal polling once current values return.
+- Record the age of stale station measurements in the setup log.
+  [PR #163](https://github.com/martins-netizen/ha-meteoswiss/pull/163)
+
+[Release notes and update guide](docs/RELEASE_8.4.1.md)
+
+## [8.4.0] — 2026-11-26
 
 - Promote the integration packaged in 8.4.0b3. Since stable 8.3.6, forecast
   location search adds Swiss-language aliases and a shorter setup flow.

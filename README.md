@@ -12,6 +12,9 @@ project provides the foundation; its MIT licence and attribution are retained.
 This is an independent community project, not an official MeteoSwiss product.
 
 **Start with the [latest published stable release](https://github.com/martins-netizen/ha-meteoswiss/releases/latest).**
+The [8.4.1 maintenance notes](docs/RELEASE_8.4.1.md) cover startup during a
+current-weather outage.
+
 **MeteoSwiss 8.4.0** brings a simpler forecast location search, Swiss-language
 place names and hourly forecasts for solar radiation and wind gusts.
 See the [8.4.0 release notes](docs/RELEASE_8.4.0.md) and
@@ -68,7 +71,7 @@ before deletion. Accepted b3 cleanup and b5/b6/b7 reports stay complete.
 
 | Package | Required HA Core |
 |---|---|
-| 8.4.0 series, 8.3.6, 8.3.6b1, 8.3.5 and 8.3.5b1–b7 | 2026.11.0 or newer |
+| 8.4.1, 8.4.0 series, 8.3.6, 8.3.6b1, 8.3.5 and 8.3.5b1–b7 | 2026.11.0 or newer |
 | Earlier stable 8.3.4 | 2026.8.3 or newer |
 
 The 2026.11 baseline addresses known vulnerabilities in libraries pinned by
@@ -202,15 +205,15 @@ The [developer guide](DEVELOPMENT.md#strict-type-checking) shows how to run them
 | Your situation | Guide |
 |---|---|
 | First installation | [Step-by-step setup](docs/GETTING_STARTED.md) |
-| Existing MeteoSwiss installation | [Update to 8.4.0](docs/ACCEPTANCE_8.4.0.md) or [switch repositories](docs/MIGRATION.md) |
+| Existing MeteoSwiss installation | [Update the existing entry](docs/GETTING_STARTED.md#updating-an-existing-installation) or [switch repositories](docs/MIGRATION.md) |
 | Experienced HA user | [Data and settings](docs/USAGE.md), [warning codes](docs/WARNING_CODES.md), [architecture](docs/ARCHITECTURE.md) |
 | Settings, missing data or troubleshooting | [English usage reference](docs/USAGE.md) |
 
 ## Release status
 
 The [release catalogue](https://github.com/martins-netizen/ha-meteoswiss/releases)
-lists available packages. The [8.4.0 update guide](docs/ACCEPTANCE_8.4.0.md)
-covers upgrades from stable 8.3.6 and the published 8.4.0b3.
+lists available packages. Follow the [8.4.1 update guide](docs/RELEASE_8.4.1.md#update-an-existing-installation)
+once the maintenance release appears there.
 
 Stable 8.3.6 supports a direct update from 8.3.5 or 8.3.6b1. The
 [release evidence](docs/RELEASE_EVIDENCE_8.3.6.md) records the station and
