@@ -1,6 +1,17 @@
 # Changelog
 
-## [8.4.1] — stable candidate
+## [8.4.2b1] — unpublished candidate
+
+- Continue an existing circular wind direction series when a deleted registry
+  entry claims only the arithmetic archive ID and the current sensor's
+  ownership is clear. Recorder preserves both histories. The archive
+  attribute can be empty while its ownership is unclear. A conflict at the
+  current sensor ID still blocks preparation.
+  [Issue #162](https://github.com/martins-netizen/ha-meteoswiss/issues/162) · [PR #165](https://github.com/martins-netizen/ha-meteoswiss/pull/165)
+
+[Beta notes and test steps](docs/RELEASE_8.4.2b1.md)
+
+## [8.4.1] — 2026-11-28
 
 - Start forecasts, natural-hazard warnings, pollen and air quality when the
   first current-weather refresh fails. Observation entities recover through
